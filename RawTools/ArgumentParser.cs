@@ -102,27 +102,33 @@ namespace RawTools.ArgumentParser
         public string QcDirectory { get; set; }
 
         [Option('i', "identipy", HelpText = "Optional. Perform an IdentiPy search on a subset of " +
-            "the ms2 scans in the raw file to get identification rates, digestion efficiency and labeling efficiency as part of the QC" +
-            "(default is n = 10000 scans, use -N to specify a different number if desired).")]
+            "the ms2 scans in the raw file to get identification-related metrics as part of the QC.")]
         public bool Identipy { get; set; }
 
-        [Option("db", HelpText = "Required for IdentiPy. Path to a fasta protein database. Required for Identipy search.")]
+        [Option('x', "xtandem", HelpText = "Optional. Use X! Tandem to perform a search on a subset of the ms2 scans in the raw file " +
+            "to get identification-related metrics as part of the QC.")]
+        public bool XTandem { get; set; }
+
+        [Option('X', "xtandemdirectory", HelpText = "Specify the path to the X! Tandem directory.")]
+        public string XTandemDirectory { get; set; }
+
+        [Option("db", HelpText = "Required for X! Tandem or IdentiPy search. Path to a fasta protein database.")]
         public string FastaDatabase { get; set; }
 
-        [Option("fmods", HelpText = "Optional. Fixed modifications to pass to the IdentiPy search, if desired. Use mass@aminoacid1,mass@aminoacid2 format. " +
+        [Option("fmods", HelpText = "Optional. Fixed modifications to pass to the search, if desired. Use mass@aminoacid1,mass@aminoacid2 format. " +
             "It is important that the values are separated with a comma and not spaces. IMPORTANT: Do not include isobaric quantification tags here  (e.g. TMT, iTRAQ). Instead, these must " +
             "be specified using the --qmod argument. Invoke \">RawTools qc -e\" to see examples of some common modifications")]
         public string FixedMods { get; set; }
 
-        [Option("nmod", HelpText = "Optional. A single variable N-term modification to pass to the Identipy search, if desired. Use mass@aminoacid1 format. " +
+        [Option("nmod", HelpText = "Optional. A single variable N-term modification to pass to the search, if desired. Use mass@aminoacid1 format. " +
             "Invoke \">RawTools qc -e\" to see examples of some common modifications")]
         public string VariableNMod { get; set; }
 
-        [Option("kmod", HelpText = "Optional. A single variable lysine modification to pass to the Identipy search, if desired. Use mass@aminoacid1 format. " +
+        [Option("kmod", HelpText = "Optional. A single variable lysine modification to pass to the search, if desired. Use mass@aminoacid1 format. " +
             "Invoke \">RawTools qc -e\" to see examples of some common modifications")]
         public string VariableKMod { get; set; }
 
-        [Option("xmod", HelpText = "Optional. An additional single modification to pass to the Identipy search, if desired. The modification cannot " +
+        [Option("xmod", HelpText = "Optional. An additional single modification to pass to the search, if desired. The modification cannot " +
             "be on the N-terminus or lysine. Use mass@aminoacid1 format. Invoke \">RawTools qc -e\" to see examples of some common modifications.")]
         public string VariableXMod { get; set; }
 
