@@ -101,8 +101,9 @@ namespace RawTools.ArgumentParser
         [Option('q', "qcdirectory", Required = true, HelpText = "Path to the directory containing (or to contain) the QC data file (called QC.qc)")]
         public string QcDirectory { get; set; }
 
-        [Option('i', "identipy", HelpText = "Optional. Perform an IdentiPy search on a subset (n=1000) of " +
-            "the ms2 scans in the raw file to get identification rates, digestion efficiency and labeling efficiency as part of the QC.")]
+        [Option('i', "identipy", HelpText = "Optional. Perform an IdentiPy search on a subset of " +
+            "the ms2 scans in the raw file to get identification rates, digestion efficiency and labeling efficiency as part of the QC" +
+            "(default is n = 10000 scans, use -N to specify a different number if desired).")]
         public bool Identipy { get; set; }
 
         [Option("db", HelpText = "Required for IdentiPy. Path to a fasta protein database. Required for Identipy search.")]
