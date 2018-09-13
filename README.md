@@ -28,9 +28,13 @@ If you are just here looking for the web application page for visualizing your q
 
 If you want to see what features we have in mind or are actively working on integrating into RawTools, visit the [Projects page](https://github.com/kevinkovalchik/RawTools/projects/2) for more details.
 
+<br>
+
 ### License and copyright
 
 RawTools (Copyright 2018 Kevin Kovalchik & Christopher Hughes) is licensed under Apache 2.0
+
+<br>
 
 ### Third-party licenses and copyright
 
