@@ -1,0 +1,136 @@
+---
+title: "RawTools test subset Matrix output analysis"
+output: html_notebook
+---
+
+This document details the analysis of Matrix data generated using RawTools for analysis of the subset of injections from the larger HeLa set (n = 10). 
+
+<br>
+
+### Data analysis and plotting
+
+<br>
+
+These are the R libraries we will require.
+
+```{r, results = 'hide'}
+library(ggplot2)
+library(cowplot)
+library(RColorBrewer)
+library(dplyr)
+library(data.table)
+```
+
+<br>
+
+First we need to get the list of Matrix files that were output by RawTools.
+
+```{r}
+###################################################################################################################################################################
+#get the list of metrics files
+scan_files = list.files('/projects/ptx_analysis/chughes/projects-current/morin_rawtools/test_set/scanData', pattern = '.txt', full.names = TRUE)
+```
+
+<br>
+
+Now we can process the data into a single data frame and prepare it for plotting.
+
+```{r}
+###################################################################################################################################################################
+#read in the list of files and store in a single data frame
+scan_all = data.frame()
+for (i in 1:length(scan_files)){
+  scan_in = read.table(scan_files[i], header = TRUE, sep = '\t')
+  scan_in$fraction = sub(".*?Std_(.*?)\\.raw_Matrix\\.txt", "\\1", scan_files[i])
+  scan_all = rbind(scan_all, scan_in)
+}
+
+
+###################################################################################################################################################################
+#make fraction a factor
+scan_all$fraction = factor(scan_all$fraction, levels = 1:10)
+```
+
+<br>
+
+First plot a histogram of all the MS2 scan events.
+
+```{r}
+###################################################################################################################################################################
+#plot a histogram of MS2 scans
+frac3 = subset(scan_all, scan_all$fraction == 3)
+
+output_plot = ggplot(frac3, aes(ddScanRetTime)) +
+  geom_histogram(bins = 100, color = 'white', fill = brewer.pal(3,'Set3')[1]) +
+  labs(x = "Retention Time (minutes)", y = 'Number of MS2 Scans', title = 'MS2 Scans Across Elution Window') +
+  theme(axis.text.x = element_text(size = 9)) +
+  scale_x_continuous(limits = c(0,30), breaks = seq(0,30,5))
+output_plot
+save_plot('/projects/ptx_analysis/chughes/projects-current/morin_rawtools/test_set/Ranalysis/fraction3_ms2-scan-numbers.pdf',output_plot)
+```
+
+<br>
+
+Now look at MS1 intensities.
+
+```{r}
+###################################################################################################################################################################
+#plot a line plot of MS1 intensities
+frac3 = subset(scan_all, scan_all$fraction == 3)
+
+output_plot = ggplot(frac3, aes(ddScanRetTime, MS1MedianIntensity)) +
+  geom_line(color = brewer.pal(3,'Set3')[1]) +
+  labs(x = "Retention Time (minutes)", y = 'Median MS1 Intensity', title = 'MS1 Intensity Profile') +
+  theme(axis.text.x = element_text(size = 9)) +
+  scale_x_continuous(limits = c(0,30), breaks = seq(0,30,5)) +
+  scale_y_continuous(limits = c(0,6e5), breaks = seq(0,6e5,1e5))
+output_plot
+save_plot('/projects/ptx_analysis/chughes/projects-current/morin_rawtools/test_set/Ranalysis/fraction3_ms1-intensity.pdf',output_plot)
+```
+
+<br>
+
+Number of MS2 scans per cycle, just for interest.
+
+```{r}
+###################################################################################################################################################################
+#plot a temporal analysis of number of dependent scans
+frac1 = subset(scan_all, scan_all$fraction == 1)
+
+output_plot = ggplot(frac1, aes(ddScanRetTime, MS2ScansPerCycle)) +
+  geom_point(color = 'black', fill = brewer.pal(3,'Set3')[1], pch = 21, size = 1, alpha = 0.6) +
+  geom_smooth(method='loess',formula=y~x) +
+  labs(x = "Retention Time (minutes)", y = 'Number of Dependent Scans', title = 'MS2 Scans Triggered per MS1') +
+  theme(axis.text.x = element_text(size = 9)) +
+  scale_x_continuous(limits = c(0,30), breaks = seq(0,30,5))
+output_plot
+save_plot('/projects/ptx_analysis/chughes/projects-current/morin_rawtools/test_set/Ranalysis/fraction1_dependent-scan-numbers.pdf',output_plot)
+```
+
+<br>
+
+This last plot looks at the number of scans that a precursor was picked as a difference from the scan event where its max intensity was observed.
+
+```{r}
+###################################################################################################################################################################
+#plot a temporal analysis number of scans away from the max intensity of a precursor
+frac1 = subset(scan_all, scan_all$fraction == 1 & scan_all$ParentPeakFound == 'True')
+frac1$scanDiff = abs(frac1$PeakMaxScan - frac1$MS1ScanNumber)
+
+output_plot = ggplot(frac1, aes(ddScanRetTime, scanDiff)) +
+  geom_point(color = 'black', fill = brewer.pal(3,'Set3')[1], pch = 21, size = 1, alpha = 0.6) +
+  labs(x = "Retention Time (minutes)", y = 'Number of Dependent Scans', title = 'MS2 Scans Triggered per MS1') +
+  theme(axis.text.x = element_text(size = 9)) +
+  scale_x_continuous(limits = c(0,30), breaks = seq(0,30,5)) +
+  scale_y_continuous(limits = c(0,50), breaks = seq(0,50,5))
+output_plot
+#save_plot('/projects/ptx_analysis/chughes/projects-current/morin_rawtools/test_set/Ranalysis/fraction1_dependent-scan-numbers.pdf',output_plot)
+```
+
+<br>
+
+Done.
+
+
+
+

@@ -1,0 +1,24 @@
+---------------------------------------------------------------------------
+ The Apache 2.0 license shall apply only to RawTools source code and
+ RawTools compiled executables.
+
+ All distributed libraries are covered by their own licenses, as outlined
+ below.
+
+ RawFileReader (Copyright © 2016 by Thermo Fisher Scientific, Inc. All
+ rights reserved) is expressly NOT covered under the Apache 2.0 license
+ and its license DOES NOT grant users who have recieved RawFileReader
+ distributed with accompanying software the right to distribute/combine or
+ otherwise convey RawFileReader. For clarification of the legal obligations
+ of end users of RawTools in regards to RawFileReader, the RawFileReader
+ license can be found within the accompanying file named
+ RawFileReaderLicense. Of special note, under section 3.3, end users are
+ prohibited from redistributing RawFileReader to others.
+
+ Serilog is distributed under the Apache 2.0 license, original license
+ file to be found within the accompanying file named SerilogLicense.
+
+ CommandLineParser is distributed under the MIT license, original
+ license to be found within the accompanying file named
+ CommandLineParserLicense.
+---------------------------------------------------------------------------

@@ -1,0 +1,160 @@
+---
+title: "RawTools and ProteoWizard MGF equivalency"
+output: html_notebook
+---
+
+This document details the analysis of identification data generated using SearchGUI and PeptideShaker using RawTools and ProteoWizard generated MGF files. 
+
+<br>
+
+### Data analysis and plotting
+
+<br>
+
+These are the R libraries we will require.
+
+```{r, results = 'hide'}
+library(ggplot2)
+library(cowplot)
+library(RColorBrewer)
+library(dplyr)
+library(data.table)
+```
+
+<br>
+
+First we need to get the output reports from PeptideShaker. Here we are using the Default PSM report export. 
+
+```{r, results = 'hide'}
+###################################################################################################################################################################
+#get the list of psm files
+rt_psmfiles = list.files('/projects/ptx_analysis/chughes/projects-current/morin_rawtools/test_set/rt_mgf', pattern = 'PSM_Report.txt', full.names = TRUE)
+pw_psmfiles = list.files('/projects/ptx_analysis/chughes/projects-current/morin_rawtools/test_set/pw_mgf', pattern = 'PSM_Report.txt', full.names = TRUE)
+```
+
+<br>
+
+Now we will process the identifications data to generate more manageable sets, as well as combining the RawTools and ProteoWizard data into a single object for downstream comparison.
+
+
+```{r, results = 'hide'}
+###################################################################################################################################################################
+#read in the list of files and store in a single data frame
+rt_set = data.frame()
+for (i in 1:length(rt_psmfiles)){
+  psm_temp1 = read.table(rt_psmfiles[i], header = TRUE, sep = '\t')
+  psm_temp2 = psm_temp1 %>% 
+    dplyr::select(Protein.s., Sequence, Spectrum.File, Spectrum.Title) %>% #select columns
+    dplyr::mutate(Sequence, sequence = toupper(as.character(Sequence))) %>%
+    dplyr::mutate(Protein.s., accession = sapply(strsplit(as.character(Protein.s.),","), '[', 1)) %>%
+    dplyr::mutate(Spectrum.File, fraction = sub(".*?Std_(.*?)\\.raw\\.mgf", "\\1", Spectrum.File)) %>%
+    dplyr::mutate(Spectrum.Title, scan = sub(".*?Spectrum_(.*?)", "\\1", Spectrum.Title)) %>%
+    dplyr::select(accession, sequence, fraction, scan)
+  rt_set = rbind(rt_set, psm_temp2)
+}
+
+pw_set = data.frame()
+for (i in 1:length(rt_psmfiles)){
+  psm_temp1 = read.table(pw_psmfiles[i], header = TRUE, sep = '\t')
+  psm_temp2 = psm_temp1 %>% 
+    dplyr::select(Protein.s., Sequence, Spectrum.File, Spectrum.Title) %>% #select columns
+    dplyr::mutate(Sequence, sequence = toupper(as.character(Sequence))) %>%
+    dplyr::mutate(Protein.s., accession = sapply(strsplit(as.character(Protein.s.),","), '[', 1)) %>%
+    dplyr::mutate(Spectrum.File, fraction = sub(".*?Std_(.*?)\\.mgf", "\\1", Spectrum.File)) %>%
+    dplyr::mutate(Spectrum.Title, scan = sapply(strsplit(as.character(Spectrum.Title),"\\."), '[', 2)) %>%
+    dplyr::select(accession, sequence, fraction, scan)
+  pw_set = rbind(pw_set, psm_temp2)
+}
+
+rt_set$dataset = 'rt'
+pw_set$dataset = 'pw'
+psm_set = rbind(rt_set, pw_set)
+psm_set$dataset = factor(psm_set$dataset, levels = c('rt','pw'))
+```
+
+<br>
+
+Now we can start doing some plotting. First let's look at PSM identification numbers. 
+
+```{r}
+###################################################################################################################################################################
+#make a plot of the psm identifications
+psm_set$psms = 1
+psm_compile <- setDT(psm_set)[, lapply(.SD,sum,na.rm=TRUE),by=.(fraction, dataset),.SDcols=c('psms')]
+setDF(psm_compile)
+
+output_plot = ggplot(psm_compile, aes(dataset, psms)) +
+  geom_boxplot(outlier.size = NA) +
+  geom_jitter(size = 3, fill = 'grey60', alpha = 0.8, color = 'black', pch = 21) +
+  labs(x = "Software Tool", y = 'Number of Peptides', title = 'Unique Peptide Matches') +
+  theme(axis.text.x = element_text(size = 9)) +
+  scale_y_continuous(limits = c(0,7000), breaks = seq(0,7000,1000))
+output_plot
+save_plot('/projects/ptx_analysis/chughes/projects-current/morin_rawtools/test_set/Ranalysis/mgf-validation_identifications-peptides.pdf',output_plot)
+
+#t.test(psm_compile$psms~psm_compile$dataset, var.equal=TRUE, paired=FALSE)
+```
+
+<br>
+
+What about protein identifications? 
+
+```{r}
+###################################################################################################################################################################
+#make a plot of the protein identifications
+pro_compile1 <- setDT(psm_set)[, lapply(.SD,sum,na.rm=TRUE),by=.(accession,fraction, dataset),.SDcols=c('psms')]
+setDF(pro_compile1)
+pro_compile1$proteins = 1
+pro_compile2 <- setDT(pro_compile1)[, lapply(.SD,sum,na.rm=TRUE),by=.(fraction, dataset),.SDcols=c('proteins')]
+setDF(pro_compile2)
+
+output_plot = ggplot(pro_compile2, aes(dataset, proteins)) +
+  geom_boxplot(outlier.size = NA) +
+  geom_jitter(size = 3, fill = 'grey60', alpha = 0.8, color = 'black', pch = 21) +
+  labs(x = "Software Tool", y = 'Number of Proteins', title = 'Unique Protein Matches') +
+  theme(axis.text.x = element_text(size = 9)) +
+  scale_y_continuous(limits = c(0,1300), breaks = seq(0,1300,200))
+output_plot
+save_plot('/projects/ptx_analysis/chughes/projects-current/morin_rawtools/test_set/Ranalysis/mgf-validation_identifications-proteins.pdf',output_plot)
+
+#t.test(pro_compile2$proteins~pro_compile2$dataset, var.equal=TRUE, paired=FALSE)
+```
+
+<br>
+
+Lastly, we can look at overlap in actual identifications between the two datasets for peptides and proteins.
+
+```{r}
+###################################################################################################################################################################
+#compare protein overlap
+psm_set$psms = 1
+pro_compile <- setDT(psm_set)[, lapply(.SD,sum,na.rm=TRUE),by=.(accession, dataset),.SDcols=c('psms')]
+setDF(pro_compile)
+
+rt_proteins = subset(pro_compile, pro_compile$dataset == 'rt')
+pw_proteins = subset(pro_compile, pro_compile$dataset == 'pw')
+
+length(intersect(rt_proteins$accession, pw_proteins$accession))
+length(union(rt_proteins$accession, pw_proteins$accession))
+
+###################################################################################################################################################################
+#compare peptide overlap
+psm_set$psms = 1
+pep_compile <- setDT(psm_set)[, lapply(.SD,sum,na.rm=TRUE),by=.(sequence, dataset),.SDcols=c('psms')]
+setDF(pep_compile)
+
+rt_peptides = subset(pep_compile, pep_compile$dataset == 'rt')
+pw_peptides = subset(pep_compile, pep_compile$dataset == 'pw')
+
+length(intersect(rt_peptides$sequence, pw_peptides$sequence))
+length(union(rt_peptides$sequence, pw_peptides$sequence))
+```
+
+<br>
+
+Done.
+
+
+
+
+

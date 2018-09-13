@@ -1,0 +1,251 @@
+---
+title: "RawTools test subset Metrics output analysis"
+output: html_notebook
+---
+
+This document details the analysis of Metrics data generated using RawTools for analysis of the subset of injections from the larger HeLa set (n = 10). 
+
+<br>
+
+### Data analysis and plotting
+
+<br>
+
+These are the R libraries we will require.
+
+```{r, results = 'hide'}
+library(ggplot2)
+library(cowplot)
+library(RColorBrewer)
+library(dplyr)
+library(data.table)
+```
+
+<br>
+
+First we need to get the list of Metrics files that were output by RawTools.
+
+```{r}
+###################################################################################################################################################################
+#get the list of metrics files
+metrics_files = list.files('/projects/ptx_analysis/chughes/projects-current/morin_rawtools/test_set/metrics', pattern = '.txt', full.names = TRUE)
+```
+
+<br>
+
+Now process the data for all 10 files into a single data frame and prepare for plotting.
+
+```{r}
+###################################################################################################################################################################
+#read in the list of files and store in a single data frame
+metrics_all = data.frame()
+for (i in 1:length(metrics_files)){
+  metrics_in = as.data.frame(t(read.table(metrics_files[i], header = FALSE, sep = '\t', row.names = 1)))
+  metrics_in$fraction = sub(".*?Std_(.*?)\\.raw_Metrics\\.txt", "\\1", metrics_files[i])
+  metrics_all = rbind(metrics_all, metrics_in)
+}
+
+
+###################################################################################################################################################################
+#change the column names
+colnames(metrics_all) = substring(names(metrics_all), 0, nchar(names(metrics_all))-1)
+colnames(metrics_all)[24] = 'fraction'
+
+
+###################################################################################################################################################################
+#make fraction a factor
+metrics_all$fraction = factor(metrics_all$fraction, levels = 1:10)
+```
+
+<br>
+
+First plot the scan numbers across the replicates.
+
+```{r}
+###################################################################################################################################################################
+#plot the scan numbers across replicates
+metrics_all$TotalScans = as.numeric(as.character(metrics_all$TotalScans))
+metrics_all$MS1Scans = as.numeric(as.character(metrics_all$MS1Scans))
+metrics_all$MS2Scans = as.numeric(as.character(metrics_all$MS2Scans))
+
+output_plot = ggplot(metrics_all) +
+  geom_point(aes(fraction,TotalScans), colour = brewer.pal(3,'Set3')[1], size=4) +
+  geom_point(aes(fraction,MS1Scans), colour = brewer.pal(3,'Set3')[3], size=4) +
+  geom_point(aes(fraction,MS2Scans), colour = brewer.pal(4,'Set3')[4], size=4) +
+  labs(x = "fraction", y = 'number of scans', title = 'scan numbers across replicates') +
+  theme(axis.text.x = element_text(size = 9)) +
+  geom_hline(yintercept=mean(metrics_all$TotalScans,na.rm=TRUE), color = brewer.pal(6,'RdBu')[1], alpha = 0.6) +
+  geom_hline(yintercept=mean(metrics_all$MS1Scans,na.rm=TRUE), color = brewer.pal(6,'RdBu')[1], alpha = 0.6) +
+  geom_hline(yintercept=mean(metrics_all$MS2Scans,na.rm=TRUE), color = brewer.pal(6,'RdBu')[1], alpha = 0.6) +
+  scale_y_continuous(limits = c(0,12000), breaks = seq(0,12000,2000))
+output_plot
+save_plot('/projects/ptx_analysis/chughes/projects-current/morin_rawtools/test_set/Ranalysis/scan-number-across-replicates.pdf',output_plot)
+```
+
+<br>
+
+Now plot the peak shape data across the replicates.
+
+```{r}
+###################################################################################################################################################################
+#plot the peak shape metrics across the replicates
+metrics_all$`MedianPeakWidthAt10Percent(s)` = as.numeric(as.character(metrics_all$`MedianPeakWidthAt10Percent(s)`))
+metrics_all$`MedianPeakWidthAtHalfMax(s)` = as.numeric(as.character(metrics_all$`MedianPeakWidthAtHalfMax(s)`))
+
+output_plot = ggplot(metrics_all) +
+  geom_point(aes(fraction,`MedianPeakWidthAt10Percent(s)`), colour = brewer.pal(3,'Set3')[1], size=4) +
+  geom_point(aes(fraction,`MedianPeakWidthAtHalfMax(s)`), colour = brewer.pal(3,'Set3')[3], size=4) +
+  labs(x = "fraction", y = 'median peak width (s)', title = 'peak widths across replicates') +
+  theme(axis.text.x = element_text(size = 9)) +
+  geom_hline(yintercept=mean(metrics_all$`MedianPeakWidthAt10Percent(s)`,na.rm=TRUE), color = brewer.pal(6,'RdBu')[1], alpha = 0.6) +
+  geom_hline(yintercept=mean(metrics_all$`MedianPeakWidthAtHalfMax(s)`,na.rm=TRUE), color = brewer.pal(6,'RdBu')[1], alpha = 0.6) +
+  scale_y_continuous(limits = c(0,12), breaks = seq(0,12,1))
+output_plot
+save_plot('/projects/ptx_analysis/chughes/projects-current/morin_rawtools/test_set/Ranalysis/peak-width-across-replicates.pdf',output_plot)
+```
+
+<br>
+
+Now the peak asymmetry.
+
+```{r}
+###################################################################################################################################################################
+#plot the peak asymmetry across the replicates
+metrics_all$MedianAsymmetryFactor = as.numeric(as.character(metrics_all$MedianAsymmetryFactor))
+
+output_plot = ggplot(metrics_all) +
+  geom_point(aes(fraction,MedianAsymmetryFactor), colour = brewer.pal(3,'Set3')[1], size=4) +
+  labs(x = "fraction", y = 'median peak asymmetry factor', title = 'peak asymmetry across replicates') +
+  theme(axis.text.x = element_text(size = 9)) +
+  geom_hline(yintercept=mean(metrics_all$MedianAsymmetryFactor,na.rm=TRUE), color = brewer.pal(6,'RdBu')[1], alpha = 0.6) +
+  scale_y_continuous(limits = c(0,2), breaks = seq(0,2,0.25))
+output_plot
+save_plot('/projects/ptx_analysis/chughes/projects-current/morin_rawtools/test_set/Ranalysis/peak-asymmetry-across-replicates.pdf',output_plot)
+```
+
+<br>
+
+Peak capacity
+
+```{r}
+###################################################################################################################################################################
+#plot the peak capacity across the replicates
+metrics_all$ColumnCapacity = as.numeric(as.character(metrics_all$ColumnCapacity))
+
+output_plot = ggplot(metrics_all) +
+  geom_point(aes(fraction,ColumnCapacity), colour = brewer.pal(3,'Set3')[1], size=4) +
+  labs(x = "fraction", y = 'column capacity', title = 'column peak capacity across replicates') +
+  theme(axis.text.x = element_text(size = 9)) +
+  geom_hline(yintercept=mean(metrics_all$ColumnCapacity,na.rm=TRUE), color = brewer.pal(6,'RdBu')[1], alpha = 0.6) +
+  scale_y_continuous(limits = c(0,400), breaks = seq(0,400,50))
+output_plot
+save_plot('/projects/ptx_analysis/chughes/projects-current/morin_rawtools/test_set/Ranalysis/column-capacity-across-replicates.pdf',output_plot)
+```
+
+<br>
+
+MS2 scan rate per second.
+
+```{r}
+###################################################################################################################################################################
+#plot the MS2 Scan Rate per second
+metrics_all$`MS2ScanRate(/sec)` = as.numeric(as.character(metrics_all$`MS2ScanRate(/sec)`))
+
+output_plot = ggplot(metrics_all) +
+  geom_point(aes(fraction,`MS2ScanRate(/sec)`), colour = brewer.pal(3,'Set3')[1], size=4) +
+  labs(x = "fraction", y = 'MS2 scans per second', title = 'MS2 scan rate across replicates') +
+  theme(axis.text.x = element_text(size = 9)) +
+  geom_hline(yintercept=mean(metrics_all$`MS2ScanRate(/sec)`,na.rm=TRUE), color = brewer.pal(6,'RdBu')[1], alpha = 0.6) +
+  scale_y_continuous(limits = c(0,8), breaks = seq(0,8,1))
+output_plot
+save_plot('/projects/ptx_analysis/chughes/projects-current/morin_rawtools/test_set/Ranalysis/MS2-scan-rate-across-replicates.pdf',output_plot)
+```
+
+<br>
+
+Number of MS2 scans triggered per MS1.
+
+```{r}
+###################################################################################################################################################################
+#plot the TopN Rate across replicates
+metrics_all$MeanTopN = as.numeric(as.character(metrics_all$MeanTopN))
+
+output_plot = ggplot(metrics_all) +
+  geom_point(aes(fraction,MeanTopN), colour = brewer.pal(3,'Set3')[1], size=4) +
+  labs(x = "fraction", y = 'mean TopN', title = 'TopN rate across replicates') +
+  theme(axis.text.x = element_text(size = 9)) +
+  geom_hline(yintercept=mean(metrics_all$MeanTopN,na.rm=TRUE), color = brewer.pal(6,'RdBu')[1], alpha = 0.6) +
+  scale_y_continuous(limits = c(0,10), breaks = seq(0,10,1))
+output_plot
+save_plot('/projects/ptx_analysis/chughes/projects-current/morin_rawtools/test_set/Ranalysis/TopN-rate-across-replicates.pdf',output_plot)
+```
+
+<br>
+
+Duty cycle duration.
+
+```{r}
+###################################################################################################################################################################
+#plot the duty cycle across replicates
+metrics_all$MeanDutyCycle = as.numeric(as.character(metrics_all$MeanDutyCycle))
+
+output_plot = ggplot(metrics_all) +
+  geom_point(aes(fraction,MeanDutyCycle), colour = brewer.pal(3,'Set3')[1], size=4) +
+  labs(x = "fraction", y = 'mean duty cycle (s)', title = 'duty cycle across replicates') +
+  theme(axis.text.x = element_text(size = 9)) +
+  geom_hline(yintercept=mean(metrics_all$MeanDutyCycle,na.rm=TRUE), color = brewer.pal(6,'RdBu')[1], alpha = 0.6) +
+  scale_y_continuous(limits = c(0,2), breaks = seq(0,2,0.25))
+output_plot
+save_plot('/projects/ptx_analysis/chughes/projects-current/morin_rawtools/test_set/Ranalysis/duty-cycle-across-replicates.pdf',output_plot)
+```
+
+<br>
+
+Ion injection fill times for MS2 scans.
+
+```{r}
+###################################################################################################################################################################
+#plot the fill times across replicates
+metrics_all$MedianMS2FillTime = as.numeric(as.character(metrics_all$MedianMS2FillTime))
+
+output_plot = ggplot(metrics_all) +
+  geom_point(aes(fraction,MedianMS2FillTime), colour = brewer.pal(3,'Set3')[1], size=4) +
+  labs(x = "fraction", y = 'median MS2 fill time (ms)', title = 'MS2 fill times across replicates') +
+  theme(axis.text.x = element_text(size = 9)) +
+  geom_hline(yintercept=mean(metrics_all$MedianMS2FillTime,na.rm=TRUE), color = brewer.pal(6,'RdBu')[1], alpha = 0.6) +
+  scale_y_continuous(limits = c(0,10), breaks = seq(0,10,5))
+output_plot
+save_plot('/projects/ptx_analysis/chughes/projects-current/morin_rawtools/test_set/Ranalysis/fill-times-across-replicates.pdf',output_plot)
+```
+
+<br>
+
+Lastly, MS2 intensities across the replicates. 
+
+```{r}
+###################################################################################################################################################################
+#plot the MS2 intensities across replicates
+metrics_all$MedianMS2Intensity = as.numeric(as.character(metrics_all$MedianMS2Intensity))
+
+output_plot = ggplot(metrics_all) +
+  geom_point(aes(fraction,MedianMS2Intensity), colour = brewer.pal(3,'Set3')[1], size=4) +
+  labs(x = "fraction", y = 'median MS2 intensity', title = 'MS2 intensities across replicates') +
+  theme(axis.text.x = element_text(size = 9)) +
+  geom_hline(yintercept=mean(metrics_all$MedianMS2Intensity,na.rm=TRUE), color = brewer.pal(6,'RdBu')[1], alpha = 0.6) +
+  scale_y_continuous(limits = c(0,3000), breaks = seq(0,3000,1000))
+output_plot
+save_plot('/projects/ptx_analysis/chughes/projects-current/morin_rawtools/test_set/Ranalysis/ms2-intensity-across-replicates.pdf',output_plot)
+```
+
+<br>
+
+Done. 
+
+
+
+
+
+
+
+
+
