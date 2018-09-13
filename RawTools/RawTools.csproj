@@ -134,10 +134,6 @@
     <None Include="iontrap_config.cfg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <Content Include="ThermoFisher.CommonCore.BackgroundSubtraction.xml" />
-    <Content Include="ThermoFisher.CommonCore.Data.xml" />
-    <Content Include="ThermoFisher.CommonCore.MassPrecisionEstimator.xml" />
-    <Content Include="ThermoFisher.CommonCore.RawFileReader.xml" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.6.2">

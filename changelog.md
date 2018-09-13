@@ -6,4 +6,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
-- Everything! But that isn't really informative, is it? So check out the [wiki page](https://github.com/kevinkovalchik/RawTools/wiki) to learn about RawTools.
+- Everything! But that isn't very informative, so check out the [wiki page](https://github.com/kevinkovalchik/RawTools/wiki) to learn about RawTools.
