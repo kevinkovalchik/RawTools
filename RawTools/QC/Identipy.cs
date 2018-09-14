@@ -115,7 +115,7 @@ namespace RawTools.QC
             return ConsoleUtils.Bash(pythonExec, "-c \"import sys; print(sys.version.split(' ')[0])\"").Replace("\r", "").Replace("\n", "");
         }
 
-        public static void CheckIdentipyDependencies(IdentipyParameters idpyPars)
+        public static void CheckIdentipyDependencies(SearchParameters idpyPars)
         {
             string pyExec;
             // Check if python is installed
@@ -185,7 +185,7 @@ namespace RawTools.QC
             }
         }
 
-        public static void RunIdentipy(RawDataCollection rawData, IRawDataPlus rawFile, string tempDirectory, IdentipyParameters idpyPars, int numScans)
+        public static void RunIdentipy(RawDataCollection rawData, IRawDataPlus rawFile, string tempDirectory, SearchParameters idpyPars, int numScans)
         {
             
             int[] scans;
@@ -211,7 +211,7 @@ namespace RawTools.QC
             scans = AdditionalMath.SelectRandomScans(scans: rawData.scanIndex.ScanEnumerators[MSOrderType.Ms2], num: numScans);
 
             // write them to a mgf file
-            MGF.WriteMGF(rawData, rawFile, tempDirectory, scans: scans, cutoff: 132, intensityCutoff: idpyPars.MgfIntensityCutoff);
+            MGF.WriteMGF(rawData, rawFile, tempDirectory, scans: scans, cutoff: idpyPars.MgfMassCutoff, intensityCutoff: idpyPars.MgfIntensityCutoff);
 
             // recreate the path to the mgf
             mgfFile = Path.Combine(tempDirectory, Path.GetFileName(rawData.rawFileName) + ".mgf");
@@ -224,7 +224,7 @@ namespace RawTools.QC
 
         }
 
-        public static void IdentipyExecute(string pyExec, string idpyScript, string mgfFile, IdentipyParameters identipyParameters, MassAnalyzerType Ms2Analyzer)
+        public static void IdentipyExecute(string pyExec, string idpyScript, string mgfFile, SearchParameters identipyParameters, MassAnalyzerType Ms2Analyzer)
         {
             string fastaDB = identipyParameters.FastaDatabase;
             string fmods = identipyParameters.FixedMods;
@@ -287,7 +287,7 @@ namespace RawTools.QC
             ConsoleUtils.VoidBash(pyExec, parameters);
         }
 
-        public static void IdentipyQC(QcDataContainer qcData, RawDataCollection rawData, IRawDataPlus rawFile, string tempDirectory, IdentipyParameters identipyParameters, int numSearched)
+        public static void IdentipyQC(QcDataContainer qcData, RawDataCollection rawData, IRawDataPlus rawFile, string tempDirectory, SearchParameters identipyParameters, int numSearched)
         {
             XElement results, searchSummary;
             IEnumerable<XElement> top_scores, decoyPSMs, search_hits, spectrumQueries;

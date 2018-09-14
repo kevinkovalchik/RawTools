@@ -103,7 +103,7 @@ namespace RawTools
         {
             Log.Information("Starting QC. Identipy: {Identipy}", opts.Identipy);
             //Console.WriteLine("\n");
-            IdentipyParameters idpyPars;
+            SearchParameters idpyPars;
 
             if (opts.Identipy)
             {
@@ -121,7 +121,7 @@ namespace RawTools
                     Environment.Exit(1);
                 }
 
-                idpyPars = new IdentipyParameters();
+                idpyPars = new SearchParameters();
                 idpyPars.PythonExecutable = opts.PythonExecutable;
                 idpyPars.IdentipyScript = opts.IdentipyScript;
                 idpyPars.FastaDatabase = opts.FastaDatabase;
@@ -131,6 +131,7 @@ namespace RawTools
                 idpyPars.XMod = opts.VariableXMod;
                 idpyPars.NumSpectra = opts.NumberSpectra;
                 idpyPars.MgfIntensityCutoff = opts.IntensityCutoff;
+                idpyPars.MgfMassCutoff = opts.MassCutOff;
 
                 Identipy.CheckIdentipyDependencies(idpyPars);
 

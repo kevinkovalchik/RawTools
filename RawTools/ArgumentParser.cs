@@ -101,17 +101,15 @@ namespace RawTools.ArgumentParser
         [Option('q', "qcdirectory", Required = true, HelpText = "Path to the directory containing (or to contain) the QC data file (called QC.qc)")]
         public string QcDirectory { get; set; }
 
-        [Option('i', "identipy", HelpText = "Optional. Perform an IdentiPy search on a subset of " +
+        [Option('s', "search", Required = false, HelpText = "Specify a search algorith to facilitate the calculation of identification related metrics. " +
+            "Must be one of the following: {identipy, xtandem}")]
+        public string SearchAlgorithm { get; set; }
+
+        [Option('i', "identipy", HelpText = "DEPRECATED. This argument will be replaced with the more general -s (--search) in a future version." +
+            "Optional. Perform an IdentiPy search on a subset of " +
             "the ms2 scans in the raw file to get identification-related metrics as part of the QC.")]
         public bool Identipy { get; set; }
-
-        [Option('x', "xtandem", HelpText = "Optional. Use X! Tandem to perform a search on a subset of the ms2 scans in the raw file " +
-            "to get identification-related metrics as part of the QC.")]
-        public bool XTandem { get; set; }
-
-        [Option('X', "xtandemdirectory", HelpText = "Specify the path to the X! Tandem directory.")]
-        public string XTandemDirectory { get; set; }
-
+        
         [Option("db", HelpText = "Required for X! Tandem or IdentiPy search. Path to a fasta protein database.")]
         public string FastaDatabase { get; set; }
 
@@ -141,6 +139,9 @@ namespace RawTools.ArgumentParser
             "However, if you are using a virtual python environment this location will vary from the system-wide installation. " +
             "Include the extension if there is one.  -I and -p must be invoked together.")]
         public string IdentipyScript { get; set; }
+
+        [Option('X', "xtandemdirectory", HelpText = "Specify the path to the X! Tandem directory.")]
+        public string XTandemDirectory { get; set; }
 
         [Option('N', "numberspectra", Default = 10000, HelpText = "Optional. The number of MS2 spectra used for the Identipy search. Defaults to 10,000. " +
             "If N is greater than the number of MS2 scans in a raw file, all MS2 scans will be used.")]

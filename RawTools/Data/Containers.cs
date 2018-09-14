@@ -401,14 +401,14 @@ namespace RawTools.Data.Containers
         }
     }
 
-    class IdentipyParameters
+    class SearchParameters
     {
-        public string FastaDatabase, PythonExecutable, IdentipyScript;
+        public string FastaDatabase, PythonExecutable, IdentipyScript, XTandemDirectory;
         public string FixedMods, NMod, KMod, XMod;
         public int NumSpectra;
-        public double MgfIntensityCutoff;
+        public double MgfIntensityCutoff, MgfMassCutoff;
 
-        public IdentipyParameters()
+        public SearchParameters()
         {
             FixedMods = NMod = KMod = XMod = null;
         }

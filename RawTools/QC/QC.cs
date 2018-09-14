@@ -117,7 +117,7 @@ namespace RawTools.QC
             return qcData;
         }
 
-        public static void DoQc(string dataDirectory, string qcDirectory, IdentipyParameters idpyPars = null)
+        public static void DoQc(string dataDirectory, string qcDirectory, SearchParameters idpyPars = null)
         {
             QcDataCollection qcData;
 

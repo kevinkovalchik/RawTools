@@ -111,9 +111,15 @@
     <Compile Include="ArgumentParser.cs" />
     <Compile Include="Data\Collections.cs" />
     <Compile Include="Data\Processing.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="QC\Identipy.cs" />
     <Compile Include="QC\Watcher.cs" />
     <Compile Include="QC\QC.cs" />
+    <Compile Include="QC\XTandem.cs" />
     <Compile Include="Write\DataWrite.cs" />
     <Compile Include="Utilities.cs" />
     <Compile Include="Data\Containers.cs" />
@@ -146,6 +152,17 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Resources\XTandem_default_config.xml" />
+    <Content Include="Resources\XTandem_custom_config.xml" />
+    <None Include="Resources\XTandem_taxonomy.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="AfterBuild">
