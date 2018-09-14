@@ -234,7 +234,10 @@ namespace RawTools.QC
                     where x != null
                     select x;
 
-            vmods = tempMods.Aggregate((i,j) => i + "," + j);
+            if (tempMods.Count() > 0)
+            {
+                vmods = tempMods.Aggregate((i, j) => i + "," + j);
+            }
 
             string appDir = AppInformation.AssemblyDirectory;
             string N;
