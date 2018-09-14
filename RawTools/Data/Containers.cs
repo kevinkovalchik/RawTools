@@ -404,6 +404,7 @@ namespace RawTools.Data.Containers
     class SearchParameters
     {
         public string FastaDatabase, PythonExecutable, IdentipyScript, XTandemDirectory;
+        public SearchAlgorithm SearchAlgorithm;
         public string FixedMods, NMod, KMod, XMod;
         public int NumSpectra;
         public double MgfIntensityCutoff, MgfMassCutoff;
@@ -412,5 +413,18 @@ namespace RawTools.Data.Containers
         {
             FixedMods = NMod = KMod = XMod = null;
         }
+    }
+
+    class QcParameters
+    {
+        public string RawFileDirectory, QcDirectory, QcFile;
+        public SearchParameters searchParameters;
+        public string QcSearchDataDirectory { get { return Path.Combine(QcDirectory, "QcSearchData"); } }
+    }
+
+    public enum SearchAlgorithm
+    {
+        XTandem = 1,
+        IdentiPy = 2
     }
 }

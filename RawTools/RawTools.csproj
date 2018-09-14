@@ -117,6 +117,8 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="QC\Identipy.cs" />
+    <Compile Include="QC\RunSearch.cs" />
+    <Compile Include="QC\SearchQC.cs" />
     <Compile Include="QC\Watcher.cs" />
     <Compile Include="QC\QC.cs" />
     <Compile Include="QC\XTandem.cs" />

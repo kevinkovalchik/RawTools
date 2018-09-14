@@ -1,4 +1,22 @@
-﻿using System;
+﻿// Copyright 2018 Kevin Kovalchik & Christopher Hughes
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+//    you may not use this file except in compliance with the License.
+//    You may obtain a copy of the License at
+// 
+//        http://www.apache.org/licenses/LICENSE-2.0
+// 
+//    Unless required by applicable law or agreed to in writing, software
+//    distributed under the License is distributed on an "AS IS" BASIS,
+//    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//    See the License for the specific language governing permissions and
+//    limitations under the License.
+//
+// Kevin Kovalchik and Christopher Hughes do not claim copyright of
+// any third-party libraries ditributed with RawTools. All third party
+// licenses are provided in accompanying files as outline in the NOTICE.
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -17,21 +35,6 @@ namespace RawTools.QC
 {
     static class XTandem
     {
-        public static bool CheckForParametersFile(string XTandemDirectory)
-        {
-            return File.Exists(Path.Combine(XTandemDirectory, "input.xml"));
-        }
-
-        public static bool CheckForDefaultParametersFile(string XTandemDirectory)
-        {
-            return File.Exists(Path.Combine(XTandemDirectory, "default_input.xml"));
-        }
-
-        public static void WriteDefaultParametersFile(string XTandemDirectory)
-        {
-            XElement.Parse(Properties.Resources.XTandem_default_config).Save(Path.Combine(XTandemDirectory, "default_input.xml"));
-        }
-
         static void AddNoteToXTandemParameters(this XElement parameters, string type, string label, string value)
         {
             if (value != null)
@@ -49,11 +52,13 @@ namespace RawTools.QC
             // add fixed modifications
             customParameters.AddNoteToXTandemParameters(type: "input", label: "residue, modification mass", value: parameters.FixedMods);
 
-            // add the other modifications
-            foreach (string modification in new List<string>() { parameters.NMod, parameters.KMod, parameters.XMod })
-            {
-                customParameters.AddNoteToXTandemParameters(type: "input", label: "residue, potential modification mass", value: parameters.FixedMods);
-            }
+            // add the variable modifications
+            var tempMods = from x in (new string[] { parameters.NMod, parameters.KMod, parameters.XMod })
+                           where x != null
+                           select x;
+
+            string vmods = tempMods.Aggregate((i, j) => i + "," + j);
+            customParameters.AddNoteToXTandemParameters(type: "input", label: "residue, potential modification mass", value: vmods);
 
             // add the parent and fragment mass errors
             // we assume the parent scan is in the FTMS
@@ -94,25 +99,23 @@ namespace RawTools.QC
             taxonomy.Element("bioml").Element("taxon").Add(element);
         }
 
-        public static void WriteCustomParametersFile(string directory, XElement parameters, string fileName)
-        {
-            parameters.Save(Path.Combine(directory, fileName));
-        }
-
-        public static void RunXTandem(this RawDataCollection rawData, string xTandemParameters, SearchParameters searchParameters, string mgfFile, string outputFile)
+        public static void RunXTandem(this RawDataCollection rawData, SearchParameters searchParameters, string mgfFile, string outputFile)
         {
             XElement customPars, taxonomy;
 
             // write out the default input file
             XElement.Parse(Properties.Resources.XTandem_default_config).Save(Path.Combine(searchParameters.XTandemDirectory, "XTandem_default_config.xml"));
 
-            // set up the taxonomy file
+            // set up and write the taxonomy file
             taxonomy = XElement.Parse(Properties.Resources.XTandem_taxonomy);
             taxonomy.UpdateTaxonomy(searchParameters);
+            taxonomy.Save(Path.Combine(searchParameters.XTandemDirectory, "XTandem_taxonomy.xml"));
 
-            // set up the custom input file
+            // set up and write the custom input file
             customPars = XElement.Parse(Properties.Resources.XTandem_custom_config);
             customPars.UpdateCustomXParameters(searchParameters, rawData, mgfFile, outputFile);
+            string xTandemParameters = Path.Combine(searchParameters.XTandemDirectory, "XTandem_custom_config.xml");
+            customPars.Save(xTandemParameters);            
 
             ConsoleUtils.VoidBash(Path.Combine(searchParameters.XTandemDirectory, "tandem.exe"), xTandemParameters);
         }
