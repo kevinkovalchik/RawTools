@@ -50,7 +50,7 @@ namespace RawTools.QC
 
             if (qcParameters.searchParameters.SearchAlgorithm == SearchAlgorithm.XTandem)
             {
-                XTandem.RunXTandem(rawData, qcParameters.searchParameters, mgfFile, outputFile);
+                XTandem.RunXTandem(rawData, qcParameters.searchParameters, mgfFile, outputFile, genDecoy: true);
             }
 
             if (qcParameters.searchParameters.SearchAlgorithm == SearchAlgorithm.IdentiPy)

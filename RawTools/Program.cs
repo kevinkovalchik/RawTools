@@ -77,9 +77,7 @@ namespace RawTools
 
         static int DoStuff(ArgumentParser.TestOptions opts)
         {
-            string[] tempMods = new string[] { "1", "2", "3" };
-            string vmods = tempMods.Aggregate((i, j) => i + "," + j);
-            Console.WriteLine(vmods);
+            Console.WriteLine("Number of processors: {0}", Environment.ProcessorCount);
 
             return 0;
         }
@@ -100,7 +98,7 @@ namespace RawTools
                 // the search algorithm is not null but it also it not identipy or xtandem
                 Log.Error("Invalid search algorithm argument: {Argument}", opts.SearchAlgorithm);
                 Console.WriteLine("ERROR: Search algorithm must be one of {identipy, xtandem}");
-                return(1);
+                return 1;
             }
 
             if (opts.Identipy)
@@ -146,8 +144,15 @@ namespace RawTools
 
                     searchParameters.SearchAlgorithm = SearchAlgorithm.IdentiPy;
                 }
+
                 if (opts.SearchAlgorithm == "xtandem")
                 {
+                    if (opts.XTandemDirectory == null)
+                    {
+                        Log.Error("Path to XTandem directory was not provided");
+                        Console.WriteLine("ERROR: You must specify the X! Tandem directory using the -X argument to perform a search using X! Tandem.");
+                        return 1;
+                    }
                     searchParameters.SearchAlgorithm = SearchAlgorithm.XTandem;
                 }
             }

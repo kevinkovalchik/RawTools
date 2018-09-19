@@ -39,7 +39,7 @@
 	<note type="input" label="spectrum, sequence batch size">1000</note>
 	
 <note>residue modification parameters</note>
-	<note type="input" label="residue, modification mass">57.022@C</note>
+	<note type="input" label="residue, modification mass"></note>
 		<note>The format of this parameter is m@X, where m is the modfication
 		mass in Daltons and X is the appropriate residue to modify. Lists of
 		modifications are separated by commas. For example, to modify M and C
@@ -82,7 +82,7 @@
 		<note>if yes, an upper limit is set on the number of homologues kept for a particular spectrum</note>
 
 <note>model refinement parameters</note>
-	<note type="input" label="refine">yes</note>
+	<note type="input" label="refine">no</note>
 	<note type="input" label="refine, modification mass"></note>
 	<note type="input" label="refine, sequence path"></note>
 	<note type="input" label="refine, tic percent">20</note>
@@ -107,7 +107,7 @@
 
 <note>scoring parameters</note>
 	<note type="input" label="scoring, minimum ion count">4</note>
-	<note type="input" label="scoring, maximum missed cleavage sites">1</note>
+	<note type="input" label="scoring, maximum missed cleavage sites">2</note>
 	<note type="input" label="scoring, x ions">no</note>
 	<note type="input" label="scoring, y ions">yes</note>
 	<note type="input" label="scoring, z ions">no</note>
@@ -127,26 +127,26 @@
 	<note type="input" label="output, one sequence copy">no</note>
 	<note type="input" label="output, sequence path"></note>
 	<note type="input" label="output, path">output.xml</note>
-	<note type="input" label="output, sort results by">protein</note>
+	<note type="input" label="output, sort results by">spectrum</note>
 		<note>values = protein|spectrum (spectrum is the default)</note>
-	<note type="input" label="output, path hashing">yes</note>
+	<note type="input" label="output, path hashing">no</note>
 		<note>values = yes|no</note>
 	<note type="input" label="output, xsl path">tandem-style.xsl</note>
 	<note type="input" label="output, parameters">yes</note>
 		<note>values = yes|no</note>
 	<note type="input" label="output, performance">yes</note>
 		<note>values = yes|no</note>
-	<note type="input" label="output, spectra">yes</note>
+	<note type="input" label="output, spectra">no</note>
 		<note>values = yes|no</note>
-	<note type="input" label="output, histograms">yes</note>
+	<note type="input" label="output, histograms">no</note>
 		<note>values = yes|no</note>
 	<note type="input" label="output, proteins">yes</note>
 		<note>values = yes|no</note>
-	<note type="input" label="output, sequences">yes</note>
+	<note type="input" label="output, sequences">no</note>
 		<note>values = yes|no</note>
 	<note type="input" label="output, one sequence copy">no</note>
 		<note>values = yes|no, set to yes to produce only one copy of each protein sequence in the output xml</note>
-	<note type="input" label="output, results">valid</note>
+	<note type="input" label="output, results">all</note>
 		<note>values = all|valid|stochastic</note>
 	<note type="input" label="output, maximum valid expectation value">0.1</note>
 		<note>value is used in the valid|stochastic setting of output, results</note>

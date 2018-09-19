@@ -10,7 +10,7 @@
 	files are linked to a taxon name.
 	</note>
 
-	<note type="input" label="list path, default parameters">default_input.xml</note>
+	<note type="input" label="list path, default parameters">RawTools_default_config.xml</note>
 
 	<note type="input" label="protein, taxon">all</note>
   

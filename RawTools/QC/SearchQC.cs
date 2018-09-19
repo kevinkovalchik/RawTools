@@ -38,7 +38,137 @@ namespace RawTools.QC
 {
     static class SearchQC
     {
-        public static void RunQC(QcDataContainer qcData, RawDataCollection rawData, IRawDataPlus rawFile, QcParameters qcParameters)
+        public static int GetMissedCleavages(string sequence)
+        {
+            int num = 0;
+
+            for (int i = 0; i < sequence.Length - 1; i++)
+            {
+                if ((sequence[i] == 'K' | sequence[i] == 'R') & sequence[i + 1] != 'P')
+                {
+                    num += 1;
+                }
+            }
+
+            return num;
+        }
+
+        public static void ParseXTandem(QcDataContainer qcData, QcParameters qcParameters)
+        {
+            XElement results, searchSummary;
+            IEnumerable<XElement> top_scores, decoyPSMs, search_hits, spectrumQueries;
+            int numGoodPSMs, totalCleavageSites, numMissedCleavages, peptidesWithNoMissedCleavages;
+            IEnumerable<int> allMissedCleavages, charges;
+            double IdRate, chargeRatio3to2, chargeRatio4to2;
+            double digestionEfficiencyByCleavage, digestionEfficiencyByPeptide, topDecoyScore;
+            double missedCleavageRate;
+            Dictionary<int, int> numCharges = new Dictionary<int, int>();
+            SearchParameters searchParameters = qcParameters.searchParameters;
+            int numSearched = searchParameters.NumSpectra;
+
+            // load the xml Identipy results file
+            string QcSearchDataDirectory = qcParameters.QcSearchDataDirectory;
+            string resultsFile = Path.Combine(QcSearchDataDirectory, Path.GetFileName(qcData.RawFile) + ".pep.xml");
+            results = XElement.Load(resultsFile);
+
+            // add the namespace
+            XNamespace nsp = "http://www.bioml.com/gaml/";
+
+            // parse out the search summary
+            searchSummary = results.Descendants("group").Where(x => { return x?.Attribute("type").Value == "parameters"; }).FirstOrDefault();
+
+            // parse out the PSMs
+            spectrumQueries = results.Descendants("group").Where(x => { return x?.Attribute("type").Value == "model"; });
+            Console.WriteLine(spectrumQueries.Count());
+
+            // keep only the PSMs with scores higher than the highest scoring decoy
+            // parse out the decoy hits
+            var decoyQueries = from x in spectrumQueries
+                               where x.Attribute("label").Value.StartsWith("DECOY_")
+                               select x;
+
+            // and the non-decoy hits
+            var nonDecoyQueries = from x in spectrumQueries
+                                  where !x.Attribute("label").Value.StartsWith("DECOY_")
+                                  select x;
+
+            // get the top decoy score
+            topDecoyScore = (from x in decoyQueries
+                             select Convert.ToDouble(x?.Element("protein")?.Element("peptide")?.Element("domain")?.Attribute("hyperscore")?.Value)).ToArray().Percentile(95);
+
+            // and finally select the non-decoy hits which are above the top decoy score
+            top_scores = from x in nonDecoyQueries
+                         where Convert.ToDouble(x?.Element("protein")?.Element("peptide")?.Element("domain")?.Attribute("hyperscore")?.Value) > topDecoyScore
+                         select x;
+
+            Console.WriteLine("Top decoy score: {0}", topDecoyScore);
+            Console.WriteLine("Non-decoy hits: {0}", nonDecoyQueries.Count());
+            Console.WriteLine("Search hits above top decoy: {0}", top_scores.Count());
+
+            // parse out the charges
+            charges = from x in top_scores select Convert.ToInt32(x.Attribute("z").Value);
+
+            // get the number of each charge, add to a dictionary
+            foreach (int charge in new List<int>() { 2, 3, 4 })
+            {
+                numCharges.Add(charge, (from x in charges where x == charge select x).Count());
+            }
+
+            // calculate charge ratios
+            chargeRatio3to2 = Convert.ToDouble(numCharges[3]) / Convert.ToDouble(numCharges[2]);
+            chargeRatio4to2 = Convert.ToDouble(numCharges[4]) / Convert.ToDouble(numCharges[2]);
+
+            // get out the peptide info
+            search_hits = top_scores.Elements("protein").Elements("peptide").Elements("domain");
+
+            // parse out the missed cleavage data
+            allMissedCleavages = (from x in search_hits select SearchQC.GetMissedCleavages(x.Attribute("seq").Value));
+
+            // number of PSMs is the length of this collection
+            numGoodPSMs = search_hits.Count();
+
+            // total missed cleavages is the sum
+            numMissedCleavages = allMissedCleavages.Sum();
+
+            // missed cleavages per PSM
+            missedCleavageRate = Convert.ToDouble(numMissedCleavages) / numGoodPSMs;
+
+            // calculate ID rate
+            IdRate = Convert.ToDouble(numGoodPSMs) / numSearched;
+            Console.WriteLine("IDrate: {0}", IdRate);
+
+            // the total number of cleavage sites is missed cleavages + number of PSMs (not 2 X missed cleavages. that would count each terminus twice)
+            totalCleavageSites = numGoodPSMs + numMissedCleavages;
+
+            // this leads us to the cleavage digestion efficiency
+            digestionEfficiencyByCleavage = Convert.ToDouble(totalCleavageSites - numMissedCleavages) / totalCleavageSites;
+
+            // now get number of peptides with no missed cleavages
+            peptidesWithNoMissedCleavages = (from x in allMissedCleavages where x == 0 select x).Count();
+
+            // and the peptide digestion efficiency is peptides with no cleavages over psms
+            digestionEfficiencyByPeptide = Convert.ToDouble(peptidesWithNoMissedCleavages) / numGoodPSMs;
+            Console.WriteLine("Digestion efficiency: {0}", digestionEfficiencyByPeptide);
+
+            // get labeling efficiency metrics
+            if ((searchParameters.NMod != null) | (searchParameters.KMod != null) | (searchParameters.XMod != null))
+            {
+                qcData.GetModificationFrequencyXTandem(searchSummary, top_scores, nsp, searchParameters.NMod, searchParameters.KMod,
+                    searchParameters.XMod);
+            }
+
+            // get median mass drift
+            Console.WriteLine(top_scores.Count());
+            qcData.MedianMassDrift = GetMassDrift(top_scores, search: SearchAlgorithm.XTandem);
+
+            qcData.IdentificationRate = IdRate;
+            qcData.MissedCleavageRate = missedCleavageRate;
+            qcData.DigestionEfficiency = digestionEfficiencyByPeptide;
+            qcData.ChargeRatio3to2 = chargeRatio3to2;
+            qcData.ChargeRatio4to2 = chargeRatio4to2;
+        }
+
+        public static void ParseIdentipy(QcDataContainer qcData, RawDataCollection rawData, IRawDataPlus rawFile, QcParameters qcParameters)
         {
             XElement results, searchSummary;
             IEnumerable<XElement> top_scores, decoyPSMs, search_hits, spectrumQueries;
@@ -152,12 +282,12 @@ namespace RawTools.QC
             // get labeling efficiency metrics
             if ((searchParameters.NMod != null) | (searchParameters.KMod != null) | (searchParameters.XMod != null))
             {
-                qcData.GetModificationFrequency(searchSummary, search_hits, nsp, searchParameters.NMod, searchParameters.KMod,
+                qcData.GetModificationFrequencyIdentipy(searchSummary, search_hits, nsp, searchParameters.NMod, searchParameters.KMod,
                     searchParameters.XMod);
             }
 
             // get median mass drift
-            qcData.GetMassDrift(search_hits);
+            qcData.MedianMassDrift = GetMassDrift(search_hits, search: SearchAlgorithm.IdentiPy);
 
             qcData.IdentificationRate = IdRate;
             qcData.MissedCleavageRate = missedCleavageRate;
@@ -166,17 +296,243 @@ namespace RawTools.QC
             qcData.ChargeRatio4to2 = chargeRatio4to2;
         }
 
-        public static void GetMassDrift(this QcDataContainer qcData, IEnumerable<XElement> PSMs)
+        public static double GetMassDrift(IEnumerable<XElement> PSMs, SearchAlgorithm search)
         {
-            var ppms = (from x in PSMs select (double)x.Attribute("massdiff") / (double)x.Attribute("calc_neutral_pep_mass") * 1e6);
+            double[] ppms;
+
+            if (search == SearchAlgorithm.IdentiPy)
+            {
+                ppms = (from x in PSMs select (double)x.Attribute("massdiff") / (double)x.Attribute("calc_neutral_pep_mass") * 1e6).ToArray();
+            }
+            else
+            {
+                ppms = (from x in PSMs
+                           select ((Convert.ToDouble(x.Attribute("mh")?.Value) -
+                           Convert.ToDouble(x.Element("protein").Element("peptide").Element("domain")?.Attribute("mh").Value)) /
+                           Convert.ToDouble(x.Element("protein").Element("peptide").Element("domain")?.Attribute("mh").Value))*1e6).ToArray();
+            }
             var median_ppm = ppms.ToArray().Percentile(50); ;
             Console.WriteLine("Median mass drift(ppm): {0}", median_ppm);
-            qcData.MedianMassDrift = median_ppm;
+            return median_ppm;
         }
 
         // public static void GetModificationFrequency(this QcDataContainer qcData)
 
-        public static void GetModificationFrequency(this QcDataContainer qcData, XElement searchSummary, IEnumerable<XElement> PSMs, XNamespace nsp, string nmod, string kmod, string xmod)
+        public static void GetModificationFrequencyXTandem(this QcDataContainer qcData, XElement searchSummary, IEnumerable<XElement> PSMs, XNamespace nsp, string nmod, string kmod, string xmod)
+        {
+            // get the modification mass and location out of qmods
+            Dictionary<string, string> Modifications = new Dictionary<string, string>();
+            Dictionary<string, int> LabelingSites = new Dictionary<string, int>();
+            Dictionary<string, double> LabelingEfficiency = new Dictionary<string, double>();
+            Dictionary<string, int> MissedMods = new Dictionary<string, int>();
+            string xMod = null;
+
+            string[] Mods = new string[] { nmod, kmod, xmod };
+
+            foreach (var item in Mods)
+            {
+                if (item == null)
+                {
+                    continue;
+                }
+                var splitString = item.Split('@');
+                // add the key: value pairs as AA:mass
+                Modifications.Add(splitString.Last(), splitString.First());
+            }
+
+            // now we need to get at labeling efficiency
+            int KTotalSites = 0;
+            int KTotalMissed = 0;
+            int NTotalSites = 0;
+            int NTotalMissed = 0;
+            int XTotalSites = 0;
+            int XTotalMissed = 0;
+            foreach (string aa in Modifications.Keys)
+            {
+                // if the modification is to the n-terminus, this is Nmod
+                if (aa == "[")
+                {
+                    string massToLookFor = Modifications[aa];
+                    int hits = 0;
+                    int termini = 0;
+
+                    IEnumerable<XElement> nTermMods;
+
+                    foreach (var domain in PSMs.Elements("protein").Elements("peptide").Elements("domain"))
+                    {
+                        string term = domain.Attribute("start").Value;
+
+                        nTermMods = from x in domain.Elements("aa")
+                                        where (x.Attribute("at").Value == term & x.Attribute("modified").Value == massToLookFor)
+                                        select x;
+
+                        if (nTermMods.Count() > 0)
+                        {
+                            hits += 1;
+                        }
+                        termini += 1;
+                    }
+                    int missed = termini - hits;
+                    MissedMods.Add(aa, missed);
+                    NTotalMissed = missed;
+                    NTotalSites = PSMs.Count();
+                    LabelingSites.Add(aa, PSMs.Count());
+                }
+
+                // if the modification is not to the n-terminus or K, this is X
+                if ((aa != "[") & (aa != "K"))
+                {
+                    xMod = aa;
+                    string massToLookFor = Modifications[aa];
+
+                    int missed = 0;
+
+                    LabelingSites.Add(aa, 0);
+
+                    foreach (var hit in PSMs)
+                    {
+                        int numLabeled = 0;
+                        string peptide = hit?.Element("protein")?.Element("peptide")?.Element("domain")?.Attribute("seq").Value;
+
+                        if (peptide == null) { continue; }
+
+                        if (!peptide.Contains(aa))
+                        {
+                            // the amino acid isn't in the peptide, so go to the next PSMs
+                            continue;
+                        }
+
+                        int numPresent = peptide.Count(x => x.ToString() == aa);
+                        XTotalSites += numPresent;
+                        LabelingSites[aa] += numPresent;
+
+                        if (hit.Element("protein").Element("peptide").Element("domain").Elements("aa") != null)
+                        {
+                            numLabeled = (from x in hit.Element("protein").Element("peptide").Element("domain").Elements("aa")
+                                          where x.Attribute("modified").Value == massToLookFor & x.Attribute("type").Value == aa
+                                          select 1).Count();
+                        }
+
+                        if (numPresent == numLabeled)
+                        {
+                            // everything is labeled, so continue to the next
+                            continue;
+                        }
+                        else
+                        {
+                            missed += (numPresent - numLabeled);
+                        }
+                    }
+
+                    MissedMods.Add(aa, missed);
+                    XTotalMissed = missed;
+                }
+
+                // if the modification is to K, this is Kmod
+                if (aa == "K")
+                {
+                    string massToLookFor = Modifications[aa];
+
+                    int missed = 0;
+
+                    LabelingSites.Add(aa, 0);
+
+                    foreach (var hit in PSMs)
+                    {
+                        int numLabeled = 0;
+                        string peptide = hit?.Element("protein")?.Element("peptide")?.Element("domain")?.Attribute("seq").Value;
+
+                        if (peptide == null){ continue; }
+
+                        if (!peptide.Contains(aa))
+                        {
+                            // the amino acid isn't in the peptide, so go to the next PSMs
+                            continue;
+                        }
+
+                        int numPresent = peptide.Count(x => x.ToString() == aa);
+                        KTotalSites += numPresent;
+                        LabelingSites[aa] += numPresent;
+
+                        if (hit.Element("protein").Element("peptide").Element("domain").Elements("aa") != null)
+                        {
+                            numLabeled = (from x in hit.Element("protein").Element("peptide").Element("domain").Elements("aa")
+                                          where x.Attribute("modified").Value == massToLookFor & x.Attribute("type").Value == aa
+                                          select 1).Count();
+
+                            if (Modifications[aa] == Modifications["["])
+                            {
+                                // the K mod is the same as the N-mod (this is probably always the case)
+                                if (numLabeled > 1 & hit.Element("protein").Element("peptide").Element("domain").Attribute("seq").Value[0] == 'K')
+                                {
+                                    // we want to see if there are two labels or not
+                                    int nTermKs = (from x in hit.Element("protein").Element("peptide").Element("domain").Elements("aa")
+                                                   where x.Attribute("modified").Value == massToLookFor & x.Attribute("type").Value == aa & x.Attribute("at").Value == hit.Element("protein").Element("peptide").Element("domain").Attribute("start").Value
+                                                   select 1).Count();
+                                    if (nTermKs == 1)
+                                    {
+                                        // there's only one label, so give it to the n-term, not lysine
+                                        numLabeled -= 1;
+                                    }
+                                }
+                            }
+
+                        }
+
+                        if (numPresent == numLabeled)
+                        {
+                            // everything is labeled, so continue to the next
+                            continue;
+                        }
+                        else
+                        {
+                            missed += (numPresent - numLabeled);
+                        }
+                    }
+
+                    MissedMods.Add(aa, missed);
+                    KTotalMissed += missed;
+                }
+            }
+
+            // spit out some metrics to the console
+            Console.WriteLine("Total N-term sites: {0}", NTotalSites);
+            Console.WriteLine("Total K sites: {0}", KTotalSites);
+            Console.WriteLine("Total {0} sites: {1}", xMod, XTotalSites);
+            foreach (var key in MissedMods.Keys)
+            {
+                Console.WriteLine("Missed labels at {0}: {1}", key, MissedMods[key]);
+            }
+
+            // calculate labelling efficiency for each site
+            foreach (var aa in LabelingSites.Keys)
+            {
+                double efficiency = Convert.ToDouble(LabelingSites[aa] - MissedMods[aa]) / LabelingSites[aa];
+                LabelingEfficiency.Add(aa, efficiency);
+                Console.WriteLine("Labeling efficiency at {0}: {1}", aa, efficiency);
+
+                // if the sites are n-term or K add them to their own attributes
+                if (aa == "[")
+                {
+                    qcData.LabelingEfficiencyAtNTerm = efficiency;
+                }
+                else
+                {
+                    if (aa == "K")
+                    {
+                        qcData.LabelingEfficiencyAtK = efficiency;
+
+                    }
+                    else
+                    {
+                        qcData.LabelingEfficiencyAtX = efficiency;
+                        qcData.LabelX = aa;
+                    }
+                }
+            }
+        }
+
+        public static void GetModificationFrequencyIdentipy(this QcDataContainer qcData, XElement searchSummary, IEnumerable<XElement> PSMs, XNamespace nsp, string nmod, string kmod, string xmod)
         {
             // get the modification mass and location out of qmods
             Dictionary<string, string> Modifications = new Dictionary<string, string>();

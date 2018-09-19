@@ -427,4 +427,20 @@ namespace RawTools.Data.Containers
         XTandem = 1,
         IdentiPy = 2
     }
+
+    public class SearchData
+    {
+        public int PeptidesWithMissedCleavages;
+        public int TotalNumPeptides;
+        public int NLabelSites, KLabelSites, XLabelSites;
+        public int NLabelSitesMissed, KLabelSitesMissed, XLabelSitesMissed;
+        public int Charge2, Charge3, Charge4;
+    }
+
+    public class PSMData
+    {
+        public string seq;
+        public int start, end;
+        public string hjbhvhggchvhg;
+    }
 }

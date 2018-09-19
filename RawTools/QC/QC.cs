@@ -240,9 +240,18 @@ namespace RawTools.QC
                     {
                         Search.WriteSearchMGF(qcParameters, rawData, rawFile);
                         Search.RunSearch(qcParameters, rawData, rawFile);
-                        SearchQC.RunQC(newQcData, rawData, rawFile, qcParameters);
-                        newQcData.IdentipyParameters = String.Format("\"fmods: {0}; nmod: {1}; kmod: {2}; xmod: {3}; fastaDB: {4}; pythonExecutable: {5}; identipyScript: {6}\"",
+                        if (searchParameters.SearchAlgorithm == SearchAlgorithm.XTandem)
+                        {
+                            SearchQC.ParseXTandem(newQcData, qcParameters);
+                            newQcData.IdentipyParameters = String.Format("\"Algorithm: X!Tandem; fmods: {0}; nmod: {1}; kmod: {2}; xmod: {3}; fastaDB: {4}; xtandemDirectory: {5}\"",
+                            searchParameters.FixedMods, searchParameters.NMod, searchParameters.KMod, searchParameters.XMod, searchParameters.FastaDatabase, searchParameters.XTandemDirectory);
+                        }
+                        else
+                        {
+                            SearchQC.ParseIdentipy(newQcData, rawData, rawFile, qcParameters);
+                            newQcData.IdentipyParameters = String.Format("\"Algorithm: IdentiPy; fmods: {0}; nmod: {1}; kmod: {2}; xmod: {3}; fastaDB: {4}; pythonExecutable: {5}; identipyScript: {6}\"",
                             searchParameters.FixedMods, searchParameters.NMod, searchParameters.KMod, searchParameters.XMod, searchParameters.FastaDatabase, searchParameters.PythonExecutable, searchParameters.IdentipyScript);
+                        }
                     }
 
                     qcDataCollection.QcData.Add(rawFile.CreationDate, newQcData);
@@ -357,6 +366,7 @@ namespace RawTools.QC
         public double FractionOfRunAbovePoint1MaxIntensity;
         public string IdentipyParameters = "None";
         public int NumEsiStabilityFlags;
+        public SearchData SearchData;
 
         public Distribution Ms1FillTime, Ms2FillTime, Ms3FillTime;
 
@@ -375,6 +385,7 @@ namespace RawTools.QC
             ChargeRatio3to2 = ChargeRatio4to2 = -1;
             Ms3ScanRate = -1;
             MedianMassDrift = -1;
+            SearchData = new SearchData();
         }
     }
 
