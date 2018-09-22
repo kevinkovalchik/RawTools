@@ -14,5 +14,5 @@
 
 	<note type="input" label="protein, taxon">all</note>
   
-	<note type="input" label="output, results">valid</note>
+	<note type="input" label="output, results">all</note>
 </bioml>

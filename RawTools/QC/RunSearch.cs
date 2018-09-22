@@ -36,10 +36,10 @@ namespace RawTools.QC
 {
     static class Search
     {
-        public static void WriteSearchMGF(QcParameters qcParameters, RawDataCollection rawData, IRawDataPlus rawFile)
+        public static void WriteSearchMGF(QcParameters qcParameters, RawDataCollection rawData, IRawDataPlus rawFile, bool fixedScans = false)
         {
             var pars = qcParameters.searchParameters;
-            int[] scans = AdditionalMath.SelectRandomScans(scans: rawData.scanIndex.ScanEnumerators[MSOrderType.Ms2], num: pars.NumSpectra);
+            int[] scans = AdditionalMath.SelectRandomScans(scans: rawData.scanIndex.ScanEnumerators[MSOrderType.Ms2], num: pars.NumSpectra, fixedScans: fixedScans);
             MGF.WriteMGF(rawData, rawFile, qcParameters.QcSearchDataDirectory, pars.MgfMassCutoff, scans, pars.MgfIntensityCutoff);
         }
 

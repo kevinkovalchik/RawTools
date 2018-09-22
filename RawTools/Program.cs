@@ -92,6 +92,7 @@ namespace RawTools
             qcParameters.RawFileDirectory = opts.DirectoryToQc;
             qcParameters.QcDirectory = opts.QcDirectory;
             qcParameters.QcFile = Path.Combine(opts.QcDirectory, "QC.xml");
+            
 
             if (opts.SearchAlgorithm != null & !(new List<string>() { "identipy", "xtandem" }.Contains(opts.SearchAlgorithm)))
             {
@@ -128,7 +129,8 @@ namespace RawTools
                     XMod = opts.VariableXMod,
                     NumSpectra = opts.NumberSpectra,
                     MgfIntensityCutoff = opts.IntensityCutoff,
-                    MgfMassCutoff = opts.MassCutOff
+                    MgfMassCutoff = opts.MassCutOff,
+                    FixedScans = opts.FixedScans
                 };
 
                 if (opts.SearchAlgorithm == "identipy")

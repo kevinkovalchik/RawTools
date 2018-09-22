@@ -413,6 +413,7 @@ namespace RawTools.Data.Containers
         {
             FixedMods = NMod = KMod = XMod = null;
         }
+        public bool FixedScans;
     }
 
     class QcParameters
@@ -437,10 +438,29 @@ namespace RawTools.Data.Containers
         public int Charge2, Charge3, Charge4;
     }
 
-    public class PSMData
+    class PsmData
     {
-        public string seq;
-        public int start, end;
-        public string hjbhvhggchvhg;
+        public double Hyperscore, ExpectationValue, MassDrift;
+        public int Id;
+        public bool Decoy;
+        public string Seq;
+        public int Start, End, Charge, MissedCleavages;
+        // these mods will be in mass@aa format
+        public List<Modification> Mods = new List<Modification>();
+    }
+
+    class Modification
+    {
+        public int Loc;
+        public string AA;
+        public double Mass;
+
+        public string MassAtAa
+        {
+            get
+            {
+                return String.Concat(Mass, "@", AA);
+            }
+        }
     }
 }

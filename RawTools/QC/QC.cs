@@ -238,8 +238,10 @@ namespace RawTools.QC
 
                     if (searchParameters != null)
                     {
-                        Search.WriteSearchMGF(qcParameters, rawData, rawFile);
+                        Search.WriteSearchMGF(qcParameters, rawData, rawFile, searchParameters.FixedScans);
                         Search.RunSearch(qcParameters, rawData, rawFile);
+                        newQcData.ParseSearchResults(rawData, rawFile, qcParameters);
+                        /*
                         if (searchParameters.SearchAlgorithm == SearchAlgorithm.XTandem)
                         {
                             SearchQC.ParseXTandem(newQcData, qcParameters);
@@ -252,6 +254,7 @@ namespace RawTools.QC
                             newQcData.IdentipyParameters = String.Format("\"Algorithm: IdentiPy; fmods: {0}; nmod: {1}; kmod: {2}; xmod: {3}; fastaDB: {4}; pythonExecutable: {5}; identipyScript: {6}\"",
                             searchParameters.FixedMods, searchParameters.NMod, searchParameters.KMod, searchParameters.XMod, searchParameters.FastaDatabase, searchParameters.PythonExecutable, searchParameters.IdentipyScript);
                         }
+                        */
                     }
 
                     qcDataCollection.QcData.Add(rawFile.CreationDate, newQcData);

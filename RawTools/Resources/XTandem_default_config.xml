@@ -123,7 +123,7 @@
 
 <note>output parameters</note>
 	<note type="input" label="output, log path"></note>
-	<note type="input" label="output, message">testing 1 2 3</note>
+	<note type="input" label="output, message">testing 1 2 3 </note>
 	<note type="input" label="output, one sequence copy">no</note>
 	<note type="input" label="output, sequence path"></note>
 	<note type="input" label="output, path">output.xml</note>

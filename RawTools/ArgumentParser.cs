@@ -155,5 +155,9 @@ namespace RawTools.ArgumentParser
             "The value is relative to the highest intensity ion found in a given scan. For example, if you use \"-y 0.01\", then for all scans peaks of less than 1% " +
             "the intensity of the highest intensity ion in that scan will be excluded.")]
         public double IntensityCutoff { get; set; }
+
+        [Option("fixedscans", HelpText = "Causes the scans in the mgf file used for a database search to be static (i.e. not random, the same " +
+            "scans are used everytime). This is intended for diagnostic purposes, not for general use.")]
+        public bool FixedScans { get; set; }
     }
 }

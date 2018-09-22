@@ -116,8 +116,12 @@ namespace RawTools.QC
             // make a decoy database, if requested
             if (genDecoy)
             {
-                FastaManipulation.ReverseDecoy(searchParameters.FastaDatabase);
-                searchParameters.FastaDatabase = searchParameters.FastaDatabase + ".TARGET_DECOY.fasta";
+                // check if the decoy database already exists
+                if (!searchParameters.FastaDatabase.EndsWith(".TARGET_DECOY.fasta"))
+                {
+                    FastaManipulation.ReverseDecoy(searchParameters.FastaDatabase);
+                    searchParameters.FastaDatabase = searchParameters.FastaDatabase + ".TARGET_DECOY.fasta";
+                }
             }
 
             // write out the default input file
