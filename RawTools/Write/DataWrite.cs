@@ -447,7 +447,7 @@ namespace RawTools.Data.IO
                     f.Write(qcData.QcData[key].IdentipyParameters + "\n");
                 }
             }
-            Console.WriteLine("Finished writing QC data to csv");
+            Console.WriteLine("Finished writing QC data to csv\n");
         }
     }
 

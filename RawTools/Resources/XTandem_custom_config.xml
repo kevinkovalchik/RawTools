@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<bioml>
+	<note>
+	Each one of the parameters for x! tandem is entered as a labeled note node. 
+	Any of the entries in the default_input.xml file can be over-ridden by
+	adding a corresponding entry to this file. This file represents a minimum
+	input file, with only entries for the default settings, the output file
+	and the input spectra file name. 
+	See the taxonomy.xml file for a description of how FASTA sequence list 
+	files are linked to a taxon name.
+	</note>
+
+	<note type="input" label="list path, default parameters">RawTools_default_config.xml</note>
+
+	<note type="input" label="protein, taxon">all</note>
+  
+	<note type="input" label="output, results">all</note>
+</bioml>

@@ -401,16 +401,66 @@ namespace RawTools.Data.Containers
         }
     }
 
-    class IdentipyParameters
+    class SearchParameters
     {
-        public string FastaDatabase, PythonExecutable, IdentipyScript;
+        public string FastaDatabase, PythonExecutable, IdentipyScript, XTandemDirectory;
+        public SearchAlgorithm SearchAlgorithm;
         public string FixedMods, NMod, KMod, XMod;
         public int NumSpectra;
-        public double MgfIntensityCutoff;
+        public double MgfIntensityCutoff, MgfMassCutoff;
 
-        public IdentipyParameters()
+        public SearchParameters()
         {
             FixedMods = NMod = KMod = XMod = null;
+        }
+        public bool FixedScans;
+    }
+
+    class QcParameters
+    {
+        public string RawFileDirectory, QcDirectory, QcFile;
+        public SearchParameters searchParameters;
+        public string QcSearchDataDirectory { get { return Path.Combine(QcDirectory, "QcSearchData"); } }
+    }
+
+    public enum SearchAlgorithm
+    {
+        XTandem = 1,
+        IdentiPy = 2
+    }
+
+    public class SearchData
+    {
+        public int PeptidesWithMissedCleavages;
+        public int TotalNumPeptides;
+        public int NLabelSites, KLabelSites, XLabelSites;
+        public int NLabelSitesMissed, KLabelSitesMissed, XLabelSitesMissed;
+        public int Charge2, Charge3, Charge4;
+    }
+
+    class PsmData
+    {
+        public double Hyperscore, ExpectationValue, MassDrift;
+        public int Id;
+        public bool Decoy;
+        public string Seq;
+        public int Start, End, Charge, MissedCleavages;
+        // these mods will be in mass@aa format
+        public List<Modification> Mods = new List<Modification>();
+    }
+
+    class Modification
+    {
+        public int Loc;
+        public string AA;
+        public double Mass;
+
+        public string MassAtAa
+        {
+            get
+            {
+                return String.Concat(Mass, "@", AA);
+            }
         }
     }
 }

@@ -117,9 +117,13 @@ namespace RawTools.QC
             return qcData;
         }
 
-        public static void DoQc(string dataDirectory, string qcDirectory, IdentipyParameters idpyPars = null)
+        public static void DoQc(QcParameters qcParameters)
         {
-            QcDataCollection qcData;
+            QcDataCollection qcDataCollection;
+            string dataDirectory = qcParameters.RawFileDirectory;
+            string qcDirectory = qcParameters.QcDirectory;
+            string qcSearchDataDirecotry = qcParameters.QcSearchDataDirectory;
+            SearchParameters searchParameters = qcParameters.searchParameters;
 
             // our qc file
             string qcFile = Path.Combine(qcDirectory, "QC.xml");
@@ -130,7 +134,7 @@ namespace RawTools.QC
                 // if so, open it
                 try
                 {
-                    qcData = XmlSerialization.ReadFromXmlFile<QcDataCollection>(qcFile);
+                    qcDataCollection = XmlSerialization.ReadFromXmlFile<QcDataCollection>(qcFile);
                     Log.Information("QC data file loaded successfully");
                 }
                 catch (Exception e)
@@ -147,7 +151,7 @@ namespace RawTools.QC
                     Directory.CreateDirectory(qcDirectory);
                 }
 
-                qcData = new QcDataCollection(dataDirectory, qcDirectory);
+                qcDataCollection = new QcDataCollection(dataDirectory, qcDirectory);
                 Log.Information("Appears to be a new QC directory. New QC data collection created.");
             }
 
@@ -162,7 +166,7 @@ namespace RawTools.QC
                 Environment.Exit(1);
             }
 
-            fileList.RemoveAll(s => qcData.ProcessedRawFiles.Contains(Path.GetFileName(s)));
+            fileList.RemoveAll(s => qcDataCollection.ProcessedRawFiles.Contains(Path.GetFileName(s)));
 
             Log.Information("Raw files in QC queue: {Files}", fileList);
 
@@ -209,11 +213,11 @@ namespace RawTools.QC
                 // okay, it is probably a real raw file, let's do the QC
 
                 // check if the raw file already exists in the QC data with a different name
-                if (qcData.QcData.Keys.Contains(rawHeader.CreationDate))
+                if (qcDataCollection.QcData.Keys.Contains(rawHeader.CreationDate))
                 {
                     Log.Information("A file with the same creation date and time as {File} already exists in the QC data", fileName);
                     Console.WriteLine("{0} appears to already exist in the QC data with the name {1}. Skipping to next file.",
-                        fileName, qcData.QcData[rawHeader.CreationDate].RawFile);
+                        fileName, qcDataCollection.QcData[rawHeader.CreationDate].RawFile);
                     continue;
                 }
 
@@ -230,21 +234,32 @@ namespace RawTools.QC
                     }
                     */
 
-                    QcDataContainer newQcData = ProcessQcData(Data: qcData, rawData: rawData, rawFile: rawFile, qcDirectory: qcDirectory);
+                    QcDataContainer newQcData = ProcessQcData(Data: qcDataCollection, rawData: rawData, rawFile: rawFile, qcDirectory: qcDirectory);
 
-                    if (idpyPars != null)
+                    if (searchParameters != null)
                     {
-                        string tempDirectory = Path.Combine(qcDirectory, "QcSearchData");
-                        int nScans = idpyPars.NumSpectra;
-                        Identipy.RunIdentipy(rawData, rawFile, tempDirectory, idpyPars, nScans);
-                        Identipy.IdentipyQC(newQcData, rawData, rawFile, tempDirectory, idpyPars, nScans);
-                        newQcData.IdentipyParameters = String.Format("\"fmods: {0}; nmod: {1}; kmod: {2}; xmod: {3}; fastaDB: {4}; pythonExecutable: {5}; identipyScript: {6}\"",
-                            idpyPars.FixedMods, idpyPars.NMod, idpyPars.KMod, idpyPars.XMod, idpyPars.FastaDatabase, idpyPars.PythonExecutable, idpyPars.IdentipyScript);
+                        Search.WriteSearchMGF(qcParameters, rawData, rawFile, searchParameters.FixedScans);
+                        Search.RunSearch(qcParameters, rawData, rawFile);
+                        newQcData.ParseSearchResults(rawData, rawFile, qcParameters);
+                        /*
+                        if (searchParameters.SearchAlgorithm == SearchAlgorithm.XTandem)
+                        {
+                            SearchQC.ParseXTandem(newQcData, qcParameters);
+                            newQcData.IdentipyParameters = String.Format("\"Algorithm: X!Tandem; fmods: {0}; nmod: {1}; kmod: {2}; xmod: {3}; fastaDB: {4}; xtandemDirectory: {5}\"",
+                            searchParameters.FixedMods, searchParameters.NMod, searchParameters.KMod, searchParameters.XMod, searchParameters.FastaDatabase, searchParameters.XTandemDirectory);
+                        }
+                        else
+                        {
+                            SearchQC.ParseIdentipy(newQcData, rawData, rawFile, qcParameters);
+                            newQcData.IdentipyParameters = String.Format("\"Algorithm: IdentiPy; fmods: {0}; nmod: {1}; kmod: {2}; xmod: {3}; fastaDB: {4}; pythonExecutable: {5}; identipyScript: {6}\"",
+                            searchParameters.FixedMods, searchParameters.NMod, searchParameters.KMod, searchParameters.XMod, searchParameters.FastaDatabase, searchParameters.PythonExecutable, searchParameters.IdentipyScript);
+                        }
+                        */
                     }
 
-                    qcData.QcData.Add(rawFile.CreationDate, newQcData);
-                    qcData.ProcessedRawFiles.Add(Path.GetFileName(rawData.rawFileName));
-                    qcData.WriteQcToTable();
+                    qcDataCollection.QcData.Add(rawFile.CreationDate, newQcData);
+                    qcDataCollection.ProcessedRawFiles.Add(Path.GetFileName(rawData.rawFileName));
+                    qcDataCollection.WriteQcToTable();
                 }
 
                 Log.Information("QC finished: {File}", fileName);
@@ -255,7 +270,7 @@ namespace RawTools.QC
 
             try
             {
-                XmlSerialization.WriteToXmlFile<QcDataCollection>(qcFile, qcData);
+                XmlSerialization.WriteToXmlFile<QcDataCollection>(qcFile, qcDataCollection);
                 Log.Information("QC file saved successfully");
                 Console.WriteLine("QC file saved successfully");
             }
@@ -354,6 +369,7 @@ namespace RawTools.QC
         public double FractionOfRunAbovePoint1MaxIntensity;
         public string IdentipyParameters = "None";
         public int NumEsiStabilityFlags;
+        public SearchData SearchData;
 
         public Distribution Ms1FillTime, Ms2FillTime, Ms3FillTime;
 
@@ -372,6 +388,7 @@ namespace RawTools.QC
             ChargeRatio3to2 = ChargeRatio4to2 = -1;
             Ms3ScanRate = -1;
             MedianMassDrift = -1;
+            SearchData = new SearchData();
         }
     }
 

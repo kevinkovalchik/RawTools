@@ -324,12 +324,20 @@ namespace RawTools.Utilities
             }
         }
 
-        public static int[] SelectRandomScans(int[] scans, int num)
+        public static int[] SelectRandomScans(int[] scans, int num, bool fixedScans = false)
         {
             // convert scans to a list so we can use more methods on it
             List<int> scansIn = scans.ToList();
             int[] scansOut;
-            Random numGen = new Random();
+            Random numGen;
+            if (fixedScans)
+            {
+                numGen = new Random(1);
+            }
+            else
+            {
+                numGen = new Random();
+            }
             int newScan = 0;
 
             if (scans.Count() > num)

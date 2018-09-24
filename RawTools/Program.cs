@@ -57,15 +57,7 @@ namespace RawTools
                 .CreateLogger();
 
             Log.Information("Program started with arguments: {0}", String.Join(" ", args));
-
-            /*
-            if (Environment.OSVersion.Platform == PlatformID.MacOSX)
-            {
-                Console.WriteLine("MacOSX system detected. Sorry, RawTools is not compatible with MacOSX at this time");
-                Log.Error("System is MacOSX");
-                Environment.Exit(1);
-            }
-            */
+            
 
             Parser.Default.ParseArguments<ArgumentParser.ParseOptions, ArgumentParser.QcOptions, ArgumentParser.TestOptions, ArgumentParser.ExampleMods>(args)
                 .WithParsed<ArgumentParser.ParseOptions>(opts => DoStuff(opts))
@@ -73,28 +65,19 @@ namespace RawTools
                 .WithParsed<ArgumentParser.TestOptions>(opts => DoStuff(opts))
                 .WithParsed<ArgumentParser.ExampleMods>(opts => DoStuff(opts))
                 .WithNotParsed((errs) => HandleParseError(args));
-               /*
-            Parser.Default.ParseArguments<ArgumentParser.ParseOptions, ArgumentParser.QcOptions>(args)
-              .MapResult(
-                (ArgumentParser.ParseOptions opts) => DoStuff(opts),
-                (ArgumentParser.QcOptions opts) => DoStuff(opts),
-                errs => HandleParseError(args));
-                */
 
             Log.CloseAndFlush();
         }
 
         static int DoStuff(ArgumentParser.ExampleMods opts)
         {
-            Identipy.ExampleMods();
+            SearchQC.ExampleMods();
             return 0;
         }
 
         static int DoStuff(ArgumentParser.TestOptions opts)
         {
-            string[] tempMods = new string[] { "1", "2", "3" };
-            string vmods = tempMods.Aggregate((i, j) => i + "," + j);
-            Console.WriteLine(vmods);
+            Console.WriteLine("Number of processors: {0}", Environment.ProcessorCount);
 
             return 0;
         }
@@ -103,9 +86,28 @@ namespace RawTools
         {
             Log.Information("Starting QC. Identipy: {Identipy}", opts.Identipy);
             //Console.WriteLine("\n");
-            IdentipyParameters idpyPars;
+            SearchParameters searchParameters;
+
+            QcParameters qcParameters = new QcParameters();
+            qcParameters.RawFileDirectory = opts.DirectoryToQc;
+            qcParameters.QcDirectory = opts.QcDirectory;
+            qcParameters.QcFile = Path.Combine(opts.QcDirectory, "QC.xml");
+            
+
+            if (opts.SearchAlgorithm != null & !(new List<string>() { "identipy", "xtandem" }.Contains(opts.SearchAlgorithm)))
+            {
+                // the search algorithm is not null but it also it not identipy or xtandem
+                Log.Error("Invalid search algorithm argument: {Argument}", opts.SearchAlgorithm);
+                Console.WriteLine("ERROR: Search algorithm must be one of {identipy, xtandem}");
+                return 1;
+            }
 
             if (opts.Identipy)
+            {
+                opts.SearchAlgorithm = "identipy";
+            }
+
+            if (opts.SearchAlgorithm != null)
             {
                 if (opts.FastaDatabase == null)
                 {
@@ -114,34 +116,55 @@ namespace RawTools
                         "provide the path to a database.");
                     Environment.Exit(1);
                 }
-                if ((opts.IdentipyScript == null & opts.PythonExecutable != null) | (opts.IdentipyScript != null & opts.PythonExecutable == null))
+
+                searchParameters = new SearchParameters
                 {
-                    Log.Error("If providing location of python or identipy, must specify both of them.");
-                    Console.WriteLine("ERROR: When invoking the -p or -I options, you must supply both of them.");
-                    Environment.Exit(1);
+                    PythonExecutable = opts.PythonExecutable,
+                    IdentipyScript = opts.IdentipyScript,
+                    XTandemDirectory = opts.XTandemDirectory,
+                    FastaDatabase = opts.FastaDatabase,
+                    FixedMods = opts.FixedMods,
+                    NMod = opts.VariableNMod,
+                    KMod = opts.VariableKMod,
+                    XMod = opts.VariableXMod,
+                    NumSpectra = opts.NumberSpectra,
+                    MgfIntensityCutoff = opts.IntensityCutoff,
+                    MgfMassCutoff = opts.MassCutOff,
+                    FixedScans = opts.FixedScans
+                };
+
+                if (opts.SearchAlgorithm == "identipy")
+                {
+                    if ((opts.IdentipyScript == null & opts.PythonExecutable != null) | (opts.IdentipyScript != null & opts.PythonExecutable == null))
+                    {
+                        Log.Error("If providing location of python or identipy, must specify both of them.");
+                        Console.WriteLine("ERROR: When invoking the -p or -I options, you must supply both of them.");
+                        Environment.Exit(1);
+                    }
+
+                    Identipy.CheckIdentipyDependencies(searchParameters);
+
+                    searchParameters.SearchAlgorithm = SearchAlgorithm.IdentiPy;
                 }
 
-                idpyPars = new IdentipyParameters();
-                idpyPars.PythonExecutable = opts.PythonExecutable;
-                idpyPars.IdentipyScript = opts.IdentipyScript;
-                idpyPars.FastaDatabase = opts.FastaDatabase;
-                idpyPars.FixedMods = opts.FixedMods;
-                idpyPars.NMod = opts.VariableNMod;
-                idpyPars.KMod = opts.VariableKMod;
-                idpyPars.XMod = opts.VariableXMod;
-                idpyPars.NumSpectra = opts.NumberSpectra;
-                idpyPars.MgfIntensityCutoff = opts.IntensityCutoff;
-
-                Identipy.CheckIdentipyDependencies(idpyPars);
-
+                if (opts.SearchAlgorithm == "xtandem")
+                {
+                    if (opts.XTandemDirectory == null)
+                    {
+                        Log.Error("Path to XTandem directory was not provided");
+                        Console.WriteLine("ERROR: You must specify the X! Tandem directory using the -X argument to perform a search using X! Tandem.");
+                        return 1;
+                    }
+                    searchParameters.SearchAlgorithm = SearchAlgorithm.XTandem;
+                }
             }
             else
             {
-                idpyPars = null;
+                searchParameters = null;
             }
+            qcParameters.searchParameters = searchParameters;
 
-            
-            QC.QC.DoQc(dataDirectory: opts.DirectoryToQc, qcDirectory: opts.QcDirectory, idpyPars: idpyPars);
+            QC.QC.DoQc(qcParameters);
             
             return 0;
         }

@@ -101,28 +101,32 @@ namespace RawTools.ArgumentParser
         [Option('q', "qcdirectory", Required = true, HelpText = "Path to the directory containing (or to contain) the QC data file (called QC.qc)")]
         public string QcDirectory { get; set; }
 
-        [Option('i', "identipy", HelpText = "Optional. Perform an IdentiPy search on a subset of " +
-            "the ms2 scans in the raw file to get identification rates, digestion efficiency and labeling efficiency as part of the QC" +
-            "(default is n = 10000 scans, use -N to specify a different number if desired).")]
-        public bool Identipy { get; set; }
+        [Option('s', "search", Required = false, HelpText = "Specify a search algorith to facilitate the calculation of identification related metrics. " +
+            "Must be one of the following: {identipy, xtandem}")]
+        public string SearchAlgorithm { get; set; }
 
-        [Option("db", HelpText = "Required for IdentiPy. Path to a fasta protein database. Required for Identipy search.")]
+        [Option('i', "identipy", HelpText = "DEPRECATED. This argument will be replaced with the more general -s (--search) in a future version." +
+            "Optional. Perform an IdentiPy search on a subset of " +
+            "the ms2 scans in the raw file to get identification-related metrics as part of the QC.")]
+        public bool Identipy { get; set; }
+        
+        [Option("db", HelpText = "Required for X! Tandem or IdentiPy search. Path to a fasta protein database.")]
         public string FastaDatabase { get; set; }
 
-        [Option("fmods", HelpText = "Optional. Fixed modifications to pass to the IdentiPy search, if desired. Use mass@aminoacid1,mass@aminoacid2 format. " +
+        [Option("fmods", HelpText = "Optional. Fixed modifications to pass to the search, if desired. Use mass@aminoacid1,mass@aminoacid2 format. " +
             "It is important that the values are separated with a comma and not spaces. IMPORTANT: Do not include isobaric quantification tags here  (e.g. TMT, iTRAQ). Instead, these must " +
             "be specified using the --qmod argument. Invoke \">RawTools qc -e\" to see examples of some common modifications")]
         public string FixedMods { get; set; }
 
-        [Option("nmod", HelpText = "Optional. A single variable N-term modification to pass to the Identipy search, if desired. Use mass@aminoacid1 format. " +
+        [Option("nmod", HelpText = "Optional. A single variable N-term modification to pass to the search, if desired. Use mass@aminoacid1 format. " +
             "Invoke \">RawTools qc -e\" to see examples of some common modifications")]
         public string VariableNMod { get; set; }
 
-        [Option("kmod", HelpText = "Optional. A single variable lysine modification to pass to the Identipy search, if desired. Use mass@aminoacid1 format. " +
+        [Option("kmod", HelpText = "Optional. A single variable lysine modification to pass to the search, if desired. Use mass@aminoacid1 format. " +
             "Invoke \">RawTools qc -e\" to see examples of some common modifications")]
         public string VariableKMod { get; set; }
 
-        [Option("xmod", HelpText = "Optional. An additional single modification to pass to the Identipy search, if desired. The modification cannot " +
+        [Option("xmod", HelpText = "Optional. An additional single modification to pass to the search, if desired. The modification cannot " +
             "be on the N-terminus or lysine. Use mass@aminoacid1 format. Invoke \">RawTools qc -e\" to see examples of some common modifications.")]
         public string VariableXMod { get; set; }
 
@@ -136,6 +140,9 @@ namespace RawTools.ArgumentParser
             "Include the extension if there is one.  -I and -p must be invoked together.")]
         public string IdentipyScript { get; set; }
 
+        [Option('X', "xtandemdirectory", HelpText = "Specify the path to the X! Tandem directory.")]
+        public string XTandemDirectory { get; set; }
+
         [Option('N', "numberspectra", Default = 10000, HelpText = "Optional. The number of MS2 spectra used for the Identipy search. Defaults to 10,000. " +
             "If N is greater than the number of MS2 scans in a raw file, all MS2 scans will be used.")]
         public int NumberSpectra { get; set; }
@@ -148,5 +155,9 @@ namespace RawTools.ArgumentParser
             "The value is relative to the highest intensity ion found in a given scan. For example, if you use \"-y 0.01\", then for all scans peaks of less than 1% " +
             "the intensity of the highest intensity ion in that scan will be excluded.")]
         public double IntensityCutoff { get; set; }
+
+        [Option("fixedscans", HelpText = "Causes the scans in the mgf file used for a database search to be static (i.e. not random, the same " +
+            "scans are used everytime). This is intended for diagnostic purposes, not for general use.")]
+        public bool FixedScans { get; set; }
     }
 }

@@ -153,4 +153,7 @@ namespace RawTools.Data.Collections
         #endregion
     }
 
+    class PsmDataCollection: Dictionary<int, PsmData>
+    { }
+
 }
