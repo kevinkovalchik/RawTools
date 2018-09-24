@@ -12,6 +12,13 @@ To obtain the latest compiled release of RawTools or to obtain an older version,
 
 <br>
 
+#### Notable news
+
+-RawTools now offers support for X! Tandem as a search engine to facilitate calculation of identification-related metrics. IdentiPy is still available, of course.
+The user may decide which search engine they wish to use. We are working on updating the help documentation to reflect this addition. [2018-09-24]
+
+<br>
+
 ### Getting help
 
 If you need help getting started with RawTools or with understanding the output, please visit the [RawTools Wiki](https://github.com/kevinkovalchik/RawTools/wiki).
