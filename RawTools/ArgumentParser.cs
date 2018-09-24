@@ -49,7 +49,7 @@ namespace RawTools.ArgumentParser
         public string InputDirectory { get; set; }
 
         [Option('p', "parse", HelpText = "Optional. Parses raw file meta and scan data and writes the output to a tab-delimited text file. " +
-            "Either this output or the quant output (-q) is recommended unless your aim is to simply create an MGF or to observe broad metrics using -x.")]
+            "Typically either this output or the quant output (-q) is used unless your aim is to simply create an MGF or to observe broad metrics using -x.")]
         public bool ParseData { get; set; }
 
         [Option('q', "quant", HelpText = "Optional. Similar to parse (-p), but also quantifies reporter ions and write results to output matrix. " +
@@ -98,14 +98,14 @@ namespace RawTools.ArgumentParser
         [Option('d', "directory", Required = true, HelpText = "Path to the directory containing the raw files for QC")]
         public string DirectoryToQc { get; set; }
 
-        [Option('q', "qcdirectory", Required = true, HelpText = "Path to the directory containing (or to contain) the QC data file (called QC.qc)")]
+        [Option('q', "qcdirectory", Required = true, HelpText = "Path to the directory containing (or to contain) the QC data file (called QC.xml)")]
         public string QcDirectory { get; set; }
 
-        [Option('s', "search", Required = false, HelpText = "Specify a search algorith to facilitate the calculation of identification related metrics. " +
+        [Option('s', "search", Required = false, HelpText = "Specify the search engine to facilitate the calculation of identification related metrics. " +
             "Must be one of the following: {identipy, xtandem}")]
         public string SearchAlgorithm { get; set; }
 
-        [Option('i', "identipy", HelpText = "DEPRECATED. This argument will be replaced with the more general -s (--search) in a future version." +
+        [Option('i', "identipy", HelpText = "[DEPRECATED. This argument will be replaced with the more general -s (--search) in a future version.]" +
             "Optional. Perform an IdentiPy search on a subset of " +
             "the ms2 scans in the raw file to get identification-related metrics as part of the QC.")]
         public bool Identipy { get; set; }
@@ -140,10 +140,10 @@ namespace RawTools.ArgumentParser
             "Include the extension if there is one.  -I and -p must be invoked together.")]
         public string IdentipyScript { get; set; }
 
-        [Option('X', "xtandemdirectory", HelpText = "Specify the path to the X! Tandem directory.")]
+        [Option('X', "xtandemdirectory", HelpText = "Specify the path to the X! Tandem directory (the directory containing \"tandem.exe\").")]
         public string XTandemDirectory { get; set; }
 
-        [Option('N', "numberspectra", Default = 10000, HelpText = "Optional. The number of MS2 spectra used for the Identipy search. Defaults to 10,000. " +
+        [Option('N', "numberspectra", Default = 10000, HelpText = "Optional. The number of MS2 spectra to be passes to the search engine as an MGF file. Defaults to 10,000. " +
             "If N is greater than the number of MS2 scans in a raw file, all MS2 scans will be used.")]
         public int NumberSpectra { get; set; }
 
@@ -157,7 +157,7 @@ namespace RawTools.ArgumentParser
         public double IntensityCutoff { get; set; }
 
         [Option("fixedscans", HelpText = "Causes the scans in the mgf file used for a database search to be static (i.e. not random, the same " +
-            "scans are used everytime). This is intended for diagnostic purposes, not for general use.")]
+            "scans are used everytime). This is intended for testing purposes, not for general use.")]
         public bool FixedScans { get; set; }
     }
 }
