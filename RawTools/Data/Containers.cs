@@ -108,8 +108,8 @@ namespace RawTools.Data.Containers
 
         public PrecursorMassData(double MonoisotopicMass, double ParentMass)
         {
-            this.MonoisotopicMZ = MonoisotopicMass;
-            this.ParentMZ = ParentMass;
+            MonoisotopicMZ = MonoisotopicMass;
+            ParentMZ = ParentMass;
         }
     }
 
@@ -281,7 +281,7 @@ namespace RawTools.Data.Containers
 
     class ScanMetaData
     {
-        public double DutyCycle, FillTime, MS2ScansPerCycle = -1;
+        public double DutyCycle, FillTime, MS2ScansPerCycle, Ms1IsolationInterference = -1;
         public Distribution IntensityDistribution;
         public double SummedIntensity;
         public double FractionConsumingTop80PercentTotalIntensity;
@@ -317,7 +317,7 @@ namespace RawTools.Data.Containers
         public int TotalScans, MS1Scans, MS2Scans, MS3Scans;
         public double TotalAnalysisTime, MeanTopN, MS1ScanRate, MS2ScanRate, MS3ScanRate, MeanDutyCycle, MedianMS1FillTime, MedianMS2FillTime,
             MedianMS3FillTime, MedianPrecursorIntensity, MedianSummedMS2Intensity, MedianBaselinePeakWidth, MedianHalfHeightPeakWidth, PeakCapacity, Gradient,
-            MedianAsymmetryFactor, MedianMs2FractionConsumingTop80PercentTotalIntensity;
+            MedianAsymmetryFactor, MedianMs2FractionConsumingTop80PercentTotalIntensity, MedianMs1IsolationInterference;
         public bool IncludesQuant = false;
         public QuantMetaData QuantMeta;
     }

@@ -61,7 +61,7 @@ namespace RawTools.Data.IO
                 ProgressIndicator progress = new ProgressIndicator(scans.Count(), "Writing matrix to disk");
 
                 f.Write("MS3ScanNumber\tMS2ScanNumber\tMS1ScanNumber\tQuantScanRetTime\tParentScanRetTime\tDutyCycle" +
-                    "\tMS2ScansPerCycle\tParentIonMass\tMonoisotopicMass\tPrecursorCharge");
+                    "\tMS2ScansPerCycle\tParentIonMass\tMonoisotopicMass\tPrecursorCharge\tMS1IsolationInterference");
 
                 if (!rawData.isBoxCar)
                 {
@@ -133,6 +133,8 @@ namespace RawTools.Data.IO
                     f.Write(rawData.precursorMasses[ms2scan].MonoisotopicMZ.ToString() + "\t");
 
                     f.Write(rawData.trailerExtras[ms2scan].ChargeState.ToString() + "\t");
+
+                    f.Write(rawData.metaData[scan].Ms1IsolationInterference.ToString() + "\t");
 
                     if (!rawData.isBoxCar)
                     {
@@ -339,6 +341,7 @@ namespace RawTools.Data.IO
                 f.WriteLine("MedianMS2FillTime:\t" + Math.Round(metrics.MedianMS2FillTime, 4));
                 f.WriteLine("MedianMS3FillTime:\t" + Math.Round(metrics.MedianMS3FillTime, 4));
                 f.WriteLine("MedianMS2Intensity:\t" + Math.Round(metrics.MedianSummedMS2Intensity, 4));
+                f.WriteLine("MedianMS1IsolationInterference:\t" + Math.Round(metrics.MedianMs1IsolationInterference, 4));
                 if (!rawData.isBoxCar)
                 {
                     f.WriteLine("MedianPeakWidthAt10Percent(s):\t" + Math.Round(metrics.MedianBaselinePeakWidth * 60, 4));
@@ -376,7 +379,7 @@ namespace RawTools.Data.IO
             {
                 f.WriteLine("DateAcquired,FileName,Instrument,ExperimentMsOrder,Ms1Analyzer,Ms2Analyzer,Ms3Analyzer,TotalAnalysisTime,TotalScans,NumMs1Scans,NumMs2Scans," +
                     "NumMs3Scans,Ms1ScanRate(/s),Ms2ScanRate(/s),Ms3ScanRate(/s),MeanDutyCycle(s),MeanMs2TriggerRate(/Ms1Scan),Ms1MedianSummedIntensity,Ms2MedianSummedIntensity," +
-                    "MedianPrecursorIntensity,MedianMs2PeakFractionConsumingTop80PercentTotalIntensity,EsiInstabilityFlags(count),MedianMassDrift(ppm)," +
+                    "MedianPrecursorIntensity,MedianMs1IsolationInterence,MedianMs2PeakFractionConsumingTop80PercentTotalIntensity,EsiInstabilityFlags(count),MedianMassDrift(ppm)," +
                     "IdentificationRate(IDs/Ms2Scan),DigestionEfficiency,MissedCleavageRate(/PSM),ModificationFrequencyAtNTerm,ModificationFrequencyAtK,ModificationFrequencyAtX," +
                     "MedianMsFillTime(ms),MedianMs2FillTime(ms),MedianMs3FillTime(ms),WidthAt10%H(s),WidthAt50%H(s),AsymmetryAt10%H,AsymmetryAt50%H," +
                     "PeakCapacity,TimeBeforeFirstExceedanceOf10%MaxIntensity,TimeAfterLastExceedanceOf10%MaxIntensity,FractionOfRunAbove10%MaxIntensity,IdChargeRatio3to2,IdChargeRatio4to2,IdentipyParameters");
@@ -413,6 +416,7 @@ namespace RawTools.Data.IO
                     f.Write(qcData.QcData[key].MedianSummedMs1Intensity + ",");
                     f.Write(qcData.QcData[key].MedianSummedMs2Intensity + ",");
                     f.Write(qcData.QcData[key].MedianPrecursorIntensity + ",");
+                    f.Write(qcData.QcData[key].MedianMs1IsolationInterference + ",");
                     f.Write(qcData.QcData[key].MedianMs2FractionConsumingTop80PercentTotalIntensity + ",");
 
                     f.Write(qcData.QcData[key].NumEsiStabilityFlags + ",");

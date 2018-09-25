@@ -80,6 +80,7 @@ namespace RawTools.QC
 
             qcData.MedianPrecursorIntensity = metricsData.MedianPrecursorIntensity;
             qcData.MedianSummedMs2Intensity = metricsData.MedianSummedMS2Intensity;
+            qcData.MedianMs1IsolationInterference = metricsData.MedianMs1IsolationInterference;
             qcData.MedianMs2FractionConsumingTop80PercentTotalIntensity = metricsData.MedianMs2FractionConsumingTop80PercentTotalIntensity;
 
             qcData.NumEsiStabilityFlags = NumberOfEsiFlags(rawData);
@@ -357,6 +358,7 @@ namespace RawTools.QC
         public double MeanTopN;
         public double MedianSummedMs2Intensity;
         public double MedianSummedMs1Intensity;
+        public double MedianMs1IsolationInterference;
         public double MedianMs2FractionConsumingTop80PercentTotalIntensity;
         public double MedianPrecursorIntensity;
         public double LabelingEfficiencyAtX, LabelingEfficiencyAtNTerm, LabelingEfficiencyAtK;

@@ -261,6 +261,17 @@ namespace RawTools.Data.Processing
                 metaData.Add(scan, new ScanMetaData());
             }
 
+            // get isolation window
+            double isoWindow;
+            if (rawData.methodData.AnalysisOrder == MSOrderType.Ms2)
+            {
+                isoWindow = rawData.methodData.IsolationWindow.MS2;
+            }
+            else
+            {
+                isoWindow = rawData.methodData.IsolationWindow.MS3.MS1Window;
+            }
+
             // get topN
             foreach (int scan in rawData.scanIndex.ScanEnumerators[MSOrderType.Ms])
             {
@@ -320,6 +331,14 @@ namespace RawTools.Data.Processing
                     else
                     {
                         metaData[scans[i]].FractionConsumingTop80PercentTotalIntensity = rawData.segmentedScans[scans[i]].Intensities.FractionOfScansConsumingTotalIntensity(percent: 80);
+                    }
+
+                    // calculate ms1 isolation interference
+                    if (rawData.methodData.AnalysisOrder == MSOrder)
+                    {
+                        int preScan = rawData.precursorScans[scans[i]].MasterScan;
+                        metaData[scans[i]].Ms1IsolationInterference = Ms1Interference.CalculateForOneScan(rawData.centroidStreams[preScan],
+                            rawData.precursorMasses[scans[i]].MonoisotopicMZ, isoWindow, rawData.trailerExtras[scans[i]].ChargeState);
                     }
 
                     progress.Update();
@@ -434,6 +453,10 @@ namespace RawTools.Data.Processing
 
                 metricsData.MedianAsymmetryFactor = rawData.peakData.PeakShapeMedians.Asymmetry.P10;
             }
+
+            // add isolation interference
+            metricsData.MedianMs1IsolationInterference = (from scan in rawData.scanIndex.ScanEnumerators[rawData.methodData.AnalysisOrder]
+                                                          select rawData.metaData[scan].Ms1IsolationInterference).ToArray().Percentile(50);
 
             // now add the quant meta data, if quant was performed
             double medianReporterIntensity = 0;
@@ -1067,5 +1090,75 @@ namespace RawTools.Data.Processing
             rawData.Performed.Add(Operations.PeakArea);
         }
         
+    }
+
+    static class Ms1Interference
+    {
+        static (double[], double[]) SubsetCentroidScan(this CentroidStreamData Ms1Scan, double parentMass, double isoWindow)
+        {
+            List<double> masses = new List<double>();
+            List<double> intensities = new List<double>();
+
+            double lower = parentMass - 0.5 * isoWindow;
+            double upper = parentMass + 0.5 * isoWindow;
+
+            for (int i = 0; i < Ms1Scan.Masses.Length; i++)
+            {
+                if (Ms1Scan.Masses[i] > lower & Ms1Scan.Masses[i] < upper)
+                {
+                    masses.Add(Ms1Scan.Masses[i]);
+                    intensities.Add(Ms1Scan.Intensities[i]);
+                }
+            }
+
+            return (masses.ToArray(), intensities.ToArray());
+        }
+
+        static bool withinTolerance(this List<double> isotopes, double ion, double ppmTolerance)
+        {
+            double[] ppm = new double[isotopes.Count()];
+
+            for (int i = 0; i < ppm.Length; i++)
+            {
+                ppm[i] = Math.Abs(ion - isotopes[i]) / isotopes[i] * 1e6;
+            }
+
+            return ppm.Min() < ppmTolerance;
+        }
+
+        public static double CalculateForOneScan(CentroidStreamData Ms1Scan, double monoIsoMass, double isoWindow, int charge, double ppm = 4)
+        {
+            double[] masses;
+            double[] intensities;
+            double[] interferences;
+            double currentIsotope;
+            List<double> isotopes = new List<double>();
+
+            // subset the ms1 scan to be the isolation window
+            (masses, intensities) = SubsetCentroidScan(Ms1Scan, monoIsoMass, isoWindow);
+
+            // make a copy of the intensities array to represent the interference intensities
+            interferences = (double[])intensities.Clone();
+
+            // make a list of the possible isotopes
+            currentIsotope = monoIsoMass;
+            while (currentIsotope < monoIsoMass + 0.5*isoWindow)
+            {
+                isotopes.Add(currentIsotope);
+                currentIsotope += 1.007276 / charge;
+            }
+
+            for (int i = 0; i < interferences.Length; i++)
+            {
+                double ion = masses[i];
+
+                if (isotopes.withinTolerance(ion, 4))
+                {
+                    interferences[i] = 0;
+                }
+            }
+
+            return interferences.Sum() / intensities.Sum();
+        }
     }
 }
