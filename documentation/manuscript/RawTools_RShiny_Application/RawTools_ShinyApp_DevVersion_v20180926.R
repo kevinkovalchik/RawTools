@@ -110,6 +110,7 @@ ui = shinyUI(
                                   a specific set of samples, use these values to adjust which are displayed. The values 
                                   in the boxes are the preset defaults. These values can be changed in real-time and the 
                                   plots will update.'),
+                                  radioButtons('xaxis_radio', label = NULL, choices = list('Use Pre-determined Values' = 1, 'Use Custom Values' = 2), selected = 1),
                                   fluidRow(
                                     column(4,
                                       h6('min'),
@@ -245,7 +246,1642 @@ server = shinyServer(function(input, output) {
 
   output$qc_plots = renderPlot({
     
-    if ((input$yaxis_radio == 1) & (input$outlier_radio == 1)){
+    if ((input$xaxis_radio == 1) & (input$yaxis_radio == 1) & (input$outlier_radio == 1)){
+      qcFile = input$qc_file
+      
+      if (is.null(qcFile))
+        return(NULL)
+      
+      qc_data = read.table(qcFile$datapath, header = TRUE, sep = ',')
+      qc_data$injection = factor(seq(1:nrow(qc_data)))
+      
+      xaxis_first = 1
+      xaxis_last = nrow(qc_data)
+      xaxis_interval = nrow(qc_data) / 10
+      
+      outlier_optimum_value = input$out_val
+      outlier_range = input$range_val
+      
+      if (input$qc_plot_id == 2) {
+        minBorder = 0
+        maxBorder = round(max(qc_data[xaxis_first:xaxis_last,'TotalAnalysisTime'], na.rm = TRUE) + (max(qc_data[xaxis_first:xaxis_last,'TotalAnalysisTime'], na.rm = TRUE)*0.1), 2) 
+        intBorder = round((max(qc_data[xaxis_first:xaxis_last,'TotalAnalysisTime'], na.rm = TRUE) / 10), 5)
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), TotalAnalysisTime)) +
+          geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Total Analysis Time (minutes)', title = 'Total Analysis Time') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 3) {
+        minBorder = 0
+        maxBorder = round(max(qc_data[xaxis_first:xaxis_last,'NumMs1Scans'], na.rm = TRUE) + (max(qc_data[xaxis_first:xaxis_last,'NumMs1Scans'], na.rm = TRUE)*0.1), 2) 
+        intBorder = round((max(qc_data[xaxis_first:xaxis_last,'NumMs1Scans'], na.rm = TRUE) / 10), 5)
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), NumMs1Scans)) +
+          geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Number of MS1 Scans', title = 'MS1 Scans') +
+          theme(axis.text.x = element_text(size = 12)) +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 4) {
+        minBorder = 0
+        maxBorder = round(max(qc_data[xaxis_first:xaxis_last,'NumMs2Scans'], na.rm = TRUE) + (max(qc_data[xaxis_first:xaxis_last,'NumMs2Scans'], na.rm = TRUE)*0.1), 2) 
+        intBorder = round((max(qc_data[xaxis_first:xaxis_last,'NumMs2Scans'], na.rm = TRUE) / 10), 5)
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), NumMs2Scans)) +
+          geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Number of MS2 Scans', title = 'MS2 Scans') +
+          theme(axis.text.x = element_text(size = 12)) +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 5) {
+        minBorder = 0
+        maxBorder = round(max(qc_data[xaxis_first:xaxis_last,'NumMs3Scans'], na.rm = TRUE) + (max(qc_data[xaxis_first:xaxis_last,'NumMs3Scans'], na.rm = TRUE)*0.1), 2) 
+        intBorder = round((max(qc_data[xaxis_first:xaxis_last,'NumMs3Scans'], na.rm = TRUE) / 10), 5)
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), NumMs3Scans)) +
+          geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Number of MS3 Scans', title = 'MS3 Scans') +
+          theme(axis.text.x = element_text(size = 12)) +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 6) {
+        minBorder = 0
+        maxBorder = round(max(qc_data[xaxis_first:xaxis_last,'Ms1ScanRate..s.'], na.rm = TRUE) + (max(qc_data[xaxis_first:xaxis_last,'Ms1ScanRate..s.'], na.rm = TRUE)*0.1), 2) 
+        intBorder = round((max(qc_data[xaxis_first:xaxis_last,'Ms1ScanRate..s.'], na.rm = TRUE) / 10), 5)
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), Ms1ScanRate..s.)) +
+          geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'MS1 Scan Rate (Hz)', title = 'MS1 Scan Rate') +
+          theme(axis.text.x = element_text(size = 12)) +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 7) {
+        minBorder = 0
+        maxBorder = round(max(qc_data[xaxis_first:xaxis_last,'Ms2ScanRate..s.'], na.rm = TRUE) + (max(qc_data[xaxis_first:xaxis_last,'Ms2ScanRate..s.'], na.rm = TRUE)*0.1), 2) 
+        intBorder = round((max(qc_data[xaxis_first:xaxis_last,'Ms2ScanRate..s.'], na.rm = TRUE) / 10), 5)
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), Ms2ScanRate..s.)) +
+          geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'MS2 Scan Rate (Hz)', title = 'MS2 Scan Rate') +
+          theme(axis.text.x = element_text(size = 12)) +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 8) {
+        minBorder = 0
+        maxBorder = round(max(qc_data[xaxis_first:xaxis_last,'Ms3ScanRate..s.'], na.rm = TRUE) + (max(qc_data[xaxis_first:xaxis_last,'Ms3ScanRate..s.'], na.rm = TRUE)*0.1), 2) 
+        intBorder = round((max(qc_data[xaxis_first:xaxis_last,'Ms3ScanRate..s.'], na.rm = TRUE) / 10), 5)
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), abs(Ms3ScanRate..s.))) +
+          geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'MS3 Scan Rate (Hz)', title = 'MS3 Scan Rate') +
+          theme(axis.text.x = element_text(size = 12)) +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 9) {
+        minBorder = 0
+        maxBorder = round(max(qc_data[xaxis_first:xaxis_last,'MeanDutyCycle.s.'], na.rm = TRUE) + (max(qc_data[xaxis_first:xaxis_last,'MeanDutyCycle.s.'], na.rm = TRUE)*0.1), 2) 
+        intBorder = round((max(qc_data[xaxis_first:xaxis_last,'MeanDutyCycle.s.'], na.rm = TRUE) / 10), 5)
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), MeanDutyCycle.s.)) +
+          geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Mean Duty Cycle (s)', title = 'Duty Cycle') +
+          theme(axis.text.x = element_text(size = 12)) +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 10) {
+        minBorder = 0
+        maxBorder = round(max(qc_data[xaxis_first:xaxis_last,'MeanMs2TriggerRate..Ms1Scan.'], na.rm = TRUE) + (max(qc_data[xaxis_first:xaxis_last,'MeanMs2TriggerRate..Ms1Scan.'], na.rm = TRUE)*0.1), 2) 
+        intBorder = round((max(qc_data[xaxis_first:xaxis_last,'MeanMs2TriggerRate..Ms1Scan.'], na.rm = TRUE) / 10), 5)
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), MeanMs2TriggerRate..Ms1Scan.)) +
+          geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Mean Number of MS2 Triggered per MS1', title = 'MS2 Trigger Rate') +
+          theme(axis.text.x = element_text(size = 12)) +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 11) {
+        minBorder = 0
+        maxBorder = round(max(log10(qc_data[xaxis_first:xaxis_last,'Ms1MedianSummedIntensity']), na.rm = TRUE) + (max(log10(qc_data[xaxis_first:xaxis_last,'Ms1MedianSummedIntensity']), na.rm = TRUE)*0.1), 2) 
+        intBorder = round((max(log10(qc_data[xaxis_first:xaxis_last,'Ms1MedianSummedIntensity']), na.rm = TRUE) / 10), 5)
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), log10(Ms1MedianSummedIntensity))) +
+          geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'log10(Median Summed MS1 Intensity)', title = 'MS1 Intensity') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 12) {
+        minBorder = 0
+        maxBorder = round(max(log10(qc_data[xaxis_first:xaxis_last,'Ms2MedianSummedIntensity']), na.rm = TRUE) + (max(log10(qc_data[xaxis_first:xaxis_last,'Ms2MedianSummedIntensity']), na.rm = TRUE)*0.1), 2) 
+        intBorder = round((max(log10(qc_data[xaxis_first:xaxis_last,'Ms2MedianSummedIntensity']), na.rm = TRUE) / 10), 5)
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), log10(Ms2MedianSummedIntensity))) +
+          geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'log10(Median Summed MS2 Intensity)', title = 'MS2 Intensity') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 13) {
+        minBorder = 0
+        maxBorder = round(max(log10(qc_data[xaxis_first:xaxis_last,'MedianPrecursorIntensity']), na.rm = TRUE) + (max(log10(qc_data[xaxis_first:xaxis_last,'MedianPrecursorIntensity']), na.rm = TRUE)*0.1), 2) 
+        intBorder = round((max(log10(qc_data[xaxis_first:xaxis_last,'MedianPrecursorIntensity']), na.rm = TRUE) / 10), 5)
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), log10(MedianPrecursorIntensity))) +
+          geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'log10(Median Precursor Intensity)', title = 'Precursor Intensity') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 14) {
+        minBorder = 0
+        maxBorder = round(max(qc_data[xaxis_first:xaxis_last,'MedianMs2PeakFractionConsumingTop80PercentTotalIntensity'], na.rm = TRUE) + (max(qc_data[xaxis_first:xaxis_last,'MedianMs2PeakFractionConsumingTop80PercentTotalIntensity'], na.rm = TRUE)*0.1), 2) 
+        intBorder = round((max(qc_data[xaxis_first:xaxis_last,'MedianMs2PeakFractionConsumingTop80PercentTotalIntensity'], na.rm = TRUE) / 10), 5)
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), MedianMs2PeakFractionConsumingTop80PercentTotalIntensity)) +
+          geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Fraction of MS2 Peaks', title = 'MS2 Peak Fraction') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 15) {
+        minBorder = 0
+        maxBorder = round(max(qc_data[xaxis_first:xaxis_last,'EsiInstabilityFlags.count.'], na.rm = TRUE) + (max(qc_data[xaxis_first:xaxis_last,'EsiInstabilityFlags.count.'], na.rm = TRUE)*0.1), 2) 
+        intBorder = round((max(qc_data[xaxis_first:xaxis_last,'EsiInstabilityFlags.count.'], na.rm = TRUE) / 10), 5)
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), EsiInstabilityFlags.count.)) +
+          geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Number of Scans with >10% Deviation from Bordering', title = 'Electrospray Stability') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 16) {
+        minBorder = 0
+        maxBorder = round(max(qc_data[xaxis_first:xaxis_last,'MedianMassDrift.ppm.'], na.rm = TRUE) + (max(qc_data[xaxis_first:xaxis_last,'MedianMassDrift.ppm.'], na.rm = TRUE)*0.1), 2) 
+        intBorder = round((max(qc_data[xaxis_first:xaxis_last,'MedianMassDrift.ppm.'], na.rm = TRUE) / 10), 5)
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), abs(MedianMassDrift.ppm.))) +
+          geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Mass Drift (ppm)', title = 'Mass Analyzer Drift') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 17) {
+        minBorder = 0
+        maxBorder = round(max(qc_data[xaxis_first:xaxis_last,'IdentificationRate.IDs.Ms2Scan.'], na.rm = TRUE) + (max(qc_data[xaxis_first:xaxis_last,'IdentificationRate.IDs.Ms2Scan.'], na.rm = TRUE)*0.1), 2) 
+        intBorder = round((max(qc_data[xaxis_first:xaxis_last,'IdentificationRate.IDs.Ms2Scan.'], na.rm = TRUE) / 10), 5)
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), IdentificationRate.IDs.Ms2Scan.)) +
+          geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Spectra Identification Rate', title = 'Spectral Identification Rate') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 18) {
+        minBorder = 0
+        maxBorder = round(max(qc_data[xaxis_first:xaxis_last,'DigestionEfficiency'], na.rm = TRUE) + (max(qc_data[xaxis_first:xaxis_last,'DigestionEfficiency'], na.rm = TRUE)*0.1), 2) 
+        intBorder = round((max(qc_data[xaxis_first:xaxis_last,'DigestionEfficiency'], na.rm = TRUE) / 10), 5)
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), DigestionEfficiency)) +
+          geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Digestion Efficiency', title = 'Digestion Efficiency') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 19) {
+        minBorder = 0
+        maxBorder = round(max(qc_data[xaxis_first:xaxis_last,'MissedCleavageRate..PSM.'], na.rm = TRUE) + (max(qc_data[xaxis_first:xaxis_last,'MissedCleavageRate..PSM.'], na.rm = TRUE)*0.1), 2) 
+        intBorder = round((max(qc_data[xaxis_first:xaxis_last,'MissedCleavageRate..PSM.'], na.rm = TRUE) / 10), 5)
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), MissedCleavageRate..PSM.)) +
+          geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Missed Cleavage Rate', title = 'Missed Cleavage Rate') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 20) {
+        minBorder = 0
+        maxBorder = round(max(qc_data[xaxis_first:xaxis_last,'ModificationFrequencyAtNTerm'], na.rm = TRUE) + (max(qc_data[xaxis_first:xaxis_last,'ModificationFrequencyAtNTerm'], na.rm = TRUE)*0.1), 2) 
+        intBorder = round((max(qc_data[xaxis_first:xaxis_last,'ModificationFrequencyAtNTerm'], na.rm = TRUE) / 10), 5)
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), ModificationFrequencyAtNTerm)) +
+          geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'N-term Labeling Efficiency', title = 'N-term Labeling Efficiency') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 21) {
+        minBorder = 0
+        maxBorder = round(max(qc_data[xaxis_first:xaxis_last,'ModificationFrequencyAtK'], na.rm = TRUE) + (max(qc_data[xaxis_first:xaxis_last,'ModificationFrequencyAtK'], na.rm = TRUE)*0.1), 2) 
+        intBorder = round((max(qc_data[xaxis_first:xaxis_last,'ModificationFrequencyAtK'], na.rm = TRUE) / 10), 5)
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), ModificationFrequencyAtK)) +
+          geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Lysine Labeling Efficiency', title = 'Lysine Labeling Efficiency') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 22) {
+        minBorder = 0
+        maxBorder = round(max(qc_data[xaxis_first:xaxis_last,'ModificationFrequencyAtX'], na.rm = TRUE) + (max(qc_data[xaxis_first:xaxis_last,'ModificationFrequencyAtX'], na.rm = TRUE)*0.1), 2) 
+        intBorder = round((max(qc_data[xaxis_first:xaxis_last,'ModificationFrequencyAtX'], na.rm = TRUE) / 10), 5)
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), ModificationFrequencyAtX)) +
+          geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Modification Labeling Efficiency', title = 'Specified Modification Labeling Efficiency') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 23) {
+        minBorder = 0
+        maxBorder = round(max(qc_data[xaxis_first:xaxis_last,'MedianMsFillTime.ms.'], na.rm = TRUE) + (max(qc_data[xaxis_first:xaxis_last,'MedianMsFillTime.ms.'], na.rm = TRUE)*0.1), 2) 
+        intBorder = round((max(qc_data[xaxis_first:xaxis_last,'MedianMsFillTime.ms.'], na.rm = TRUE) / 10), 5)
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), MedianMsFillTime.ms.)) +
+          geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Median MS1 Ion Injection Time', title = 'MS1 Ion Injection Time') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 24) {
+        minBorder = 0
+        maxBorder = round(max(qc_data[xaxis_first:xaxis_last,'MedianMs2FillTime.ms.'], na.rm = TRUE) + (max(qc_data[xaxis_first:xaxis_last,'MedianMs2FillTime.ms.'], na.rm = TRUE)*0.1), 2) 
+        intBorder = round((max(qc_data[xaxis_first:xaxis_last,'MedianMs2FillTime.ms.'], na.rm = TRUE) / 10), 5)
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), MedianMs2FillTime.ms.)) +
+          geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Median MS2 Ion Injection Time', title = 'MS2 Ion Injection Time') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 25) {
+        minBorder = 0
+        maxBorder = round(max(qc_data[xaxis_first:xaxis_last,'MedianMs3FillTime.ms.'], na.rm = TRUE) + (max(qc_data[xaxis_first:xaxis_last,'MedianMs3FillTime.ms.'], na.rm = TRUE)*0.1), 2) 
+        intBorder = round((max(qc_data[xaxis_first:xaxis_last,'MedianMs3FillTime.ms.'], na.rm = TRUE) / 10), 5)
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), MedianMs3FillTime.ms.)) +
+          geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Median MS2 Ion Injection Time', title = 'MS3 Ion Injection Time') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 26) {
+        minBorder = 0
+        maxBorder = round(max(qc_data[xaxis_first:xaxis_last,'WidthAt10.H.s.'], na.rm = TRUE) + (max(qc_data[xaxis_first:xaxis_last,'WidthAt10.H.s.'], na.rm = TRUE)*0.1), 2) 
+        intBorder = round((max(qc_data[xaxis_first:xaxis_last,'WidthAt10.H.s.'], na.rm = TRUE) / 10), 5)
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), WidthAt10.H.s.)) +
+          geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Peak Width at 10% Height', title = 'Peak Width at 10% Height') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 27) {
+        minBorder = 0
+        maxBorder = round(max(qc_data[xaxis_first:xaxis_last,'WidthAt50.H.s.'], na.rm = TRUE) + (max(qc_data[xaxis_first:xaxis_last,'WidthAt50.H.s.'], na.rm = TRUE)*0.1), 2) 
+        intBorder = round((max(qc_data[xaxis_first:xaxis_last,'WidthAt50.H.s.'], na.rm = TRUE) / 10), 5)
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), WidthAt50.H.s.)) +
+          geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Peak Width at 50% Height', title = 'Peak Width at 50% Height') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 28) {
+        minBorder = 0
+        maxBorder = round(max(qc_data[xaxis_first:xaxis_last,'AsymmetryAt10.H'], na.rm = TRUE) + (max(qc_data[xaxis_first:xaxis_last,'AsymmetryAt10.H'], na.rm = TRUE)*0.1), 2) 
+        intBorder = round((max(qc_data[xaxis_first:xaxis_last,'AsymmetryAt10.H'], na.rm = TRUE) / 10), 5)
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), AsymmetryAt10.H)) +
+          geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Peak Asymmetry at 10% Height', title = 'Peak Asymmetry at 10% Height') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 29) {
+        minBorder = 0
+        maxBorder = round(max(qc_data[xaxis_first:xaxis_last,'AsymmetryAt50.H'], na.rm = TRUE) + (max(qc_data[xaxis_first:xaxis_last,'AsymmetryAt50.H'], na.rm = TRUE)*0.1), 2) 
+        intBorder = round((max(qc_data[xaxis_first:xaxis_last,'AsymmetryAt50.H'], na.rm = TRUE) / 10), 5)
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), AsymmetryAt50.H)) +
+          geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Peak Asymmetry at 50% Height', title = 'Peak Asymmetry at 50% Height') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 30) {
+        minBorder = 0
+        maxBorder = round(max(qc_data[xaxis_first:xaxis_last,'PeakCapacity'], na.rm = TRUE) + (max(qc_data[xaxis_first:xaxis_last,'PeakCapacity'], na.rm = TRUE)*0.1), 2) 
+        intBorder = round((max(qc_data[xaxis_first:xaxis_last,'PeakCapacity'], na.rm = TRUE) / 10), 5)
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), PeakCapacity)) +
+          geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Column Peak Capacity', title = 'Column Peak Capacity') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 31) {
+        minBorder = 0
+        maxBorder = round(max(qc_data[xaxis_first:xaxis_last,'TimeBeforeFirstExceedanceOf10.MaxIntensity'], na.rm = TRUE) + (max(qc_data[xaxis_first:xaxis_last,'TimeBeforeFirstExceedanceOf10.MaxIntensity'], na.rm = TRUE)*0.1), 2) 
+        intBorder = round((max(qc_data[xaxis_first:xaxis_last,'TimeBeforeFirstExceedanceOf10.MaxIntensity'], na.rm = TRUE) / 10), 5)
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), TimeBeforeFirstExceedanceOf10.MaxIntensity)) +
+          geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Time (minutes)', title = 'Time Before First Peak Elution') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 32) {
+        minBorder = 0
+        maxBorder = round(max(qc_data[xaxis_first:xaxis_last,'TimeAfterLastExceedanceOf10.MaxIntensity'], na.rm = TRUE) + (max(qc_data[xaxis_first:xaxis_last,'TimeAfterLastExceedanceOf10.MaxIntensity'], na.rm = TRUE)*0.1), 2) 
+        intBorder = round((max(qc_data[xaxis_first:xaxis_last,'TimeAfterLastExceedanceOf10.MaxIntensity'], na.rm = TRUE) / 10), 5)
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), TimeAfterLastExceedanceOf10.MaxIntensity)) +
+          geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Time (minutes)', title = 'Time After Last Peak Elution') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 33) {
+        minBorder = 0
+        maxBorder = round(max(qc_data[xaxis_first:xaxis_last,'FractionOfRunAbove10.MaxIntensity'], na.rm = TRUE) + (max(qc_data[xaxis_first:xaxis_last,'FractionOfRunAbove10.MaxIntensity'], na.rm = TRUE)*0.1), 2) 
+        intBorder = round((max(qc_data[xaxis_first:xaxis_last,'FractionOfRunAbove10.MaxIntensity'], na.rm = TRUE) / 10), 5)
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), FractionOfRunAbove10.MaxIntensity)) +
+          geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Run Fraction', title = 'Fraction of Run With Eluting Peaks') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 34) {
+        minBorder = 0
+        maxBorder = round(max(qc_data[xaxis_first:xaxis_last,'IdChargeRatio3to2'], na.rm = TRUE) + (max(qc_data[xaxis_first:xaxis_last,'IdChargeRatio3to2'], na.rm = TRUE)*0.1), 2) 
+        intBorder = round((max(qc_data[xaxis_first:xaxis_last,'IdChargeRatio3to2'], na.rm = TRUE) / 10), 5)
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), IdChargeRatio3to2)) +
+          geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Charge Ratio (z = 3 to 2)', title = 'Charge Ratio of z = 3 to 2') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 35) {
+        minBorder = 0
+        maxBorder = round(max(qc_data[xaxis_first:xaxis_last,'IdChargeRatio4to2'], na.rm = TRUE) + (max(qc_data[xaxis_first:xaxis_last,'IdChargeRatio4to2'], na.rm = TRUE)*0.1), 2) 
+        intBorder = round((max(qc_data[xaxis_first:xaxis_last,'IdChargeRatio4to2'], na.rm = TRUE) / 10), 5)
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), IdChargeRatio4to2)) +
+          geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Charge Ratio (z = 4 to 2)', title = 'Charge Ratio of z = 4 to 2') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+    }
+    
+    else if ((input$xaxis_radio == 1) & (input$yaxis_radio == 1) & (input$outlier_radio == 2)){
+      qcFile = input$qc_file
+      
+      if (is.null(qcFile))
+        return(NULL)
+      
+      qc_data = read.table(qcFile$datapath, header = TRUE, sep = ',')
+      qc_data$injection = factor(seq(1:nrow(qc_data)))
+      
+      xaxis_first = 1
+      xaxis_last = nrow(qc_data)
+      xaxis_interval = nrow(qc_data) / 10
+      
+      outlier_optimum_value = input$out_val
+      outlier_range = input$range_val
+      
+      if (input$qc_plot_id == 2) {
+        minBorder = 0
+        maxBorder = round(max(qc_data[xaxis_first:xaxis_last,'TotalAnalysisTime'], na.rm = TRUE) + (max(qc_data[xaxis_first:xaxis_last,'TotalAnalysisTime'], na.rm = TRUE)*0.1), 2) 
+        intBorder = round((max(qc_data[xaxis_first:xaxis_last,'TotalAnalysisTime'], na.rm = TRUE) / 10), 5)
+        qc_data$outlier_diff = abs(qc_data$TotalAnalysisTime - outlier_optimum_value)
+        qc_data$colors = ifelse(qc_data$outlier_diff > (outlier_optimum_value * (outlier_range / 100)), 'red', brewer.pal(3,'PuBuGn')[3]) 
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), TotalAnalysisTime)) +
+          geom_point(fill = qc_data$colors, pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Total Analysis Time (minutes)', title = 'Total Analysis Time') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 3) {
+        minBorder = 0
+        maxBorder = round(max(qc_data[xaxis_first:xaxis_last,'NumMs1Scans'], na.rm = TRUE) + (max(qc_data[xaxis_first:xaxis_last,'NumMs1Scans'], na.rm = TRUE)*0.1), 2) 
+        intBorder = round((max(qc_data[xaxis_first:xaxis_last,'NumMs1Scans'], na.rm = TRUE) / 10), 5)
+        qc_data$outlier_diff = abs(qc_data$NumMs1Scans - outlier_optimum_value)
+        qc_data$colors = ifelse(qc_data$outlier_diff > (outlier_optimum_value * (outlier_range / 100)), 'red', brewer.pal(3,'PuBuGn')[3]) 
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), NumMs1Scans)) +
+          geom_point(fill = qc_data$colors, pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Number of MS1 Scans', title = 'MS1 Scans') +
+          theme(axis.text.x = element_text(size = 12)) +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 4) {
+        minBorder = 0
+        maxBorder = round(max(qc_data[xaxis_first:xaxis_last,'NumMs2Scans'], na.rm = TRUE) + (max(qc_data[xaxis_first:xaxis_last,'NumMs2Scans'], na.rm = TRUE)*0.1), 2) 
+        intBorder = round((max(qc_data[xaxis_first:xaxis_last,'NumMs2Scans'], na.rm = TRUE) / 10), 5)
+        qc_data$outlier_diff = abs(qc_data$NumMs2Scans - outlier_optimum_value)
+        qc_data$colors = ifelse(qc_data$outlier_diff > (outlier_optimum_value * (outlier_range / 100)), 'red', brewer.pal(3,'PuBuGn')[3]) 
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), NumMs2Scans)) +
+          geom_point(fill = qc_data$colors, pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Number of MS2 Scans', title = 'MS2 Scans') +
+          theme(axis.text.x = element_text(size = 12)) +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 5) {
+        minBorder = 0
+        maxBorder = round(max(qc_data[xaxis_first:xaxis_last,'NumMs3Scans'], na.rm = TRUE) + (max(qc_data[xaxis_first:xaxis_last,'NumMs3Scans'], na.rm = TRUE)*0.1), 2) 
+        intBorder = round((max(qc_data[xaxis_first:xaxis_last,'NumMs3Scans'], na.rm = TRUE) / 10), 5)
+        qc_data$outlier_diff = abs(qc_data$NumMs3Scans - outlier_optimum_value)
+        qc_data$colors = ifelse(qc_data$outlier_diff > (outlier_optimum_value * (outlier_range / 100)), 'red', brewer.pal(3,'PuBuGn')[3]) 
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), NumMs3Scans)) +
+          geom_point(fill = qc_data$colors, pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Number of MS3 Scans', title = 'MS3 Scans') +
+          theme(axis.text.x = element_text(size = 12)) +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 6) {
+        minBorder = 0
+        maxBorder = round(max(qc_data[xaxis_first:xaxis_last,'Ms1ScanRate..s.'], na.rm = TRUE) + (max(qc_data[xaxis_first:xaxis_last,'Ms1ScanRate..s.'], na.rm = TRUE)*0.1), 2) 
+        intBorder = round((max(qc_data[xaxis_first:xaxis_last,'Ms1ScanRate..s.'], na.rm = TRUE) / 10), 5)
+        qc_data$outlier_diff = abs(qc_data$Ms1ScanRate..s. - outlier_optimum_value)
+        qc_data$colors = ifelse(qc_data$outlier_diff > (outlier_optimum_value * (outlier_range / 100)), 'red', brewer.pal(3,'PuBuGn')[3]) 
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), Ms1ScanRate..s.)) +
+          geom_point(fill = qc_data$colors, pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'MS1 Scan Rate (Hz)', title = 'MS1 Scan Rate') +
+          theme(axis.text.x = element_text(size = 12)) +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 7) {
+        minBorder = 0
+        maxBorder = round(max(qc_data[xaxis_first:xaxis_last,'Ms2ScanRate..s.'], na.rm = TRUE) + (max(qc_data[xaxis_first:xaxis_last,'Ms2ScanRate..s.'], na.rm = TRUE)*0.1), 2) 
+        intBorder = round((max(qc_data[xaxis_first:xaxis_last,'Ms2ScanRate..s.'], na.rm = TRUE) / 10), 5)
+        qc_data$outlier_diff = abs(qc_data$Ms2ScanRate..s. - outlier_optimum_value)
+        qc_data$colors = ifelse(qc_data$outlier_diff > (outlier_optimum_value * (outlier_range / 100)), 'red', brewer.pal(3,'PuBuGn')[3]) 
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), Ms2ScanRate..s.)) +
+          geom_point(fill = qc_data$colors, pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'MS2 Scan Rate (Hz)', title = 'MS2 Scan Rate') +
+          theme(axis.text.x = element_text(size = 12)) +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 8) {
+        minBorder = 0
+        maxBorder = round(max(qc_data[xaxis_first:xaxis_last,'Ms3ScanRate..s.'], na.rm = TRUE) + (max(qc_data[xaxis_first:xaxis_last,'Ms3ScanRate..s.'], na.rm = TRUE)*0.1), 2) 
+        intBorder = round((max(qc_data[xaxis_first:xaxis_last,'Ms3ScanRate..s.'], na.rm = TRUE) / 10), 5)
+        qc_data$outlier_diff = abs(qc_data$Ms3ScanRate..s. - outlier_optimum_value)
+        qc_data$colors = ifelse(qc_data$outlier_diff > (outlier_optimum_value * (outlier_range / 100)), 'red', brewer.pal(3,'PuBuGn')[3]) 
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), abs(Ms3ScanRate..s.))) +
+          geom_point(fill = qc_data$colors, pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'MS3 Scan Rate (Hz)', title = 'MS3 Scan Rate') +
+          theme(axis.text.x = element_text(size = 12)) +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 9) {
+        minBorder = 0
+        maxBorder = round(max(qc_data[xaxis_first:xaxis_last,'MeanDutyCycle.s.'], na.rm = TRUE) + (max(qc_data[xaxis_first:xaxis_last,'MeanDutyCycle.s.'], na.rm = TRUE)*0.1), 2) 
+        intBorder = round((max(qc_data[xaxis_first:xaxis_last,'MeanDutyCycle.s.'], na.rm = TRUE) / 10), 5)
+        qc_data$outlier_diff = abs(qc_data$MeanDutyCycle.s. - outlier_optimum_value)
+        qc_data$colors = ifelse(qc_data$outlier_diff > (outlier_optimum_value * (outlier_range / 100)), 'red', brewer.pal(3,'PuBuGn')[3]) 
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), MeanDutyCycle.s.)) +
+          geom_point(fill = qc_data$colors, pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Mean Duty Cycle (s)', title = 'Duty Cycle') +
+          theme(axis.text.x = element_text(size = 12)) +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 10) {
+        minBorder = 0
+        maxBorder = round(max(qc_data[xaxis_first:xaxis_last,'MeanMs2TriggerRate..Ms1Scan.'], na.rm = TRUE) + (max(qc_data[xaxis_first:xaxis_last,'MeanMs2TriggerRate..Ms1Scan.'], na.rm = TRUE)*0.1), 2) 
+        intBorder = round((max(qc_data[xaxis_first:xaxis_last,'MeanMs2TriggerRate..Ms1Scan.'], na.rm = TRUE) / 10), 5)
+        qc_data$outlier_diff = abs(qc_data$MeanMs2TriggerRate..Ms1Scan. - outlier_optimum_value)
+        qc_data$colors = ifelse(qc_data$outlier_diff > (outlier_optimum_value * (outlier_range / 100)), 'red', brewer.pal(3,'PuBuGn')[3]) 
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), MeanMs2TriggerRate..Ms1Scan.)) +
+          geom_point(fill = qc_data$colors, pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Mean Number of MS2 Triggered per MS1', title = 'MS2 Trigger Rate') +
+          theme(axis.text.x = element_text(size = 12)) +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 11) {
+        minBorder = 0
+        maxBorder = round(max(log10(qc_data[xaxis_first:xaxis_last,'Ms1MedianSummedIntensity']), na.rm = TRUE) + (max(log10(qc_data[xaxis_first:xaxis_last,'Ms1MedianSummedIntensity']), na.rm = TRUE)*0.1), 2) 
+        intBorder = round((max(log10(qc_data[xaxis_first:xaxis_last,'Ms1MedianSummedIntensity']), na.rm = TRUE) / 10), 5)
+        qc_data$outlier_diff = abs(qc_data$Ms1MedianSummedIntensity - outlier_optimum_value)
+        qc_data$colors = ifelse(qc_data$outlier_diff > (outlier_optimum_value * (outlier_range / 100)), 'red', brewer.pal(3,'PuBuGn')[3]) 
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), log10(Ms1MedianSummedIntensity))) +
+          geom_point(fill = qc_data$colors, pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'log10(Median Summed MS1 Intensity)', title = 'MS1 Intensity') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 12) {
+        minBorder = 0
+        maxBorder = round(max(log10(qc_data[xaxis_first:xaxis_last,'Ms2MedianSummedIntensity']), na.rm = TRUE) + (max(log10(qc_data[xaxis_first:xaxis_last,'Ms2MedianSummedIntensity']), na.rm = TRUE)*0.1), 2) 
+        intBorder = round((max(log10(qc_data[xaxis_first:xaxis_last,'Ms2MedianSummedIntensity']), na.rm = TRUE) / 10), 5)
+        qc_data$outlier_diff = abs(qc_data$Ms2MedianSummedIntensity - outlier_optimum_value)
+        qc_data$colors = ifelse(qc_data$outlier_diff > (outlier_optimum_value * (outlier_range / 100)), 'red', brewer.pal(3,'PuBuGn')[3]) 
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), log10(Ms2MedianSummedIntensity))) +
+          geom_point(fill = qc_data$colors, pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'log10(Median Summed MS2 Intensity)', title = 'MS2 Intensity') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 13) {
+        minBorder = 0
+        maxBorder = round(max(log10(qc_data[xaxis_first:xaxis_last,'MedianPrecursorIntensity']), na.rm = TRUE) + (max(log10(qc_data[xaxis_first:xaxis_last,'MedianPrecursorIntensity']), na.rm = TRUE)*0.1), 2) 
+        intBorder = round((max(log10(qc_data[xaxis_first:xaxis_last,'MedianPrecursorIntensity']), na.rm = TRUE) / 10), 5)
+        qc_data$outlier_diff = abs(qc_data$MedianPrecursorIntensity - outlier_optimum_value)
+        qc_data$colors = ifelse(qc_data$outlier_diff > (outlier_optimum_value * (outlier_range / 100)), 'red', brewer.pal(3,'PuBuGn')[3]) 
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), log10(MedianPrecursorIntensity))) +
+          geom_point(fill =qc_data$colors, pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'log10(Median Precursor Intensity)', title = 'Precursor Intensity') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 14) {
+        minBorder = 0
+        maxBorder = round(max(qc_data[xaxis_first:xaxis_last,'MedianMs2PeakFractionConsumingTop80PercentTotalIntensity'], na.rm = TRUE) + (max(qc_data[xaxis_first:xaxis_last,'MedianMs2PeakFractionConsumingTop80PercentTotalIntensity'], na.rm = TRUE)*0.1), 2) 
+        intBorder = round((max(qc_data[xaxis_first:xaxis_last,'MedianMs2PeakFractionConsumingTop80PercentTotalIntensity'], na.rm = TRUE) / 10), 5)
+        qc_data$outlier_diff = abs(qc_data$MedianMs2PeakFractionConsumingTop80PercentTotalIntensity - outlier_optimum_value)
+        qc_data$colors = ifelse(qc_data$outlier_diff > (outlier_optimum_value * (outlier_range / 100)), 'red', brewer.pal(3,'PuBuGn')[3]) 
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), MedianMs2PeakFractionConsumingTop80PercentTotalIntensity)) +
+          geom_point(fill = qc_data$colors, pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Fraction of MS2 Peaks', title = 'MS2 Peak Fraction') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 15) {
+        minBorder = 0
+        maxBorder = round(max(qc_data[xaxis_first:xaxis_last,'EsiInstabilityFlags.count.'], na.rm = TRUE) + (max(qc_data[xaxis_first:xaxis_last,'EsiInstabilityFlags.count.'], na.rm = TRUE)*0.1), 2) 
+        intBorder = round((max(qc_data[xaxis_first:xaxis_last,'EsiInstabilityFlags.count.'], na.rm = TRUE) / 10), 5)
+        qc_data$outlier_diff = abs(qc_data$EsiInstabilityFlags.count. - outlier_optimum_value)
+        qc_data$colors = ifelse(qc_data$outlier_diff > (outlier_optimum_value * (outlier_range / 100)), 'red', brewer.pal(3,'PuBuGn')[3]) 
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), EsiInstabilityFlags.count.)) +
+          geom_point(fill = qc_data$colors, pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Number of Scans with >10% Deviation from Bordering', title = 'Electrospray Stability') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 16) {
+        minBorder = 0
+        maxBorder = round(max(qc_data[xaxis_first:xaxis_last,'MedianMassDrift.ppm.'], na.rm = TRUE) + (max(qc_data[xaxis_first:xaxis_last,'MedianMassDrift.ppm.'], na.rm = TRUE)*0.1), 2) 
+        intBorder = round((max(qc_data[xaxis_first:xaxis_last,'MedianMassDrift.ppm.'], na.rm = TRUE) / 10), 5)
+        qc_data$outlier_diff = abs(qc_data$MedianMassDrift.ppm. - outlier_optimum_value)
+        qc_data$colors = ifelse(qc_data$outlier_diff > (outlier_optimum_value * (outlier_range / 100)), 'red', brewer.pal(3,'PuBuGn')[3]) 
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), abs(MedianMassDrift.ppm.))) +
+          geom_point(fill = qc_data$colors, pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Mass Drift (ppm)', title = 'Mass Analyzer Drift') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 17) {
+        minBorder = 0
+        maxBorder = round(max(qc_data[xaxis_first:xaxis_last,'IdentificationRate.IDs.Ms2Scan.'], na.rm = TRUE) + (max(qc_data[xaxis_first:xaxis_last,'IdentificationRate.IDs.Ms2Scan.'], na.rm = TRUE)*0.1), 2) 
+        intBorder = round((max(qc_data[xaxis_first:xaxis_last,'IdentificationRate.IDs.Ms2Scan.'], na.rm = TRUE) / 10), 5)
+        qc_data$outlier_diff = abs(qc_data$IdentificationRate.IDs.Ms2Scan. - outlier_optimum_value)
+        qc_data$colors = ifelse(qc_data$outlier_diff > (outlier_optimum_value * (outlier_range / 100)), 'red', brewer.pal(3,'PuBuGn')[3]) 
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), IdentificationRate.IDs.Ms2Scan.)) +
+          geom_point(fill = qc_data$colors, pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Spectra Identification Rate', title = 'Spectral Identification Rate') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 18) {
+        minBorder = 0
+        maxBorder = round(max(qc_data[xaxis_first:xaxis_last,'DigestionEfficiency'], na.rm = TRUE) + (max(qc_data[xaxis_first:xaxis_last,'DigestionEfficiency'], na.rm = TRUE)*0.1), 2) 
+        intBorder = round((max(qc_data[xaxis_first:xaxis_last,'DigestionEfficiency'], na.rm = TRUE) / 10), 5)
+        qc_data$outlier_diff = abs(qc_data$DigestionEfficiency - outlier_optimum_value)
+        qc_data$colors = ifelse(qc_data$outlier_diff > (outlier_optimum_value * (outlier_range / 100)), 'red', brewer.pal(3,'PuBuGn')[3]) 
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), DigestionEfficiency)) +
+          geom_point(fill = qc_data$colors, pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Digestion Efficiency', title = 'Digestion Efficiency') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 19) {
+        minBorder = 0
+        maxBorder = round(max(qc_data[xaxis_first:xaxis_last,'MissedCleavageRate..PSM.'], na.rm = TRUE) + (max(qc_data[xaxis_first:xaxis_last,'MissedCleavageRate..PSM.'], na.rm = TRUE)*0.1), 2) 
+        intBorder = round((max(qc_data[xaxis_first:xaxis_last,'MissedCleavageRate..PSM.'], na.rm = TRUE) / 10), 5)
+        qc_data$outlier_diff = abs(qc_data$MissedCleavageRate..PSM. - outlier_optimum_value)
+        qc_data$colors = ifelse(qc_data$outlier_diff > (outlier_optimum_value * (outlier_range / 100)), 'red', brewer.pal(3,'PuBuGn')[3]) 
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), MissedCleavageRate..PSM.)) +
+          geom_point(fill = qc_data$colors, pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Missed Cleavage Rate', title = 'Missed Cleavage Rate') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 20) {
+        minBorder = 0
+        maxBorder = round(max(qc_data[xaxis_first:xaxis_last,'ModificationFrequencyAtNTerm'], na.rm = TRUE) + (max(qc_data[xaxis_first:xaxis_last,'ModificationFrequencyAtNTerm'], na.rm = TRUE)*0.1), 2) 
+        intBorder = round((max(qc_data[xaxis_first:xaxis_last,'ModificationFrequencyAtNTerm'], na.rm = TRUE) / 10), 5)
+        qc_data$outlier_diff = abs(qc_data$ModificationFrequencyAtNTerm - outlier_optimum_value)
+        qc_data$colors = ifelse(qc_data$outlier_diff > (outlier_optimum_value * (outlier_range / 100)), 'red', brewer.pal(3,'PuBuGn')[3]) 
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), ModificationFrequencyAtNTerm)) +
+          geom_point(fill = qc_data$colors, pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'N-term Labeling Efficiency', title = 'N-term Labeling Efficiency') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 21) {
+        minBorder = 0
+        maxBorder = round(max(qc_data[xaxis_first:xaxis_last,'ModificationFrequencyAtK'], na.rm = TRUE) + (max(qc_data[xaxis_first:xaxis_last,'ModificationFrequencyAtK'], na.rm = TRUE)*0.1), 2) 
+        intBorder = round((max(qc_data[xaxis_first:xaxis_last,'ModificationFrequencyAtK'], na.rm = TRUE) / 10), 5)
+        qc_data$outlier_diff = abs(qc_data$ModificationFrequencyAtK - outlier_optimum_value)
+        qc_data$colors = ifelse(qc_data$outlier_diff > (outlier_optimum_value * (outlier_range / 100)), 'red', brewer.pal(3,'PuBuGn')[3]) 
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), ModificationFrequencyAtK)) +
+          geom_point(fill = qc_data$colors, pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Lysine Labeling Efficiency', title = 'Lysine Labeling Efficiency') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 22) {
+        minBorder = 0
+        maxBorder = round(max(qc_data[xaxis_first:xaxis_last,'ModificationFrequencyAtX'], na.rm = TRUE) + (max(qc_data[xaxis_first:xaxis_last,'ModificationFrequencyAtX'], na.rm = TRUE)*0.1), 2) 
+        intBorder = round((max(qc_data[xaxis_first:xaxis_last,'ModificationFrequencyAtX'], na.rm = TRUE) / 10), 5)
+        qc_data$outlier_diff = abs(qc_data$ModificationFrequencyAtX - outlier_optimum_value)
+        qc_data$colors = ifelse(qc_data$outlier_diff > (outlier_optimum_value * (outlier_range / 100)), 'red', brewer.pal(3,'PuBuGn')[3]) 
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), ModificationFrequencyAtX)) +
+          geom_point(fill = qc_data$colors, pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Modification Labeling Efficiency', title = 'Specified Modification Labeling Efficiency') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 23) {
+        minBorder = 0
+        maxBorder = round(max(qc_data[xaxis_first:xaxis_last,'MedianMsFillTime.ms.'], na.rm = TRUE) + (max(qc_data[xaxis_first:xaxis_last,'MedianMsFillTime.ms.'], na.rm = TRUE)*0.1), 2) 
+        intBorder = round((max(qc_data[xaxis_first:xaxis_last,'MedianMsFillTime.ms.'], na.rm = TRUE) / 10), 5)
+        qc_data$outlier_diff = abs(qc_data$MedianMsFillTime.ms. - outlier_optimum_value)
+        qc_data$colors = ifelse(qc_data$outlier_diff > (outlier_optimum_value * (outlier_range / 100)), 'red', brewer.pal(3,'PuBuGn')[3]) 
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), MedianMsFillTime.ms.)) +
+          geom_point(fill = qc_data$colors, pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Median MS1 Ion Injection Time', title = 'MS1 Ion Injection Time') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 24) {
+        minBorder = 0
+        maxBorder = round(max(qc_data[xaxis_first:xaxis_last,'MedianMs2FillTime.ms.'], na.rm = TRUE) + (max(qc_data[xaxis_first:xaxis_last,'MedianMs2FillTime.ms.'], na.rm = TRUE)*0.1), 2) 
+        intBorder = round((max(qc_data[xaxis_first:xaxis_last,'MedianMs2FillTime.ms.'], na.rm = TRUE) / 10), 5)
+        qc_data$outlier_diff = abs(qc_data$MedianMs2FillTime.ms. - outlier_optimum_value)
+        qc_data$colors = ifelse(qc_data$outlier_diff > (outlier_optimum_value * (outlier_range / 100)), 'red', brewer.pal(3,'PuBuGn')[3]) 
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), MedianMs2FillTime.ms.)) +
+          geom_point(fill = qc_data$colors, pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Median MS2 Ion Injection Time', title = 'MS2 Ion Injection Time') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 25) {
+        minBorder = 0
+        maxBorder = round(max(qc_data[xaxis_first:xaxis_last,'MedianMs3FillTime.ms.'], na.rm = TRUE) + (max(qc_data[xaxis_first:xaxis_last,'MedianMs3FillTime.ms.'], na.rm = TRUE)*0.1), 2) 
+        intBorder = round((max(qc_data[xaxis_first:xaxis_last,'MedianMs3FillTime.ms.'], na.rm = TRUE) / 10), 5)
+        qc_data$outlier_diff = abs(qc_data$MedianMs3FillTime.ms. - outlier_optimum_value)
+        qc_data$colors = ifelse(qc_data$outlier_diff > (outlier_optimum_value * (outlier_range / 100)), 'red', brewer.pal(3,'PuBuGn')[3]) 
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), MedianMs3FillTime.ms.)) +
+          geom_point(fill = qc_data$colors, pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Median MS2 Ion Injection Time', title = 'MS3 Ion Injection Time') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 26) {
+        minBorder = 0
+        maxBorder = round(max(qc_data[xaxis_first:xaxis_last,'WidthAt10.H.s.'], na.rm = TRUE) + (max(qc_data[xaxis_first:xaxis_last,'WidthAt10.H.s.'], na.rm = TRUE)*0.1), 2) 
+        intBorder = round((max(qc_data[xaxis_first:xaxis_last,'WidthAt10.H.s.'], na.rm = TRUE) / 10), 5)
+        qc_data$outlier_diff = abs(qc_data$WidthAt10.H.s. - outlier_optimum_value)
+        qc_data$colors = ifelse(qc_data$outlier_diff > (outlier_optimum_value * (outlier_range / 100)), 'red', brewer.pal(3,'PuBuGn')[3]) 
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), WidthAt10.H.s.)) +
+          geom_point(fill = qc_data$colors, pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Peak Width at 10% Height', title = 'Peak Width at 10% Height') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 27) {
+        minBorder = 0
+        maxBorder = round(max(qc_data[xaxis_first:xaxis_last,'WidthAt50.H.s.'], na.rm = TRUE) + (max(qc_data[xaxis_first:xaxis_last,'WidthAt50.H.s.'], na.rm = TRUE)*0.1), 2) 
+        intBorder = round((max(qc_data[xaxis_first:xaxis_last,'WidthAt50.H.s.'], na.rm = TRUE) / 10), 5)
+        qc_data$outlier_diff = abs(qc_data$WidthAt50.H.s. - outlier_optimum_value)
+        qc_data$colors = ifelse(qc_data$outlier_diff > (outlier_optimum_value * (outlier_range / 100)), 'red', brewer.pal(3,'PuBuGn')[3]) 
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), WidthAt50.H.s.)) +
+          geom_point(fill = qc_data$colors, pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Peak Width at 50% Height', title = 'Peak Width at 50% Height') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 28) {
+        minBorder = 0
+        maxBorder = round(max(qc_data[xaxis_first:xaxis_last,'AsymmetryAt10.H'], na.rm = TRUE) + (max(qc_data[xaxis_first:xaxis_last,'AsymmetryAt10.H'], na.rm = TRUE)*0.1), 2) 
+        intBorder = round((max(qc_data[xaxis_first:xaxis_last,'AsymmetryAt10.H'], na.rm = TRUE) / 10), 5)
+        qc_data$outlier_diff = abs(qc_data$AsymmetryAt10.H - outlier_optimum_value)
+        qc_data$colors = ifelse(qc_data$outlier_diff > (outlier_optimum_value * (outlier_range / 100)), 'red', brewer.pal(3,'PuBuGn')[3]) 
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), AsymmetryAt10.H)) +
+          geom_point(fill = qc_data$colors, pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Peak Asymmetry at 10% Height', title = 'Peak Asymmetry at 10% Height') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 29) {
+        minBorder = 0
+        maxBorder = round(max(qc_data[xaxis_first:xaxis_last,'AsymmetryAt50.H'], na.rm = TRUE) + (max(qc_data[xaxis_first:xaxis_last,'AsymmetryAt50.H'], na.rm = TRUE)*0.1), 2) 
+        intBorder = round((max(qc_data[xaxis_first:xaxis_last,'AsymmetryAt50.H'], na.rm = TRUE) / 10), 5)
+        qc_data$outlier_diff = abs(qc_data$AsymmetryAt50.H - outlier_optimum_value)
+        qc_data$colors = ifelse(qc_data$outlier_diff > (outlier_optimum_value * (outlier_range / 100)), 'red', brewer.pal(3,'PuBuGn')[3]) 
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), AsymmetryAt50.H)) +
+          geom_point(fill = qc_data$colors, pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Peak Asymmetry at 50% Height', title = 'Peak Asymmetry at 50% Height') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 30) {
+        minBorder = 0
+        maxBorder = round(max(qc_data[xaxis_first:xaxis_last,'PeakCapacity'], na.rm = TRUE) + (max(qc_data[xaxis_first:xaxis_last,'PeakCapacity'], na.rm = TRUE)*0.1), 2) 
+        intBorder = round((max(qc_data[xaxis_first:xaxis_last,'PeakCapacity'], na.rm = TRUE) / 10), 5)
+        qc_data$outlier_diff = abs(qc_data$PeakCapacity - outlier_optimum_value)
+        qc_data$colors = ifelse(qc_data$outlier_diff > (outlier_optimum_value * (outlier_range / 100)), 'red', brewer.pal(3,'PuBuGn')[3]) 
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), PeakCapacity)) +
+          geom_point(fill = qc_data$colors, pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Column Peak Capacity', title = 'Column Peak Capacity') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 31) {
+        minBorder = 0
+        maxBorder = round(max(qc_data[xaxis_first:xaxis_last,'TimeBeforeFirstExceedanceOf10.MaxIntensity'], na.rm = TRUE) + (max(qc_data[xaxis_first:xaxis_last,'TimeBeforeFirstExceedanceOf10.MaxIntensity'], na.rm = TRUE)*0.1), 2) 
+        intBorder = round((max(qc_data[xaxis_first:xaxis_last,'TimeBeforeFirstExceedanceOf10.MaxIntensity'], na.rm = TRUE) / 10), 5)
+        qc_data$outlier_diff = abs(qc_data$TimeBeforeFirstExceedanceOf10.MaxIntensity - outlier_optimum_value)
+        qc_data$colors = ifelse(qc_data$outlier_diff > (outlier_optimum_value * (outlier_range / 100)), 'red', brewer.pal(3,'PuBuGn')[3]) 
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), TimeBeforeFirstExceedanceOf10.MaxIntensity)) +
+          geom_point(fill = qc_data$colors, pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Time (minutes)', title = 'Time Before First Peak Elution') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 32) {
+        minBorder = 0
+        maxBorder = round(max(qc_data[xaxis_first:xaxis_last,'TimeAfterLastExceedanceOf10.MaxIntensity'], na.rm = TRUE) + (max(qc_data[xaxis_first:xaxis_last,'TimeAfterLastExceedanceOf10.MaxIntensity'], na.rm = TRUE)*0.1), 2) 
+        intBorder = round((max(qc_data[xaxis_first:xaxis_last,'TimeAfterLastExceedanceOf10.MaxIntensity'], na.rm = TRUE) / 10), 5)
+        qc_data$outlier_diff = abs(qc_data$TimeAfterLastExceedanceOf10.MaxIntensity - outlier_optimum_value)
+        qc_data$colors = ifelse(qc_data$outlier_diff > (outlier_optimum_value * (outlier_range / 100)), 'red', brewer.pal(3,'PuBuGn')[3]) 
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), TimeAfterLastExceedanceOf10.MaxIntensity)) +
+          geom_point(fill = qc_data$colors, pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Time (minutes)', title = 'Time After Last Peak Elution') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 33) {
+        minBorder = 0
+        maxBorder = round(max(qc_data[xaxis_first:xaxis_last,'FractionOfRunAbove10.MaxIntensity'], na.rm = TRUE) + (max(qc_data[xaxis_first:xaxis_last,'FractionOfRunAbove10.MaxIntensity'], na.rm = TRUE)*0.1), 2) 
+        intBorder = round((max(qc_data[xaxis_first:xaxis_last,'FractionOfRunAbove10.MaxIntensity'], na.rm = TRUE) / 10), 5)
+        qc_data$outlier_diff = abs(qc_data$FractionOfRunAbove10.MaxIntensity - outlier_optimum_value)
+        qc_data$colors = ifelse(qc_data$outlier_diff > (outlier_optimum_value * (outlier_range / 100)), 'red', brewer.pal(3,'PuBuGn')[3]) 
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), FractionOfRunAbove10.MaxIntensity)) +
+          geom_point(fill = qc_data$colors, pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Run Fraction', title = 'Fraction of Run With Eluting Peaks') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 34) {
+        minBorder = 0
+        maxBorder = round(max(qc_data[xaxis_first:xaxis_last,'IdChargeRatio3to2'], na.rm = TRUE) + (max(qc_data[xaxis_first:xaxis_last,'IdChargeRatio3to2'], na.rm = TRUE)*0.1), 2) 
+        intBorder = round((max(qc_data[xaxis_first:xaxis_last,'IdChargeRatio3to2'], na.rm = TRUE) / 10), 5)
+        qc_data$outlier_diff = abs(qc_data$IdChargeRatio3to2 - outlier_optimum_value)
+        qc_data$colors = ifelse(qc_data$outlier_diff > (outlier_optimum_value * (outlier_range / 100)), 'red', brewer.pal(3,'PuBuGn')[3]) 
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), IdChargeRatio3to2)) +
+          geom_point(fill = qc_data$colors, pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Charge Ratio (z = 3 to 2)', title = 'Charge Ratio of z = 3 to 2') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 35) {
+        minBorder = 0
+        maxBorder = round(max(qc_data[xaxis_first:xaxis_last,'IdChargeRatio4to2'], na.rm = TRUE) + (max(qc_data[xaxis_first:xaxis_last,'IdChargeRatio4to2'], na.rm = TRUE)*0.1), 2) 
+        intBorder = round((max(qc_data[xaxis_first:xaxis_last,'IdChargeRatio4to2'], na.rm = TRUE) / 10), 5)
+        qc_data$outlier_diff = abs(qc_data$IdChargeRatio4to2 - outlier_optimum_value)
+        qc_data$colors = ifelse(qc_data$outlier_diff > (outlier_optimum_value * (outlier_range / 100)), 'red', brewer.pal(3,'PuBuGn')[3]) 
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), IdChargeRatio4to2)) +
+          geom_point(fill = qc_data$colors, pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Charge Ratio (z = 4 to 2)', title = 'Charge Ratio of z = 4 to 2') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+    }
+    
+    else if ((input$xaxis_radio == 1) & (input$yaxis_radio == 2) & (input$outlier_radio == 1)){
+      
+      qcFile = input$qc_file
+      
+      if (is.null(qcFile))
+        return(NULL)
+      
+      qc_data = read.table(qcFile$datapath, header = TRUE, sep = ',')
+      qc_data$injection = factor(seq(1:nrow(qc_data)))
+      
+      minBorder = input$yaxis_min
+      maxBorder = input$yaxis_max
+      intBorder = input$yaxis_int
+      
+      xaxis_first = 1
+      xaxis_last = nrow(qc_data)
+      xaxis_interval = nrow(qc_data) / 10
+      
+      if (input$qc_plot_id == 2) {
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), TotalAnalysisTime)) +
+          geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Total Analysis Time (minutes)', title = 'Total Analysis Time') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 3) {
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), NumMs1Scans)) +
+          geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Number of MS1 Scans', title = 'MS1 Scans') +
+          theme(axis.text.x = element_text(size = 12)) +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 4) {
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), NumMs2Scans)) +
+          geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Number of MS2 Scans', title = 'MS2 Scans') +
+          theme(axis.text.x = element_text(size = 12)) +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 5) {
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), NumMs3Scans)) +
+          geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Number of MS3 Scans', title = 'MS3 Scans') +
+          theme(axis.text.x = element_text(size = 12)) +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 6) {
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), Ms1ScanRate..s.)) +
+          geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'MS1 Scan Rate (Hz)', title = 'MS1 Scan Rate') +
+          theme(axis.text.x = element_text(size = 12)) +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 7) {
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), Ms2ScanRate..s.)) +
+          geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'MS2 Scan Rate (Hz)', title = 'MS2 Scan Rate') +
+          theme(axis.text.x = element_text(size = 12)) +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 8) {
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), Ms3ScanRate..s.)) +
+          geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'MS3 Scan Rate (Hz)', title = 'MS3 Scan Rate') +
+          theme(axis.text.x = element_text(size = 12)) +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 9) {
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), MeanDutyCycle.s.)) +
+          geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Mean Duty Cycle (s)', title = 'Duty Cycle') +
+          theme(axis.text.x = element_text(size = 12)) +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 10) {
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), MeanMs2TriggerRate..Ms1Scan.)) +
+          geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Mean Number of MS2 Triggered per MS1', title = 'MS2 Trigger Rate') +
+          theme(axis.text.x = element_text(size = 12)) +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 11) {
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), log10(Ms1MedianSummedIntensity))) +
+          geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'log10(Median Summed MS1 Intensity)', title = 'MS1 Intensity') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 12) {
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), log10(Ms2MedianSummedIntensity))) +
+          geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'log10(Median Summed MS2 Intensity)', title = 'MS2 Intensity') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 13) {
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), log10(MedianPrecursorIntensity))) +
+          geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'log10(Median Precursor Intensity)', title = 'Precursor Intensity') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 14) {
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), MedianMs2PeakFractionConsumingTop80PercentTotalIntensity)) +
+          geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Fraction of MS2 Peaks', title = 'MS2 Peak Fraction') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 15) {
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), EsiInstabilityFlags.count.)) +
+          geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Number of Scans with >10% Deviation from Bordering', title = 'Electrospray Stability') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 16) {
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), MedianMassDrift.ppm.)) +
+          geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Mass Drift (ppm)', title = 'Mass Analyzer Drift') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 17) {
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), IdentificationRate.IDs.Ms2Scan.)) +
+          geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Spectra Identification Rate', title = 'Spectral Identification Rate') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 18) {
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), DigestionEfficiency)) +
+          geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Digestion Efficiency', title = 'Digestion Efficiency') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 19) {
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), MissedCleavageRate..PSM.)) +
+          geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Missed Cleavage Rate', title = 'Missed Cleavage Rate') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 20) {
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), ModificationFrequencyAtNTerm)) +
+          geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'N-term Labeling Efficiency', title = 'N-term Labeling Efficiency') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 21) {
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), ModificationFrequencyAtK)) +
+          geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Lysine Labeling Efficiency', title = 'Lysine Labeling Efficiency') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 22) {
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), ModificationFrequencyAtX)) +
+          geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Modification Labeling Efficiency', title = 'Specified Modification Labeling Efficiency') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 23) {
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), MedianMsFillTime.ms.)) +
+          geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Median MS1 Ion Injection Time', title = 'MS1 Ion Injection Time') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 24) {
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), MedianMs2FillTime.ms.)) +
+          geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Median MS2 Ion Injection Time', title = 'MS2 Ion Injection Time') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 25) {
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), MedianMs3FillTime.ms.)) +
+          geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Median MS2 Ion Injection Time', title = 'MS3 Ion Injection Time') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 26) {
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), WidthAt10.H.s.)) +
+          geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Peak Width at 10% Height', title = 'Peak Width at 10% Height') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 27) {
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), WidthAt50.H.s.)) +
+          geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Peak Width at 50% Height', title = 'Peak Width at 50% Height') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 28) {
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), AsymmetryAt10.H)) +
+          geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Peak Asymmetry at 10% Height', title = 'Peak Asymmetry at 10% Height') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 29) {
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), AsymmetryAt50.H)) +
+          geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Peak Asymmetry at 50% Height', title = 'Peak Asymmetry at 50% Height') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 30) {
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), PeakCapacity)) +
+          geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Column Peak Capacity', title = 'Column Peak Capacity') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 31) {
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), TimeBeforeFirstExceedanceOf10.MaxIntensity)) +
+          geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Time (minutes)', title = 'Time Before First Peak Elution') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 32) {
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), TimeAfterLastExceedanceOf10.MaxIntensity)) +
+          geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Time (minutes)', title = 'Time After Last Peak Elution') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 33) {
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), FractionOfRunAbove10.MaxIntensity)) +
+          geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Run Fraction', title = 'Fraction of Run With Eluting Peaks') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 34) {
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), IdChargeRatio3to2)) +
+          geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Charge Ratio (z = 3 to 2)', title = 'Charge Ratio of z = 3 to 2') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 35) {
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), IdChargeRatio4to2)) +
+          geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Charge Ratio (z = 4 to 2)', title = 'Charge Ratio of z = 4 to 2') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+    }
+    
+    else if ((input$xaxis_radio == 1) & (input$yaxis_radio == 2) & (input$outlier_radio == 2)){
+      
+      qcFile = input$qc_file
+      
+      if (is.null(qcFile))
+        return(NULL)
+      
+      qc_data = read.table(qcFile$datapath, header = TRUE, sep = ',')
+      qc_data$injection = factor(seq(1:nrow(qc_data)))
+      
+      minBorder = input$yaxis_min
+      maxBorder = input$yaxis_max
+      intBorder = input$yaxis_int
+      
+      xaxis_first = 1
+      xaxis_last = nrow(qc_data)
+      xaxis_interval = nrow(qc_data) / 10
+      
+      outlier_optimum_value = input$out_val
+      outlier_range = input$range_val
+      
+      if (input$qc_plot_id == 2) {
+        qc_data$outlier_diff = abs(qc_data$TotalAnalysisTime - outlier_optimum_value)
+        qc_data$colors = ifelse(qc_data$outlier_diff > (outlier_optimum_value * (outlier_range / 100)), 'red', brewer.pal(3,'PuBuGn')[3]) 
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), TotalAnalysisTime)) +
+          geom_point(fill = qc_data$colors, pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Total Analysis Time (minutes)', title = 'Total Analysis Time') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 3) {
+        qc_data$outlier_diff = abs(qc_data$NumMs1Scans - outlier_optimum_value)
+        qc_data$colors = ifelse(qc_data$outlier_diff > (outlier_optimum_value * (outlier_range / 100)), 'red', brewer.pal(3,'PuBuGn')[3]) 
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), NumMs1Scans)) +
+          geom_point(fill = qc_data$colors, pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Number of MS1 Scans', title = 'MS1 Scans') +
+          theme(axis.text.x = element_text(size = 12)) +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 4) {
+        qc_data$outlier_diff = abs(qc_data$NumMs2Scans - outlier_optimum_value)
+        qc_data$colors = ifelse(qc_data$outlier_diff > (outlier_optimum_value * (outlier_range / 100)), 'red', brewer.pal(3,'PuBuGn')[3]) 
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), NumMs2Scans)) +
+          geom_point(fill = qc_data$colors, pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Number of MS2 Scans', title = 'MS2 Scans') +
+          theme(axis.text.x = element_text(size = 12)) +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 5) {
+        qc_data$outlier_diff = abs(qc_data$NumMs3Scans - outlier_optimum_value)
+        qc_data$colors = ifelse(qc_data$outlier_diff > (outlier_optimum_value * (outlier_range / 100)), 'red', brewer.pal(3,'PuBuGn')[3]) 
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), NumMs3Scans)) +
+          geom_point(fill = qc_data$colors, pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Number of MS3 Scans', title = 'MS3 Scans') +
+          theme(axis.text.x = element_text(size = 12)) +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 6) {
+        qc_data$outlier_diff = abs(qc_data$Ms1ScanRate..s. - outlier_optimum_value)
+        qc_data$colors = ifelse(qc_data$outlier_diff > (outlier_optimum_value * (outlier_range / 100)), 'red', brewer.pal(3,'PuBuGn')[3]) 
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), Ms1ScanRate..s.)) +
+          geom_point(fill = qc_data$colors, pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'MS1 Scan Rate (Hz)', title = 'MS1 Scan Rate') +
+          theme(axis.text.x = element_text(size = 12)) +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 7) {
+        qc_data$outlier_diff = abs(qc_data$Ms2ScanRate..s. - outlier_optimum_value)
+        qc_data$colors = ifelse(qc_data$outlier_diff > (outlier_optimum_value * (outlier_range / 100)), 'red', brewer.pal(3,'PuBuGn')[3]) 
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), Ms2ScanRate..s.)) +
+          geom_point(fill = qc_data$colors, pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'MS2 Scan Rate (Hz)', title = 'MS2 Scan Rate') +
+          theme(axis.text.x = element_text(size = 12)) +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 8) {
+        qc_data$outlier_diff = abs(qc_data$Ms3ScanRate..s. - outlier_optimum_value)
+        qc_data$colors = ifelse(qc_data$outlier_diff > (outlier_optimum_value * (outlier_range / 100)), 'red', brewer.pal(3,'PuBuGn')[3]) 
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), Ms3ScanRate..s.)) +
+          geom_point(fill = qc_data$colors, pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'MS3 Scan Rate (Hz)', title = 'MS3 Scan Rate') +
+          theme(axis.text.x = element_text(size = 12)) +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 9) {
+        qc_data$outlier_diff = abs(qc_data$MeanDutyCycle.s. - outlier_optimum_value)
+        qc_data$colors = ifelse(qc_data$outlier_diff > (outlier_optimum_value * (outlier_range / 100)), 'red', brewer.pal(3,'PuBuGn')[3]) 
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), MeanDutyCycle.s.)) +
+          geom_point(fill = qc_data$colors, pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Mean Duty Cycle (s)', title = 'Duty Cycle') +
+          theme(axis.text.x = element_text(size = 12)) +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 10) {
+        qc_data$outlier_diff = abs(qc_data$MeanMs2TriggerRate..Ms1Scan. - outlier_optimum_value)
+        qc_data$colors = ifelse(qc_data$outlier_diff > (outlier_optimum_value * (outlier_range / 100)), 'red', brewer.pal(3,'PuBuGn')[3]) 
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), MeanMs2TriggerRate..Ms1Scan.)) +
+          geom_point(fill = qc_data$colors, pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Mean Number of MS2 Triggered per MS1', title = 'MS2 Trigger Rate') +
+          theme(axis.text.x = element_text(size = 12)) +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 11) {
+        qc_data$outlier_diff = abs(log10(qc_data$Ms1MedianSummedIntensity) - outlier_optimum_value)
+        qc_data$colors = ifelse(qc_data$outlier_diff > (outlier_optimum_value * (outlier_range / 100)), 'red', brewer.pal(3,'PuBuGn')[3]) 
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), log10(Ms1MedianSummedIntensity))) +
+          geom_point(fill = qc_data$colors, pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'log10(Median Summed MS1 Intensity)', title = 'MS1 Intensity') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 12) {
+        qc_data$outlier_diff = abs(log10(qc_data$Ms2MedianSummedIntensity) - outlier_optimum_value)
+        qc_data$colors = ifelse(qc_data$outlier_diff > (outlier_optimum_value * (outlier_range / 100)), 'red', brewer.pal(3,'PuBuGn')[3]) 
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), log10(Ms2MedianSummedIntensity))) +
+          geom_point(fill = qc_data$colors, pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'log10(Median Summed MS2 Intensity)', title = 'MS2 Intensity') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 13) {
+        qc_data$outlier_diff = abs(log10(qc_data$MedianPrecursorIntensity) - outlier_optimum_value)
+        qc_data$colors = ifelse(qc_data$outlier_diff > (outlier_optimum_value * (outlier_range / 100)), 'red', brewer.pal(3,'PuBuGn')[3]) 
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), log10(MedianPrecursorIntensity))) +
+          geom_point(fill = qc_data$colors, pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'log10(Median Precursor Intensity)', title = 'Precursor Intensity') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 14) {
+        qc_data$outlier_diff = abs(qc_data$MedianMs2PeakFractionConsumingTop80PercentTotalIntensity - outlier_optimum_value)
+        qc_data$colors = ifelse(qc_data$outlier_diff > (outlier_optimum_value * (outlier_range / 100)), 'red', brewer.pal(3,'PuBuGn')[3]) 
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), MedianMs2PeakFractionConsumingTop80PercentTotalIntensity)) +
+          geom_point(fill = qc_data$colors, pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Fraction of MS2 Peaks', title = 'MS2 Peak Fraction') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 15) {
+        qc_data$outlier_diff = abs(qc_data$EsiInstabilityFlags.count. - outlier_optimum_value)
+        qc_data$colors = ifelse(qc_data$outlier_diff > (outlier_optimum_value * (outlier_range / 100)), 'red', brewer.pal(3,'PuBuGn')[3]) 
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), EsiInstabilityFlags.count.)) +
+          geom_point(fill = qc_data$colors, pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Number of Scans with >10% Deviation from Bordering', title = 'Electrospray Stability') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 16) {
+        qc_data$outlier_diff = abs(qc_data$MedianMassDrift.ppm. - outlier_optimum_value)
+        qc_data$colors = ifelse(qc_data$outlier_diff > (outlier_optimum_value * (outlier_range / 100)), 'red', brewer.pal(3,'PuBuGn')[3]) 
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), MedianMassDrift.ppm.)) +
+          geom_point(fill = qc_data$colors, pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Mass Drift (ppm)', title = 'Mass Analyzer Drift') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 17) {
+        qc_data$outlier_diff = abs(qc_data$IdentificationRate.IDs.Ms2Scan. - outlier_optimum_value)
+        qc_data$colors = ifelse(qc_data$outlier_diff > (outlier_optimum_value * (outlier_range / 100)), 'red', brewer.pal(3,'PuBuGn')[3]) 
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), IdentificationRate.IDs.Ms2Scan.)) +
+          geom_point(fill = qc_data$colors, pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Spectra Identification Rate', title = 'Spectral Identification Rate') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 18) {
+        qc_data$outlier_diff = abs(qc_data$DigestionEfficiency - outlier_optimum_value)
+        qc_data$colors = ifelse(qc_data$outlier_diff > (outlier_optimum_value * (outlier_range / 100)), 'red', brewer.pal(3,'PuBuGn')[3]) 
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), DigestionEfficiency)) +
+          geom_point(fill = qc_data$colors, pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Digestion Efficiency', title = 'Digestion Efficiency') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 19) {
+        qc_data$outlier_diff = abs(qc_data$MissedCleavageRate..PSM. - outlier_optimum_value)
+        qc_data$colors = ifelse(qc_data$outlier_diff > (outlier_optimum_value * (outlier_range / 100)), 'red', brewer.pal(3,'PuBuGn')[3]) 
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), MissedCleavageRate..PSM.)) +
+          geom_point(fill = qc_data$colors, pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Missed Cleavage Rate', title = 'Missed Cleavage Rate') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 20) {
+        qc_data$outlier_diff = abs(qc_data$ModificationFrequencyAtNTerm - outlier_optimum_value)
+        qc_data$colors = ifelse(qc_data$outlier_diff > (outlier_optimum_value * (outlier_range / 100)), 'red', brewer.pal(3,'PuBuGn')[3]) 
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), ModificationFrequencyAtNTerm)) +
+          geom_point(fill = qc_data$colors, pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'N-term Labeling Efficiency', title = 'N-term Labeling Efficiency') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 21) {
+        qc_data$outlier_diff = abs(qc_data$ModificationFrequencyAtK - outlier_optimum_value)
+        qc_data$colors = ifelse(qc_data$outlier_diff > (outlier_optimum_value * (outlier_range / 100)), 'red', brewer.pal(3,'PuBuGn')[3]) 
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), ModificationFrequencyAtK)) +
+          geom_point(fill = qc_data$colors, pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Lysine Labeling Efficiency', title = 'Lysine Labeling Efficiency') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 22) {
+        qc_data$outlier_diff = abs(qc_data$ModificationFrequencyAtX - outlier_optimum_value)
+        qc_data$colors = ifelse(qc_data$outlier_diff > (outlier_optimum_value * (outlier_range / 100)), 'red', brewer.pal(3,'PuBuGn')[3]) 
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), ModificationFrequencyAtX)) +
+          geom_point(fill = qc_data$colors, pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Modification Labeling Efficiency', title = 'Specified Modification Labeling Efficiency') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 23) {
+        qc_data$outlier_diff = abs(qc_data$MedianMsFillTime.ms. - outlier_optimum_value)
+        qc_data$colors = ifelse(qc_data$outlier_diff > (outlier_optimum_value * (outlier_range / 100)), 'red', brewer.pal(3,'PuBuGn')[3]) 
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), MedianMsFillTime.ms.)) +
+          geom_point(fill = qc_data$colors, pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Median MS1 Ion Injection Time', title = 'MS1 Ion Injection Time') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 24) {
+        qc_data$outlier_diff = abs(qc_data$MedianMs2FillTime.ms. - outlier_optimum_value)
+        qc_data$colors = ifelse(qc_data$outlier_diff > (outlier_optimum_value * (outlier_range / 100)), 'red', brewer.pal(3,'PuBuGn')[3]) 
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), MedianMs2FillTime.ms.)) +
+          geom_point(fill = qc_data$colors, pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Median MS2 Ion Injection Time', title = 'MS2 Ion Injection Time') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 25) {
+        qc_data$outlier_diff = abs(qc_data$MedianMs3FillTime.ms. - outlier_optimum_value)
+        qc_data$colors = ifelse(qc_data$outlier_diff > (outlier_optimum_value * (outlier_range / 100)), 'red', brewer.pal(3,'PuBuGn')[3]) 
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), MedianMs3FillTime.ms.)) +
+          geom_point(fill = qc_data$colors, pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Median MS2 Ion Injection Time', title = 'MS3 Ion Injection Time') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 26) {
+        qc_data$outlier_diff = abs(qc_data$WidthAt10.H.s. - outlier_optimum_value)
+        qc_data$colors = ifelse(qc_data$outlier_diff > (outlier_optimum_value * (outlier_range / 100)), 'red', brewer.pal(3,'PuBuGn')[3]) 
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), WidthAt10.H.s.)) +
+          geom_point(fill = qc_data$colors, pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Peak Width at 10% Height', title = 'Peak Width at 10% Height') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 27) {
+        qc_data$outlier_diff = abs(qc_data$ WidthAt50.H.s. - outlier_optimum_value)
+        qc_data$colors = ifelse(qc_data$outlier_diff > (outlier_optimum_value * (outlier_range / 100)), 'red', brewer.pal(3,'PuBuGn')[3]) 
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), WidthAt50.H.s.)) +
+          geom_point(fill = qc_data$colors, pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Peak Width at 50% Height', title = 'Peak Width at 50% Height') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 28) {
+        qc_data$outlier_diff = abs(qc_data$AsymmetryAt10.H - outlier_optimum_value)
+        qc_data$colors = ifelse(qc_data$outlier_diff > (outlier_optimum_value * (outlier_range / 100)), 'red', brewer.pal(3,'PuBuGn')[3]) 
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), AsymmetryAt10.H)) +
+          geom_point(fill = qc_data$colors, pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Peak Asymmetry at 10% Height', title = 'Peak Asymmetry at 10% Height') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 29) {
+        qc_data$outlier_diff = abs(qc_data$AsymmetryAt50.H - outlier_optimum_value)
+        qc_data$colors = ifelse(qc_data$outlier_diff > (outlier_optimum_value * (outlier_range / 100)), 'red', brewer.pal(3,'PuBuGn')[3]) 
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), AsymmetryAt50.H)) +
+          geom_point(fill = qc_data$colors, pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Peak Asymmetry at 50% Height', title = 'Peak Asymmetry at 50% Height') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 30) {
+        qc_data$outlier_diff = abs(qc_data$PeakCapacity - outlier_optimum_value)
+        qc_data$colors = ifelse(qc_data$outlier_diff > (outlier_optimum_value * (outlier_range / 100)), 'red', brewer.pal(3,'PuBuGn')[3]) 
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), PeakCapacity)) +
+          geom_point(fill = qc_data$colors, pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Column Peak Capacity', title = 'Column Peak Capacity') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 31) {
+        qc_data$outlier_diff = abs(qc_data$TimeBeforeFirstExceedanceOf10.MaxIntensity - outlier_optimum_value)
+        qc_data$colors = ifelse(qc_data$outlier_diff > (outlier_optimum_value * (outlier_range / 100)), 'red', brewer.pal(3,'PuBuGn')[3]) 
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), TimeBeforeFirstExceedanceOf10.MaxIntensity)) +
+          geom_point(fill = qc_data$colors, pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Time (minutes)', title = 'Time Before First Peak Elution') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 32) {
+        qc_data$outlier_diff = abs(qc_data$TimeAfterLastExceedanceOf10.MaxIntensity - outlier_optimum_value)
+        qc_data$colors = ifelse(qc_data$outlier_diff > (outlier_optimum_value * (outlier_range / 100)), 'red', brewer.pal(3,'PuBuGn')[3]) 
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), TimeAfterLastExceedanceOf10.MaxIntensity)) +
+          geom_point(fill = qc_data$colors, pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Time (minutes)', title = 'Time After Last Peak Elution') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 33) {
+        qc_data$outlier_diff = abs(qc_data$FractionOfRunAbove10.MaxIntensity - outlier_optimum_value)
+        qc_data$colors = ifelse(qc_data$outlier_diff > (outlier_optimum_value * (outlier_range / 100)), 'red', brewer.pal(3,'PuBuGn')[3]) 
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), FractionOfRunAbove10.MaxIntensity)) +
+          geom_point(fill = qc_data$colors, pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Run Fraction', title = 'Fraction of Run With Eluting Peaks') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 34) {
+        qc_data$outlier_diff = abs(qc_data$IdChargeRatio3to2 - outlier_optimum_value)
+        qc_data$colors = ifelse(qc_data$outlier_diff > (outlier_optimum_value * (outlier_range / 100)), 'red', brewer.pal(3,'PuBuGn')[3]) 
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), IdChargeRatio3to2)) +
+          geom_point(fill = qc_data$colors, pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Charge Ratio (z = 3 to 2)', title = 'Charge Ratio of z = 3 to 2') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+      
+      else if (input$qc_plot_id == 35) {
+        qc_data$outlier_diff = abs(qc_data$IdChargeRatio4to2 - outlier_optimum_value)
+        qc_data$colors = ifelse(qc_data$outlier_diff > (outlier_optimum_value * (outlier_range / 100)), 'red', brewer.pal(3,'PuBuGn')[3]) 
+        output_plot = ggplot(qc_data, aes(as.numeric(injection), IdChargeRatio4to2)) +
+          geom_point(fill = qc_data$colors, pch = 21, size = 3, colour = 'black', alpha = 0.8, stroke = 1) +
+          labs(x = "Injection Number", y = 'Charge Ratio (z = 4 to 2)', title = 'Charge Ratio of z = 4 to 2') +
+          theme(axis.text.x = element_text(size = 12), legend.position="none") +
+          scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
+          scale_x_continuous(limits = c(xaxis_first,xaxis_last), breaks = seq(xaxis_first,xaxis_last,xaxis_interval))
+        output_plot}
+    }
+    
+    else if ((input$xaxis_radio == 2) & (input$yaxis_radio == 1) & (input$outlier_radio == 1)){
       qcFile = input$qc_file
       
       if (is.null(qcFile))
@@ -669,7 +2305,7 @@ server = shinyServer(function(input, output) {
         output_plot}
     }
     
-    else if ((input$yaxis_radio == 1) & (input$outlier_radio == 2)){
+    else if ((input$xaxis_radio == 2) & (input$yaxis_radio == 1) & (input$outlier_radio == 2)){
       qcFile = input$qc_file
       
       if (is.null(qcFile))
@@ -1161,7 +2797,7 @@ server = shinyServer(function(input, output) {
         output_plot}
     }
     
-    else if ((input$yaxis_radio == 2) & (input$outlier_radio == 1)){
+    else if ((input$xaxis_radio == 2) & (input$yaxis_radio == 2) & (input$outlier_radio == 1)){
       
       qcFile = input$qc_file
       
@@ -1485,7 +3121,7 @@ server = shinyServer(function(input, output) {
         output_plot}
     }
     
-    else if ((input$yaxis_radio == 2) & (input$outlier_radio == 2)){
+    else if ((input$xaxis_radio == 2) & (input$yaxis_radio == 2) & (input$outlier_radio == 2)){
       
       qcFile = input$qc_file
       
