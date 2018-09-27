@@ -113,6 +113,8 @@
   <ItemGroup>
     <Compile Include="Algorithms\Averagine.cs" />
     <Compile Include="Algorithms\ChargeStateCalculator.cs" />
+    <Compile Include="Algorithms\IsoProfilePredictor.cs" />
+    <Compile Include="Algorithms\IsotopomerEnvelope.cs" />
     <Compile Include="Algorithms\PattersonChargeStateCalculator.cs" />
     <Compile Include="ArgumentParser.cs" />
     <Compile Include="Constants\Constants.cs" />

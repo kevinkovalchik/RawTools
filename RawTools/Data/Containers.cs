@@ -64,10 +64,16 @@ namespace RawTools.Data.Containers
         
     }
 
-    class SimpleCentroid
+    public class SimpleCentroid
     {
-        public double[] Masses, Intensities;
-        public SimpleCentroid(double[] masses, double[] intensities)
+        public List<double> Masses, Intensities;
+
+        public SimpleCentroid()
+        {
+
+        }
+
+        public SimpleCentroid(List<double> masses, List<double> intensities)
         {
             Masses = masses;
             Intensities = intensities;
