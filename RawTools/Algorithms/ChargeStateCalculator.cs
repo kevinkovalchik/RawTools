@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using RawTools.Data.Containers;
 using RawTools.Utilities;
+using RawTools.Utilities.MathStats;
+using RawTools.Algorithms;
 
 namespace RawTools.Algorithms
 {
@@ -21,8 +23,24 @@ namespace RawTools.Algorithms
 
             (masses, intensities) = AdditionalMath.SubsetMsData(centroidData.Masses, centroidData.Intensities, parentMass - 0.1, parentMass + 1.2);
 
-            parentIndex = masses.ToList().IndexOf(parentMass);
+            if (masses.Length == 0)
+            {
+                possibleChargeStates.Add(assignedCharge);
+                return possibleChargeStates;
+            }
+
             int currentIndex;
+
+            if (masses.withinTolerance(parentMass, 10))
+            {
+                parentIndex = masses.indexOfClosest(parentMass);
+            }
+            else
+            {
+                possibleChargeStates.Add(assignedCharge);
+                return possibleChargeStates;
+            }
+
 
             // needs more work. can try matching multiple isotopes, then if charge state is ambiguous take the one with more matches
             foreach (int charge in allowedCharges)

@@ -115,6 +115,7 @@
     <Compile Include="Algorithms\ChargeStateCalculator.cs" />
     <Compile Include="Algorithms\IsoProfilePredictor.cs" />
     <Compile Include="Algorithms\IsotopomerEnvelope.cs" />
+    <Compile Include="Algorithms\MonoIsoPredictor.cs" />
     <Compile Include="Algorithms\PattersonChargeStateCalculator.cs" />
     <Compile Include="ArgumentParser.cs" />
     <Compile Include="Constants\Constants.cs" />
@@ -132,8 +133,10 @@
     <Compile Include="QC\Watcher.cs" />
     <Compile Include="QC\QC.cs" />
     <Compile Include="QC\XTandem.cs" />
+    <Compile Include="Utilities\MathStats\FitScores.cs" />
+    <Compile Include="Utilities\MathStats\ToleranceCalculator.cs" />
     <Compile Include="Write\DataWrite.cs" />
-    <Compile Include="Utilities.cs" />
+    <Compile Include="Utilities\Utilities.cs" />
     <Compile Include="Data\Containers.cs" />
     <Compile Include="Data\Extraction.cs" />
     <Compile Include="Program.cs" />

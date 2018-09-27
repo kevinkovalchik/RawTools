@@ -85,6 +85,8 @@ namespace RawTools.Algorithms
             for (var i = 0; i < isotopeIndex; i++)
             {
                 truncatedDist[i] = dist[i] / maxHeight;
+                //(Changed by Kevin)
+                ///truncatedDist[i] = dist[i] / dist[0];
             }
 
             return new IsotopomerEnvelope(truncatedDist, mostIntenseIsotopomerIndex);

@@ -85,7 +85,7 @@ namespace RawTools
                 RawDataCollection rawData = new RawDataCollection(rawFile: rawFile);
 
                 rawData.ExtractAll(rawFile);
-                rawData.ExtractSegmentScans(rawFile, MSOrderType.Ms);
+                //rawData.ExtractSegmentScans(rawFile, MSOrderType.Ms);
 
                 int[] scans = rawData.scanIndex.ScanEnumerators[MSOrderType.Ms2];
 
@@ -96,16 +96,21 @@ namespace RawTools
                 {
                     int masterScan = rawData.precursorScans[scan].MasterScan;
                     double parentMZ = rawData.precursorMasses[scan].ParentMZ;
-                    //int CS = PattersonChargeStateCalculator.GetChargeState(rawData.centroidStreams[masterScan], rawData.segmentedScans[masterScan], parentMZ);
+                    double monoisoMass;
+                    int charge;
+                    
                     List<int> otherCS = ChargeStateCalculator.GetChargeState(rawData.centroidStreams[masterScan], parentMZ, rawData.trailerExtras[scan].ChargeState);
+                    (charge,monoisoMass) = MonoIsoPredictor.GetMonoIsotopicMassCharge(rawData.centroidStreams[masterScan], parentMZ, otherCS, rawData.trailerExtras[scan].ChargeState);
                     P.Update();
-                    //Console.Write("Thermo: {0}, Us: {1}, Simple: ", rawData.trailerExtras[scan].ChargeState, CS);
-                    //foreach (var charge in otherCS)
-                    //{
-                    //    Console.Write("{0}, ", charge);
-                    //}
-                    //Console.Write("\n");
-
+                    /*Console.Write("Thermo: {0}, Us: ", rawData.trailerExtras[scan].ChargeState);
+                    foreach (var c in otherCS)
+                    {
+                        Console.Write("{0}, ", c);
+                    }
+                    Console.Write("RefinedCharge: {0},", charge);
+                    Console.Write("ParentMZ: {0}, ThermoMass: {1}, OurMass: {2}", parentMZ, rawData.precursorMasses[scan].MonoisotopicMZ, monoisoMass);
+                    Console.Write("\n");
+                    */
                 }
                 P.Done();
             }

@@ -44,7 +44,7 @@ namespace RawTools.Data.Containers
         }
     }
     
-    class CentroidStreamData
+    public class CentroidStreamData
     {
         public double[] Masses, Intensities, Resolutions, Noises, Baselines, SignalToNoise;
 
@@ -77,6 +77,12 @@ namespace RawTools.Data.Containers
         {
             Masses = masses;
             Intensities = intensities;
+        }
+
+        public SimpleCentroid(CentroidStreamData centroidStream)
+        {
+            Masses = centroidStream.Masses.ToList();
+            Intensities = centroidStream.Intensities.ToList();
         }
     }
 

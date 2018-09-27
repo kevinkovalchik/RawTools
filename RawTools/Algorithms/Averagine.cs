@@ -174,6 +174,18 @@ namespace RawTools.Algorithms
             var monoIsotopeMass = isotopeMass - isotopeIndex * Masses.C13MinusC12;
             return monoIsotopeMass;
         }
+
+        /// <summary>
+        /// Get the monoisotopic mass of a given m/z
+        /// </summary>
+        /// <param name="isotopeMz"></param>
+        /// <param name="charge"></param>
+        /// <param name="isotopeIndex"></param>
+        /// <returns></returns>
+        public static double GetMonoIsotopicMassFromMZ(double isotopeMz, int charge)
+        {
+            return (isotopeMz - Masses.Proton) * charge;
+        }
     }
 
     /// <summary>
