@@ -115,6 +115,7 @@
     <Compile Include="Algorithms\ChargeStateCalculator.cs" />
     <Compile Include="Algorithms\PattersonChargeStateCalculator.cs" />
     <Compile Include="ArgumentParser.cs" />
+    <Compile Include="Constants\Constants.cs" />
     <Compile Include="Data\Collections.cs" />
     <Compile Include="Data\Processing.cs" />
     <Compile Include="Properties\Resources.Designer.cs">

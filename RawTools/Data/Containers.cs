@@ -64,6 +64,16 @@ namespace RawTools.Data.Containers
         
     }
 
+    class SimpleCentroid
+    {
+        public double[] Masses, Intensities;
+        public SimpleCentroid(double[] masses, double[] intensities)
+        {
+            Masses = masses;
+            Intensities = intensities;
+        }
+    }
+
     class SegmentedScanData
     {
         public double[] Positions, Intensities;

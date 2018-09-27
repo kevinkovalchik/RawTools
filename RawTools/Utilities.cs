@@ -448,6 +448,21 @@ namespace RawTools.Utilities
 
             return (massesOut.ToArray(), intensitiesOut.ToArray());
         }
+
+        /// <summary>
+        /// Returns the factorial of the input as a double
+        /// </summary>
+        /// <param name="value">The number of interest</param>
+        public static double Factorial(int value)
+        {
+            double valueOut = 1;
+            for (int i = value; i > 0; i--)
+            {
+                valueOut *= i;
+            }
+
+            return valueOut;
+        }
     }
 
     static class ReadWrite

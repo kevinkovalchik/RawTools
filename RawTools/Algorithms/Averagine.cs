@@ -5,6 +5,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Collections.Concurrent;
+using RawTools.Constants;
+using RawTools.Utilities;
 
 namespace RawTools.Algorithms
 {
@@ -14,14 +17,14 @@ namespace RawTools.Algorithms
     public class Averagine
     {
         // NominalMass -> Isotope Envelop (Changed to ConcurrentDictionary by Chris)
-        private readonly Dictionary<int, IsotopomerEnvelope> IsotopeEnvelopMap;
+        private readonly ConcurrentDictionary<int, IsotopomerEnvelope> IsotopeEnvelopMap;
 
         /// <summary>
         /// Constructor
         /// </summary>
         public Averagine()
         {
-            this.IsotopeEnvelopMap = new Dictionary<int, IsotopomerEnvelope>();
+            this.IsotopeEnvelopMap = new ConcurrentDictionary<int, IsotopomerEnvelope>();
         }
 
         /// <summary>
@@ -412,137 +415,14 @@ namespace RawTools.Algorithms
                 if (number[i - 1] == 0) prob *= exp;
                 else
                     prob *=
-                        (Math.Pow(mean, number[i - 1]) * exp / SpecialFunctions.Factorial(number[i - 1]));
+                        (Math.Pow(mean, number[i - 1]) * exp / AdditionalMath.Factorial(number[i - 1]));
             }
             return prob;
         }
     }
 
     public class Ion
-    {
-        /// <summary>
-        /// Elemental composition of the ion
-        /// </summary>
-        public Composition.Composition Composition { get; }
-
-        /// <summary>
-        /// Electrical charge of the ion
-        /// </summary>
-        public int Charge { get; }
-
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        /// <param name="composition"></param>
-        /// <param name="charge"></param>
-        public Ion(Composition.Composition composition, int charge)
-        {
-            Composition = composition;
-            Charge = charge;
-        }
-
-        /// <summary>
-        /// Get the monoisotopic m/z of the ion
-        /// </summary>
-        /// <returns></returns>
-        public double GetMonoIsotopicMz()
-        {
-            return (Composition.Mass + Charge * Constants.Proton) / Charge;
-        }
-
-        /// <summary>
-        /// Gets the m/z of ith isotope
-        /// </summary>
-        /// <param name="isotopeIndex">isotope index. 0 means mono-isotope, 1 means 2nd isotope, etc.</param>
-        /// <returns></returns>
-        public double GetIsotopeMz(int isotopeIndex)
-        {
-            return (Composition.GetIsotopeMass(isotopeIndex) + Charge * Constants.Proton) / Charge;
-        }
-
-        /// <summary>
-        /// Gets the m/z of the most abundant isotope peak
-        /// </summary>
-        /// <returns>m/z of the most abundant isotope peak</returns>
-        public double GetMostAbundantIsotopeMz()
-        {
-            return GetIsotopeMz(Composition.GetMostAbundantIsotopeZeroBasedIndex());
-        }
-
-        /// <summary>
-        /// Gets the m/z of ith isotope
-        /// </summary>
-        /// <param name="isotopeIndexInRealNumber">isotope index in real number. 0 means mono-isotope, 0.5 means the center of mono and 2nd isotopes.</param>
-        /// <returns></returns>
-        public double GetIsotopeMz(double isotopeIndexInRealNumber)
-        {
-            return (Composition.GetIsotopeMass(isotopeIndexInRealNumber) + Charge * Constants.Proton) / Charge;
-        }
-
-        /// <summary>
-        /// Gets theoretical isotope peaks whose intensities are relative to the most intense isotope
-        /// </summary>
-        /// <param name="minimumRelativeIntensity">Minimum intensity threshold for including the isotope in the results</param>
-        /// <returns>Enumerable of isotope peaks</returns>
-        public IEnumerable<Isotope> GetIsotopes(double minimumRelativeIntensity)
-        {
-            var isotopeIndex = -1;
-            foreach (var isotopeRatio in Composition.GetIsotopomerEnvelopeRelativeIntensities())
-            {
-                ++isotopeIndex;
-                if (isotopeRatio >= minimumRelativeIntensity)
-                {
-                    yield return new Isotope(isotopeIndex, isotopeRatio);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Gets top n (numIsotopes) theoretical isotope peaks ordered by the ratios of isotopes (higher first)
-        /// </summary>
-        /// <param name="numIsotopes">number of isotopes</param>
-        /// <returns>Enumerable of isotope peaks</returns>
-        public IEnumerable<Isotope> GetIsotopes(int numIsotopes)
-        {
-            var isotopes = Composition.GetIsotopomerEnvelopeRelativeIntensities();
-            var index = Enumerable.Range(0, isotopes.Length).ToArray();
-
-            Array.Sort(index, (i, j) => isotopes[j].CompareTo(isotopes[i]));
-
-            for (var i = 0; i < numIsotopes && i < index.Length; i++)
-            {
-                yield return new Isotope(index[i], isotopes[index[i]]);
-            }
-        }
-
-        /// <summary>
-        /// Get the top 3 isotopes for this ion
-        /// </summary>
-        /// <returns></returns>
-        public IList<Isotope> GetTop3Isotopes()
-        {
-            var isotopes = Composition.GetIsotopomerEnvelopeRelativeIntensities();
-
-            var top3 = new List<Isotope>();
-            var indexOfMostAbundantIsotope = Composition.GetMostAbundantIsotopeZeroBasedIndex();
-            if (indexOfMostAbundantIsotope == 0)
-            {
-                for (var i = 0; i < 3 && i < isotopes.Length; i++)
-                {
-                    top3.Add(new Isotope(i, isotopes[i]));
-                }
-            }
-            else
-            {
-                for (var i = indexOfMostAbundantIsotope - 1; i <= indexOfMostAbundantIsotope + 1 && i < isotopes.Length; i++)
-                {
-                    top3.Add(new Isotope(i, isotopes[i]));
-                }
-            }
-
-            return top3;
-        }
-
+    { 
         /// <summary>
         /// Get the m/z of the specified isotope
         /// </summary>
@@ -552,8 +432,8 @@ namespace RawTools.Algorithms
         /// <returns></returns>
         public static double GetIsotopeMz(double monoIsotopicMass, int charge, int isotopeIndex)
         {
-            var isotopeMass = monoIsotopicMass + isotopeIndex * Constants.C13MinusC12;
-            return isotopeMass / charge + Constants.Proton;
+            var isotopeMass = monoIsotopicMass + isotopeIndex * Masses.C13MinusC12;
+            return isotopeMass / charge + Masses.Proton;
         }
 
         /// <summary>
@@ -565,8 +445,8 @@ namespace RawTools.Algorithms
         /// <returns></returns>
         public static double GetMonoIsotopicMass(double isotopeMz, int charge, int isotopeIndex)
         {
-            var isotopeMass = (isotopeMz - Constants.Proton) * charge;
-            var monoIsotopeMass = isotopeMass - isotopeIndex * Constants.C13MinusC12;
+            var isotopeMass = (isotopeMz - Masses.Proton) * charge;
+            var monoIsotopeMass = isotopeMass - isotopeIndex * Masses.C13MinusC12;
             return monoIsotopeMass;
         }
     }
@@ -576,100 +456,6 @@ namespace RawTools.Algorithms
     /// </summary>
     public class Atom
     {
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        /// <param name="code"></param>
-        /// <param name="mass"></param>
-        /// <param name="nominalMass"></param>
-        /// <param name="name"></param>
-        public Atom(string code, double mass, int nominalMass, string name)
-        {
-            Code = code;
-            Mass = mass;
-            NominalMass = nominalMass;
-            Name = name;
-        }
-
-        /// <summary>
-        /// Empty constructor
-        /// </summary>
-        public Atom()
-        {
-        }
-
-        /// <summary>
-        /// Atomic Symbol
-        /// </summary>
-        public string Code { get; }
-
-        /// <summary>
-        /// Name of element
-        /// </summary>
-        public string Name { get; }
-
-        /// <summary>
-        /// Monoisotopic mass of element
-        /// </summary>
-        public double Mass { get; set; }
-
-        /// <summary>
-        /// Nominal mass
-        /// </summary>
-        public int NominalMass { get; set; }
-
-        /// <summary>
-        /// Get an array of all supported elements, and some compounds
-        /// </summary>
-        public static readonly Atom[] AtomArr =
-            {
-                // Use Unimod values
-                new Atom("H", H, 1, "Hydrogen"),
-                new Atom("2H", 2.014101779, 2, "Deuterium"),
-                new Atom("D", 2.014101779, 2, "Deuterium"),
-                new Atom("Li", 7.016003, 7, "Lithium"),
-                new Atom("C", C, 12, "Carbon"),
-                new Atom("13C", Constants.C13, 13, "Carbon13"),
-                new Atom("N", N, 14, "Nitrogen"),
-                new Atom("15N", 15.00010897, 15, "Nitrogen15"),
-                new Atom("O", O, 16, "Oxygen"),
-                new Atom("18O", 17.9991603, 18, "Oxygen18"),
-                new Atom("F", 18.99840322, 19, "Fluorine"),
-                new Atom("Na", 22.9897677, 23, "Sodium"),
-                new Atom("P", 30.973762, 31, "Phosphorous"),
-                new Atom("S", S, 32, "Sulfur"),
-                new Atom("Cl", 34.96885272, 35, "Chlorine"),
-                new Atom("K", 38.9637074, 39, "Potassium"),
-                new Atom("Ca", 39.9625906, 40, "Calcium"),
-                new Atom("Fe", 55.9349393, 56, "Iron"),
-                new Atom("Ni", 57.9353462, 58, "Nickel"),
-                new Atom("Cu", 62.9295989, 63, "Copper"),
-                new Atom("Zn", 63.9291448, 64, "Zinc"),
-                new Atom("Br", 78.9183361, 79, "Bromine"),
-                new Atom("Se", 79.9165196, 80, "Selenium"),
-                new Atom("Mo", 97.9054073, 98, "Molybdenum"),
-                new Atom("Ag", 106.905092, 107, "Silver"),
-                new Atom("I", 126.904473, 127, "Iodine"),
-                new Atom("Au", 196.966543, 197, "Gold"),
-                new Atom("Hg", 201.970617, 202, "Mercury"),
-                new Atom("B", 11.00930554, 11, "Boron"),
-                new Atom("As", 74.92159, 75, "Arsenic"),
-                new Atom("Mg",  23.985043, 24, "Magnesium"),
-
-                // Compounds
-                // TODO: Move to somewhere more appropriate
-                new Atom("Hex", 162.052824, 162, "Hexose"),
-                new Atom("HexNAc", 203.079373, 203, "N-Acetylhexosamine"),
-                new Atom("dHex", 146.057909, 146, "Fucose"),
-                new Atom("NeuAc", 291.095417, 291, "N-acetyl neuraminic acid"),
-                new Atom("NeuGc", 307.090331, 307, "N-glycoyl neuraminic acid"),
-                new Atom("Hep", 192.063388, 192, "Heptose"),
-                new Atom("Pent", 132.042257, 85, "Pentose"),
-            };
-
-        /// <summary>
-        /// Monoisotopic mass of Carbon
-        /// </summary>
         public const double C = 12.0;
 
         /// <summary>
@@ -691,25 +477,5 @@ namespace RawTools.Algorithms
         /// Monoisotopic mass of Sulfur
         /// </summary>
         public const double S = 31.9720707;
-
-        /// <summary>
-        /// Get the atom that corresponds to the provided atomic symbol
-        /// </summary>
-        /// <param name="code"></param>
-        /// <returns></returns>
-        public static Atom Get(string code)
-        {
-            return AtomMap[code];
-        }
-
-        private static readonly Dictionary<string, Atom> AtomMap;
-        static Atom()
-        {
-            AtomMap = new Dictionary<string, Atom>();
-            foreach (var atom in AtomArr)
-            {
-                AtomMap.Add(atom.Code, atom);
-            }
-        }
     }
 }
