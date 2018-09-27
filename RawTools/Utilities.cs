@@ -431,6 +431,23 @@ namespace RawTools.Utilities
                 return 0;
             }
         }
+
+        public static (double[], double[]) SubsetMsData(double[] masses, double[] intensities, double lowMass, double hiMass)
+        {
+            List<double> massesOut = new List<double>();
+            List<double> intensitiesOut = new List<double>();
+
+            for (int i = 0; i < masses.Length; i++)
+            {
+                if (masses[i] > lowMass & masses[i] < hiMass)
+                {
+                    massesOut.Add(masses[i]);
+                    intensitiesOut.Add(intensities[i]);
+                }
+            }
+
+            return (massesOut.ToArray(), intensitiesOut.ToArray());
+        }
     }
 
     static class ReadWrite

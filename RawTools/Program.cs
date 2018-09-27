@@ -33,6 +33,7 @@ using RawTools.Data.Collections;
 using RawTools.Data.Extraction;
 using RawTools.Data.Containers;
 using RawTools.Utilities;
+using RawTools.Algorithms;
 using RawTools.QC;
 using System.Xml.Linq;
 using Serilog;
@@ -77,9 +78,39 @@ namespace RawTools
 
         static int DoStuff(ArgumentParser.TestOptions opts)
         {
-            Console.WriteLine("Number of processors: {0}", Environment.ProcessorCount);
+            using (IRawDataPlus rawFile = RawFileReaderFactory.ReadFile(fileName: opts.File))
+            {
+                rawFile.SelectInstrument(Device.MS, 1);
+                
+                RawDataCollection rawData = new RawDataCollection(rawFile: rawFile);
 
-            return 0;
+                rawData.ExtractAll(rawFile);
+                rawData.ExtractSegmentScans(rawFile, MSOrderType.Ms);
+
+                int[] scans = rawData.scanIndex.ScanEnumerators[MSOrderType.Ms2];
+
+                ProgressIndicator P = new ProgressIndicator(scans.Length, "Calculating charge states");
+                P.Start();
+
+                foreach (int scan in scans)
+                {
+                    int masterScan = rawData.precursorScans[scan].MasterScan;
+                    double parentMZ = rawData.precursorMasses[scan].ParentMZ;
+                    //int CS = PattersonChargeStateCalculator.GetChargeState(rawData.centroidStreams[masterScan], rawData.segmentedScans[masterScan], parentMZ);
+                    List<int> otherCS = ChargeStateCalculator.GetChargeState(rawData.centroidStreams[masterScan], parentMZ, rawData.trailerExtras[scan].ChargeState);
+                    P.Update();
+                    //Console.Write("Thermo: {0}, Us: {1}, Simple: ", rawData.trailerExtras[scan].ChargeState, CS);
+                    //foreach (var charge in otherCS)
+                    //{
+                    //    Console.Write("{0}, ", charge);
+                    //}
+                    //Console.Write("\n");
+
+                }
+                P.Done();
+            }
+
+                return 0;
         }
 
         static int DoStuff(ArgumentParser.QcOptions opts)

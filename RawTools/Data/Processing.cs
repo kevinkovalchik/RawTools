@@ -1145,7 +1145,7 @@ namespace RawTools.Data.Processing
             while (currentIsotope < monoIsoMass + 0.5*isoWindow)
             {
                 isotopes.Add(currentIsotope);
-                currentIsotope += 1.007276 / charge;
+                currentIsotope += 1.003356 / charge;
             }
 
             for (int i = 0; i < interferences.Length; i++)
