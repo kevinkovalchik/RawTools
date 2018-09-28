@@ -38,7 +38,7 @@ If you are just here looking for the web application page for visualizing your q
 
 ### Staying up to date
 
-If you want to see what features we have in mind or are actively working on integrating into RawTools, visit the [Projects page](https://github.com/kevinkovalchik/RawTools/projects/2) for more details.
+If you want to see what features we have in mind or are actively working on integrating into RawTools, visit the [Projects page](https://github.com/kevinkovalchik/RawTools/projects) for more details.
 
 <br>
 
