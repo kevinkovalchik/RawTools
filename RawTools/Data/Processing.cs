@@ -332,7 +332,7 @@ namespace RawTools.Data.Processing
                     {
                         metaData[scans[i]].FractionConsumingTop80PercentTotalIntensity = rawData.segmentedScans[scans[i]].Intensities.FractionOfScansConsumingTotalIntensity(percent: 80);
                     }
-
+                    
                     // calculate ms1 isolation interference
                     if (rawData.methodData.AnalysisOrder == MSOrder)
                     {
@@ -340,7 +340,7 @@ namespace RawTools.Data.Processing
                         metaData[scans[i]].Ms1IsolationInterference = Ms1Interference.CalculateForOneScan(rawData.centroidStreams[preScan],
                             rawData.precursorMasses[scans[i]].MonoisotopicMZ, isoWindow, rawData.trailerExtras[scans[i]].ChargeState);
                     }
-
+                    
                     progress.Update();
                 }
             }
@@ -1152,7 +1152,7 @@ namespace RawTools.Data.Processing
             {
                 double ion = masses[i];
 
-                if (isotopes.withinTolerance(ion, 4))
+                if (isotopes.withinTolerance(ion, 10))
                 {
                     interferences[i] = 0;
                 }

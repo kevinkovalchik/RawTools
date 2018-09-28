@@ -1,4 +1,8 @@
-﻿using System;
+﻿// This code is taken from from InformedProteomics from the compomics group. https://github.com/PNNL-Comp-Mass-Spec/Informed-Proteomics
+// Informed Proteomics is licensed under the Apache License, Version 2.0
+// Written by Sangtae Kim, Junkap Park, and Chris Wilkins for the Department of Energy (PNNL, Richland, WA) Copyright 2015, Battelle Memorial Institute. All Rights Reserved.
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;

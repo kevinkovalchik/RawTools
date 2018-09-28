@@ -45,7 +45,6 @@ namespace RawTools.Algorithms
 
             if (masses.Length == 0)
             {
-                Console.WriteLine("BLAMO!");
                 return (assignedChargeState, parentMZ);
             }
 
@@ -76,7 +75,7 @@ namespace RawTools.Algorithms
                 foreach (double monoisoMZ in possibleMonoIsoMasses)
                 {
                     // calculate the actual mass and intensity envelope of the potential monoisotopicMZ
-                    double monoIsotopeMass = Ion.GetMonoIsotopicMassFromMZ(monoisoMZ, charge);
+                    double monoIsotopeMass = (monoisoMZ - Masses.Proton) * charge;
                     double[] isotopomerEnvelope = Averagine.GetIsotopomerEnvelope(monoIsotopeMass).Envelope;
 
                     // get out the observed intensities corresponding to the isotope envelope
@@ -129,7 +128,7 @@ namespace RawTools.Algorithms
 
             double smallestDistance = 1;
             double massOut = 0;
-            int chargeOut = -1;
+            int chargeOut = assignedChargeState;
 
             if (scores.Keys.Count == 0)
             {

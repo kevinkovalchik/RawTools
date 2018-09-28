@@ -1,4 +1,7 @@
-﻿using System;
+﻿// This code is adapted from InformedProteomics from the compomics group. https://github.com/PNNL-Comp-Mass-Spec/Informed-Proteomics
+// Informed Proteomics is licensed under the Apache License, Version 2.0
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;

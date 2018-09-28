@@ -1,6 +1,18 @@
 ---------------------------------------------------------------------------
- The Apache 2.0 license shall apply only to RawTools source code and
- RawTools compiled executables.
+ The Apache 2.0 license shall apply to RawTools original source code and
+ RawTools compiled executables, but does not necessarily apply to 
+ derived source code and distributed libraries. Derived source code and
+ distributed libraries are licensed as outlined below:
+
+ RawTools makes use of code adapted from the Informed Proteomics project
+ by the PNNL Compomics group:
+ https://github.com/PNNL-Comp-Mass-Spec/Informed-Proteomics
+ Every effort has been made to make note of which source files contain
+ this code and proper credit is given.
+ Informed Proteomics is licensed under the Apache License, Version 2.0 and
+ is written by Sangtae Kim, Junkap Park, and Chris Wilkins for the
+ Department of Energy (PNNL, Richland, WA) Copyright 2015, Battelle
+ Memorial Institute. All Rights Reserved.
 
  All distributed libraries are covered by their own licenses, as outlined
  below.

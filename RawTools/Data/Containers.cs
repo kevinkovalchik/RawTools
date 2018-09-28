@@ -443,6 +443,7 @@ namespace RawTools.Data.Containers
         public string RawFileDirectory, QcDirectory, QcFile;
         public SearchParameters searchParameters;
         public string QcSearchDataDirectory { get { return Path.Combine(QcDirectory, "QcSearchData"); } }
+        public bool RefineMassCharge;
     }
 
     public enum SearchAlgorithm

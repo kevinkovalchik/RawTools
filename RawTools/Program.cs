@@ -128,6 +128,7 @@ namespace RawTools
             qcParameters.RawFileDirectory = opts.DirectoryToQc;
             qcParameters.QcDirectory = opts.QcDirectory;
             qcParameters.QcFile = Path.Combine(opts.QcDirectory, "QC.xml");
+            qcParameters.RefineMassCharge = opts.RefineMassCharge;
             
 
             if (opts.SearchAlgorithm != null & !(new List<string>() { "identipy", "xtandem" }.Contains(opts.SearchAlgorithm)))
@@ -317,7 +318,7 @@ namespace RawTools
 
                     if (opts.ParseData | opts.Metrics | opts.Quant)
                     {
-                        rawData.ExtractAll(rawFile);
+                        rawData.ExtractAll(rawFile, opts.RefineMassCharge);
 
                         if (!isBoxCar)
                         {

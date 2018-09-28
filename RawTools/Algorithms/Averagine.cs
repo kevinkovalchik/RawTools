@@ -1,4 +1,5 @@
-﻿// This code is adapted from InformedProteomics from the compomics group. Need to add some license info etc here
+﻿// This code is adapted from InformedProteomics from the compomics group. https://github.com/PNNL-Comp-Mass-Spec/Informed-Proteomics
+// Informed Proteomics is licensed under the Apache License, Version 2.0
 
 using System;
 using System.Collections.Generic;
@@ -48,41 +49,6 @@ namespace RawTools.Algorithms
         {
             var nominalMass = (int)Math.Round(monoIsotopeMass * 0.9995);
             return GetIsotopomerEnvelopeFromNominalMassInst(nominalMass, isoProfilePredictor);
-        }
-
-        /// <summary>
-        /// Get the theoretical Isotope profile for <paramref name="monoIsotopeMass"/> at charge <paramref name="charge"/>
-        /// </summary>
-        /// <param name="monoIsotopeMass"></param>
-        /// <param name="charge"></param>
-        /// <param name="relativeIntensityThreshold"></param>
-        /// <returns></returns>
-        public static SimpleCentroid GetTheoreticalIsotopeProfile(double monoIsotopeMass, int charge, double relativeIntensityThreshold = 0.1)
-        {
-            return DefaultAveragine.GetTheoreticalIsotopeProfileInst(monoIsotopeMass, charge, relativeIntensityThreshold);
-        }
-
-        /// <summary>
-        /// Get the theoretical Isotope profile for <paramref name="monoIsotopeMass"/> at charge <paramref name="charge"/> using <paramref name="isoProfilePredictor"/>
-        /// </summary>
-        /// <param name="monoIsotopeMass"></param>
-        /// <param name="charge"></param>
-        /// <param name="relativeIntensityThreshold"></param>
-        /// <param name="isoProfilePredictor"></param>
-        /// <returns></returns>
-        public SimpleCentroid GetTheoreticalIsotopeProfileInst(double monoIsotopeMass, int charge, double relativeIntensityThreshold = 0.1, IsoProfilePredictor isoProfilePredictor = null)
-        {
-            var peakList = new SimpleCentroid();
-            var envelope = GetIsotopomerEnvelopeInst(monoIsotopeMass, isoProfilePredictor);
-            for (var isotopeIndex = 0; isotopeIndex < envelope.Envelope.Length; isotopeIndex++)
-            {
-                var intensity = envelope.Envelope[isotopeIndex];
-                if (intensity < relativeIntensityThreshold) continue;
-                var mz = Ion.GetIsotopeMz(monoIsotopeMass, charge, isotopeIndex);
-                peakList.Masses.Add(mz);
-                peakList.Intensities.Add(intensity);
-            }
-            return peakList;
         }
 
         /// <summary>
@@ -143,48 +109,6 @@ namespace RawTools.Algorithms
 
             isoProfilePredictor = isoProfilePredictor ?? IsoProfilePredictor.Predictor;
             return isoProfilePredictor.GetIsotopomerEnvelope(numC, numH, numN, numO, numS);
-        }
-    }
-
-    public class Ion
-    { 
-        /// <summary>
-        /// Get the m/z of the specified isotope
-        /// </summary>
-        /// <param name="monoIsotopicMass"></param>
-        /// <param name="charge"></param>
-        /// <param name="isotopeIndex"></param>
-        /// <returns></returns>
-        public static double GetIsotopeMz(double monoIsotopicMass, int charge, int isotopeIndex)
-        {
-            var isotopeMass = monoIsotopicMass + isotopeIndex * Masses.C13MinusC12;
-            return isotopeMass / charge + Masses.Proton;
-        }
-
-        /// <summary>
-        /// Get the monoisotopic mass of the specified isotope
-        /// </summary>
-        /// <param name="isotopeMz"></param>
-        /// <param name="charge"></param>
-        /// <param name="isotopeIndex"></param>
-        /// <returns></returns>
-        public static double GetMonoIsotopicMass(double isotopeMz, int charge, int isotopeIndex)
-        {
-            var isotopeMass = (isotopeMz - Masses.Proton) * charge;
-            var monoIsotopeMass = isotopeMass - isotopeIndex * Masses.C13MinusC12;
-            return monoIsotopeMass;
-        }
-
-        /// <summary>
-        /// Get the monoisotopic mass of a given m/z
-        /// </summary>
-        /// <param name="isotopeMz"></param>
-        /// <param name="charge"></param>
-        /// <param name="isotopeIndex"></param>
-        /// <returns></returns>
-        public static double GetMonoIsotopicMassFromMZ(double isotopeMz, int charge)
-        {
-            return (isotopeMz - Masses.Proton) * charge;
         }
     }
 

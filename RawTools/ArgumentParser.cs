@@ -87,6 +87,10 @@ namespace RawTools.ArgumentParser
             "is the MS order and type is T, B, or TB (TIC, base peak and both, respectively). For example, to generate a MS1 TIC and base peak chromatogram, invoke " +
             "\"--chro 1TB\". Or, to generate a MS2 TIC, invoke \"--chro 2T\".")]
         public string Chromatogram { get; set; }
+
+        [Option('R', "refinemasscharge", HelpText = "Optional. Refine precursor charge and monoisotopic mass assignments. Highly recommended if " +
+            "monoisotopic precursor selection was turned off in the instrument method.")]
+        public bool RefineMassCharge { get; set; }
     }
 
     [Verb("qc", HelpText = "Perform QC operations. Two arguments are required: -d, the directory containing one or more raw files to QC; -q, a " +
@@ -159,5 +163,9 @@ namespace RawTools.ArgumentParser
         [Option("fixedscans", HelpText = "Causes the scans in the mgf file used for a database search to be static (i.e. not random, the same " +
             "scans are used everytime). This is intended for testing purposes, not for general use.")]
         public bool FixedScans { get; set; }
+
+        [Option('R', "refinemasscharge", HelpText = "Optional. Refine precursor charge and monoisotopic mass assignments. Highly recommended if " +
+            "monoisotopic precursor selection was turned off in the instrument method.")]
+        public bool RefineMassCharge { get; set; }
     }
 }
