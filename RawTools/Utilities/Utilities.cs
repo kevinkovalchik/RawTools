@@ -144,7 +144,14 @@ namespace RawTools.Utilities
         public ProgressIndicator(int total, string message)
         {
             total_x = total;
-            writeNow = total_x / 100;
+            if (total_x > 100)
+            {
+                writeNow = total_x / 100;
+            }
+            else
+            {
+                writeNow = total_x;
+            }
             this.message = message;
         }
 

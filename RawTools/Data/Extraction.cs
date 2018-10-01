@@ -508,7 +508,8 @@ namespace RawTools.Data.Extraction
             rawData.methodData.MSOrderEnumerator.Add(MSOrderType.Ms);
             rawData.methodData.MSOrderEnumerator.Add(MSOrderType.Ms2);
 
-            double ms2window = rawFile.GetScanEventForScanNumber(rawData.scanIndex.ScanEnumerators[MSOrderType.Ms2][1000]).GetIsolationWidth(0);
+            int n = rawData.scanIndex.ScanEnumerators[MSOrderType.Ms2].Count();
+            double ms2window = rawFile.GetScanEventForScanNumber(rawData.scanIndex.ScanEnumerators[MSOrderType.Ms2][n/2]).GetIsolationWidth(0);
 
             if (rawData.methodData.AnalysisOrder == MSOrderType.Ms3)
             {
