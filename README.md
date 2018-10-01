@@ -14,9 +14,9 @@ To obtain the latest compiled release of RawTools or to obtain an older version,
 
 ### Notable news
 
-* **Edit** - The Shiny application is temporarily down for some updates. [2018-09-26] 
+* The Shiny application is now back online. [2018-10-01] 
 
-* The RawTools Shiny application has been revamped to use a new interface and to provide functionality for plotting of 'Matrix' and 'chromatogram' outputs. Matrix files are generated using the RawTools parse functionality and can be useful for visualizing data temporally across the acquisition. Chromatogram files are also generated using the parse functionality, with the `--chro` flag. The new application is currently available on GitHub [from here](https://github.com/kevinkovalchik/RawTools/tree/master/documentation/manuscript/RawTools_RShiny_Application). [2018-09-26]
+* The RawTools Shiny application has been revamped to use a new interface and to provide functionality for plotting of 'Matrix' and 'chromatogram' outputs. Matrix files are generated using the RawTools parse functionality and can be useful for visualizing data temporally across the acquisition. Chromatogram files are also generated using the parse functionality, with the `--chro` flag. The new application is currently available on GitHub [from here](https://github.com/kevinkovalchik/RawTools/tree/master/documentation/manuscript/RawTools_RShiny_Application). The web page can be accessed from [this link](https://rawtoolsqcdv.bcgsc.ca/). [2018-09-26]
 
 * RawTools now offers support for X! Tandem in as a search engine to facilitate calculation of identification-related metrics. IdentiPy remains available and the user may decide which search engine they wish to use. We are working on updating the help documentation to reflect this addition. [2018-09-24]
 
@@ -38,7 +38,7 @@ If you are just here looking for the web application page for visualizing your q
 
 ### Staying up to date
 
-If you want to see what features we have in mind or are actively working on integrating into RawTools, visit the [Projects page](https://github.com/kevinkovalchik/RawTools/projects/2) for more details.
+If you want to see what features we have in mind or are actively working on integrating into RawTools, visit the [Projects page](https://github.com/kevinkovalchik/RawTools/projects) for more details.
 
 <br>
 
