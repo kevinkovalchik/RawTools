@@ -14,7 +14,7 @@ To obtain the latest compiled release of RawTools or to obtain an older version,
 
 ### Notable news
 
-* **Edit** - The Shiny application is temporarily down for some updates. [2018-09-26] 
+* The Shiny application is now back online. [2018-10-01] 
 
 * The RawTools Shiny application has been revamped to use a new interface and to provide functionality for plotting of 'Matrix' and 'chromatogram' outputs. Matrix files are generated using the RawTools parse functionality and can be useful for visualizing data temporally across the acquisition. Chromatogram files are also generated using the parse functionality, with the `--chro` flag. The new application is currently available on GitHub [from here](https://github.com/kevinkovalchik/RawTools/tree/master/documentation/manuscript/RawTools_RShiny_Application). [2018-09-26]
 
