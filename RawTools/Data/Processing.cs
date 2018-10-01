@@ -877,7 +877,6 @@ namespace RawTools.Data.Processing
             Intensities = Intensities.GetRange(0, Intensities.Count() / (100 - percentile));
 
             int[] scans = (from x in rawData.peakData.Keys.ToArray() where Intensities.Contains(rawData.peakData[x].MaximumIntensity) select x).ToArray();
-
             DistributionMultiple allPeaksAsymmetry = new DistributionMultiple();
             DistributionMultiple allPeaksWidths = new DistributionMultiple();
             ProgressIndicator P = new ProgressIndicator(scans.Length, "Calculating peak symmetries");
@@ -900,7 +899,14 @@ namespace RawTools.Data.Processing
             P.Done();
 
             rawData.Performed.Add(Operations.PeakShape);
+            if (allPeaksWidths.P50.Count() == 0)
+            {
+                rawData.peakData.PeakShapeMedians = new Containers.PeakShape(width: new Width(), asymmetry: new Asymmetry(), peakMax: 0);
+            }
+            else
+            {
             rawData.peakData.PeakShapeMedians = new Containers.PeakShape(width: allPeaksWidths.GetMedians(), asymmetry: allPeaksAsymmetry.GetMedians(), peakMax: 0);
+            }
         }
         /*
         static double FindMaxRetTime(PrecursorPeakData peakData, alglib.spline1dinterpolant splineInterpolant)
