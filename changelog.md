@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - RawTools is unable to properly process files from very short duration acquistions. Problems seem to often come up with handeling precursor peaks. As a quick workaround, metrics are not reported for precursor peaks when this issue occurs. A future fix will address the problem more thoroughly. [[issue2]](https://github.com/kevinkovalchik/RawTools/issues/2)
 
+### Added
+- MS1 isolation interference calculations added to parse and qc outputs.
+
 ## [1.2.0] 2018-09-24
 ### Added
 - Added support for X! Tandem as a search engine.
