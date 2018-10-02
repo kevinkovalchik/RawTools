@@ -28,7 +28,6 @@ using ThermoFisher.CommonCore.Data.Interfaces;
 using ThermoFisher.CommonCore.Data.FilterEnums;
 using ThermoFisher.CommonCore.Data;
 using RawTools.Data.IO;
-using RawTools.Data.Processing;
 using RawTools.Data.Collections;
 using RawTools.Data.Extraction;
 using RawTools.Data.Containers;

@@ -26,7 +26,7 @@ using System.Xml.Serialization;
 using System.Threading.Tasks;
 using RawTools.Data.Containers;
 using RawTools.Data.Collections;
-using RawTools.Data.Processing;
+using RawTools.Algorithms;
 using RawTools.Data.Extraction;
 using RawTools.Data.IO;
 using RawTools.Utilities;

@@ -26,7 +26,7 @@ using System.Threading.Tasks;
 using RawTools.Data.Collections;
 using RawTools.Data.Containers;
 using RawTools.Data.Extraction;
-using RawTools.Data.Processing;
+using RawTools.Algorithms;
 using ThermoFisher.CommonCore.Data.Interfaces;
 using ThermoFisher.CommonCore.Data.FilterEnums;
 using System.Xml.Serialization;
