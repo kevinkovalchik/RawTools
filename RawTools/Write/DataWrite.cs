@@ -216,7 +216,7 @@ namespace RawTools.Data.IO
 
             MassAnalyzerType ms2MassAnalyzer = rawData.methodData.MassAnalyzers[MSOrderType.Ms2];
 
-            List<Operations> operations = new List<Operations> { Operations.ScanIndex, Operations.MethodData, Operations.TrailerExtras, Operations.RetentionTimes };
+            List<Operations> operations = new List<Operations> { Operations.ScanIndex, Operations.MethodData, Operations.TrailerExtras, Operations.RetentionTimes , Operations.PrecursorMasses};
 
             if (ms2MassAnalyzer == MassAnalyzerType.MassAnalyzerFTMS)
             {
@@ -248,7 +248,7 @@ namespace RawTools.Data.IO
                     f.WriteLine("TITLE=Spectrum_{0}", i);
                     f.WriteLine("SCAN={0}", i);
                     f.WriteLine("RTINSECONDS={0}", rawData.retentionTimes[i]);
-                    f.WriteLine("PEPMASS={0}", rawData.trailerExtras[i].MonoisotopicMZ);
+                    f.WriteLine("PEPMASS={0}", rawData.precursorMasses[i].MonoisotopicMZ);
                     f.WriteLine("CHARGE={0}", rawData.trailerExtras[i].ChargeState);
                     
                     if (ms2MassAnalyzer == MassAnalyzerType.MassAnalyzerFTMS)

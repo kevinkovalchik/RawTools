@@ -90,6 +90,10 @@ namespace RawTools.ArgumentParser
 
         [Option('e', "experimenttype", Default = "DDA", HelpText = "Specify the type of MS experiment. Options are [DDA, DIA, PRM].")]
         public string ExperimentType { get; set; }
+
+        [Option('R', "refinemasscharge", HelpText = "Optional. Refine precursor charge and monoisotopic mass assignments. Highly recommended if " +
+            "monoisotopic precursor selection was turned off in the instrument method.")]
+        public bool RefineMassCharge { get; set; }
     }
 
     [Verb("qc", HelpText = "Perform QC operations. Two arguments are required: -d, the directory containing one or more raw files to QC; -q, a " +
@@ -165,5 +169,9 @@ namespace RawTools.ArgumentParser
 
         [Option('e', "experimenttype", Default = "DDA", HelpText = "Specify the type of MS experiment. Options are [DDA, DIA, PRM].")]
         public string ExperimentType { get; set; }
+
+        [Option('R', "refinemasscharge", HelpText = "Optional. Refine precursor charge and monoisotopic mass assignments. Highly recommended if " +
+            "monoisotopic precursor selection was turned off in the instrument method.")]
+        public bool RefineMassCharge { get; set; }
     }
 }

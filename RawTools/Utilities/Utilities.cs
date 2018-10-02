@@ -152,7 +152,6 @@ namespace RawTools.Utilities
             {
                 writeNow = total_x;
             }
-            
             this.message = message;
         }
 
@@ -438,6 +437,38 @@ namespace RawTools.Utilities
             {
                 return 0;
             }
+        }
+
+        public static (double[], double[]) SubsetMsData(double[] masses, double[] intensities, double lowMass, double hiMass)
+        {
+            List<double> massesOut = new List<double>();
+            List<double> intensitiesOut = new List<double>();
+
+            for (int i = 0; i < masses.Length; i++)
+            {
+                if (masses[i] > lowMass & masses[i] < hiMass)
+                {
+                    massesOut.Add(masses[i]);
+                    intensitiesOut.Add(intensities[i]);
+                }
+            }
+
+            return (massesOut.ToArray(), intensitiesOut.ToArray());
+        }
+
+        /// <summary>
+        /// Returns the factorial of the input as a double
+        /// </summary>
+        /// <param name="value">The number of interest</param>
+        public static double Factorial(int value)
+        {
+            double valueOut = 1;
+            for (int i = value; i > 0; i--)
+            {
+                valueOut *= i;
+            }
+
+            return valueOut;
         }
     }
 

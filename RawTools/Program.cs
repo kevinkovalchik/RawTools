@@ -33,6 +33,7 @@ using RawTools.Data.Collections;
 using RawTools.Data.Extraction;
 using RawTools.Data.Containers;
 using RawTools.Utilities;
+using RawTools.Algorithms;
 using RawTools.QC;
 using System.Xml.Linq;
 using Serilog;
@@ -77,9 +78,44 @@ namespace RawTools
 
         static int DoStuff(ArgumentParser.TestOptions opts)
         {
-            Console.WriteLine("Number of processors: {0}", Environment.ProcessorCount);
+            using (IRawDataPlus rawFile = RawFileReaderFactory.ReadFile(fileName: opts.File))
+            {
+                rawFile.SelectInstrument(Device.MS, 1);
+                
+                RawDataCollection rawData = new RawDataCollection(rawFile: rawFile);
 
-            return 0;
+                rawData.ExtractAll(rawFile);
+                //rawData.ExtractSegmentScans(rawFile, MSOrderType.Ms);
+
+                int[] scans = rawData.scanIndex.ScanEnumerators[MSOrderType.Ms2];
+
+                ProgressIndicator P = new ProgressIndicator(scans.Length, "Calculating charge states");
+                P.Start();
+
+                foreach (int scan in scans)
+                {
+                    int masterScan = rawData.precursorScans[scan].MasterScan;
+                    double parentMZ = rawData.precursorMasses[scan].ParentMZ;
+                    double monoisoMass;
+                    int charge;
+                    
+                    List<int> otherCS = ChargeStateCalculator.GetChargeState(rawData.centroidStreams[masterScan], parentMZ, rawData.trailerExtras[scan].ChargeState);
+                    (charge,monoisoMass) = MonoIsoPredictor.GetMonoIsotopicMassCharge(rawData.centroidStreams[masterScan], parentMZ, otherCS, rawData.trailerExtras[scan].ChargeState);
+                    P.Update();
+                    /*Console.Write("Thermo: {0}, Us: ", rawData.trailerExtras[scan].ChargeState);
+                    foreach (var c in otherCS)
+                    {
+                        Console.Write("{0}, ", c);
+                    }
+                    Console.Write("RefinedCharge: {0},", charge);
+                    Console.Write("ParentMZ: {0}, ThermoMass: {1}, OurMass: {2}", parentMZ, rawData.precursorMasses[scan].MonoisotopicMZ, monoisoMass);
+                    Console.Write("\n");
+                    */
+                }
+                P.Done();
+            }
+
+                return 0;
         }
 
         static int DoStuff(ArgumentParser.QcOptions opts)
@@ -92,6 +128,7 @@ namespace RawTools
             qcParameters.RawFileDirectory = opts.DirectoryToQc;
             qcParameters.QcDirectory = opts.QcDirectory;
             qcParameters.QcFile = Path.Combine(opts.QcDirectory, "QC.xml");
+            qcParameters.RefineMassCharge = opts.RefineMassCharge;
             
 
             if (opts.SearchAlgorithm != null & !(new List<string>() { "identipy", "xtandem" }.Contains(opts.SearchAlgorithm)))
@@ -281,7 +318,7 @@ namespace RawTools
 
                     if (opts.ParseData | opts.Metrics | opts.Quant)
                     {
-                        rawData.ExtractAll(rawFile);
+                        rawData.ExtractAll(rawFile, opts.RefineMassCharge);
 
                         if (!isBoxCar)
                         {

@@ -226,7 +226,7 @@ namespace RawTools.QC
                 {
                     rawFile.SelectInstrument(Device.MS, 1);
                     RawDataCollection rawData = new RawDataCollection(rawFile);
-                    rawData.ExtractAll(rawFile);
+                    rawData.ExtractAll(rawFile, refineMassCharge: qcParameters.RefineMassCharge);
 
                     /*
                     if (idpyPars?.QuantMods != null)
