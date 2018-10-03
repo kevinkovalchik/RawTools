@@ -32,7 +32,21 @@ using System.Xml.Serialization;
 
 namespace RawTools.Data.Collections
 {
-    //class MasterDataCollection:
+    class CentroidStreamCollection : Dictionary<int, CentroidStreamData> { }
+
+    class SegmentScanCollection : Dictionary<int, SegmentedScanData> { }
+
+    class TrailerExtraCollection : Dictionary<int, TrailerExtraData> { }
+
+    class PrecursorScanCollection : Dictionary<int, PrecursorScanData> { }
+
+    class PrecursorMassCollection : Dictionary<int, PrecursorMassData> { }
+
+    class RetentionTimeCollection : Dictionary<int, double> { }
+
+    class ScanDependentsCollections : Dictionary<int, IScanDependents> { }
+
+
 
     class RawDataCollection
     {
@@ -45,11 +59,12 @@ namespace RawTools.Data.Collections
         public Dictionary<int, PrecursorMassData> precursorMasses;
         public Dictionary<int, double> retentionTimes;
         public QuantDataCollection quantData;
-        public ScanMetaDataCollection metaData;
+        public ScanMetaDataCollectionDDA metaData;
         public PrecursorPeakDataCollection peakData;
         public HashSet<Operations> Performed = new HashSet<Operations>();
-        public Containers.MethodData methodData;
-        public bool isExactive, isBoxCar;
+        public Containers.MethodDataContainer methodData;
+        public bool isExactive, isBoxCar, refineMassCharge;
+        public ExperimentType ExpType;
 
         public RawDataCollection(IRawDataPlus rawFile)
         {
@@ -63,9 +78,9 @@ namespace RawTools.Data.Collections
             precursorScans = new Dictionary<int, PrecursorScanData>();
             precursorMasses = new Dictionary<int, PrecursorMassData>();
             retentionTimes = new Dictionary<int, double>();
-            methodData = new Containers.MethodData();
+            methodData = new Containers.MethodDataContainer();
             quantData = new QuantDataCollection();
-            metaData = new ScanMetaDataCollection();
+            metaData = new ScanMetaDataCollectionDDA();
             peakData = new PrecursorPeakDataCollection();
 
             this.ExtractScanIndex(rawFile);
@@ -78,7 +93,10 @@ namespace RawTools.Data.Collections
         public string LabelingReagents;
     }
 
-    class ScanMetaDataCollection : Dictionary<int, ScanMetaData>
+    class ScanMetaDataCollectionDDA : Dictionary<int, ScanMetaDataDDA>
+    { }
+
+    class ScanMetaDataCollectionDIA : Dictionary<int, ScanMetaDataDIA>
     { }
 
     class PrecursorPeakDataCollection : Dictionary<int, PrecursorPeakData>

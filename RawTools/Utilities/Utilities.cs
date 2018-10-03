@@ -30,6 +30,7 @@ using RawTools.Algorithms;
 using ThermoFisher.CommonCore.Data.Interfaces;
 using ThermoFisher.CommonCore.Data.FilterEnums;
 using System.Xml.Serialization;
+using Serilog;
 
 
 namespace RawTools.Utilities
@@ -657,5 +658,24 @@ namespace RawTools.Utilities
                 return Path.GetDirectoryName(path);
             }
         }
-    }    
+    }
+
+    public static class RawFileInfo
+    {
+        public static void CheckIfBoxcar(this IRawDataPlus rawFile)
+        {
+            bool isBoxCar = rawFile.GetScanEventForScanNumber(1).MassRangeCount > 1;
+
+            if (isBoxCar)
+            {
+                Log.Error("Boxcar experiments not currently supported");
+                Console.WriteLine("This looks like a boxcar or similar raw file. Sorry, boxcar is not currently supported.");
+                Environment.Exit(0);
+            }
+            else
+            {
+                return;
+            }
+        }
+    }
 }

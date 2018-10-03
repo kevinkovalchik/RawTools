@@ -42,6 +42,11 @@ namespace RawTools.Algorithms
         {
             PrecursorPeakData peak = new PrecursorPeakData();
 
+            if (rawData.ExpType == ExperimentType.DIA | rawData.ExpType == ExperimentType.PRM)
+            {
+                return peak;
+            }
+
             int firstScan = parentScan,
                 lastScan = parentScan,
                 maxScan = parentScan,

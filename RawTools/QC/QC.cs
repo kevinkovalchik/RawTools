@@ -226,6 +226,7 @@ namespace RawTools.QC
                 {
                     rawFile.SelectInstrument(Device.MS, 1);
                     RawDataCollection rawData = new RawDataCollection(rawFile);
+                    rawData.ExpType = qcParameters.ExpType;
                     rawData.ExtractAll(rawFile, refineMassCharge: qcParameters.RefineMassCharge);
 
                     /*

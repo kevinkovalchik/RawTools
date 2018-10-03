@@ -37,7 +37,7 @@ namespace RawTools.Data.IO
 {
     static class Parse
     {
-        public static void WriteMatrix(RawDataCollection rawData, ScanMetaDataCollection metaData, IRawDataPlus rawFile, QuantDataCollection quantData = null, string outputDirectory = null)
+        public static void WriteMatrix(RawDataCollection rawData, ScanMetaDataCollectionDDA metaData, IRawDataPlus rawFile, QuantDataCollection quantData = null, string outputDirectory = null)
         {
             string fileName = ReadWrite.GetPathToFile(outputDirectory, rawData.rawFileName, "_Matrix.txt");
 
@@ -125,7 +125,7 @@ namespace RawTools.Data.IO
                     }
 
                     f.Write(ms3scan.ToString() + "\t" + ms2scan.ToString() + "\t" + masterScan.ToString() + "\t");
-
+                    
                     f.Write(rawData.retentionTimes[scan].ToString() + "\t" + rawData.retentionTimes[masterScan].ToString() + "\t");
                     f.Write(metaData[masterScan].DutyCycle.ToString() + "\t" + metaData[masterScan].MS2ScansPerCycle.ToString() + "\t");
                     

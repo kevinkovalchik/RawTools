@@ -135,7 +135,7 @@ namespace RawTools.Data.Containers
         }
     }
 
-    class MethodData
+    class MethodDataContainer
     {
         public double IsolationOffset, MS2IsolationWindow, MS3IsolationWindow;
         public MSOrderType AnalysisOrder;
@@ -145,7 +145,7 @@ namespace RawTools.Data.Containers
         public (double MS2, (double MS1Window, double MS2Window) MS3) IsolationWindow;
         public (double MS2, (double MS1Offset, double MS2Offset) MS3) IsolationWindowOffset;
         
-        public MethodData()
+        public MethodDataContainer()
         {
             MassAnalyzers = new Dictionary<MSOrderType, MassAnalyzerType>();
             MSOrderEnumerator = new List<MSOrderType>();
@@ -301,21 +301,39 @@ namespace RawTools.Data.Containers
         }
     }
 
-    class ScanMetaData
+    class ScanMetaDataDDA
     {
         public double DutyCycle, FillTime, MS2ScansPerCycle, Ms1IsolationInterference = -1;
         public Distribution IntensityDistribution;
         public double SummedIntensity;
         public double FractionConsumingTop80PercentTotalIntensity;
         
-        public ScanMetaData()
+        public ScanMetaDataDDA()
         { }
 
-        public ScanMetaData(double dutyCycle, double fillTime, double scanTime, double ms2ScansPerCycle, Distribution intensityDistribution)
+        public ScanMetaDataDDA(double dutyCycle, double fillTime, double scanTime, double ms2ScansPerCycle, Distribution intensityDistribution)
         {
             DutyCycle = dutyCycle;
             FillTime = fillTime;
             MS2ScansPerCycle = ms2ScansPerCycle;
+            IntensityDistribution = intensityDistribution;
+        }
+    }
+
+    class ScanMetaDataDIA
+    {
+        public double DutyCycle, FillTime = -1;
+        public Distribution IntensityDistribution;
+        public double SummedIntensity;
+        public double FractionConsumingTop80PercentTotalIntensity;
+
+        public ScanMetaDataDIA()
+        { }
+
+        public ScanMetaDataDIA(double dutyCycle, double fillTime, double scanTime, Distribution intensityDistribution)
+        {
+            DutyCycle = dutyCycle;
+            FillTime = fillTime;
             IntensityDistribution = intensityDistribution;
         }
     }
@@ -423,6 +441,44 @@ namespace RawTools.Data.Containers
         }
     }
 
+    class TrailerExtraIndices
+    {
+        public int InjectionTime, MasterScan, MonoisotopicMZ, ChargeState, HCDEnergy = -1;
+        public List<int> SPSMasses = new List<int>();
+
+        public TrailerExtraIndices(IRawDataPlus rawFile)
+        {
+            HeaderItem[] header = rawFile.GetTrailerExtraHeaderInformation();
+            for (int i = 0; i < header.Length; i++)
+            {
+                if (header[i].Label.ToLower().Contains("injection time") & !header[i].Label.ToLower().Contains("reagent"))
+                {
+                    InjectionTime = i;
+                }
+                if (header[i].Label.ToLower().Contains("master scan"))
+                {
+                    MasterScan = i;
+                }
+                if (header[i].Label.ToLower().Contains("monoisotopic"))
+                {
+                    MonoisotopicMZ = i;
+                }
+                if (header[i].Label.ToLower().Contains("charge state"))
+                {
+                    ChargeState = i;
+                }
+                if (header[i].Label.ToLower().Contains("hcd energy") & !header[i].Label.ToLower().Contains("ev"))
+                {
+                    HCDEnergy = i;
+                }
+                if (header[i].Label.ToLower().Contains("sps"))
+                {
+                    SPSMasses.Add(i);
+                }
+            }
+        }
+    }
+
     class SearchParameters
     {
         public string FastaDatabase, PythonExecutable, IdentipyScript, XTandemDirectory;
@@ -444,12 +500,20 @@ namespace RawTools.Data.Containers
         public SearchParameters searchParameters;
         public string QcSearchDataDirectory { get { return Path.Combine(QcDirectory, "QcSearchData"); } }
         public bool RefineMassCharge;
+        public ExperimentType ExpType;
     }
 
     public enum SearchAlgorithm
     {
         XTandem = 1,
         IdentiPy = 2
+    }
+
+    public enum ExperimentType
+    {
+        DDA = 1,
+        DIA = 2,
+        PRM = 3
     }
 
     public class SearchData

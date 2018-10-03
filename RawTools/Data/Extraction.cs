@@ -254,45 +254,7 @@ namespace RawTools.Data.Extraction
             }
         }
     }
-
-    class TrailerExtraIndices
-    {
-        public int InjectionTime, MasterScan, MonoisotopicMZ, ChargeState, HCDEnergy = -1;
-        public List<int> SPSMasses = new List<int>();
-
-        public TrailerExtraIndices(IRawDataPlus rawFile)
-        {
-            HeaderItem[] header = rawFile.GetTrailerExtraHeaderInformation();
-            for (int i = 0; i < header.Length; i++)
-            {
-                if (header[i].Label.ToLower().Contains("injection time") & !header[i].Label.ToLower().Contains("reagent"))
-                {
-                    InjectionTime = i;
-                }
-                if (header[i].Label.ToLower().Contains("master scan"))
-                {
-                    MasterScan = i;
-                }
-                if (header[i].Label.ToLower().Contains("monoisotopic"))
-                {
-                    MonoisotopicMZ = i;
-                }
-                if (header[i].Label.ToLower().Contains("charge state"))
-                {
-                    ChargeState = i;
-                }
-                if (header[i].Label.ToLower().Contains("hcd energy") & !header[i].Label.ToLower().Contains("ev"))
-                {
-                    HCDEnergy = i;
-                }
-                if (header[i].Label.ToLower().Contains("sps"))
-                {
-                    SPSMasses.Add(i);
-                }
-            }
-        }
-    }
-
+    
     static class TrailerExtras
     {
         public static TrailerExtraData ExtractTrailerExtra(RawDataCollection rawData, IRawDataPlus rawFile, int scan, TrailerExtraIndices indices)
@@ -385,7 +347,6 @@ namespace RawTools.Data.Extraction
                 try
                 {
                     rawData.trailerExtras.Add(scan, ExtractTrailerExtra(rawData, rawFile, scan, indices));
-
                 }
                 catch (Exception e)
                 {
@@ -478,7 +439,7 @@ namespace RawTools.Data.Extraction
         }
     }
 
-    static class MethodData
+    static class MethodDataExtract
     {
         public static void ExtractMethodData(this RawDataCollection rawData, IRawDataPlus rawFile)
         {
@@ -493,7 +454,7 @@ namespace RawTools.Data.Extraction
 
             Log.Information("Extracting method/instrument information");
 
-            rawData.methodData = new Containers.MethodData();
+            rawData.methodData = new Containers.MethodDataContainer();
 
             rawData.methodData.AnalysisOrder = rawData.scanIndex.AnalysisOrder;
             int firstQuantScan = rawData.scanIndex.ScanEnumerators[rawData.scanIndex.AnalysisOrder][0];
@@ -548,42 +509,64 @@ namespace RawTools.Data.Extraction
             int ms3Scan = -1;
             IEnumerable<int> scans = rawData.scanIndex.ScanEnumerators[MSOrderType.Ms];
             ProgressIndicator progress = new ProgressIndicator(scans.Count(), "Indexing linked scan events");
-            foreach (int scan in scans)
+            if (rawData.ExpType == ExperimentType.DDA)
             {
-                var scanDependents = rawFile.GetScanDependents(scan, 4);
-
-                // check if the ms1 scan has dependent scans
-                if (scanDependents == null)
+                foreach (int scan in scans)
                 {
-                    continue;
-                }
+                    var scanDependents = rawFile.GetScanDependents(scan, 4);
 
-                for (int i = 0; i < scanDependents.ScanDependentDetailArray.Length; i++)
-                {
-                    if (rawData.scanIndex.AnalysisOrder == MSOrderType.Ms2) // it is ms2
+                    // check if the ms1 scan has dependent scans
+                    if (scanDependents == null)
                     {
-                        ms2Scan = scanDependents.ScanDependentDetailArray[i].ScanIndex;
-                        rawData.precursorScans.Add(ms2Scan, new PrecursorScanData(ms2scan: ms2Scan, masterScan: scan));
-                    }                    
-                    else // it is ms3
-                    {
-                        ms2Scan = scanDependents.ScanDependentDetailArray[i].ScanIndex;
+                        continue;
+                    }
 
-                        if (rawFile.GetScanDependents(ms2Scan, 4).ScanDependentDetailArray.Length != 0) // make sure there is ms3 data
+                    for (int i = 0; i < scanDependents.ScanDependentDetailArray.Length; i++)
+                    {
+                        if (rawData.scanIndex.AnalysisOrder == MSOrderType.Ms2) // it is ms2
                         {
-                            ms3Scan = rawFile.GetScanDependents(ms2Scan, 4).ScanDependentDetailArray[0].ScanIndex;
+                            ms2Scan = scanDependents.ScanDependentDetailArray[i].ScanIndex;
                             rawData.precursorScans.Add(ms2Scan, new PrecursorScanData(ms2scan: ms2Scan, masterScan: scan));
-                            rawData.precursorScans.Add(ms3Scan, new PrecursorScanData(ms3scan: ms3Scan, ms2Scan: ms2Scan, masterScan: scan));
                         }
-                        else
+                        else // it is ms3
                         {
-                            // there is no ms3 scan, so we only add the ms2 scan
-                            rawData.precursorScans.Add(ms2Scan, new PrecursorScanData(ms2scan: ms2Scan, masterScan: scan));
+                            ms2Scan = scanDependents.ScanDependentDetailArray[i].ScanIndex;
+
+                            if (rawFile.GetScanDependents(ms2Scan, 4).ScanDependentDetailArray.Length != 0) // make sure there is ms3 data
+                            {
+                                ms3Scan = rawFile.GetScanDependents(ms2Scan, 4).ScanDependentDetailArray[0].ScanIndex;
+                                rawData.precursorScans.Add(ms2Scan, new PrecursorScanData(ms2scan: ms2Scan, masterScan: scan));
+                                rawData.precursorScans.Add(ms3Scan, new PrecursorScanData(ms3scan: ms3Scan, ms2Scan: ms2Scan, masterScan: scan));
+                            }
+                            else
+                            {
+                                // there is no ms3 scan, so we only add the ms2 scan
+                                rawData.precursorScans.Add(ms2Scan, new PrecursorScanData(ms2scan: ms2Scan, masterScan: scan));
+                            }
                         }
                     }
+                    progress.Update();
                 }
-                progress.Update();
             }
+            if (rawData.ExpType == ExperimentType.DIA)
+            {
+                // if it is DIA it must be MS2
+                scans = rawData.scanIndex.ScanEnumerators[MSOrderType.Ms2];
+
+                // we need the trailer extra
+                CheckIfDone.Check(rawData, rawFile, new List<Operations> { Operations.TrailerExtras });
+                foreach (int scan in scans)
+                {
+                    int masterScan = rawData.trailerExtras[scan].MasterScan;
+
+                    rawData.precursorScans.Add(scan, new PrecursorScanData(ms2scan: scan, masterScan: masterScan));
+                }
+            }
+            if (rawData.ExpType == ExperimentType.PRM)
+            {
+                // if it is PRM there are ONLY ms2 scans, so we don't actually care about precursor scans
+            }
+            
             progress.Done();
             rawData.Performed.Add(Operations.PrecursorScans);
         }
@@ -702,16 +685,16 @@ namespace RawTools.Data.Extraction
                     }
 
                     // add the trailer extra data
-                    rawData.trailerExtras.Add(i, TrailerExtras.ExtractTrailerExtra(rawData, rawFile, i, indices));
-                    rawData.Performed.Add(Operations.TrailerExtras);
+                    if (!rawData.Performed.Contains(Operations.TrailerExtras))
+                    {
+                        rawData.trailerExtras.Add(i, TrailerExtras.ExtractTrailerExtra(rawData, rawFile, i, indices));
+                    }
 
                     // add the retention time
                     rawData.retentionTimes.Add(i, rawFile.RetentionTimeFromScanNumber(i));
-                    rawData.Performed.Add(Operations.RetentionTimes);
 
                     // add the precursor mass
                     PrecursorMasses.ExtractPrecursorMasses(rawData, rawFile, i);
-                    rawData.Performed.Add(Operations.PrecursorMasses);
 
                     P.Update();
                 }
@@ -722,8 +705,11 @@ namespace RawTools.Data.Extraction
                 }
             }
             P.Done();
+            rawData.Performed.Add(Operations.TrailerExtras);
+            rawData.Performed.Add(Operations.RetentionTimes);
+            rawData.Performed.Add(Operations.PrecursorMasses);
 
-            if (refineMassCharge)
+            if (rawData.refineMassCharge)
             {
                 P = new ProgressIndicator(rawData.scanIndex.ScanEnumerators[MSOrderType.Ms2].Length, "Refining precursor charge state and monoisotopic mass");
                 P.Start();

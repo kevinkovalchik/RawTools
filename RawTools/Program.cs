@@ -79,42 +79,10 @@ namespace RawTools
         {
             using (IRawDataPlus rawFile = RawFileReaderFactory.ReadFile(fileName: opts.File))
             {
-                rawFile.SelectInstrument(Device.MS, 1);
-                
-                RawDataCollection rawData = new RawDataCollection(rawFile: rawFile);
-
-                rawData.ExtractAll(rawFile);
-                //rawData.ExtractSegmentScans(rawFile, MSOrderType.Ms);
-
-                int[] scans = rawData.scanIndex.ScanEnumerators[MSOrderType.Ms2];
-
-                ProgressIndicator P = new ProgressIndicator(scans.Length, "Calculating charge states");
-                P.Start();
-
-                foreach (int scan in scans)
-                {
-                    int masterScan = rawData.precursorScans[scan].MasterScan;
-                    double parentMZ = rawData.precursorMasses[scan].ParentMZ;
-                    double monoisoMass;
-                    int charge;
-                    
-                    List<int> otherCS = ChargeStateCalculator.GetChargeState(rawData.centroidStreams[masterScan], parentMZ, rawData.trailerExtras[scan].ChargeState);
-                    (charge,monoisoMass) = MonoIsoPredictor.GetMonoIsotopicMassCharge(rawData.centroidStreams[masterScan], parentMZ, otherCS, rawData.trailerExtras[scan].ChargeState);
-                    P.Update();
-                    /*Console.Write("Thermo: {0}, Us: ", rawData.trailerExtras[scan].ChargeState);
-                    foreach (var c in otherCS)
-                    {
-                        Console.Write("{0}, ", c);
-                    }
-                    Console.Write("RefinedCharge: {0},", charge);
-                    Console.Write("ParentMZ: {0}, ThermoMass: {1}, OurMass: {2}", parentMZ, rawData.precursorMasses[scan].MonoisotopicMZ, monoisoMass);
-                    Console.Write("\n");
-                    */
-                }
-                P.Done();
+                WorkFlows.WorkFlows.DDA(rawFile);
             }
 
-                return 0;
+            return 0;
         }
 
         static int DoStuff(ArgumentParser.QcOptions opts)
@@ -128,7 +96,21 @@ namespace RawTools
             qcParameters.QcDirectory = opts.QcDirectory;
             qcParameters.QcFile = Path.Combine(opts.QcDirectory, "QC.xml");
             qcParameters.RefineMassCharge = opts.RefineMassCharge;
-            
+
+            if (new List<string>() { "DDA", "DIA", "PRM" }.Contains(opts.ExperimentType))
+            {
+                if (opts.ExperimentType == "DDA") qcParameters.ExpType = ExperimentType.DDA;
+
+                if (opts.ExperimentType == "DIA") qcParameters.ExpType = ExperimentType.DIA;
+
+                if (opts.ExperimentType == "PRM") qcParameters.ExpType = ExperimentType.PRM;
+            }
+            else
+            {
+                Log.Error("Experiment type of {ExpType} was passed", opts.ExperimentType);
+                Console.WriteLine("Experiment type must be one of ['DDA', 'DIA', 'PRM'], not {0}", opts.ExperimentType);
+                Environment.Exit(1);
+            }
 
             if (opts.SearchAlgorithm != null & !(new List<string>() { "identipy", "xtandem" }.Contains(opts.SearchAlgorithm)))
             {
@@ -289,6 +271,26 @@ namespace RawTools
                 }
             }
 
+            // is the experiment type valid?
+            ExperimentType ExpType = ExperimentType.DDA;
+            if (new List<string>() { "DDA", "DIA", "PRM" }.Contains(opts.ExperimentType))
+            {
+                if (opts.ExperimentType == "DDA") ExpType = ExperimentType.DDA;
+
+                if (opts.ExperimentType == "DIA") ExpType = ExperimentType.DIA;
+
+                if (opts.ExperimentType == "PRM") ExpType = ExperimentType.PRM;
+
+            }
+            
+            else
+            {
+                Log.Error("Experiment type of {ExpType} was passed", opts.ExperimentType);
+                Console.WriteLine("Experiment type must be one of ['DDA', 'DIA', 'PRM'], not {0}", opts.ExperimentType);
+                Environment.Exit(1);
+            }
+
+
             System.Diagnostics.Stopwatch singleFileTime = new System.Diagnostics.Stopwatch();
             System.Diagnostics.Stopwatch totalTime = new System.Diagnostics.Stopwatch();
             totalTime.Start();
@@ -306,6 +308,7 @@ namespace RawTools
                     Log.Information("Now processing: {File} --- Instrument: {Instrument}", Path.GetFileName(file), rawFile.GetInstrumentData().Name);
 
                     RawDataCollection rawData = new RawDataCollection(rawFile:rawFile);
+                    rawData.ExpType = ExpType;
                     QuantDataCollection quantData = new QuantDataCollection();
 
                     bool isBoxCar = rawData.isBoxCar;
@@ -319,7 +322,7 @@ namespace RawTools
                     {
                         rawData.ExtractAll(rawFile, opts.RefineMassCharge);
 
-                        if (!isBoxCar)
+                        if (!isBoxCar & rawData.ExpType == ExperimentType.DDA)
                         {
                             rawData.CalcPeakRetTimesAndInts(rawFile: rawFile);
                         }
