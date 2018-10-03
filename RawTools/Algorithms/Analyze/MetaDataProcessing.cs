@@ -38,111 +38,38 @@ namespace RawTools.Algorithms.Analyze
 {
     static class MetaDataProcessing
     {
-        public static void AggregateMetaData(CentroidStreamCollection centroidStreams, SegmentScanCollection segmentScans, MethodDataContainer methodData,
+        public static ScanMetaDataCollectionDDA AggregateMetaDataDDA(CentroidStreamCollection centroidStreams, SegmentScanCollection segmentScans, MethodDataContainer methodData,
             PrecursorScanCollection precursorScans, TrailerExtraCollection trailerExtras, PrecursorMassCollection precursorMasses,
             RetentionTimeCollection retentionTimes, ScanDependentsCollections scanDependents, ScanIndex index)
         {
             ProgressIndicator progress = new ProgressIndicator(index.ScanEnumerators[MSOrderType.Any].Count(),
                 "Formatting scan meta data");
 
-            // add a new ScanMetaData class for each scan
-            foreach (int scan in index.ScanEnumerators[MSOrderType.Any])
-            {
-                metaData.Add(scan, new ScanMetaDataDDA());
-            }
+            ScanMetaDataCollectionDDA metaData = new ScanMetaDataCollectionDDA();
+            
+            double isoWindow = AggregateMetaData.Ms1IsoWindow(methodData);
 
-            // get isolation window
-            double isoWindow;
-            if (methodData.AnalysisOrder == MSOrderType.Ms2)
-            {
-                isoWindow = methodData.IsolationWindow.MS2;
-            }
-            else
-            {
-                isoWindow = methodData.IsolationWindow.MS3.MS1Window;
-            }
+            metaData.MS2ScansPerCycle = AggregateMetaData.MS2ScansPerCycle(scanDependents, index);
 
-            // get topN
-            foreach (int scan in index.ScanEnumerators[MSOrderType.Ms])
-            {
-                // if the ms1 scan has no scan dependents then topN = 0
-                if (scanDependents[scan] == null)
-                {
-                    metaData[scan].MS2ScansPerCycle = 0;
-                }
-                else
-                {
-                    metaData[scan].MS2ScansPerCycle = scanDependents[scan].ScanDependentDetailArray.Length;
-                }
-            }
+            metaData.FillTime = AggregateMetaData.FillTimes(trailerExtras, index);
 
-            // go through scans for each ms order sequentially
-            foreach (MSOrderType MSOrder in new List<MSOrderType> { MSOrderType.Ms, MSOrderType.Ms2, MSOrderType.Ms3 })
-            {
-                int[] scans = index.ScanEnumerators[MSOrder];
-                for (int i = 0; i < scans.Length; i++)
-                {
-                    metaData[scans[i]].FillTime = trailerExtras[scans[i]].InjectionTime;
+            metaData.DutyCycle = AggregateMetaData.DutyCycle(retentionTimes, index);
 
-                    // populate duty cycle
-                    if (i < scans.Length - 1)
-                    {
-                        metaData[scans[i]].DutyCycle = (retentionTimes[scans[i + 1]] - retentionTimes[scans[i]]) * 60;
-                    }
-                    else
-                    {
-                        metaData[scans[i]].DutyCycle = 0;
-                    }
+            metaData.IntensityDistribution = AggregateMetaData.IntensityDistributions(centroidStreams, segmentScans, index);
 
-                    // populate scan rate
-                    if ((MSOrder == MSOrderType.Ms2 | MSOrder == MSOrderType.Ms3) & rawData.ExpType == ExperimentType.DDA)
-                    {
-                        metaData[scans[i]].MS2ScansPerCycle = metaData[precursorScans[scans[i]].MasterScan].MS2ScansPerCycle;
-                    }
+            metaData.SummedIntensity = AggregateMetaData.SummedIntensities(centroidStreams, segmentScans, index);
 
-                    // populate intensity distributions
-                    if (methodData.MassAnalyzers[MSOrder] == MassAnalyzerType.MassAnalyzerFTMS)
-                    {
-                        metaData[scans[i]].IntensityDistribution = new Distribution(centroidStreams[scans[i]].Intensities);
-                        metaData[scans[i]].SummedIntensity = centroidStreams[scans[i]].Intensities.Sum();
-                    }
-                    else
-                    {
-                        metaData[scans[i]].IntensityDistribution = new Distribution(segmentScans[scans[i]].Intensities);
-                        metaData[scans[i]].SummedIntensity = segmentScans[scans[i]].Intensities.Sum();
-                    }
+            metaData.FractionConsumingTop80PercentTotalIntensity = AggregateMetaData.Top80Frac(centroidStreams, segmentScans, index);
 
-                    // populate fraction of scans consuming 80% of total intensity
+            metaData.Ms1IsolationInterference = AggregateMetaData.Ms1Interference(centroidStreams, precursorMasses, trailerExtras,
+                precursorScans, index, isoWindow);
 
-                    if (methodData.MassAnalyzers[MSOrder] == MassAnalyzerType.MassAnalyzerFTMS)
-                    {
-                        metaData[scans[i]].FractionConsumingTop80PercentTotalIntensity = centroidStreams[scans[i]].Intensities.FractionOfScansConsumingTotalIntensity(percent: 80);
-                    }
-                    else
-                    {
-                        metaData[scans[i]].FractionConsumingTop80PercentTotalIntensity = segmentScans[scans[i]].Intensities.FractionOfScansConsumingTotalIntensity(percent: 80);
-                    }
-
-                    // calculate ms1 isolation interference
-                    if (methodData.AnalysisOrder == MSOrder & rawData.ExpType == ExperimentType.DDA)
-                    {
-                        int preScan = precursorScans[scans[i]].MasterScan;
-                        metaData[scans[i]].Ms1IsolationInterference = Ms1Interference.CalculateForOneScan(centroidStreams[preScan],
-                            precursorMasses[scans[i]].MonoisotopicMZ, isoWindow, trailerExtras[scans[i]].ChargeState);
-                    }
-
-                    progress.Update();
-                }
-            }
-            progress.Done();
-
-
-
-            rawData.Performed.Add(Operations.MetaData);
+            return metaData;
         }
 
-        public static void GetMetricsData(this MetricsData metricsData, ScanMetaDataCollectionDDA metaData, RawDataCollection rawData, IRawDataPlus rawFile, QuantDataCollection quantData = null)
+        public static MetricsData GetMetricsDataDDA(ScanMetaDataCollectionDDA metaData, IRawDataPlus rawFile, QuantDataCollection quantData = null)
         {
+            MetricsData metricsData = new MetricsData();
             List<Operations> operations = new List<Operations> { Operations.ScanIndex, Operations.RetentionTimes, Operations.MethodData, Operations.MetaData };
             if (!rawData.isBoxCar)
             {

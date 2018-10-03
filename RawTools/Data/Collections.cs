@@ -93,11 +93,33 @@ namespace RawTools.Data.Collections
         public string LabelingReagents;
     }
 
-    class ScanMetaDataCollectionDDA : Dictionary<int, ScanMetaDataDDA>
-    { }
+    class ScanMetaDataCollectionDDA
+    {
+        public Dictionary<int, double> DutyCycle, FillTime, SummedIntensity, Ms1IsolationInterference, FractionConsumingTop80PercentTotalIntensity;
+        public Dictionary<int, Distribution> IntensityDistribution;
+        public Dictionary<int, int> MS2ScansPerCycle;
 
-    class ScanMetaDataCollectionDIA : Dictionary<int, ScanMetaDataDIA>
-    { }
+        public ScanMetaDataCollectionDDA()
+        {
+            DutyCycle = FillTime = MS2ScansPerCycle = Ms1IsolationInterference =
+                FractionConsumingTop80PercentTotalIntensity = new Dictionary<int, double>();
+            IntensityDistribution = new Dictionary<int, Distribution>();
+            SummedIntensity = new Dictionary<int, double>();
+        }
+    }
+
+    class ScanMetaDataCollectionDIA
+    {
+        public Dictionary<int, double> DutyCycle, SummedIntensity, FillTime, FractionConsumingTop80PercentTotalIntensity;
+        public Dictionary<int, Distribution> IntensityDistribution;
+
+        public ScanMetaDataCollectionDIA()
+        {
+            DutyCycle = FillTime = FractionConsumingTop80PercentTotalIntensity = new Dictionary<int, double>();
+            IntensityDistribution = new Dictionary<int, Distribution>();
+            SummedIntensity = new Dictionary<int, double>();
+        }
+    }
 
     class PrecursorPeakDataCollection : Dictionary<int, PrecursorPeakData>
     {
