@@ -248,7 +248,16 @@ namespace RawTools.Data.IO
                     f.WriteLine("TITLE=Spectrum_{0}", i);
                     f.WriteLine("SCAN={0}", i);
                     f.WriteLine("RTINSECONDS={0}", rawData.retentionTimes[i]);
-                    f.WriteLine("PEPMASS={0}", rawData.precursorMasses[i].MonoisotopicMZ);
+
+                    if (rawData.precursorMasses[i].MonoisotopicMZ != 0)
+                    {
+                        f.WriteLine("PEPMASS={0}", rawData.precursorMasses[i].MonoisotopicMZ);
+                    }
+                    else
+                    {
+                        f.WriteLine("PEPMASS={0}", rawData.precursorMasses[i].ParentMZ);
+                    }
+
                     f.WriteLine("CHARGE={0}", rawData.trailerExtras[i].ChargeState);
                     
                     if (ms2MassAnalyzer == MassAnalyzerType.MassAnalyzerFTMS)
