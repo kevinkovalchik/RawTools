@@ -116,7 +116,6 @@
     <Compile Include="Algorithms\Extraction\ExtractData.cs" />
     <Compile Include="Algorithms\IsoProfilePredictor.cs" />
     <Compile Include="Algorithms\IsotopomerEnvelope.cs" />
-    <Compile Include="Algorithms\MetaDataProcessing.cs" />
     <Compile Include="Algorithms\MonoIsoPredictor.cs" />
     <Compile Include="Algorithms\Ms1Interference.cs" />
     <Compile Include="Algorithms\QuantifyAllScans.cs" />

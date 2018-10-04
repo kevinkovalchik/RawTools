@@ -33,51 +33,40 @@ using RawTools.Data.Collections;
 using RawTools.Data.Extraction;
 using RawTools.Utilities;
 using RawTools.Algorithms;
+using RawTools.WorkFlows;
 
 namespace RawTools.Algorithms
 {
     static class Quantification
     {
-        public static void Quantify(this QuantDataCollection quantData, RawDataCollection rawData, IRawDataPlus rawFile, string labelingReagent)
+        public static QuantDataCollection Quantify(CentroidStreamCollection centroidScans, SegmentScanCollection segmentScans, WorkflowParameters parameters, MethodDataContainer methodData, ScanIndex index)
         {
-            MassAnalyzerType quantAnalyzer = rawData.methodData.QuantAnalyzer;
+            int[] scans = index.ScanEnumerators[index.AnalysisOrder];
 
-            if (quantAnalyzer == MassAnalyzerType.MassAnalyzerFTMS)
-            {
-                rawData.ExtractCentroidStreams(rawFile, rawData.methodData.AnalysisOrder);
-            }
-            else
-            {
-                rawData.ExtractSegmentScans(rawFile, rawData.methodData.AnalysisOrder);
-            }
-
-            int[] scans;
-
-            ScanIndex scanIndex = rawData.scanIndex;
-            Dictionary<int, CentroidStreamData> centroidScans = rawData.centroidStreams;
-            Dictionary<int, SegmentedScanData> segmentScans = rawData.segmentedScans;
-
-            scans = scanIndex.ScanEnumerators[scanIndex.AnalysisOrder];
-
+            QuantDataCollection quantData = new QuantDataCollection();
+            
             ProgressIndicator progress = new ProgressIndicator(scans.Length, "Quantifying reporter ions");
 
-            quantData.LabelingReagents = labelingReagent;
+            string labelingReagents = parameters.ParseParams.LabelingReagents;
+
+            quantData.LabelingReagents = labelingReagents;
 
             foreach (int scan in scans)
             {
-                if (quantAnalyzer == MassAnalyzerType.MassAnalyzerFTMS)
+                if (methodData.QuantAnalyzer == MassAnalyzerType.MassAnalyzerFTMS)
                 {
-                    quantData.Add(scan, new QuantifyReporters(centroidScans[scan], labelingReagent).quantData);
+                    quantData.Add(scan, QuantifyReporters.QuantifyOneScan(centroidScans[scan], labelingReagents));
                 }
                 else
                 {
-                    quantData.Add(scan, new QuantifyReporters(segmentScans[scan], labelingReagent).quantData);
+                    quantData.Add(scan, QuantifyReporters.QuantifyOneScan(segmentScans[scan], labelingReagents));
                 }
 
                 progress.Update();
             }
             progress.Done();
-            rawData.Performed.Add(Operations.Quantification);
+
+            return quantData;
         }
     }
 }

@@ -32,53 +32,125 @@ using ThermoFisher.CommonCore.Data.Business;
 using ThermoFisher.CommonCore.Data.Interfaces;
 using ThermoFisher.CommonCore.Data;
 using ThermoFisher.CommonCore.Data.FilterEnums;
+using RawTools.WorkFlows;
 
 namespace RawTools.Data.IO
 {
+    class Writer
+    {
+        private List<string> Data;
+        private string FileName;
+        private CentroidStreamCollection CentroidStreams;
+        private SegmentScanCollection SegmentScans;
+        private ScanMetaDataCollectionDDA MetaData;
+        private QuantDataCollection QuantData;
+        private RetentionTimeCollection RetentionTimes;
+        private PrecursorMassCollection PrecursorMasses;
+        private PrecursorScanCollection PrecursorScans;
+        private PrecursorPeakCollection PrecursorPeaks;
+        private TrailerExtraCollection TrailerExtras;
+
+        public Writer(List<string> data, string fileName)
+        {
+            Data = data;
+            FileName = fileName;
+        }
+
+        private void WriteDatum(string datum, int scan, StreamWriter f, bool endOfLine = false)
+        {
+            if (datum == "MS3ScanNumber")
+            {
+                f.Write(PrecursorScans[scan].MS3Scan);
+            }
+
+            if (datum == "MS2ScanNumber")
+            {
+                f.Write(PrecursorScans[scan].MS2Scan);
+            }
+
+            if (datum == "MS1ScanNumber")
+            {
+                f.Write(PrecursorScans[scan].MasterScan);
+            }
+
+            if (datum == "QuantScanRetTime")
+            {
+                f.Write(RetentionTimes[scan]);
+            }
+
+            if (datum == "ParentScanRetTime")
+            {
+                f.Write(RetentionTimes[PrecursorScans[scan].MasterScan]);
+            }
+
+            if (datum == "MS2ScansPerCycle")
+            {
+                f.Write(MetaData.MS2ScansPerCycle[scan]);
+            }
+
+            if (datum == "DutyCycle")
+            {
+                f.Write(MetaData.DutyCycle[scan]);
+            }
+
+            if (datum == "ParentIonMass")
+            {
+                f.Write(PrecursorMasses[scan].ParentMZ);
+            }
+
+            if (datum == "MonoisotopicMass")
+            {
+                f.Write(PrecursorMasses[scan].MonoisotopicMZ);
+            }
+
+            if (datum == "PrecursorCharge")
+            {
+                f.Write(TrailerExtras[scan].ChargeState);
+            }
+
+            if (datum == "MS1IsolationInterference")
+            {
+                f.Write(MetaData.Ms1IsolationInterference[scan]);
+            }
+            
+                    "\tParentPeakFound\tParentPeakArea\tPeakFirstScan\tPeakMaxScan\tPeakLastScan\tBaseLinePeakWidth(s)" +
+                    "\tPeakParentScanIntensity\tPeakMaxIntensity\tMS1IonInjectionTime\tMS2IonInjectionTime" +
+                    "\tMS3IonInjectionTime\tHCDEnergy\tMS1MedianIntensity\tMS2MedianIntensity\t"
+        }
+
+        public void WriteMatrix()
+        {
+            using (StreamWriter f = new StreamWriter(FileName)) //Open a new file
+            {
+                for (int i = 0; i < Data.Count() - 1; i++)
+                {
+                    f.Write(Data[i] + "\t");
+                }
+                f.Write(Data.Last() + "\n");
+
+
+            }
+        }
+    }
+
     static class Parse
     {
-        public static void WriteMatrix(RawDataCollection rawData, ScanMetaDataCollectionDDA metaData, IRawDataPlus rawFile, QuantDataCollection quantData = null, string outputDirectory = null)
+        public static void WriteMatrixDDA(ScanMetaDataCollectionDDA metaData, WorkflowParameters parameters, ScanIndex index, QuantDataCollection quantData = null, string outputDirectory = null)
         {
-            string fileName = ReadWrite.GetPathToFile(outputDirectory, rawData.rawFileName, "_Matrix.txt");
-
-            CheckIfDone.Check(rawData, rawFile, new List<Operations> { Operations.ScanIndex, Operations.MethodData, Operations.PrecursorScans,
-                Operations.RetentionTimes, Operations.PrecursorMasses, Operations.TrailerExtras, Operations.MetaData});
+            string fileName = ReadWrite.GetPathToFile(outputDirectory, parameters.RawFileName, "_Matrix.txt");
 
             using (StreamWriter f = new StreamWriter(fileName)) //Open a new file
             {
-                List<int> scans;
-
-                if (!rawData.isBoxCar)
-                {
-                    scans = rawData.scanIndex.ScanEnumerators[rawData.scanIndex.AnalysisOrder].ToList();
-                }
-                else
-                {
-                    scans = rawData.precursorScans.Keys.ToList();
-                    scans.Sort();
-                }                
+                List<int> scans = index.ScanEnumerators[index.AnalysisOrder].ToList();
 
                 ProgressIndicator progress = new ProgressIndicator(scans.Count(), "Writing matrix to disk");
 
                 f.Write("MS3ScanNumber\tMS2ScanNumber\tMS1ScanNumber\tQuantScanRetTime\tParentScanRetTime\tDutyCycle" +
-                    "\tMS2ScansPerCycle\tParentIonMass\tMonoisotopicMass\tPrecursorCharge\tMS1IsolationInterference");
-
-                if (!rawData.isBoxCar)
-                {
-                    f.Write("\tParentPeakFound");
-                }
-
-                if (rawData.Performed.Contains(Operations.PeakArea) & !rawData.isBoxCar)
-                {
-                    f.Write("\tParentPeakArea");
-                }
-
-                if(!rawData.isBoxCar)
-                {
-                    f.Write("\tPeakFirstScan\tPeakMaxScan\tPeakLastScan\tBaseLinePeakWidth(s)\tPeakParentScanIntensity\tPeakMaxIntensity");
-                }
-                f.Write("\tMS1IonInjectionTime\tMS2IonInjectionTime" +
+                    "\tMS2ScansPerCycle\tParentIonMass\tMonoisotopicMass\tPrecursorCharge\tMS1IsolationInterference" +
+                    "\tParentPeakFound\tParentPeakArea\tPeakFirstScan\tPeakMaxScan\tPeakLastScan\tBaseLinePeakWidth(s)" +
+                    "\tPeakParentScanIntensity\tPeakMaxIntensity\tMS1IonInjectionTime\tMS2IonInjectionTime" +
                     "\tMS3IonInjectionTime\tHCDEnergy\tMS1MedianIntensity\tMS2MedianIntensity\t");
+                
 
                 if(quantData != null)
                 {

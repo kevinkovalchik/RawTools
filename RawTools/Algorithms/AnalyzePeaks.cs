@@ -251,7 +251,7 @@ namespace RawTools.Algorithms
             return peak;
         }
 
-        public static PrecursorPeakCollection AnalyzeAllPeaks(CentroidStreamCollection centroids, IRawDataPlus rawFile, RetentionTimeCollection retentionTimes,
+        public static PrecursorPeakCollection AnalyzeAllPeaks(CentroidStreamCollection centroids, RetentionTimeCollection retentionTimes,
             PrecursorMassCollection precursorMasses, PrecursorScanCollection precursorScans, ScanIndex index)
         {
             PrecursorPeakCollection peaks = new PrecursorPeakCollection();

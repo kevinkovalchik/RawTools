@@ -23,15 +23,14 @@ using RawTools.Utilities;
 
 namespace RawTools.Algorithms
 {
-    class QuantifyReporters
+    static class QuantifyReporters
     {
-        (string[] Labels, double[] Masses) reporters;
-        public QuantData quantData = new QuantData();
 
         // first instance method is for FTMS data
-        public QuantifyReporters(CentroidStreamData centroidStream, string labelingReagent)
+        static public QuantData QuantifyOneScan(CentroidStreamData centroidStream, string labelingReagent)
         {
-            reporters = new LabelingReagents().Reagents[labelingReagent];
+            (string[] Labels, double[] Masses) reporters = new LabelingReagents().Reagents[labelingReagent];
+            QuantData quantData = new QuantData();
             int index;
             double mass;
             double[] massDiff;
@@ -99,12 +98,15 @@ namespace RawTools.Algorithms
                     }
                 }
             }
+
+            return quantData;
         }
 
         // second instance method is for ITMS data
-        public QuantifyReporters(SegmentedScanData segmentedScan, string labelingReagent)
+        public static QuantData QuantifyOneScan(SegmentedScanData segmentedScan, string labelingReagent)
         {
-            reporters = new LabelingReagents().Reagents[labelingReagent];
+            (string[] Labels, double[] Masses) reporters = new LabelingReagents().Reagents[labelingReagent];
+            QuantData quantData = new QuantData();
 
             int index;
 
@@ -151,6 +153,7 @@ namespace RawTools.Algorithms
 
 
             }
+            return quantData;
         }
     }
 }

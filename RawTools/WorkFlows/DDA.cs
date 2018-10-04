@@ -31,6 +31,7 @@ using ThermoFisher.CommonCore.Data.FilterEnums;
 using ThermoFisher.CommonCore.Data.Business;
 using Serilog;
 using RawTools.Algorithms.ExtractData;
+using RawTools.Algorithms.Analyze;
 
 namespace RawTools.WorkFlows
 {
@@ -38,7 +39,7 @@ namespace RawTools.WorkFlows
 
     static class WorkFlows
     {
-        public static void DDA(IRawDataPlus rawFile)
+        public static void DDA(IRawDataPlus rawFile, WorkflowParameters parameters)
         {
             rawFile.SelectInstrument(Device.MS, 1);
             
@@ -64,8 +65,21 @@ namespace RawTools.WorkFlows
 
             ScanDependentsCollections scanDependents = Extract.ScanDependents(rawFile, Index);
 
-            ScanMetaDataCollectionDDA metaData = 
+            ScanMetaDataCollectionDDA metaData = MetaDataProcessing.AggregateMetaDataDDA(centroidStreams, segmentScans, methodData, precursorScans,
+                trailerExtras, precursorMasses, retentionTimes, scanDependents, Index);
+
+            PrecursorPeakCollection peakData = AnalyzePeaks.AnalyzeAllPeaks(centroidStreams, retentionTimes, precursorMasses, precursorScans, Index);
             
+            QuantDataCollection quantData = null;
+
+            if (parameters.ParseParams.Quant)
+            {
+                quantData = Quantification.Quantify(centroidStreams, segmentScans, parameters, methodData, Index);
+            }
+
+            MetricsData metrics = MetaDataProcessing.GetMetricsDataDDA(metaData, methodData, parameters, retentionTimes, Index, peakData, quantData);
+
+
         }
     }
 

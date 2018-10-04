@@ -68,7 +68,7 @@ namespace RawTools.Algorithms.Analyze
             return metaData;
         }
 
-        public static MetricsData GetMetricsDataDDA(ScanMetaDataCollectionDDA metaData, IRawDataPlus rawFile, MethodDataContainer methodData,
+        public static MetricsData GetMetricsDataDDA(ScanMetaDataCollectionDDA metaData, MethodDataContainer methodData,
             WorkflowParameters parameters, RetentionTimeCollection retentionTimes, ScanIndex index, PrecursorPeakCollection peakData,
             QuantDataCollection quantData = null)
         {

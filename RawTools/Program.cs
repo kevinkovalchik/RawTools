@@ -347,11 +347,11 @@ namespace RawTools
                     {
                         if (opts.Quant)
                         {
-                            Parse.WriteMatrix(rawData: rawData, rawFile: rawFile, metaData: rawData.metaData, quantData: rawData.quantData, outputDirectory: opts.OutputDirectory);
+                            Parse.WriteMatrixDDA(rawData: rawData, rawFile: rawFile, metaData: rawData.metaData, quantData: rawData.quantData, outputDirectory: opts.OutputDirectory);
                         }
                         else
                         {
-                            Parse.WriteMatrix(rawData: rawData, rawFile: rawFile, metaData: rawData.metaData, outputDirectory: opts.OutputDirectory);
+                            Parse.WriteMatrixDDA(rawData: rawData, rawFile: rawFile, metaData: rawData.metaData, outputDirectory: opts.OutputDirectory);
                         }
                     }                    
 
