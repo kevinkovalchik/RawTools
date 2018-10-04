@@ -26,6 +26,8 @@ using RawTools.Data.Extraction;
 using RawTools.Data.Containers;
 using RawTools.Algorithms;
 using RawTools.Utilities;
+using RawTools.Data.IO;
+using RawTools.QC;
 using ThermoFisher.CommonCore.Data.Interfaces;
 using ThermoFisher.CommonCore.Data.FilterEnums;
 using ThermoFisher.CommonCore.Data.Business;
@@ -35,9 +37,7 @@ using RawTools.Algorithms.Analyze;
 
 namespace RawTools.WorkFlows
 {
-    
-
-    static class WorkFlows
+    static class DataWorkFlows
     {
         public static void DDA(IRawDataPlus rawFile, WorkflowParameters parameters)
         {
@@ -71,14 +71,76 @@ namespace RawTools.WorkFlows
             PrecursorPeakCollection peakData = AnalyzePeaks.AnalyzeAllPeaks(centroidStreams, retentionTimes, precursorMasses, precursorScans, Index);
             
             QuantDataCollection quantData = null;
-
             if (parameters.ParseParams.Quant)
             {
                 quantData = Quantification.Quantify(centroidStreams, segmentScans, parameters, methodData, Index);
             }
 
-            MetricsData metrics = MetaDataProcessing.GetMetricsDataDDA(metaData, methodData, parameters, retentionTimes, Index, peakData, quantData);
+            MetricsData metrics = null;
+            if (parameters.ParseParams.Metrics)
+            {
+                metrics = MetaDataProcessing.GetMetricsDataDDA(metaData, methodData, parameters, retentionTimes, Index, peakData, quantData);
+            }
 
+            if (parameters.ParseParams.Parse)
+            {
+                Writer writerDDA = new Writer(parameters.RawFileName, centroidStreams, segmentScans, metaData, retentionTimes,
+                precursorMasses, precursorScans, peakData, trailerExtras, Index);
+                writerDDA.WriteMatrixDDA();
+            }
+            if (parameters.ParseParams.WriteMgf)
+            {
+                Writer writerMGF = new Writer(centroidStreams, segmentScans, parameters);
+                writerMGF.WriteMGF();
+            }
+
+        }
+
+        public static QcDataContainer QcDDA(IRawDataPlus rawFile, WorkflowParameters parameters)
+        {
+            rawFile.SelectInstrument(Device.MS, 1);
+
+            rawFile.CheckIfBoxcar();
+
+            ScanIndex Index = Extract.ScanIndices(rawFile);
+
+            MethodDataContainer methodData = Extract.MethodData(rawFile, Index);
+
+            CentroidStreamCollection centroidStreams = new CentroidStreamCollection();
+
+            SegmentScanCollection segmentScans = new SegmentScanCollection();
+
+            (centroidStreams, segmentScans) = Extract.MsData(rawFile: rawFile, index: Index);
+
+            TrailerExtraCollection trailerExtras = Extract.TrailerExtras(rawFile, Index);
+
+            PrecursorScanCollection precursorScans = Extract.PrecursorScansByScanDependents(rawFile, Index);
+
+            PrecursorMassCollection precursorMasses = Extract.PrecursorMasses(rawFile, precursorScans, trailerExtras, Index);
+
+            RetentionTimeCollection retentionTimes = Extract.RetentionTimes(rawFile, Index);
+
+            ScanDependentsCollections scanDependents = Extract.ScanDependents(rawFile, Index);
+
+            ScanMetaDataCollectionDDA metaData = MetaDataProcessing.AggregateMetaDataDDA(centroidStreams, segmentScans, methodData, precursorScans,
+                trailerExtras, precursorMasses, retentionTimes, scanDependents, Index);
+
+            PrecursorPeakCollection peakData = AnalyzePeaks.AnalyzeAllPeaks(centroidStreams, retentionTimes, precursorMasses, precursorScans, Index);
+
+            MetricsData metrics = MetaDataProcessing.GetMetricsDataDDA(metaData, methodData, rawFile.FileName, retentionTimes, Index, peakData);
+
+            QcDataContainer qcData = QC.QcWorkflow.ParseQcData(parameters.QcParams, metrics, methodData);
+
+            if (parameters.QcParams.PerformSearch)
+            {
+                Search.WriteSearchMGF(parameters, centroidStreams, segmentScans, Index, parameters.QcParams.FixedScans);
+
+                Search.RunSearch(parameters.QcParams, rawData, rawFile);
+
+                newQcData.ParseSearchResults(rawData, rawFile, qcParameters);
+            }
+
+            return qcData;
 
         }
     }

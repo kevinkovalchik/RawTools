@@ -27,6 +27,8 @@ using System.Threading.Tasks;
 using RawTools.Data.Containers;
 using RawTools.Data.Collections;
 using RawTools.Algorithms;
+using RawTools.Algorithms.Analyze;
+using RawTools.WorkFlows;
 using RawTools.Data.Extraction;
 using RawTools.Data.IO;
 using RawTools.Utilities;
@@ -40,91 +42,107 @@ using RawTools;
 namespace RawTools.QC
 {
     
-    static class QC
+    static class QcWorkflow
     {
-        public static QcDataContainer ProcessQcData(this QcDataCollection Data, RawDataCollection rawData, IRawDataPlus rawFile, string qcDirectory, string fastaDB = null)
+        //public static QcDataContainer ProcessQcData(this QcDataCollection Data, RawDataCollection rawData, IRawDataPlus rawFile, string qcDirectory, string fastaDB = null)
+        public static QcDataContainer ParseQcData(QcWorkflowParameters parameters, MetricsData metricsData, MethodDataContainer methodData)
         {
-            DateTime dateAcquired = rawFile.CreationDate;
-            //RawDataCollection rawData = new RawDataCollection(rawFile);
+            DateTime dateAcquired = methodData.CreationDate;
 
-            MetricsData metricsData = new MetricsData();
-            metricsData.GetMetricsData(metaData: rawData.metaData, rawData: rawData, rawFile: rawFile);
+            QcDataContainer qcData = new QcDataContainer(metricsData.RawFileName, dateAcquired, metricsData);
 
-            QcDataContainer qcData = new QcDataContainer(rawData.rawFileName, dateAcquired);
-
-            qcData.Instrument = rawData.instrument;
-            qcData.ExperimentMsOrder = rawData.methodData.AnalysisOrder;
-            qcData.Ms1Analyzer = rawData.methodData.MassAnalyzers[MSOrderType.Ms].ToString();
-            qcData.Ms2Analyzer = rawData.methodData.MassAnalyzers[MSOrderType.Ms2].ToString();
+            qcData.Instrument = methodData.Instrument;
+            qcData.ExperimentMsOrder = methodData.AnalysisOrder;
+            qcData.Ms1Analyzer = methodData.MassAnalyzers[MSOrderType.Ms].ToString();
+            qcData.Ms2Analyzer = methodData.MassAnalyzers[MSOrderType.Ms2].ToString();
 
             if (qcData.ExperimentMsOrder == MSOrderType.Ms3)
             {
-                qcData.Ms3Analyzer = rawData.methodData.MassAnalyzers[MSOrderType.Ms3].ToString();
+                qcData.Ms3Analyzer = methodData.MassAnalyzers[MSOrderType.Ms3].ToString();
             }
             else
             {
                 qcData.Ms3Analyzer = "None";
             }
 
-            qcData.TotalScans = metricsData.TotalScans;
-            qcData.NumMs1Scans = metricsData.MS1Scans;
-            qcData.NumMs2Scans = metricsData.MS2Scans;
-            qcData.NumMs3Scans = metricsData.MS3Scans;
-
-            qcData.Ms1ScanRate = metricsData.MS1ScanRate;
-            qcData.Ms2ScanRate = metricsData.MS2ScanRate;
-
-            qcData.MeanDutyCycle = metricsData.MeanDutyCycle;
-
-            qcData.MeanTopN = metricsData.MeanTopN;
-
-            qcData.MedianPrecursorIntensity = metricsData.MedianPrecursorIntensity;
-            qcData.MedianSummedMs2Intensity = metricsData.MedianSummedMS2Intensity;
-            qcData.MedianMs1IsolationInterference = metricsData.MedianMs1IsolationInterference;
-            qcData.MedianMs2FractionConsumingTop80PercentTotalIntensity = metricsData.MedianMs2FractionConsumingTop80PercentTotalIntensity;
-
-            qcData.NumEsiStabilityFlags = NumberOfEsiFlags(rawData);
-
-            qcData.QuantMeta = metricsData.QuantMeta;
-
-            qcData.GradientTime = metricsData.Gradient;
-            qcData.ColumnPeakCapacity = metricsData.PeakCapacity;
-            qcData.ChromIntMetrics(rawData, metricsData);
-
-            if (!rawData.isBoxCar)
-            {
-                qcData.PeakShape.Asymmetry.P10 = rawData.peakData.PeakShapeMedians.Asymmetry.P10;
-                qcData.PeakShape.Asymmetry.P50 = rawData.peakData.PeakShapeMedians.Asymmetry.P50;
-
-                qcData.PeakShape.Width.P10 = rawData.peakData.PeakShapeMedians.Width.P10;
-                qcData.PeakShape.Width.P50 = rawData.peakData.PeakShapeMedians.Width.P50;
-            }
-
-
-
-            // add the signal-to-noise distribution to the QC data. These are presented as "median of the ith percentile", so for example we take all the 10th percentile values of
-            // the S2N and put them in a list, then report the median of that list
-                
-            qcData.MedianSummedMs1Intensity = (from x in rawData.scanIndex.ScanEnumerators[MSOrderType.Ms] select rawData.centroidStreams[x].Intensities.Sum()).ToArray().Percentile(50);
-
-            // add the fill-time distribution to the QC data. This is more straightforward. Just put all the fill times in an array and use it to instantiate a new distribution.
-            qcData.Ms1FillTime = new Distribution((from x in rawData.scanIndex.ScanEnumerators[MSOrderType.Ms] select rawData.trailerExtras[x].InjectionTime).ToArray());
-            qcData.Ms2FillTime = new Distribution((from x in rawData.scanIndex.ScanEnumerators[MSOrderType.Ms2] select rawData.trailerExtras[x].InjectionTime).ToArray());
-            qcData.Ms3FillTime = new Distribution((from x in rawData.scanIndex.ScanEnumerators[MSOrderType.Ms3] select rawData.trailerExtras[x].InjectionTime).ToArray());
-            
-            //Data.QcData.Add(dateAcquired, newData);
-            //Data.ProcessedRawFiles.Add(Path.GetFileName(rawData.rawFileName));
-
             return qcData;
         }
 
-        public static void DoQc(QcParameters qcParameters)
+        public static void DoQc(WorkflowParameters parameters)
         {
             QcDataCollection qcDataCollection;
-            string dataDirectory = qcParameters.RawFileDirectory;
-            string qcDirectory = qcParameters.QcDirectory;
-            string qcSearchDataDirecotry = qcParameters.QcSearchDataDirectory;
-            SearchParameters searchParameters = qcParameters.searchParameters;
+            string dataDirectory = parameters.RawFileDirectory;
+            string qcDirectory = parameters.QcParams.QcDirectory;
+            string qcSearchDataDirecotry = parameters.QcParams.QcSearchDataDirectory;
+            SearchParameters searchParameters = parameters.QcParams.SearchParameters;
+            List<string> fileList = new List<string>();
+
+            (fileList, qcDataCollection) = GetFileListAndQcFile(parameters);
+
+            foreach (string fileName in fileList)
+            {
+                Console.WriteLine("Processing {0}", fileName);
+
+                if (!RawFileInfo.CheckIfValid(fileName))
+                {
+                    continue;
+                }
+                // okay, it is probably a real raw file, let's do the QC
+
+                // check if the raw file already exists in the QC data with a different name
+                if (CheckIfFilePresentInQcCollection(fileName, qcDataCollection))
+                {
+                    Log.Information("A file with the same creation date and time as {File} already exists in the QC data", fileName);
+
+                    Console.WriteLine("{0} appears to already exist in the QC data with the name {1}. Skipping to next file.",
+                        fileName, qcDataCollection.QcData[FileHeaderReaderFactory.ReadFile(fileName).CreationDate].RawFile);
+
+                    continue;
+                }
+
+                using (IRawDataPlus rawFile = RawFileReaderFactory.ReadFile(fileName))
+                {
+                    rawFile.SelectInstrument(Device.MS, 1);
+
+                    QcDataContainer newQcData = DataWorkFlows.QcDDA(rawFile, parameters);
+
+                    if (searchParameters != null)
+                    {
+                        Search.RunSearch(qcParameters, rawData, rawFile);
+                        newQcData.ParseSearchResults(rawData, rawFile, qcParameters);
+                    }
+
+                    qcDataCollection.QcData.Add(rawFile.CreationDate, newQcData);
+                    qcDataCollection.ProcessedRawFiles.Add(Path.GetFileName(rawData.rawFileName));
+                    qcDataCollection.WriteQcToTable();
+                }
+
+                Log.Information("QC finished: {File}", fileName);
+            }
+
+            Log.Information("QC of all files completed");
+            Console.WriteLine("QC of all files completed!");
+
+            try
+            {
+                XmlSerialization.WriteToXmlFile<QcDataCollection>(qcFile, qcDataCollection);
+                Log.Information("QC file saved successfully");
+                Console.WriteLine("QC file saved successfully");
+            }
+            catch (Exception e)
+            {
+                Log.Error(e, "Failed during serialization of QC data");
+                throw e;
+            }
+        }
+
+        private static (List<string> fileList, QcDataCollection qcDataCollection) GetFileListAndQcFile(WorkflowParameters parameters)
+        {
+            QcDataCollection qcDataCollection;
+            string dataDirectory = parameters.RawFileDirectory;
+            string qcDirectory = parameters.QcParams.QcDirectory;
+            string qcSearchDataDirecotry = parameters.QcParams.QcSearchDataDirectory;
+            SearchParameters searchParameters = parameters.QcParams.SearchParameters;
 
             // our qc file
             string qcFile = Path.Combine(qcDirectory, "QC.xml");
@@ -180,169 +198,21 @@ namespace RawTools.QC
 
             Console.WriteLine("{0} file(s) to process", fileList.Count());
 
-            foreach (string fileName in fileList)
-            {
-                Console.WriteLine("Processing {0}", fileName);
-
-                IFileHeader rawHeader;
-
-                // try to open the raw file header
-                try
-                {
-                    rawHeader = FileHeaderReaderFactory.ReadFile(fileName); ;
-                }
-                catch (Exception)
-                {
-                    Log.Information("{File} is not a valid raw file", fileName);
-                    Console.WriteLine("{0} is not a valid raw file, continuing to next file.", fileName);
-                    continue;
-                }
-
-                // is it a real raw file?
-                if (rawHeader.FileType == FileType.RawFile)
-                {
-                    Log.Information("{File} is a valid raw file", fileName);
-                    Log.Information("Creation date: {Date}", rawHeader.CreationDate);
-                    Log.Information("File description: {Description}", rawHeader.FileDescription);
-                }
-                else
-                {
-                    Log.Information("{File} is not a valid raw file", fileName);
-                    Console.WriteLine("{0} is not a valid raw file, continuing to next file.", fileName);
-                    continue;
-                }
-                // okay, it is probably a real raw file, let's do the QC
-
-                // check if the raw file already exists in the QC data with a different name
-                if (qcDataCollection.QcData.Keys.Contains(rawHeader.CreationDate))
-                {
-                    Log.Information("A file with the same creation date and time as {File} already exists in the QC data", fileName);
-                    Console.WriteLine("{0} appears to already exist in the QC data with the name {1}. Skipping to next file.",
-                        fileName, qcDataCollection.QcData[rawHeader.CreationDate].RawFile);
-                    continue;
-                }
-
-                using (IRawDataPlus rawFile = RawFileReaderFactory.ReadFile(fileName))
-                {
-                    rawFile.SelectInstrument(Device.MS, 1);
-                    RawDataCollection rawData = new RawDataCollection(rawFile);
-                    rawData.ExpType = qcParameters.ExpType;
-                    rawData.ExtractAll(rawFile, refineMassCharge: qcParameters.RefineMassCharge);
-
-                    /*
-                    if (idpyPars?.QuantMods != null)
-                    {
-                        rawData.quantData.Quantify(rawData, rawFile, )
-                    }
-                    */
-
-                    QcDataContainer newQcData = ProcessQcData(Data: qcDataCollection, rawData: rawData, rawFile: rawFile, qcDirectory: qcDirectory);
-
-                    if (searchParameters != null)
-                    {
-                        Search.WriteSearchMGF(qcParameters, rawData, rawFile, searchParameters.FixedScans);
-                        Search.RunSearch(qcParameters, rawData, rawFile);
-                        newQcData.ParseSearchResults(rawData, rawFile, qcParameters);
-                        /*
-                        if (searchParameters.SearchAlgorithm == SearchAlgorithm.XTandem)
-                        {
-                            SearchQC.ParseXTandem(newQcData, qcParameters);
-                            newQcData.IdentipyParameters = String.Format("\"Algorithm: X!Tandem; fmods: {0}; nmod: {1}; kmod: {2}; xmod: {3}; fastaDB: {4}; xtandemDirectory: {5}\"",
-                            searchParameters.FixedMods, searchParameters.NMod, searchParameters.KMod, searchParameters.XMod, searchParameters.FastaDatabase, searchParameters.XTandemDirectory);
-                        }
-                        else
-                        {
-                            SearchQC.ParseIdentipy(newQcData, rawData, rawFile, qcParameters);
-                            newQcData.IdentipyParameters = String.Format("\"Algorithm: IdentiPy; fmods: {0}; nmod: {1}; kmod: {2}; xmod: {3}; fastaDB: {4}; pythonExecutable: {5}; identipyScript: {6}\"",
-                            searchParameters.FixedMods, searchParameters.NMod, searchParameters.KMod, searchParameters.XMod, searchParameters.FastaDatabase, searchParameters.PythonExecutable, searchParameters.IdentipyScript);
-                        }
-                        */
-                    }
-
-                    qcDataCollection.QcData.Add(rawFile.CreationDate, newQcData);
-                    qcDataCollection.ProcessedRawFiles.Add(Path.GetFileName(rawData.rawFileName));
-                    qcDataCollection.WriteQcToTable();
-                }
-
-                Log.Information("QC finished: {File}", fileName);
-            }
-
-            Log.Information("QC of all files completed");
-            Console.WriteLine("QC of all files completed!");
-
-            try
-            {
-                XmlSerialization.WriteToXmlFile<QcDataCollection>(qcFile, qcDataCollection);
-                Log.Information("QC file saved successfully");
-                Console.WriteLine("QC file saved successfully");
-            }
-            catch (Exception e)
-            {
-                Log.Error(e, "Failed during serialization of QC data");
-                throw e;
-            }
+            return (fileList, qcDataCollection);
         }
 
-        public static int NumberOfEsiFlags(RawDataCollection rawData)
+        private static bool CheckIfFilePresentInQcCollection(string fileName, QcDataCollection qcDataCollection)
         {
-            int flags = 0;
+            IFileHeader rawHeader = FileHeaderReaderFactory.ReadFile(fileName);
 
-            int[] scans = rawData.scanIndex.ScanEnumerators[MSOrderType.Ms];
-
-            for (int i = 2; i < scans.Length; i++)
+            if (qcDataCollection.QcData.Keys.Contains(rawHeader.CreationDate))
             {
-                if (rawData.metaData[scans[i]].SummedIntensity / rawData.metaData[scans[i - 1]].SummedIntensity < 0.1)
-                {
-                    flags += 1;
-                }
-                if (rawData.metaData[scans[i]].SummedIntensity / rawData.metaData[scans[i - 1]].SummedIntensity > 10)
-                {
-                    flags += 1;
-                }
+                return true;
             }
-            return flags;
-        }
-
-        public static void ChromIntMetrics(this QcDataContainer qcData, RawDataCollection rawData, MetricsData metrics)
-        {
-            double firstRtToExceed10 = 0;
-            double lastRtToExceed10 = 0;
-            double proportionCovered;
-            var scans = rawData.scanIndex.ScanEnumerators[MSOrderType.Ms];
-            var reversedScans = scans.Reverse();
-            var totalIntList = (from x in scans select rawData.metaData[x].SummedIntensity).ToArray();
-
-            // get Q1 of total intensity from all scans
-            double threshold = totalIntList.Max()/10;
-
-            // get first RT which exceeds Q1
-            for (int i = 0; i < scans.Length; i++)
+            else
             {
-                int scan = scans[i];
-                if (totalIntList.MovingAverage(i, 20) > threshold)
-                {
-                    firstRtToExceed10 = rawData.retentionTimes[scan];
-                    break;
-                }
+                return false;
             }
-
-            for (int i = scans.Length - 1; i >= 0; i--)
-            {
-                int scan = scans[i];
-                if (totalIntList.MovingAverage(i, 20) > threshold)
-                {
-                    lastRtToExceed10 = rawData.retentionTimes[scan];
-                    break;
-                }
-            }
-
-            // get proportion of run encompassed by these times
-            //proportionCovered = (lastRtToExceedQ1 - firstRtToExceedQ1) / metrics.TotalAnalysisTime;
-            proportionCovered = (lastRtToExceed10 - firstRtToExceed10) / rawData.retentionTimes[rawData.scanIndex.ScanEnumerators[MSOrderType.Ms].Last()];
-
-            qcData.TimeBeforeFirstScanToExceedPoint1MaxIntensity = firstRtToExceed10;// - rawData.retentionTimes[1];
-            qcData.TimeAfterLastScanToExceedPoint1MaxIntensity = rawData.retentionTimes[rawData.scanIndex.ScanEnumerators[MSOrderType.Ms].Last()] - lastRtToExceed10;
-            qcData.FractionOfRunAbovePoint1MaxIntensity = proportionCovered;
         }
     }
     
@@ -374,24 +244,52 @@ namespace RawTools.QC
         public int NumEsiStabilityFlags;
         public SearchData SearchData;
 
-        public Distribution Ms1FillTime, Ms2FillTime, Ms3FillTime;
+        public Distribution Ms1FillTimeDistribution, Ms2FillTimeDistribution, Ms3FillTimeDistribution;
 
         public QuantMetaData QuantMeta;
 
         public QcDataContainer()
         { }
 
-        public QcDataContainer(string rawFile, DateTime dateAquired)
+        public QcDataContainer(string rawFile, DateTime dateAquired, MetricsData metricsData)
         {
             RawFile = rawFile;
             DateAcquired = dateAquired;
-            Ms1FillTime = Ms2FillTime = Ms3FillTime = new Distribution();
+            Ms1FillTimeDistribution = Ms2FillTimeDistribution = Ms3FillTimeDistribution = new Distribution();
             LabelingEfficiencyAtX = LabelingEfficiencyAtNTerm = LabelingEfficiencyAtK = -1;
             DigestionEfficiency = IdentificationRate = MissedCleavageRate = -1;
             ChargeRatio3to2 = ChargeRatio4to2 = -1;
             Ms3ScanRate = -1;
             MedianMassDrift = -1;
             SearchData = new SearchData();
+
+            TotalScans = metricsData.TotalScans;
+            NumMs1Scans = metricsData.MS1Scans;
+            NumMs2Scans = metricsData.MS2Scans;
+            NumMs3Scans = metricsData.MS3Scans;
+            Ms1ScanRate = metricsData.MS1ScanRate;
+            Ms2ScanRate = metricsData.MS2ScanRate;
+            MeanDutyCycle = metricsData.MeanDutyCycle;
+            MeanTopN = metricsData.MeanTopN;
+            MedianPrecursorIntensity = metricsData.MedianPrecursorIntensity;
+            MedianSummedMs2Intensity = metricsData.MedianSummedMS2Intensity;
+            MedianMs1IsolationInterference = metricsData.MedianMs1IsolationInterference;
+            MedianMs2FractionConsumingTop80PercentTotalIntensity = metricsData.MedianMs2FractionConsumingTop80PercentTotalIntensity;
+            NumEsiStabilityFlags = metricsData.NumberOfEsiFlags;
+            QuantMeta = metricsData.QuantMeta;
+            GradientTime = metricsData.Gradient;
+            ColumnPeakCapacity = metricsData.PeakCapacity;
+            TimeBeforeFirstScanToExceedPoint1MaxIntensity = metricsData.TimeBeforeFirstScanToExceedPoint1MaxIntensity;
+            TimeAfterLastScanToExceedPoint1MaxIntensity = metricsData.TimeAfterLastScanToExceedPoint1MaxIntensity;
+            FractionOfRunAbovePoint1MaxIntensity = metricsData.FractionOfRunAbovePoint1MaxIntensity;
+            PeakShape.Asymmetry.P10 = metricsData.PeakShape.Asymmetry.P10;
+            PeakShape.Asymmetry.P50 = metricsData.PeakShape.Asymmetry.P50;
+            PeakShape.Width.P10 = metricsData.PeakShape.Width.P10;
+            PeakShape.Width.P50 = metricsData.PeakShape.Width.P50;
+            MedianSummedMs1Intensity = metricsData.MedianSummedMS1Intensity;
+            Ms1FillTimeDistribution = metricsData.Ms1FillTimeDistribution;
+            Ms2FillTimeDistribution = metricsData.Ms2FillTimeDistribution;
+            Ms3FillTimeDistribution = metricsData.Ms3FillTimeDistribution;
         }
     }
 

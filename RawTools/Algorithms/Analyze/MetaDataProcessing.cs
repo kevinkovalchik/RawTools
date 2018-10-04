@@ -69,18 +69,20 @@ namespace RawTools.Algorithms.Analyze
         }
 
         public static MetricsData GetMetricsDataDDA(ScanMetaDataCollectionDDA metaData, MethodDataContainer methodData,
-            WorkflowParameters parameters, RetentionTimeCollection retentionTimes, ScanIndex index, PrecursorPeakCollection peakData,
+            string rawFileName, RetentionTimeCollection retentionTimes, ScanIndex index, PrecursorPeakCollection peakData,
             QuantDataCollection quantData = null)
         {
             MetricsData metricsData = new MetricsData();
 
-            metricsData.RawFileName = parameters.RawFileName;
+            metricsData.RawFileName = rawFileName;
             metricsData.Instrument = methodData.Instrument;
             metricsData.MS1Analyzer = methodData.MassAnalyzers[MSOrderType.Ms];
             metricsData.MS2Analyzer = methodData.MassAnalyzers[MSOrderType.Ms2];
 
             metricsData.TotalAnalysisTime = retentionTimes[index.ScanEnumerators[MSOrderType.Any].Last()] -
                 retentionTimes[index.ScanEnumerators[MSOrderType.Any].First()];
+
+            metricsData.NumberOfEsiFlags = NumberOfEsiFlags(metaData, index);
 
             metricsData.TotalScans = index.allScans.Count();
             metricsData.MS1Scans = index.ScanEnumerators[MSOrderType.Ms].Length;
@@ -98,6 +100,9 @@ namespace RawTools.Algorithms.Analyze
             }
 
             metricsData.MSOrder = methodData.AnalysisOrder;
+
+            metricsData.MedianSummedMS1Intensity = (from x in index.ScanEnumerators[MSOrderType.Ms]
+                                                    select metaData.SummedIntensity[x]).ToArray().Percentile(50);
 
             metricsData.MedianSummedMS2Intensity = (from x in index.ScanEnumerators[MSOrderType.Ms2]
                                                     select metaData.SummedIntensity[x]).ToArray().Percentile(50);
@@ -139,6 +144,21 @@ namespace RawTools.Algorithms.Analyze
             metricsData.MedianMs1IsolationInterference = (from scan in index.ScanEnumerators[methodData.AnalysisOrder]
                                                           select metaData.Ms1IsolationInterference[scan]).ToArray().Percentile(50);
 
+            (double timeBefore, double timeAfter, double fracAbove) = ChromIntMetrics(metaData, retentionTimes, index);
+            metricsData.TimeBeforeFirstScanToExceedPoint1MaxIntensity = timeBefore;
+            metricsData.TimeAfterLastScanToExceedPoint1MaxIntensity = timeAfter;
+            metricsData.FractionOfRunAbovePoint1MaxIntensity = fracAbove;
+
+            metricsData.Ms1FillTimeDistribution = new Distribution((from x in index.ScanEnumerators[MSOrderType.Ms] select metaData.FillTime[x]).ToArray());
+            metricsData.Ms2FillTimeDistribution = new Distribution((from x in index.ScanEnumerators[MSOrderType.Ms2] select metaData.FillTime[x]).ToArray());
+            metricsData.Ms3FillTimeDistribution = new Distribution((from x in index.ScanEnumerators[MSOrderType.Ms3] select metaData.FillTime[x]).ToArray());
+
+            metricsData.PeakShape.Asymmetry.P10 = peakData.PeakShapeMedians.Asymmetry.P10;
+            metricsData.PeakShape.Asymmetry.P50 = peakData.PeakShapeMedians.Asymmetry.P50;
+
+            metricsData.PeakShape.Width.P10 = peakData.PeakShapeMedians.Width.P10;
+            metricsData.PeakShape.Width.P50 = peakData.PeakShapeMedians.Width.P50;
+
             // now add the quant meta data, if quant was performed
             double medianReporterIntensity = 0;
             QuantMetaData quantMetaData = new QuantMetaData();
@@ -176,6 +196,86 @@ namespace RawTools.Algorithms.Analyze
                 metricsData.IncludesQuant = true;
             }
             return metricsData;
+        }
+
+        public static int NumberOfEsiFlags(ScanMetaDataCollectionDDA metaData, ScanIndex index)
+        {
+            return NumberOfEsiFlags(metaData.SummedIntensity, index);
+        }
+
+        public static int NumberOfEsiFlags(ScanMetaDataCollectionDIA metaData, ScanIndex index)
+        {
+            return NumberOfEsiFlags(metaData.SummedIntensity, index);
+        }
+
+        public static int NumberOfEsiFlags(Dictionary<int, double> SummedIntensity, ScanIndex index)
+        {
+            int flags = 0;
+
+            int[] scans = index.ScanEnumerators[MSOrderType.Ms];
+
+            for (int i = 2; i < scans.Length; i++)
+            {
+                if (SummedIntensity[scans[i]] / SummedIntensity[scans[i - 1]] < 0.1)
+                {
+                    flags += 1;
+                }
+                if (SummedIntensity[scans[i]] / SummedIntensity[scans[i - 1]] > 10)
+                {
+                    flags += 1;
+                }
+            }
+            return flags;
+        }
+
+        public static (double TimeBefore, double TimeAfter, double FractionAbove) ChromIntMetrics(ScanMetaDataCollectionDDA metaData, RetentionTimeCollection retentionTimes, ScanIndex index)
+        {
+            return ChromIntMetrics(metaData.SummedIntensity, retentionTimes, index);
+        }
+
+        public static (double TimeBefore, double TimeAfter, double FractionAbove) ChromIntMetrics(ScanMetaDataCollectionDIA metaData, RetentionTimeCollection retentionTimes, ScanIndex index)
+        {
+            return ChromIntMetrics(metaData.SummedIntensity, retentionTimes, index);
+        }
+
+        public static (double TimeBefore, double TimeAfter, double FractionAbove) ChromIntMetrics(Dictionary<int, double> SummedIntensity, RetentionTimeCollection retentionTimes, ScanIndex index)
+        {
+            double firstRtToExceed10 = 0;
+            double lastRtToExceed10 = 0;
+            double proportionCovered;
+            var scans = index.ScanEnumerators[MSOrderType.Ms];
+            var reversedScans = scans.Reverse();
+            var totalIntList = (from x in scans select SummedIntensity[x]).ToArray();
+
+            // get Q1 of total intensity from all scans
+            double threshold = totalIntList.Max() / 10;
+
+            // get first RT which exceeds Q1
+            for (int i = 0; i < scans.Length; i++)
+            {
+                int scan = scans[i];
+                if (totalIntList.MovingAverage(i, 20) > threshold)
+                {
+                    firstRtToExceed10 = retentionTimes[scan];
+                    break;
+                }
+            }
+
+            for (int i = scans.Length - 1; i >= 0; i--)
+            {
+                int scan = scans[i];
+                if (totalIntList.MovingAverage(i, 20) > threshold)
+                {
+                    lastRtToExceed10 = retentionTimes[scan];
+                    break;
+                }
+            }
+
+            // get proportion of run encompassed by these times
+            //proportionCovered = (lastRtToExceedQ1 - firstRtToExceedQ1) / metrics.TotalAnalysisTime;
+            proportionCovered = (lastRtToExceed10 - firstRtToExceed10) / retentionTimes[index.ScanEnumerators[MSOrderType.Ms].Last()];
+
+            return (firstRtToExceed10, retentionTimes[index.ScanEnumerators[MSOrderType.Ms].Last()] - lastRtToExceed10, proportionCovered);
         }
 
         /* The instrument method is inaccesible on Linux and Mac, so we won't use this method to get the gradient time. Instead we will

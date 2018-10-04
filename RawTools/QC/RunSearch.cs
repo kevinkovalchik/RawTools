@@ -24,6 +24,7 @@ using System.Threading.Tasks;
 using System.IO;
 using RawTools.Data.Containers;
 using RawTools.Data.Collections;
+using RawTools.WorkFlows;
 using RawTools;
 using RawTools.Utilities;
 using RawTools.Data.IO;
@@ -36,26 +37,29 @@ namespace RawTools.QC
 {
     static class Search
     {
-        public static void WriteSearchMGF(QcParameters qcParameters, RawDataCollection rawData, IRawDataPlus rawFile, bool fixedScans = false)
+        public static void WriteSearchMGF(WorkflowParameters parameters, CentroidStreamCollection centroids, SegmentScanCollection segments, ScanIndex index, bool fixedScans = false)
         {
-            var pars = qcParameters.searchParameters;
-            int[] scans = AdditionalMath.SelectRandomScans(scans: rawData.scanIndex.ScanEnumerators[MSOrderType.Ms2], num: pars.NumSpectra, fixedScans: fixedScans);
-            MGF.WriteMGF(rawData, rawFile, qcParameters.QcSearchDataDirectory, pars.MgfMassCutoff, scans, pars.MgfIntensityCutoff);
+            var pars = parameters.QcParams.SearchParameters;
+            int[] scans = AdditionalMath.SelectRandomScans(scans: index.ScanEnumerators[MSOrderType.Ms2], num: pars.NumSpectra, fixedScans: fixedScans);
+
+            Writer writer = new Writer(centroids, segments, parameters);
+
+            writer.WriteMGF(scans);            
         }
 
-        public static void RunSearch(QcParameters qcParameters, RawDataCollection rawData, IRawDataPlus rawFile)
+        public static void RunSearch(WorkflowParameters parameters, MethodDataContainer methodData, string rawFileName)
         {
-            string mgfFile = Path.Combine(qcParameters.QcSearchDataDirectory, Path.GetFileName(rawData.rawFileName) + ".mgf");
-            string outputFile = Path.Combine(qcParameters.QcSearchDataDirectory, Path.GetFileName(rawData.rawFileName) + ".pep.xml");
+            string mgfFile = Path.Combine(parameters.QcParams.QcSearchDataDirectory, Path.GetFileName(rawFileName) + ".mgf");
+            string outputFile = Path.Combine(parameters.QcParams.QcSearchDataDirectory, Path.GetFileName(rawFileName) + ".pep.xml");
 
-            if (qcParameters.searchParameters.SearchAlgorithm == SearchAlgorithm.XTandem)
+            if (parameters.QcParams.SearchAlgorithm == SearchAlgorithm.XTandem)
             {
-                XTandem.RunXTandem(rawData, qcParameters.searchParameters, mgfFile, outputFile, genDecoy: true);
+                XTandem.RunXTandem(parameters, methodData, mgfFile, outputFile, genDecoy: true);
             }
 
-            if (qcParameters.searchParameters.SearchAlgorithm == SearchAlgorithm.IdentiPy)
+            if (parameters.QcParams.SearchAlgorithm == SearchAlgorithm.IdentiPy)
             {
-                var pars = qcParameters.searchParameters;
+                var pars = parameters;
                 Identipy.RunIdentipy(rawData, rawFile, qcParameters.QcSearchDataDirectory, pars, writeMGF: false);
             }
         }

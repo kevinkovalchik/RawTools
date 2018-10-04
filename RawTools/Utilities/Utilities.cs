@@ -29,6 +29,7 @@ using RawTools.Data.Extraction;
 using RawTools.Algorithms;
 using ThermoFisher.CommonCore.Data.Interfaces;
 using ThermoFisher.CommonCore.Data.FilterEnums;
+using ThermoFisher.CommonCore.Data.Business;
 using System.Xml.Serialization;
 using Serilog;
 
@@ -698,6 +699,38 @@ namespace RawTools.Utilities
             else
             {
                 return;
+            }
+        }
+
+        public static bool CheckIfValid(string fileName)
+        {
+            IFileHeader rawHeader = null;
+
+            // try to open the raw file header
+            try
+            {
+                rawHeader = FileHeaderReaderFactory.ReadFile(fileName);
+            }
+            catch (Exception)
+            {
+                Log.Information("{File} is not a valid raw file", fileName);
+                Console.WriteLine("{0} is not a valid raw file.", fileName);
+                return false;
+            }
+
+            // is it a real raw file?
+            if (rawHeader.FileType == FileType.RawFile)
+            {
+                Log.Information("{File} is a valid raw file", fileName);
+                Log.Information("Creation date: {Date}", rawHeader.CreationDate);
+                Log.Information("File description: {Description}", rawHeader.FileDescription);
+                return true;
+            }
+            else
+            {
+                Log.Information("{File} is not a valid raw file", fileName);
+                Console.WriteLine("{0} is not a valid raw file, continuing to next file.", fileName);
+                return false;
             }
         }
     }

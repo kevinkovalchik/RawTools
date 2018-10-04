@@ -38,7 +38,7 @@ namespace RawTools.Data.IO
 {
     class Writer
     {
-        private List<string> data;
+        //private List<string> data;
         static private string fileName;
         static private ScanIndex index;
         static private CentroidStreamCollection centroidStreams;
@@ -60,7 +60,6 @@ namespace RawTools.Data.IO
         /// <summary>
         /// Writer for DDA data
         /// </summary>
-        /// <param name="data"></param>
         /// <param name="fileName"></param>
         /// <param name="centroids"></param>
         /// <param name="segments"></param>
@@ -71,12 +70,11 @@ namespace RawTools.Data.IO
         /// <param name="precursorPeaks"></param>
         /// <param name="trailerExtras"></param>
         /// <param name="quantData"></param>
-        public Writer(List<string> data, string fileName, CentroidStreamCollection centroids, SegmentScanCollection segments,
+        public Writer(string fileName, CentroidStreamCollection centroids, SegmentScanCollection segments,
             ScanMetaDataCollectionDDA metaData, RetentionTimeCollection retentionTimes, PrecursorMassCollection precursorMasses,
             PrecursorScanCollection precursorScans, PrecursorPeakCollection precursorPeaks, TrailerExtraCollection trailerExtras,
             ScanIndex Index, QuantDataCollection quantData = null)
         {
-            this.data = data;
             Writer.fileName = fileName;
             index = Index;
 
@@ -129,12 +127,11 @@ namespace RawTools.Data.IO
         /// <param name="precursorPeaks"></param>
         /// <param name="trailerExtras"></param>
         /// <param name="quantData"></param>
-        public Writer(List<string> data, string fileName, CentroidStreamCollection centroids, SegmentScanCollection segments,
+        public Writer(string fileName, CentroidStreamCollection centroids, SegmentScanCollection segments,
             ScanMetaDataCollectionDIA metaData, RetentionTimeCollection retentionTimes, PrecursorMassCollection precursorMasses,
             PrecursorScanCollection precursorScans, PrecursorPeakCollection precursorPeaks, TrailerExtraCollection trailerExtras,
             ScanIndex Index, QuantDataCollection quantData = null)
         {
-            this.data = data;
             Writer.fileName = fileName;
             Writer.index = Index;
             centroidStreams = centroids;
@@ -365,7 +362,7 @@ namespace RawTools.Data.IO
             }
         }
 
-        public static void WriteMatrixDDA()
+        public void WriteMatrixDDA()
         {
             List<string> data = new List<string>
             {
@@ -379,7 +376,7 @@ namespace RawTools.Data.IO
             WriteMatrix(data);
         }
 
-        public static void WriteMGF(int[] scans = null)
+        public void WriteMGF(int[] scans = null)
         {
             double intCutoff = 0;
             string fileName = ReadWrite.GetPathToFile(parameters.ParseParams.OutputDirectory, parameters.RawFileName, ".mgf");
@@ -588,9 +585,9 @@ namespace RawTools.Data.IO
                     f.Write(qcData.QcData[key].LabelingEfficiencyAtK + ",");
                     f.Write(qcData.QcData[key].LabelingEfficiencyAtX + ",");
 
-                    f.Write(qcData.QcData[key].Ms1FillTime.P50 + ",");
-                    f.Write(qcData.QcData[key].Ms2FillTime.P50 + ",");
-                    f.Write(qcData.QcData[key].Ms3FillTime.P50 + ",");
+                    f.Write(qcData.QcData[key].Ms1FillTimeDistribution.P50 + ",");
+                    f.Write(qcData.QcData[key].Ms2FillTimeDistribution.P50 + ",");
+                    f.Write(qcData.QcData[key].Ms3FillTimeDistribution.P50 + ",");
 
                     f.Write(qcData.QcData[key].PeakShape.Width.P10 * 60 + ",");
                     f.Write(qcData.QcData[key].PeakShape.Width.P50 * 60 + ",");

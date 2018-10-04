@@ -375,6 +375,8 @@ namespace RawTools.Algorithms.ExtractData
 
             MethodDataContainer methodData = new MethodDataContainer();
 
+            methodData.CreationDate = rawFile.CreationDate;
+
             methodData.AnalysisOrder = index.AnalysisOrder;
             int firstQuantScan = index.ScanEnumerators[index.AnalysisOrder][0];
             methodData.QuantAnalyzer = index.allScans[firstQuantScan].MassAnalyzer;

@@ -145,6 +145,7 @@ namespace RawTools.Data.Containers
         public (double MS2, (double MS1Window, double MS2Window) MS3) IsolationWindow;
         public (double MS2, (double MS1Offset, double MS2Offset) MS3) IsolationWindowOffset;
         public string Instrument;
+        public DateTime CreationDate;
         
         public MethodDataContainer()
         {
@@ -350,17 +351,23 @@ namespace RawTools.Data.Containers
         { }
     }
 
+    [Serializable]
     class MetricsData
     {
         public string RawFileName, Instrument;
         public MassAnalyzerType MS1Analyzer, MS2Analyzer, MS3Analyzer;
         public MSOrderType MSOrder;
-        public int TotalScans, MS1Scans, MS2Scans, MS3Scans;
+        public int TotalScans, MS1Scans, MS2Scans, MS3Scans, NumberOfEsiFlags;
         public double TotalAnalysisTime, MeanTopN, MS1ScanRate, MS2ScanRate, MS3ScanRate, MeanDutyCycle, MedianMS1FillTime, MedianMS2FillTime,
-            MedianMS3FillTime, MedianPrecursorIntensity, MedianSummedMS2Intensity, MedianBaselinePeakWidth, MedianHalfHeightPeakWidth, PeakCapacity, Gradient,
+            MedianMS3FillTime, MedianPrecursorIntensity, MedianSummedMS1Intensity, MedianSummedMS2Intensity, MedianBaselinePeakWidth, MedianHalfHeightPeakWidth, PeakCapacity, Gradient,
             MedianAsymmetryFactor, MedianMs2FractionConsumingTop80PercentTotalIntensity, MedianMs1IsolationInterference;
         public bool IncludesQuant = false;
         public QuantMetaData QuantMeta;
+        public double TimeBeforeFirstScanToExceedPoint1MaxIntensity;
+        public double TimeAfterLastScanToExceedPoint1MaxIntensity;
+        public double FractionOfRunAbovePoint1MaxIntensity;
+        public Distribution Ms1FillTimeDistribution, Ms2FillTimeDistribution, Ms3FillTimeDistribution;
+        public ((double P10, double P50) Asymmetry, (double P10, double P50) Width) PeakShape;
     }
 
     class PrecursorPeakData
@@ -483,7 +490,7 @@ namespace RawTools.Data.Containers
         }
     }
 
-    class SearchParameters
+    public class SearchParameters
     {
         public string FastaDatabase, PythonExecutable, IdentipyScript, XTandemDirectory;
         public SearchAlgorithm SearchAlgorithm;

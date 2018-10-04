@@ -34,6 +34,7 @@ using RawTools.Data.Containers;
 using RawTools.Utilities;
 using RawTools.Algorithms;
 using RawTools.QC;
+using RawTools.WorkFlows;
 using System.Xml.Linq;
 using Serilog;
 //using Serilog.Sinks.File;
@@ -79,7 +80,8 @@ namespace RawTools
         {
             using (IRawDataPlus rawFile = RawFileReaderFactory.ReadFile(fileName: opts.File))
             {
-                WorkFlows.WorkFlows.DDA(rawFile);
+                //WorkFlows.WorkflowParameters = new WorkFlows.WorkflowParameters();
+                //WorkFlows.WorkFlows.DDA(rawFile);
             }
 
             return 0;
@@ -182,7 +184,7 @@ namespace RawTools
             }
             qcParameters.searchParameters = searchParameters;
 
-            QC.QC.DoQc(qcParameters);
+            QC.QcWorkflow.DoQc(qcParameters);
             
             return 0;
         }
@@ -295,6 +297,8 @@ namespace RawTools
             System.Diagnostics.Stopwatch totalTime = new System.Diagnostics.Stopwatch();
             totalTime.Start();
 
+            WorkflowParameters parameters = new WorkflowParameters(opts);
+
             foreach (string file in files)
             {
                 singleFileTime.Start();
@@ -303,81 +307,9 @@ namespace RawTools
 
                 using (IRawDataPlus rawFile = RawFileReaderFactory.ReadFile(fileName:file))
                 {
-                    rawFile.SelectInstrument(Device.MS, 1);
+                    WorkFlows.DataWorkFlows.DDA(rawFile, parameters);
 
-                    Log.Information("Now processing: {File} --- Instrument: {Instrument}", Path.GetFileName(file), rawFile.GetInstrumentData().Name);
-
-                    RawDataCollection rawData = new RawDataCollection(rawFile:rawFile);
-                    rawData.ExpType = ExpType;
-                    QuantDataCollection quantData = new QuantDataCollection();
-
-                    bool isBoxCar = rawData.isBoxCar;
-
-                    if (rawData.isBoxCar)
-                    {
-                        Console.WriteLine("\nRaw file appears to be a boxcar-type experiment. Precursor peak analysis won't be performed!\n");
-                    }
-
-                    if (opts.ParseData | opts.Metrics | opts.Quant)
-                    {
-                        rawData.ExtractAll(rawFile, opts.RefineMassCharge);
-
-                        if (!isBoxCar & rawData.ExpType == ExperimentType.DDA)
-                        {
-                            rawData.CalcPeakRetTimesAndInts(rawFile: rawFile);
-                        }
-                    }
-
-                    if (opts.Quant)
-                    {
-                        rawData.quantData.Quantify(rawData:rawData, rawFile:rawFile, labelingReagent:opts.LabelingReagents);
-                    }
-
-                    if (opts.UnlabeledQuant & !isBoxCar)
-                    {
-                        rawData.QuantifyPrecursorPeaks(rawFile);
-                    }                    
-
-                    if (opts.Metrics)
-                    {
-                        rawData.metaData.AggregateMetaData(rawData, rawFile);
-                    }
-
-                    if (opts.ParseData | opts.Quant)
-                    {
-                        if (opts.Quant)
-                        {
-                            Parse.WriteMatrixDDA(rawData: rawData, rawFile: rawFile, metaData: rawData.metaData, quantData: rawData.quantData, outputDirectory: opts.OutputDirectory);
-                        }
-                        else
-                        {
-                            Parse.WriteMatrixDDA(rawData: rawData, rawFile: rawFile, metaData: rawData.metaData, outputDirectory: opts.OutputDirectory);
-                        }
-                    }                    
-
-                    if (opts.WriteMGF)
-                    {
-                        MGF.WriteMGF(rawData: rawData, rawFile: rawFile, outputDirectory: opts.OutputDirectory, cutoff: opts.MassCutOff,
-                            intensityCutoff: opts.IntensityCutoff);
-                    }
-
-                    if (opts.Metrics)
-                    {
-                        MetricsData metricsData = new MetricsData();
-
-                        if (opts.Quant)
-                        {
-                            metricsData.GetMetricsData(metaData: rawData.metaData, rawData: rawData, rawFile: rawFile, quantData: rawData.quantData);
-                        }
-                        else
-                        {
-                            metricsData.GetMetricsData(metaData: rawData.metaData, rawData: rawData, rawFile: rawFile);
-                        }
-
-                        metricsData.GetMetricsData(metaData: rawData.metaData, rawData: rawData, rawFile: rawFile);
-                        Metrics.WriteMatrix(rawData, metricsData, opts.OutputDirectory);
-                    }
-
+                    /*
                     if (opts.Chromatogram != null)
                     {
                         int order = Convert.ToInt32((opts.Chromatogram.ElementAt(0).ToString()));
@@ -394,6 +326,7 @@ namespace RawTools
                         rawData.WriteChromatogram(rawFile, (MSOrderType)order, opts.Chromatogram.Contains("T"), opts.Chromatogram.Contains("B"), opts.OutputDirectory);
                         }
                     }
+                    */
                 }
 
                 singleFileTime.Stop();

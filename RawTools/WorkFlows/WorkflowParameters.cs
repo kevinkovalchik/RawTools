@@ -17,6 +17,7 @@
 // licenses are provided in accompanying files as outline in the NOTICE.
 
 using System;
+using System.IO;
 using RawTools.Data.Containers;
 
 namespace RawTools.WorkFlows
@@ -25,7 +26,7 @@ namespace RawTools.WorkFlows
     {
         public ExperimentType ExpType;
         public double MgfIntensityCutoff, MgfMassCutoff;
-        public string RawFileName;
+        public string RawFileName, RawFileDirectory;
         public bool RefineMassCharge;
 
         public ParseWorkflowParameters ParseParams;
@@ -59,7 +60,13 @@ namespace RawTools.WorkFlows
 
         public int NumberSpectra;
 
-        public string QcDirectory, SearchAlgorithm, FastaDatabase, FixedMods,
+        public SearchParameters SearchParameters;
+
+        public SearchAlgorithm SearchAlgorithm;
+
+        public string QcDirectory, FastaDatabase, FixedMods,
             NMod, KMod, XMod, PythonExecutable, IdentipyScript, XTandemDirectory;
+
+        public string QcSearchDataDirectory { get { return Path.Combine(QcDirectory, "QcSearchData"); } }
     }
 }

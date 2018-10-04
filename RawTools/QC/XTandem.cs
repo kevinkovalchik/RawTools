@@ -29,6 +29,7 @@ using RawTools.Data.Containers;
 using RawTools.Data.Collections;
 using RawTools;
 using RawTools.Utilities;
+using RawTools.WorkFlows;
 using ThermoFisher.CommonCore.Data.FilterEnums;
 
 namespace RawTools.QC
@@ -48,13 +49,13 @@ namespace RawTools.QC
             }
         }
 
-        public static void UpdateCustomXParameters(this XElement customParameters, SearchParameters parameters, RawDataCollection rawData, string mgfFile, string outputFile)
+        public static void UpdateCustomXParameters(this XElement customParameters, WorkflowParameters parameters, MethodDataContainer methodData, string mgfFile, string outputFile)
         {
             // add fixed modifications
-            customParameters.AddNoteToXTandemParameters(type: "input", label: "residue, modification mass", value: parameters.FixedMods);
+            customParameters.AddNoteToXTandemParameters(type: "input", label: "residue, modification mass", value: parameters.QcParams.FixedMods);
 
             // add the variable modifications
-            var tempMods = from x in (new string[] { parameters.NMod, parameters.KMod, parameters.XMod })
+            var tempMods = from x in (new string[] { parameters.QcParams.NMod, parameters.QcParams.KMod, parameters.QcParams.XMod })
                            where x != null
                            select x;
             
@@ -73,7 +74,7 @@ namespace RawTools.QC
             customParameters.AddNoteToXTandemParameters(type: "input", label: "spectrum, parent monoisotopic mass error units", value: "ppm");
 
             // need to check where the fragment scan is happening to assign mass error
-            if (rawData.methodData.MassAnalyzers[MSOrderType.Ms2] == MassAnalyzerType.MassAnalyzerFTMS)
+            if (methodData.MassAnalyzers[MSOrderType.Ms2] == MassAnalyzerType.MassAnalyzerFTMS)
             {
                 customParameters.AddNoteToXTandemParameters(type: "input", label: "spectrum, fragment monoisotopic mass error", value: "0.5");
             }
@@ -85,11 +86,11 @@ namespace RawTools.QC
 
             // add default parameter file
             customParameters.AddNoteToXTandemParameters(type: "input", label: "list path, default parameters",
-                value: Path.Combine(parameters.XTandemDirectory, "RawTools_default_config.xml"));
+                value: Path.Combine(parameters.QcParams.XTandemDirectory, "RawTools_default_config.xml"));
 
             // add taxonomy file
             customParameters.AddNoteToXTandemParameters(type: "input", label: "list path, taxonomy information",
-                value: Path.Combine(parameters.XTandemDirectory, "RawTools_taxonomy.xml"));
+                value: Path.Combine(parameters.QcParams.XTandemDirectory, "RawTools_taxonomy.xml"));
 
             // add input and output
             customParameters.AddNoteToXTandemParameters(type: "input", label: "spectrum, path", value: mgfFile);
@@ -100,16 +101,16 @@ namespace RawTools.QC
             customParameters.AddNoteToXTandemParameters(type: "input", label: "spectrum, threads", value: (numProcessors - 1).ToString());
         }
 
-        public static void UpdateTaxonomy(this XElement taxonomy, SearchParameters parameters)
+        public static void UpdateTaxonomy(this XElement taxonomy, WorkflowParameters parameters)
         {
             XElement element = new XElement("file");
             element.SetAttributeValue("format", "peptide");
-            element.SetAttributeValue("URL", parameters.FastaDatabase);
+            element.SetAttributeValue("URL", parameters.QcParams.FastaDatabase);
             //taxonomy.Element("bioml").Element("taxon").Add(element);
             taxonomy.Element("taxon").Add(element);
         }
 
-        public static void RunXTandem(this RawDataCollection rawData, SearchParameters searchParameters, string mgfFile, string outputFile, bool genDecoy)
+        public static void RunXTandem(WorkflowParameters parameters, MethodDataContainer methodData, string mgfFile, string outputFile, bool genDecoy)
         {
             XElement customPars, taxonomy;
 
@@ -117,28 +118,28 @@ namespace RawTools.QC
             if (genDecoy)
             {
                 // check if the decoy database already exists
-                if (!searchParameters.FastaDatabase.EndsWith(".TARGET_DECOY.fasta"))
+                if (!parameters.QcParams.FastaDatabase.EndsWith(".TARGET_DECOY.fasta"))
                 {
-                    FastaManipulation.ReverseDecoy(searchParameters.FastaDatabase);
-                    searchParameters.FastaDatabase = searchParameters.FastaDatabase + ".TARGET_DECOY.fasta";
+                    FastaManipulation.ReverseDecoy(parameters.QcParams.FastaDatabase);
+                    parameters.QcParams.FastaDatabase = parameters.QcParams.FastaDatabase + ".TARGET_DECOY.fasta";
                 }
             }
 
             // write out the default input file
-            XElement.Parse(Properties.Resources.XTandem_default_config).Save(Path.Combine(searchParameters.XTandemDirectory, "RawTools_default_config.xml"));
+            XElement.Parse(Properties.Resources.XTandem_default_config).Save(Path.Combine(parameters.QcParams.XTandemDirectory, "RawTools_default_config.xml"));
 
             // set up and write the taxonomy file
             taxonomy = XElement.Parse(Properties.Resources.XTandem_taxonomy);
-            taxonomy.UpdateTaxonomy(searchParameters);
-            taxonomy.Save(Path.Combine(searchParameters.XTandemDirectory, "RawTools_taxonomy.xml"));
+            taxonomy.UpdateTaxonomy(parameters);
+            taxonomy.Save(Path.Combine(parameters.QcParams.XTandemDirectory, "RawTools_taxonomy.xml"));
 
             // set up and write the custom input file
             customPars = XElement.Parse(Properties.Resources.XTandem_custom_config);
-            customPars.UpdateCustomXParameters(searchParameters, rawData, mgfFile, outputFile);
-            string xTandemParameters = Path.Combine(searchParameters.XTandemDirectory, "RawTools_custom_config.xml");
+            customPars.UpdateCustomXParameters(parameters, methodData, mgfFile, outputFile);
+            string xTandemParameters = Path.Combine(parameters.QcParams.XTandemDirectory, "RawTools_custom_config.xml");
             customPars.Save(xTandemParameters);            
 
-            ConsoleUtils.VoidBash(Path.Combine(searchParameters.XTandemDirectory, "tandem.exe"), xTandemParameters);
+            ConsoleUtils.VoidBash(Path.Combine(parameters.QcParams.XTandemDirectory, "tandem.exe"), xTandemParameters);
         }
     }
 }
