@@ -100,7 +100,7 @@ namespace RawTools.Algorithms.ExtractData
 
             return scanIndex;
         }
-
+        
         public static (CentroidStreamCollection centroids, SegmentScanCollection segments) MsData(IRawDataPlus rawFile, ScanIndex index)
         {
             CentroidStreamCollection centroids = new CentroidStreamCollection();

@@ -46,7 +46,10 @@ namespace RawTools.Data.Collections
 
     class ScanDependentsCollections : Dictionary<int, IScanDependents> { }
 
-
+    class PrecursorPeakCollection : Dictionary<int, PrecursorPeakData>
+    {
+        public Containers.PeakShape PeakShapeMedians;
+    }
 
     class RawDataCollection
     {
@@ -60,7 +63,7 @@ namespace RawTools.Data.Collections
         public Dictionary<int, double> retentionTimes;
         public QuantDataCollection quantData;
         public ScanMetaDataCollectionDDA metaData;
-        public PrecursorPeakDataCollection peakData;
+        public PrecursorPeakCollection peakData;
         public HashSet<Operations> Performed = new HashSet<Operations>();
         public Containers.MethodDataContainer methodData;
         public bool isExactive, isBoxCar, refineMassCharge;
@@ -81,7 +84,7 @@ namespace RawTools.Data.Collections
             methodData = new Containers.MethodDataContainer();
             quantData = new QuantDataCollection();
             metaData = new ScanMetaDataCollectionDDA();
-            peakData = new PrecursorPeakDataCollection();
+            peakData = new PrecursorPeakCollection();
 
             this.ExtractScanIndex(rawFile);
             this.ExtractMethodData(rawFile);
@@ -101,10 +104,10 @@ namespace RawTools.Data.Collections
 
         public ScanMetaDataCollectionDDA()
         {
-            DutyCycle = FillTime = MS2ScansPerCycle = Ms1IsolationInterference =
+            DutyCycle = FillTime = Ms1IsolationInterference = SummedIntensity =
                 FractionConsumingTop80PercentTotalIntensity = new Dictionary<int, double>();
             IntensityDistribution = new Dictionary<int, Distribution>();
-            SummedIntensity = new Dictionary<int, double>();
+            MS2ScansPerCycle = new Dictionary<int, int>();
         }
     }
 
@@ -115,16 +118,12 @@ namespace RawTools.Data.Collections
 
         public ScanMetaDataCollectionDIA()
         {
-            DutyCycle = FillTime = FractionConsumingTop80PercentTotalIntensity = new Dictionary<int, double>();
+            SummedIntensity = DutyCycle = FillTime = FractionConsumingTop80PercentTotalIntensity = new Dictionary<int, double>();
             IntensityDistribution = new Dictionary<int, Distribution>();
-            SummedIntensity = new Dictionary<int, double>();
         }
     }
 
-    class PrecursorPeakDataCollection : Dictionary<int, PrecursorPeakData>
-    {
-        public Containers.PeakShape PeakShapeMedians;
-    }
+    
 
     [XmlRoot("dictionary")]
     public class SerializableDictionary<TKey, TValue>

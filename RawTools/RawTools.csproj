@@ -110,7 +110,7 @@
   <ItemGroup>
     <Compile Include="Algorithms\AnalyzePeaks.cs" />
     <Compile Include="Algorithms\Analyze\MetaDataProcessing.cs" />
-    <Compile Include="Algorithms\Analyze\MetaData\MetaData.cs" />
+    <Compile Include="Algorithms\Analyze\MetaData\ParseMetaData.cs" />
     <Compile Include="Algorithms\Averagine.cs" />
     <Compile Include="Algorithms\ChargeStateCalculator.cs" />
     <Compile Include="Algorithms\Extraction\ExtractData.cs" />

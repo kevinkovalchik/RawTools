@@ -38,14 +38,9 @@ namespace RawTools.Algorithms
 {
     static class AnalyzePeaks
     {
-        public static PrecursorPeakData OnePeak(RawDataCollection rawData, double monoIsoMass, int parentScan, int ddScan)
+        private static PrecursorPeakData OnePeak(CentroidStreamCollection centroids, RetentionTimeCollection retentionTimes,double monoIsoMass, int parentScan, int ddScan, ScanIndex index)
         {
             PrecursorPeakData peak = new PrecursorPeakData();
-
-            if (rawData.ExpType == ExperimentType.DIA | rawData.ExpType == ExperimentType.PRM)
-            {
-                return peak;
-            }
 
             int firstScan = parentScan,
                 lastScan = parentScan,
@@ -56,7 +51,7 @@ namespace RawTools.Algorithms
             bool containsFirstMS1Scan = false,
                 containsLastMS1Scan = false;
 
-            int[] MS1Scans = rawData.scanIndex.ScanEnumerators[MSOrderType.Ms];
+            int[] MS1Scans = index.ScanEnumerators[MSOrderType.Ms];
 
             double minMassDiff, maxIntensity, parentIntensity;
 
@@ -70,7 +65,7 @@ namespace RawTools.Algorithms
 
             // first take care of the parent scan data. In QE data sometimes the parent mass is missing from the parent spectrum, so we need to deal with that.
 
-            masses = rawData.centroidStreams[currentScan].Masses;//.Where(i => (i > parentMass - 1 & i < parentMass + 1)).ToArray();
+            masses = centroids[currentScan].Masses;//.Where(i => (i > parentMass - 1 & i < parentMass + 1)).ToArray();
             //masses = (from mass in rawData.centroidStreams[currentScan].Masses where mass > parentMass - 1 & mass < parentMass + 1 select mass).ToArray();
             //masses = masses.Where(i => (i > parentMass - 1 & i < parentMass + 1)).ToArray();
 
@@ -105,8 +100,8 @@ namespace RawTools.Algorithms
             while (true)
             {
                 currentScan = MS1Scans[scanIndex];
-                masses = rawData.centroidStreams[currentScan].Masses;
-                intensities = rawData.centroidStreams[currentScan].Intensities;
+                masses = centroids[currentScan].Masses;
+                intensities = centroids[currentScan].Intensities;
 
                 massDiff = new double[masses.Length];
 
@@ -155,8 +150,8 @@ namespace RawTools.Algorithms
                 }
 
                 currentScan = MS1Scans[scanIndex];
-                masses = rawData.centroidStreams[currentScan].Masses;
-                intensities = rawData.centroidStreams[currentScan].Intensities;
+                masses = centroids[currentScan].Masses;
+                intensities = centroids[currentScan].Intensities;
 
                 massDiff = new double[masses.Length];
 
@@ -222,7 +217,7 @@ namespace RawTools.Algorithms
 
             foreach (int scan in scans)
             {
-                profileTimes.Add(rawData.retentionTimes[scan]);
+                profileTimes.Add(retentionTimes[scan]);
                 profileIntensities.Add(indexedIntensities[scan]);
             }
 
@@ -245,8 +240,8 @@ namespace RawTools.Algorithms
             peak.ParentIntensity = parentIntensity;
             peak.MaximumIntensity = maxIntensity;
 
-            peak.MaximumRetTime = rawData.retentionTimes[maxScan];
-            peak.ParentRetTime = rawData.retentionTimes[parentScan];
+            peak.MaximumRetTime = retentionTimes[maxScan];
+            peak.ParentRetTime = retentionTimes[parentScan];
 
             peak.BaselineWidth = profileTimes.Last() - profileTimes.First();
 
@@ -256,39 +251,77 @@ namespace RawTools.Algorithms
             return peak;
         }
 
-        public static void CalcPeakRetTimesAndInts(this RawDataCollection rawData, IRawDataPlus rawFile)
+        public static PrecursorPeakCollection AnalyzeAllPeaks(CentroidStreamCollection centroids, IRawDataPlus rawFile, RetentionTimeCollection retentionTimes,
+            PrecursorMassCollection precursorMasses, PrecursorScanCollection precursorScans, ScanIndex index)
         {
-            CheckIfDone.Check(rawData, rawFile, new List<Operations> { Operations.ScanIndex, Operations.PrecursorMasses, Operations.PrecursorScans, Operations.Ms1CentroidStreams, Operations.RetentionTimes });
+            PrecursorPeakCollection peaks = new PrecursorPeakCollection();
+            PrecursorPeakData peak = new PrecursorPeakData();
+            DistributionMultiple allPeaksAsymmetry = new DistributionMultiple();
+            DistributionMultiple allPeaksWidths = new DistributionMultiple();
 
-            if (rawData.Performed.Contains(Operations.PeakRetAndInt))
-            {
-                return;
-            }
-
-            int[] scans = rawData.scanIndex.ScanEnumerators[MSOrderType.Ms2];
-
-            PrecursorPeakDataCollection peaks = new PrecursorPeakDataCollection();
+            int[] scans = index.ScanEnumerators[MSOrderType.Ms2];
 
             ProgressIndicator P = new ProgressIndicator(total: scans.Length, message: "Analyzing precursor peaks");
 
             foreach (int scan in scans)
             {
-                peaks.Add(scan, OnePeak(rawData: rawData, monoIsoMass: rawData.precursorMasses[scan].MonoisotopicMZ, parentScan: rawData.precursorScans[scan].MasterScan, ddScan: scan));
+                peak = OnePeak(centroids, retentionTimes, precursorMasses[scan].MonoisotopicMZ, precursorScans[scan].MasterScan, ddScan: scan, index: index);
+
+                if (peak.NScans < 5 | peak.PeakFound == false |
+                    peak.ContainsFirstMS1Scan | peak.ContainsLastMS1Scan)
+                {
+                    peak.PeakShape = null;
+                }
+                else
+                {
+                    peak.PeakShape = GetPeakShape(peak);
+                    allPeaksAsymmetry.Add(peak.PeakShape.Asymmetry);
+                    allPeaksWidths.Add(peak.PeakShape.Width);
+                }
+                
+                peak.Area = CalculatePeakArea(peak);
+
                 P.Update();
             }
             P.Done();
 
-            rawData.peakData = peaks;
-            rawData.Performed.Add(Operations.PeakRetAndInt);
-            rawData.Performed.RemoveWhere(x => x == Operations.PeakArea);
+            if (allPeaksWidths.P50.Count() == 0)
+            {
+                peaks.PeakShapeMedians = new Data.Containers.PeakShape(width: new Width(), asymmetry: new Asymmetry(), peakMax: 0);
+            }
+            else
+            {
+                peaks.PeakShapeMedians = new Data.Containers.PeakShape(width: allPeaksWidths.GetMedians(), asymmetry: allPeaksAsymmetry.GetMedians(), peakMax: 0);
+            }
+
+            return peaks;
         }
 
-        public static double InterpolateLinear((double x, double y) point0, (double x, double y) point1, double y)
+        private static PrecursorPeakCollection CalcPeakRetTimesAndInts(CentroidStreamCollection centroids, IRawDataPlus rawFile, RetentionTimeCollection retentionTimes,
+            PrecursorMassCollection precursorMasses, PrecursorScanCollection precursorScans, ScanIndex index)
+        {
+            int[] scans = index.ScanEnumerators[MSOrderType.Ms2];
+
+            PrecursorPeakCollection peaks = new PrecursorPeakCollection();
+
+            ProgressIndicator P = new ProgressIndicator(total: scans.Length, message: "Analyzing precursor peaks");
+
+            foreach (int scan in scans)
+            {
+                peaks.Add(scan, OnePeak(centroids, retentionTimes, precursorMasses[scan].MonoisotopicMZ, precursorScans[scan].MasterScan, ddScan: scan, index: index));
+                P.Update();
+            }
+            P.Done();
+
+            return peaks;
+        }
+
+        private static double InterpolateLinear((double x, double y) point0, (double x, double y) point1, double y)
         {
             return point0.x + (y - point0.y) * (point1.x - point0.x) / (point1.y - point0.y);
         }
 
-        public static Data.Containers.PeakShape GetPeakShape(RawDataCollection rawData, int scan)
+        private static Data.Containers.PeakShape GetPeakShape(PrecursorPeakData precursorPeak)
         {
             double[] Intensities, RetTimes;
             int maxIndex, currentIndex;
@@ -298,8 +331,8 @@ namespace RawTools.Algorithms
             a = new Dictionary<int, double>();
             b = new Dictionary<int, double>();
 
-            Intensities = rawData.peakData[scan].Intensities;
-            RetTimes = rawData.peakData[scan].RetTimes;
+            Intensities = precursorPeak.Intensities;
+            RetTimes = precursorPeak.RetTimes;
             maxIndex = Array.FindIndex(Intensities, x => { return x == Intensities.Max(); });
 
 
@@ -371,204 +404,8 @@ namespace RawTools.Algorithms
 
             return peak;
         }
-
-        public static void CalculatePeakShapes(this RawDataCollection rawData, IRawDataPlus rawFile, int percentile = 90)
-        {
-            List<Operations> list = new List<Operations>() { Operations.PeakRetAndInt };
-            CheckIfDone.Check(rawData, rawFile, list);
-
-            // in this first step we chose scans which are in the ith percentile
-            List<double> Intensities = (from x in rawData.peakData.Keys.ToArray() select rawData.peakData[x].MaximumIntensity).ToList();
-            Intensities.Sort();
-            Intensities.Reverse();
-            Intensities = Intensities.GetRange(0, Intensities.Count() / (100 - percentile));
-
-            int[] scans = (from x in rawData.peakData.Keys.ToArray() where Intensities.Contains(rawData.peakData[x].MaximumIntensity) select x).ToArray();
-            DistributionMultiple allPeaksAsymmetry = new DistributionMultiple();
-            DistributionMultiple allPeaksWidths = new DistributionMultiple();
-            ProgressIndicator P = new ProgressIndicator(scans.Length, "Calculating peak symmetries");
-
-            for (int i = 0; i < scans.Count(); i++)
-            {
-                if (rawData.peakData[scans[i]].NScans < 5 | rawData.peakData[scans[i]].PeakFound == false |
-                    rawData.peakData[scans[i]].ContainsFirstMS1Scan | rawData.peakData[scans[i]].ContainsLastMS1Scan)
-                {
-                    rawData.peakData[scans[i]].PeakShape = null;
-                    P.Update();
-                    continue;
-                }
-                rawData.peakData[scans[i]].PeakShape = GetPeakShape(rawData, scans[i]);
-
-                allPeaksAsymmetry.Add(rawData.peakData[scans[i]].PeakShape.Asymmetry);
-                allPeaksWidths.Add(rawData.peakData[scans[i]].PeakShape.Width);
-                P.Update();
-            }
-            P.Done();
-
-            rawData.Performed.Add(Operations.PeakShape);
-            if (allPeaksWidths.P50.Count() == 0)
-            {
-                rawData.peakData.PeakShapeMedians = new Data.Containers.PeakShape(width: new Width(), asymmetry: new Asymmetry(), peakMax: 0);
-            }
-            else
-            {
-                rawData.peakData.PeakShapeMedians = new Data.Containers.PeakShape(width: allPeaksWidths.GetMedians(), asymmetry: allPeaksAsymmetry.GetMedians(), peakMax: 0);
-            }
-        }
-        /*
-        static double FindMaxRetTime(PrecursorPeakData peakData, alglib.spline1dinterpolant splineInterpolant)
-        {
-            double[] rets = new double[10];
-            double[] ints = new double[10];
-            double firstRet = peakData.RetTimes.First();
-            double lastRet = peakData.RetTimes.Last();
-            int maxIndex = 0;
-
-            for (int j = 0; j < 3; j++)
-            {
-                for (int i = 0; i < 10; i++)
-                {
-                    rets[i] = firstRet + (lastRet - firstRet) * (i / 9);
-                    ints[i] = alglib.spline1dcalc(splineInterpolant, rets[i]);
-                }
-
-                maxIndex = Array.FindIndex(ints, x => x == ints.Max());
-                if (maxIndex == 0)
-                {
-                    return firstRet;
-                }
-                
-                firstRet = rets[maxIndex - 1];
-                lastRet = rets[maxIndex + 1];
-            }
-
-            return rets[maxIndex];
-        }
         
-        static (double a, double b) FindShoulderRetTimes(PrecursorPeakData peakData, double centerRetTime, alglib.spline1dinterpolant splineInterpolant, int percentHeight)
-        {
-            double[] rets = new double[10];
-            double[] ints = new double[10];
-            double[] diffs = new double[10];
-            double firstRet = peakData.RetTimes.First();
-            double lastRet = peakData.RetTimes.Last();
-            int leftIndex = 0,
-                rightIndex = 0;
-            double a, b;
-            double maxIntensity = alglib.spline1dcalc(splineInterpolant, centerRetTime);
-            double findIntensity = maxIntensity * percentHeight / 100;
-
-            // FindLeftShoulder
-            for (int j = 0; j < 3; j++)
-            {
-                for (int i = 0; i < 10; i++)
-                {
-                    rets[i] = firstRet + (centerRetTime - firstRet) * (i / 9);
-                    ints[i] = alglib.spline1dcalc(splineInterpolant, rets[i]);
-                    diffs[i] = Math.Abs(ints[i] - findIntensity);
-                }
-
-                leftIndex = Array.FindIndex(diffs, x => x == diffs.Min());
-                if (leftIndex == 0)
-                {
-                    break;
-                }
-                firstRet = rets[leftIndex - 1];
-                lastRet = rets[leftIndex + 1];
-            }
-            a = rets[leftIndex];
-
-            // FindRightShoulder
-            for (int j = 0; j < 3; j++)
-            {
-                for (int i = 0; i < 10; i++)
-                {
-                    rets[i] = centerRetTime + (lastRet - centerRetTime) * (i / 9);
-                    ints[i] = alglib.spline1dcalc(splineInterpolant, rets[i]);
-                    diffs[i] = Math.Abs(ints[i] - findIntensity);
-                }
-
-                rightIndex = Array.FindIndex(diffs, x => x == diffs.Min());
-                if (rightIndex == rets.Length - 1 | rightIndex == 0)
-                {
-                    break;
-                }
-                firstRet = rets[rightIndex - 1];
-                lastRet = rets[rightIndex + 1];
-            }
-            b = rets[rightIndex];
-
-            return (a : rets[leftIndex], b : rets[rightIndex]);
-        }
-        /*
-        static alglib.spline1dinterpolant FitPeak(RawDataCollection rawData, int scan)
-        {
-            int info;
-            double v;
-            alglib.spline1dinterpolant s;
-            alglib.spline1dfitreport rep;
-            double rho = 2;
-            alglib.spline1dfitpenalized(rawData.peakData[scan].RetTimes, rawData.peakData[scan].Intensities, 10, rho, out info, out s, out rep);
-
-            return s;
-        }
-        
-        public static (Distribution Asymmetry, Distribution Width, double PeakMaxRetTime) SplinePeakShape(RawDataCollection rawData, int scan)
-        {
-            alglib.spline1dinterpolant fit = FitPeak(rawData, scan);
-            Dictionary<int, (double a, double b)> PeakShoulders = new Dictionary<int, (double a, double b)>();
-            Distribution Asymmetry = new Distribution();
-            Distribution Width = new Distribution();
-
-            double PeakMaxRetTime = FindMaxRetTime(rawData.peakData[scan], fit);
-
-            foreach (int percent in new List<int> { 16, 25, 50, 75, 84 })
-            {
-                PeakShoulders.Add(percent, FindShoulderRetTimes(rawData.peakData[scan], PeakMaxRetTime, fit, percent));
-            }
-
-            Asymmetry.P16 = PeakShoulders[16].b / PeakShoulders[16].a;
-            Asymmetry.P25 = PeakShoulders[25].b / PeakShoulders[25].a;
-            Asymmetry.P50 = PeakShoulders[50].b / PeakShoulders[50].a;
-            Asymmetry.P75 = PeakShoulders[75].b / PeakShoulders[75].a;
-            Asymmetry.P84 = PeakShoulders[84].b / PeakShoulders[84].a;
-
-            Width.P16 = PeakShoulders[16].b + PeakShoulders[16].a;
-            Width.P25 = PeakShoulders[25].b + PeakShoulders[25].a;
-            Width.P50 = PeakShoulders[50].b + PeakShoulders[50].a;
-            Width.P75 = PeakShoulders[75].b + PeakShoulders[75].a;
-            Width.P84 = PeakShoulders[84].b + PeakShoulders[84].a;
-
-            return (Asymmetry: Asymmetry, Width: Width, PeakMaxRetTime: PeakMaxRetTime);
-        }
-
-        public static void AddPeakShapesToPeakData(RawDataCollection rawData)
-        {
-            // Not implemented. This method is for using a spline fitting, which we are not doing right now.
-            (Distribution Asymmetry, Distribution Width, double PeakMaxRetTime) peak;
-            ProgressIndicator P = new ProgressIndicator(rawData.peakData.Keys.Count, "Analyzing peak shapes");
-            Containers.PeakShape PeakShape = new Containers.PeakShape();
-
-            foreach (int scan in rawData.peakData.Keys)
-            {
-                if (!rawData.peakData[scan].PeakFound | rawData.peakData[scan].NScans < 3)
-                {
-                    continue;
-                }
-                peak = SplinePeakShape(rawData, scan);
-
-                PeakShape.Asymmetry = peak.Asymmetry;
-                PeakShape.MaxRetTime = peak.PeakMaxRetTime;
-                PeakShape.Width = peak.Width;
-
-                rawData.peakData[scan].PeakShape = PeakShape;
-
-                P.Update();
-            }
-            P.Done();
-        }
-        */
-        public static double CalculatePeakArea(PrecursorPeakData peak)
+        private static double CalculatePeakArea(PrecursorPeakData peak)
         {
             double area = 0;
 
@@ -578,29 +415,6 @@ namespace RawTools.Algorithms
             }
 
             return area;
-        }
-
-        public static void QuantifyPrecursorPeaks(this RawDataCollection rawData, IRawDataPlus rawFile)
-        {
-            List<Operations> list = new List<Operations>() { Operations.PeakRetAndInt };
-            CheckIfDone.Check(rawData, rawFile, list);
-            int[] scans = rawData.peakData.Keys.ToArray();
-            ProgressIndicator P = new ProgressIndicator(scans.Length, "Integrating precursor peaks");
-
-            for (int i = 0; i < scans.Count(); i++)
-            {
-                if (rawData.peakData[scans[i]].PeakFound == false)
-                {
-                    P.Update();
-                    continue;
-                }
-
-                rawData.peakData[scans[i]].Area = CalculatePeakArea(rawData.peakData[scans[i]]);
-                P.Update();
-            }
-            P.Done();
-
-            rawData.Performed.Add(Operations.PeakArea);
         }
     }
 }

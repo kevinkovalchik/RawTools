@@ -332,6 +332,29 @@ namespace RawTools.Utilities
             }
         }
 
+        /// <summary>
+        /// Return the nth percentile from a dictionary.
+        /// </summary>
+        /// <param name="dict"></param>
+        /// <param name="percentile"></param>
+        /// <returns></returns>
+        public static double PercentileFromDict(this Dictionary<int, double> dict, int percentile)
+        {
+            return dict.Values.ToArray().Percentile(percentile);
+        }
+
+        public static double MeanFromDict(this Dictionary<int, int> dict)
+        {
+            double[] values = Array.ConvertAll(dict.Values.ToArray(), Convert.ToDouble);
+
+            return values.Mean();
+        }
+
+        public static double MeanFromDict(this Dictionary<int, double> dict)
+        {
+            return dict.Values.ToArray().Mean();
+        }
+
         public static int[] SelectRandomScans(int[] scans, int num, bool fixedScans = false)
         {
             // convert scans to a list so we can use more methods on it

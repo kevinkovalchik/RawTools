@@ -33,10 +33,11 @@ using RawTools.Data.Collections;
 using RawTools.Data.Extraction;
 using RawTools.Utilities;
 using RawTools.Algorithms;
+using RawTools.WorkFlows;
 
 namespace RawTools.Algorithms.Analyze
 {
-    static class AggregateMetaData
+    static class ParseMetaData
     {
 
         public static double Ms1IsoWindow(MethodDataContainer methodData)

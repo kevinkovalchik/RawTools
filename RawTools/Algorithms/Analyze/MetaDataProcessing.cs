@@ -33,6 +33,7 @@ using RawTools.Data.Collections;
 using RawTools.Data.Extraction;
 using RawTools.Utilities;
 using RawTools.Algorithms;
+using RawTools.WorkFlows;
 
 namespace RawTools.Algorithms.Analyze
 {
@@ -47,40 +48,34 @@ namespace RawTools.Algorithms.Analyze
 
             ScanMetaDataCollectionDDA metaData = new ScanMetaDataCollectionDDA();
             
-            double isoWindow = AggregateMetaData.Ms1IsoWindow(methodData);
+            double isoWindow = ParseMetaData.Ms1IsoWindow(methodData);
 
-            metaData.MS2ScansPerCycle = AggregateMetaData.MS2ScansPerCycle(scanDependents, index);
+            metaData.MS2ScansPerCycle = ParseMetaData.MS2ScansPerCycle(scanDependents, index);
 
-            metaData.FillTime = AggregateMetaData.FillTimes(trailerExtras, index);
+            metaData.FillTime = ParseMetaData.FillTimes(trailerExtras, index);
 
-            metaData.DutyCycle = AggregateMetaData.DutyCycle(retentionTimes, index);
+            metaData.DutyCycle = ParseMetaData.DutyCycle(retentionTimes, index);
 
-            metaData.IntensityDistribution = AggregateMetaData.IntensityDistributions(centroidStreams, segmentScans, index);
+            metaData.IntensityDistribution = ParseMetaData.IntensityDistributions(centroidStreams, segmentScans, index);
 
-            metaData.SummedIntensity = AggregateMetaData.SummedIntensities(centroidStreams, segmentScans, index);
+            metaData.SummedIntensity = ParseMetaData.SummedIntensities(centroidStreams, segmentScans, index);
 
-            metaData.FractionConsumingTop80PercentTotalIntensity = AggregateMetaData.Top80Frac(centroidStreams, segmentScans, index);
+            metaData.FractionConsumingTop80PercentTotalIntensity = ParseMetaData.Top80Frac(centroidStreams, segmentScans, index);
 
-            metaData.Ms1IsolationInterference = AggregateMetaData.Ms1Interference(centroidStreams, precursorMasses, trailerExtras,
+            metaData.Ms1IsolationInterference = ParseMetaData.Ms1Interference(centroidStreams, precursorMasses, trailerExtras,
                 precursorScans, index, isoWindow);
 
             return metaData;
         }
 
-        public static MetricsData GetMetricsDataDDA(ScanMetaDataCollectionDDA metaData, IRawDataPlus rawFile, QuantDataCollection quantData = null)
+        public static MetricsData GetMetricsDataDDA(ScanMetaDataCollectionDDA metaData, IRawDataPlus rawFile, MethodDataContainer methodData,
+            WorkflowParameters parameters, RetentionTimeCollection retentionTimes, ScanIndex index, PrecursorPeakCollection peakData,
+            QuantDataCollection quantData = null)
         {
             MetricsData metricsData = new MetricsData();
-            List<Operations> operations = new List<Operations> { Operations.ScanIndex, Operations.RetentionTimes, Operations.MethodData, Operations.MetaData };
-            if (!rawData.isBoxCar)
-            {
-                operations.Add(Operations.PeakRetAndInt);
-                operations.Add(Operations.PeakShape);
-            }
 
-            rawData.Check(rawFile, operations);
-
-            metricsData.RawFileName = rawData.rawFileName;
-            metricsData.Instrument = rawData.instrument;
+            metricsData.RawFileName = parameters.RawFileName;
+            metricsData.Instrument = methodData.Instrument;
             metricsData.MS1Analyzer = methodData.MassAnalyzers[MSOrderType.Ms];
             metricsData.MS2Analyzer = methodData.MassAnalyzers[MSOrderType.Ms2];
 
@@ -104,82 +99,51 @@ namespace RawTools.Algorithms.Analyze
 
             metricsData.MSOrder = methodData.AnalysisOrder;
 
-            List<double> ms2intensities = new List<double>();
-            List<double> precursorIntensities = new List<double>();
-            List<double> ms1fillTimes = new List<double>();
-            List<double> ms2fillTimes = new List<double>();
-            List<double> ms3fillTimes = new List<double>();
-            List<double> ms2scansPerCycle = new List<double>();
-            List<double> dutyCycles = new List<double>();
-            List<double> fractionConsuming80 = new List<double>();
+            metricsData.MedianSummedMS2Intensity = (from x in index.ScanEnumerators[MSOrderType.Ms2]
+                                                    select metaData.SummedIntensity[x]).ToArray().Percentile(50);
 
-            foreach (int scan in index.ScanEnumerators[MSOrderType.Ms])
-            {
-                ms1fillTimes.Add(metaData[scan].FillTime);
-                ms2scansPerCycle.Add(metaData[scan].MS2ScansPerCycle);
-                dutyCycles.Add(metaData[scan].DutyCycle);
-            }
+            metricsData.MedianPrecursorIntensity = (from x in peakData.Keys select peakData[x].ParentIntensity).ToArray().Percentile(50);
 
-            foreach (int scan in index.ScanEnumerators[MSOrderType.Ms2])
-            {
-                precursorIntensities.Add(rawData.peakData[scan].ParentIntensity);
-                ms2intensities.Add(metaData[scan].SummedIntensity);
-                ms2fillTimes.Add(metaData[scan].FillTime);
-                fractionConsuming80.Add(metaData[scan].FractionConsumingTop80PercentTotalIntensity);
-            }
+            metricsData.MedianMS1FillTime = (from x in index.ScanEnumerators[MSOrderType.Ms]
+                                             select metaData.FillTime[x]).ToArray().Percentile(50);
 
-            if (methodData.AnalysisOrder == MSOrderType.Ms3)
-            {
-                foreach (int scan in index.ScanEnumerators[MSOrderType.Ms3])
-                {
-                    ms3fillTimes.Add(metaData[scan].FillTime);
-                }
-            }
+            metricsData.MedianMS2FillTime = (from x in index.ScanEnumerators[MSOrderType.Ms2]
+                                             select metaData.FillTime[x]).ToArray().Percentile(50);
 
-            metricsData.MedianPrecursorIntensity = precursorIntensities.ToArray().Percentile(50);
-            metricsData.MedianMs2FractionConsumingTop80PercentTotalIntensity = fractionConsuming80.ToArray().Percentile(50);
+            metricsData.MedianMS3FillTime = (from x in index.ScanEnumerators[MSOrderType.Ms3]
+                                             select metaData.FillTime[x]).ToArray().Percentile(50);
 
-            metricsData.MedianSummedMS2Intensity = ms2intensities.ToArray().Percentile(50);
-            metricsData.MedianMS1FillTime = ms1fillTimes.ToArray().Percentile(50);
-            metricsData.MedianMS2FillTime = ms2fillTimes.ToArray().Percentile(50);
-
-            if (methodData.AnalysisOrder == MSOrderType.Ms3)
-            {
-                metricsData.MedianMS3FillTime = ms3fillTimes.ToArray().Percentile(50);
-            }
-            else
-            {
-                metricsData.MedianMS3FillTime = -1;
-            }
-
-            metricsData.MeanTopN = ms2scansPerCycle.Average();
-            metricsData.MeanDutyCycle = dutyCycles.Average();
+            metricsData.MeanTopN = metaData.MS2ScansPerCycle.MeanFromDict();
+            
+            metricsData.MeanDutyCycle = (from x in index.ScanEnumerators[MSOrderType.Ms3]
+                                         select metaData.DutyCycle[x]).ToArray().Mean();
+            
+            metricsData.MedianMs2FractionConsumingTop80PercentTotalIntensity =
+                (from x in index.ScanEnumerators[MSOrderType.Ms3]
+                 select metaData.FractionConsumingTop80PercentTotalIntensity[x]).ToArray().Percentile(50);
+            
             metricsData.MS1ScanRate = metricsData.MS1Scans / metricsData.TotalAnalysisTime;
             metricsData.MS2ScanRate = metricsData.MS2Scans / metricsData.TotalAnalysisTime;
             metricsData.MS3ScanRate = metricsData.MS3Scans / metricsData.TotalAnalysisTime;
 
-            // only do the following if it isn't a boxcar experiment
-            if (!rawData.isBoxCar)
-            {
-                metricsData.MedianBaselinePeakWidth = rawData.peakData.PeakShapeMedians.Width.P10;
-                metricsData.MedianHalfHeightPeakWidth = rawData.peakData.PeakShapeMedians.Width.P50;
+            metricsData.MedianBaselinePeakWidth = peakData.PeakShapeMedians.Width.P10;
+            metricsData.MedianHalfHeightPeakWidth = peakData.PeakShapeMedians.Width.P50;
 
-                // we can't access the instrument method in Linux, so we will assume the gradient length is the length of the MS acquisition
-                metricsData.Gradient = retentionTimes[index.allScans.Keys.Max()];
-                metricsData.PeakCapacity = metricsData.Gradient / metricsData.MedianHalfHeightPeakWidth;
+            // we can't access the instrument method in Linux, so we will assume the gradient length is the length of the MS acquisition
+            metricsData.Gradient = retentionTimes[index.allScans.Keys.Max()];
+            metricsData.PeakCapacity = metricsData.Gradient / metricsData.MedianHalfHeightPeakWidth;
 
-                metricsData.MedianAsymmetryFactor = rawData.peakData.PeakShapeMedians.Asymmetry.P10;
-            }
+            metricsData.MedianAsymmetryFactor = peakData.PeakShapeMedians.Asymmetry.P10;
 
             // add isolation interference
             metricsData.MedianMs1IsolationInterference = (from scan in index.ScanEnumerators[methodData.AnalysisOrder]
-                                                          select rawData.metaData[scan].Ms1IsolationInterference).ToArray().Percentile(50);
+                                                          select metaData.Ms1IsolationInterference[scan]).ToArray().Percentile(50);
 
             // now add the quant meta data, if quant was performed
             double medianReporterIntensity = 0;
             QuantMetaData quantMetaData = new QuantMetaData();
             SerializableDictionary<string, double> medianReporterIntensityByChannel = new SerializableDictionary<string, double>();
-            if (quantData != null & rawData.Performed.Contains(Operations.Quantification))
+            if (quantData != null)
             {
                 string reagent = quantData.LabelingReagents;
                 string[] allTags = new LabelingReagents().Reagents[reagent].Labels;
@@ -211,6 +175,7 @@ namespace RawTools.Algorithms.Analyze
                 metricsData.QuantMeta = quantMetaData;
                 metricsData.IncludesQuant = true;
             }
+            return metricsData;
         }
 
         /* The instrument method is inaccesible on Linux and Mac, so we won't use this method to get the gradient time. Instead we will

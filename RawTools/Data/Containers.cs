@@ -144,6 +144,7 @@ namespace RawTools.Data.Containers
         public List<MSOrderType> MSOrderEnumerator;
         public (double MS2, (double MS1Window, double MS2Window) MS3) IsolationWindow;
         public (double MS2, (double MS1Offset, double MS2Offset) MS3) IsolationWindowOffset;
+        public string Instrument;
         
         public MethodDataContainer()
         {
@@ -413,6 +414,9 @@ namespace RawTools.Data.Containers
         public double MaxRetTime;
         public Width Width;
         public Asymmetry Asymmetry;
+
+        public PeakShape()
+        { }
 
         public PeakShape(Width width, Asymmetry asymmetry, double peakMax)
         {
