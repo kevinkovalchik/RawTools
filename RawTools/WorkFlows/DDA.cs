@@ -79,19 +79,21 @@ namespace RawTools.WorkFlows
             MetricsData metrics = null;
             if (parameters.ParseParams.Metrics)
             {
-                metrics = MetaDataProcessing.GetMetricsDataDDA(metaData, methodData, parameters, retentionTimes, Index, peakData, quantData);
+                metrics = MetaDataProcessing.GetMetricsDataDDA(metaData, methodData, rawFile.FileName, retentionTimes, Index, peakData, quantData);
+                Metrics.WriteMatrix(metrics, rawFile.FileName, parameters.ParseParams.OutputDirectory);
             }
 
             if (parameters.ParseParams.Parse)
             {
-                Writer writerDDA = new Writer(parameters.RawFileName, centroidStreams, segmentScans, metaData, retentionTimes,
+                string matrixFileName = ReadWrite.GetPathToFile(parameters.ParseParams.OutputDirectory, rawFile.FileName, "._parse.txt");
+                Writer writerDDA = new Writer(matrixFileName, centroidStreams, segmentScans, metaData, retentionTimes,
                 precursorMasses, precursorScans, peakData, trailerExtras, Index);
-                writerDDA.WriteMatrixDDA();
+                writerDDA.WriteMatrixDDA(methodData.AnalysisOrder);
             }
             if (parameters.ParseParams.WriteMgf)
             {
                 Writer writerMGF = new Writer(centroidStreams, segmentScans, parameters);
-                writerMGF.WriteMGF();
+                writerMGF.WriteMGF(rawFile.FileName);
             }
 
         }
@@ -133,11 +135,11 @@ namespace RawTools.WorkFlows
 
             if (parameters.QcParams.PerformSearch)
             {
-                Search.WriteSearchMGF(parameters, centroidStreams, segmentScans, Index, parameters.QcParams.FixedScans);
+                Search.WriteSearchMGF(parameters, centroidStreams, segmentScans, Index, rawFile.FileName, parameters.QcParams.FixedScans);
 
-                Search.RunSearch(parameters.QcParams, rawData, rawFile);
+                Search.RunSearch(parameters, methodData, rawFile.FileName);
 
-                newQcData.ParseSearchResults(rawData, rawFile, qcParameters);
+                qcData = SearchQC.ParseSearchResults(parameters, rawFile.FileName);
             }
 
             return qcData;

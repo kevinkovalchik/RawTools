@@ -30,6 +30,7 @@ using RawTools;
 using RawTools.Utilities;
 using RawTools.Data.IO;
 using RawTools.QC;
+using RawTools.WorkFlows;
 using ThermoFisher.CommonCore.Data.FilterEnums;
 using ThermoFisher.CommonCore.Data.Interfaces;
 using Serilog;
@@ -53,21 +54,25 @@ namespace RawTools.QC
             return num;
         }
         
-        public static XElement LoadSearchResults(QcParameters qcParameters, RawDataCollection rawData)
+        public static XElement LoadSearchResults(WorkflowParameters parameters, string rawFileName)
         {
-            string QcSearchDataDirectory = qcParameters.QcSearchDataDirectory;
-            string resultsFile = Path.Combine(QcSearchDataDirectory, Path.GetFileName(rawData.rawFileName) + ".pep.xml");
+            string QcSearchDataDirectory = parameters.QcParams.QcSearchDataDirectory;
+            string resultsFile = Path.Combine(QcSearchDataDirectory, Path.GetFileName(rawFileName) + ".pep.xml");
 
             return XElement.Load(resultsFile);
         }
 
-        public static void ParseSearchResults(this QcDataContainer qcData, RawDataCollection rawData, IRawDataPlus rawFile, QcParameters qcParameters)
+        public static QcDataContainer ParseSearchResults(WorkflowParameters parameters, string rawFileName)
         {
-            XElement results = LoadSearchResults(qcParameters, rawData);
+            QcDataContainer qcData = new QcDataContainer();
 
-            PsmDataCollection Psms = ExtractPsmData(results, qcParameters.searchParameters.SearchAlgorithm);
+            XElement results = LoadSearchResults(parameters, rawFileName);
 
-            qcData.ParsePSMs(Psms, qcParameters);
+            PsmDataCollection Psms = ExtractPsmData(results, parameters.QcParams.SearchAlgorithm);
+
+            qcData.ParsePSMs(Psms, parameters);
+
+            return qcData;
         }
         
         public static PsmDataCollection ExtractPsmData(XElement results, SearchAlgorithm searchAlgorithm)
@@ -214,7 +219,7 @@ namespace RawTools.QC
             return psms;
         }
 
-        public static void ParsePSMs(this QcDataContainer qcData, PsmDataCollection psmCollection, QcParameters qcParameters)
+        public static void ParsePSMs(this QcDataContainer qcData, PsmDataCollection psmCollection, WorkflowParameters parameters)
         {
             XElement results, searchSummary;
             IEnumerable<XElement> decoyPSMs, search_hits, spectrumQueries;
@@ -224,10 +229,10 @@ namespace RawTools.QC
             double digestionEfficiencyByCleavage, digestionEfficiency, topDecoyScore;
             double missedCleavageRate;
             Dictionary<int, int> numCharges = new Dictionary<int, int>();
-            SearchParameters searchParameters = qcParameters.searchParameters;
-            int numSearched = searchParameters.NumSpectra;
             List<PsmData> psms;
             IEnumerable<PsmData> goodPsms, nonDecoys;
+
+            int numSearched = parameters.QcParams.NumberSpectra;
 
             // convert the dictionary to a list for easy parsing
             psms = psmCollection.Values.ToList();
@@ -289,9 +294,9 @@ namespace RawTools.QC
             Console.WriteLine("IDrate: {0}", IdRate);
 
             // get labeling efficiency metrics
-            if ((searchParameters.NMod != null) | (searchParameters.KMod != null) | (searchParameters.XMod != null))
+            if ((parameters.QcParams.NMod != null) | (parameters.QcParams.KMod != null) | (parameters.QcParams.XMod != null))
             {
-                qcData.GetModificationFrequency(goodPsms, searchParameters);
+                qcData.GetModificationFrequency(goodPsms, parameters);
             }
 
             // get median mass drift
@@ -306,12 +311,12 @@ namespace RawTools.QC
             qcData.ChargeRatio4to2 = chargeRatio4to2;
         }
 
-        public static void GetModificationFrequency(this QcDataContainer qcData, IEnumerable<PsmData> psms, SearchParameters searchParameters)
+        public static void GetModificationFrequency(this QcDataContainer qcData, IEnumerable<PsmData> psms, WorkflowParameters parameters)
         {
 
-            string nmod = searchParameters.NMod;
-            string kmod = searchParameters.KMod;
-            string xmod = searchParameters.XMod;
+            string nmod = parameters.QcParams.NMod;
+            string kmod = parameters.QcParams.KMod;
+            string xmod = parameters.QcParams.XMod;
             Dictionary<string, string> Modifications = new Dictionary<string, string>();
             Dictionary<string, int> TotalLabelingSites = new Dictionary<string, int>();
             Dictionary<string, int> LabelingSitesHit = new Dictionary<string, int>();

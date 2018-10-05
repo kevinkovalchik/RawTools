@@ -37,14 +37,14 @@ namespace RawTools.QC
 {
     static class Search
     {
-        public static void WriteSearchMGF(WorkflowParameters parameters, CentroidStreamCollection centroids, SegmentScanCollection segments, ScanIndex index, bool fixedScans = false)
+        public static void WriteSearchMGF(WorkflowParameters parameters, CentroidStreamCollection centroids, SegmentScanCollection segments, ScanIndex index, string rawFileName, bool fixedScans = false)
         {
             var pars = parameters.QcParams.SearchParameters;
             int[] scans = AdditionalMath.SelectRandomScans(scans: index.ScanEnumerators[MSOrderType.Ms2], num: pars.NumSpectra, fixedScans: fixedScans);
 
             Writer writer = new Writer(centroids, segments, parameters);
 
-            writer.WriteMGF(scans);            
+            writer.WriteMGF(rawFileName, scans);            
         }
 
         public static void RunSearch(WorkflowParameters parameters, MethodDataContainer methodData, string rawFileName)
@@ -60,7 +60,7 @@ namespace RawTools.QC
             if (parameters.QcParams.SearchAlgorithm == SearchAlgorithm.IdentiPy)
             {
                 var pars = parameters;
-                Identipy.RunIdentipy(rawData, rawFile, qcParameters.QcSearchDataDirectory, pars, writeMGF: false);
+                Identipy.RunIdentipy(parameters, methodData, mgfFile, outputFile);
             }
         }
     }

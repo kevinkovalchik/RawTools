@@ -17,6 +17,7 @@
 // licenses are provided in accompanying files as outline in the NOTICE.
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using RawTools.Data.Containers;
 
@@ -26,26 +27,62 @@ namespace RawTools.WorkFlows
     {
         public ExperimentType ExpType;
         public double MgfIntensityCutoff, MgfMassCutoff;
-        public string RawFileName, RawFileDirectory;
+        public string RawFileDirectory;
         public bool RefineMassCharge;
+        public IEnumerable<string> InputFiles;
 
         public ParseWorkflowParameters ParseParams;
         public QcWorkflowParameters QcParams;
 
         public WorkflowParameters(ArgumentParser.ParseOptions parseOptions)
         {
-            QcParams = null;
-            Enum.TryParse(parseOptions.ExperimentType, out ExpType);
+            ParseParams = new ParseWorkflowParameters();
+            Enum.TryParse(parseOptions.ExperimentType, true, out ExpType);
 
-            // place holder
+            MgfIntensityCutoff = parseOptions.IntensityCutoff;
+            MgfMassCutoff = parseOptions.MassCutOff;
+            InputFiles = parseOptions.InputFiles;
+            RawFileDirectory = parseOptions.InputDirectory;
+            RefineMassCharge = parseOptions.RefineMassCharge;
+            ParseParams.Chromatogram = parseOptions.Chromatogram;
+            ParseParams.LabelingReagents = String.Empty;
+            ParseParams.LabelingReagents = parseOptions.LabelingReagents;
+            ParseParams.Metrics = parseOptions.Metrics;
+            ParseParams.OutputDirectory = parseOptions.OutputDirectory;
+            ParseParams.Parse = parseOptions.ParseData;
+            ParseParams.Quant = parseOptions.Quant;
+            ParseParams.UnlabeledQuant = parseOptions.UnlabeledQuant;
+            ParseParams.WriteMgf = parseOptions.WriteMGF;
         }
 
         public WorkflowParameters(ArgumentParser.QcOptions qcOptions)
         {
-            ParseParams = null;
-            Enum.TryParse(qcOptions.ExperimentType, out ExpType);
-            // place holder
+            QcParams = new QcWorkflowParameters();
+            Enum.TryParse(qcOptions.SearchAlgorithm, true, out QcParams.SearchAlgorithm);
+            Enum.TryParse(qcOptions.ExperimentType, true, out ExpType);
+
+            MgfIntensityCutoff = qcOptions.IntensityCutoff;
+            MgfMassCutoff = qcOptions.MassCutOff;
+            RawFileDirectory = qcOptions.DirectoryToQc;
+            RefineMassCharge = qcOptions.RefineMassCharge;
+
+            QcParams.FastaDatabase = qcOptions.FastaDatabase;
+            QcParams.FixedMods = qcOptions.FixedMods;
+            QcParams.FixedScans = qcOptions.FixedScans;
+            QcParams.IdentipyScript = qcOptions.IdentipyScript;
+            QcParams.KMod = qcOptions.VariableKMod;
+            QcParams.NMod = qcOptions.VariableNMod;
+            QcParams.XMod = qcOptions.VariableXMod;
+            QcParams.NumberSpectra = qcOptions.NumberSpectra;
+            QcParams.PythonExecutable = qcOptions.PythonExecutable;
+            QcParams.QcDirectory = qcOptions.QcDirectory;
+
+            if (QcParams.SearchAlgorithm != SearchAlgorithm.None)
+            {
+                QcParams.PerformSearch = true;
+            }
         }
+        
     }
 
     public class ParseWorkflowParameters

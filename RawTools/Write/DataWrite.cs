@@ -33,6 +33,7 @@ using ThermoFisher.CommonCore.Data.Interfaces;
 using ThermoFisher.CommonCore.Data;
 using ThermoFisher.CommonCore.Data.FilterEnums;
 using RawTools.WorkFlows;
+using Serilog;
 
 namespace RawTools.Data.IO
 {
@@ -86,6 +87,7 @@ namespace RawTools.Data.IO
             Writer.precursorMasses = precursorMasses;
             Writer.precursorScans = precursorScans;
             Writer.trailerExtras = trailerExtras;
+            Writer.precursorPeaks = precursorPeaks;
             Delegates.Add("MS3ScanNumber", WriterDelegates.MS3ScanNumber);
             Delegates.Add("MS2ScanNumber", WriterDelegates.MS2ScanNumber);
             Delegates.Add("MS1ScanNumber", WriterDelegates.MS1ScanNumber);
@@ -106,7 +108,7 @@ namespace RawTools.Data.IO
             Delegates.Add("PeakParentScanIntensity", WriterDelegates.PeakParentScanIntensity);
             Delegates.Add("PeakMaxIntensity", WriterDelegates.PeakMaxIntensity);
             Delegates.Add("MS1IonInjectionTime", WriterDelegates.MS1IonInjectionTime);
-            Delegates.Add("MS2IonInjectionTime ", WriterDelegates.MS2IonInjectionTime);
+            Delegates.Add("MS2IonInjectionTime", WriterDelegates.MS2IonInjectionTime);
             Delegates.Add("MS3IonInjectionTime", WriterDelegates.MS3IonInjectionTime);
             Delegates.Add("HCDEnergy", WriterDelegates.HCDEnergy);
             Delegates.Add("MS1MedianIntensity", WriterDelegates.MS1MedianIntensity);
@@ -142,13 +144,14 @@ namespace RawTools.Data.IO
             Writer.precursorMasses = precursorMasses;
             Writer.precursorScans = precursorScans;
             Writer.trailerExtras = trailerExtras;
+            Writer.precursorPeaks = precursorPeaks;
             Delegates.Add("MS2ScanNumber", WriterDelegates.MS2ScanNumber);
             Delegates.Add("MS1ScanNumber", WriterDelegates.MS1ScanNumber);
             Delegates.Add("QuantScanRetTime", WriterDelegates.QuantScanRetTime);
             Delegates.Add("ParentScanRetTime", WriterDelegates.ParentScanRetTime);
             Delegates.Add("DutyCycle", WriterDelegates.DutyCycle);
             Delegates.Add("MS1IonInjectionTime", WriterDelegates.MS1IonInjectionTime);
-            Delegates.Add("MS2IonInjectionTime ", WriterDelegates.MS2IonInjectionTime);
+            Delegates.Add("MS2IonInjectionTime", WriterDelegates.MS2IonInjectionTime);
             Delegates.Add("HCDEnergy", WriterDelegates.HCDEnergy);
             Delegates.Add("MS1MedianIntensity", WriterDelegates.MS1MedianIntensity);
             Delegates.Add("MS2MedianIntensity", WriterDelegates.MS2MedianIntensity);
@@ -191,12 +194,12 @@ namespace RawTools.Data.IO
 
             public static void MS2ScansPerCycle(int scan, StreamWriter f)
             {
-                f.Write(metaDataDDA.MS2ScansPerCycle[scan]);
+                f.Write(metaDataDDA.MS2ScansPerCycle[precursorScans[scan].MasterScan]);
             }
 
             public static void DutyCycle(int scan, StreamWriter f)
             {
-                f.Write(metaDataDDA.DutyCycle[scan]);
+                f.Write(metaDataDDA.DutyCycle[precursorScans[scan].MasterScan]);
             }
 
             public static void ParentIonMass(int scan, StreamWriter f)
@@ -281,15 +284,15 @@ namespace RawTools.Data.IO
 
             public static void MS1MedianIntensity(int scan, StreamWriter f)
             {
-                f.Write(metaDataDDA.IntensityDistribution[precursorScans[scan].MasterScan]);
+                f.Write(metaDataDDA.IntensityDistribution[precursorScans[scan].MasterScan].P50);
             }
 
             public static void MS2MedianIntensity(int scan, StreamWriter f)
             {
-                f.Write(metaDataDDA.IntensityDistribution[precursorScans[scan].MS2Scan]);
+                f.Write(metaDataDDA.IntensityDistribution[precursorScans[scan].MS2Scan].P50);
             }
         }
-
+        
         private static void WriteMatrix(List<string> Data)
         {
             using (StreamWriter f = new StreamWriter(fileName)) //Open a new file
@@ -326,8 +329,12 @@ namespace RawTools.Data.IO
                 }
                 f.Write("\n");
 
+                ProgressIndicator P = new ProgressIndicator(scans.Count(), "Writing output table");
+                P.Start();
+
                 foreach (int scan in scans)
                 {
+
                     for (int i = 0; i < Data.Count(); i++)
                     {
                         Delegates[Data[i]](scan, f);
@@ -358,28 +365,50 @@ namespace RawTools.Data.IO
                         }
                     }
                     f.Write("\n");
+                    P.Update();
                 }
+                P.Done();
             }
         }
 
-        public void WriteMatrixDDA()
+        public void WriteMatrixDDA(MSOrderType order)
         {
-            List<string> data = new List<string>
+            List<string> data = new List<string>();
+
+            if (order == MSOrderType.Ms3)
             {
+                data = new List<string>
+                {
                 "MS3ScanNumber", "MS2ScanNumber", "MS1ScanNumber", "QuantScanRetTime", "ParentScanRetTime", "DutyCycle",
                 "MS2ScansPerCycle", "ParentIonMass", "MonoisotopicMass", "PrecursorCharge", "MS1IsolationInterference",
                 "ParentPeakFound", "ParentPeakArea", "PeakFirstScan", "PeakMaxScan", "PeakLastScan", "BaseLinePeakWidth(s)",
-                "PeakParentScanIntensity", "PeakMaxIntensity", "PeakMaxIntensity", "MS1IonInjectionTime", "MS2IonInjectionTime",
+                "PeakParentScanIntensity", "PeakMaxIntensity", "MS1IonInjectionTime", "MS2IonInjectionTime",
                 "MS3IonInjectionTime", "HCDEnergy", "MS1MedianIntensity", "MS2MedianIntensity"
-            };
+                };
+            }
+            else if (order == MSOrderType.Ms2)
+            {
+                data = new List<string>
+                {
+                "MS2ScanNumber", "MS1ScanNumber", "QuantScanRetTime", "ParentScanRetTime", "DutyCycle",
+                "MS2ScansPerCycle", "ParentIonMass", "MonoisotopicMass", "PrecursorCharge", "MS1IsolationInterference",
+                "ParentPeakFound", "ParentPeakArea", "PeakFirstScan", "PeakMaxScan", "PeakLastScan", "BaseLinePeakWidth(s)",
+                "PeakParentScanIntensity", "PeakMaxIntensity", "MS1IonInjectionTime", "MS2IonInjectionTime",
+                "HCDEnergy", "MS1MedianIntensity", "MS2MedianIntensity"
+                };
+            }
+            else
+            {
+                Log.Error("Incompatible ms order: {MSOrder}", order);
+            }
 
             WriteMatrix(data);
         }
 
-        public void WriteMGF(int[] scans = null)
+        public void WriteMGF(string rawFileName, int[] scans = null)
         {
             double intCutoff = 0;
-            string fileName = ReadWrite.GetPathToFile(parameters.ParseParams.OutputDirectory, parameters.RawFileName, ".mgf");
+            string fileName = ReadWrite.GetPathToFile(parameters.ParseParams.OutputDirectory, rawFileName, ".mgf");
 
             MassAnalyzerType ms2MassAnalyzer = methodData.MassAnalyzers[MSOrderType.Ms2];
             
@@ -398,7 +427,7 @@ namespace RawTools.Data.IO
                 foreach (int i in scans)
                 {
                     f.WriteLine("\nBEGIN IONS");
-                    f.WriteLine("RAWFILE={0}", parameters.RawFileName);
+                    f.WriteLine("RAWFILE={0}", rawFileName);
                     f.WriteLine("TITLE=Spectrum_{0}", i);
                     f.WriteLine("SCAN={0}", i);
                     f.WriteLine("RTINSECONDS={0}", retentionTimes[i]);
@@ -460,9 +489,9 @@ namespace RawTools.Data.IO
 
     static class Metrics
     {
-        public static void WriteMatrix(RawDataCollection rawData, MetricsData metrics, string outputDirectory = null)
+        public static void WriteMatrix(MetricsData metrics,  string rawFileName, string outputDirectory = null)
         {
-            string fileName = ReadWrite.GetPathToFile(outputDirectory, rawData.rawFileName, "_Metrics.txt");
+            string fileName = ReadWrite.GetPathToFile(outputDirectory, rawFileName, "_Metrics.txt");
 
             using (StreamWriter f = new StreamWriter(fileName)) //Open a new file
             {
@@ -495,13 +524,10 @@ namespace RawTools.Data.IO
                 f.WriteLine("MedianMS3FillTime:\t" + Math.Round(metrics.MedianMS3FillTime, 4));
                 f.WriteLine("MedianMS2Intensity:\t" + Math.Round(metrics.MedianSummedMS2Intensity, 4));
                 f.WriteLine("MedianMS1IsolationInterference:\t" + Math.Round(metrics.MedianMs1IsolationInterference, 4));
-                if (!rawData.isBoxCar)
-                {
-                    f.WriteLine("MedianPeakWidthAt10Percent(s):\t" + Math.Round(metrics.MedianBaselinePeakWidth * 60, 4));
-                    f.WriteLine("MedianPeakWidthAtHalfMax(s):\t" + Math.Round(metrics.MedianHalfHeightPeakWidth * 60, 4));
-                    f.WriteLine("MedianAsymmetryFactor:\t" + Math.Round(metrics.MedianAsymmetryFactor, 4));
-                    f.WriteLine("ColumnCapacity:\t" + Math.Round(metrics.PeakCapacity, 4));
-                }
+                f.WriteLine("MedianPeakWidthAt10Percent(s):\t" + Math.Round(metrics.MedianBaselinePeakWidth * 60, 4));
+                f.WriteLine("MedianPeakWidthAtHalfMax(s):\t" + Math.Round(metrics.MedianHalfHeightPeakWidth * 60, 4));
+                f.WriteLine("MedianAsymmetryFactor:\t" + Math.Round(metrics.MedianAsymmetryFactor, 4));
+                f.WriteLine("ColumnCapacity:\t" + Math.Round(metrics.PeakCapacity, 4));
 
                 if (metrics.IncludesQuant == true)
                 {
@@ -610,52 +636,17 @@ namespace RawTools.Data.IO
 
     static class Chromatogram
     {
-        public static void WriteChromatogram(this RawDataCollection rawData, IRawDataPlus rawFile, MSOrderType order, bool TIC, bool BP, string outputDirectory)
+        public static void WriteChromatogram(CentroidStreamCollection centroids, SegmentScanCollection segments, RetentionTimeCollection retentionTimes, MethodDataContainer methodData, ScanIndex index, MSOrderType order, bool TIC, bool BP, string rawFileName, string outputDirectory)
         {
-            List<Operations> operations = new List<Operations>() { Operations.RetentionTimes};
-            //MSOrderType order = (MSOrderType)msOrder;
-            MassAnalyzerType analyzer = rawData.methodData.MassAnalyzers[order];
+            MassAnalyzerType analyzer = methodData.MassAnalyzers[order];
 
-            if (analyzer == MassAnalyzerType.MassAnalyzerFTMS)
-            {
-                if (order == MSOrderType.Ms)
-                {
-                    operations.Add(Operations.Ms1CentroidStreams);
-                }
-                if (order == MSOrderType.Ms2)
-                {
-                    operations.Add(Operations.Ms2CentroidStreams);
-                }
-                if (order == MSOrderType.Ms3)
-                {
-                    operations.Add(Operations.Ms3CentroidStreams);
-                }
-            }
-            else
-            {
-                if (order == MSOrderType.Ms)
-                {
-                    operations.Add(Operations.Ms1SegmentedScans);
-                }
-                if (order == MSOrderType.Ms2)
-                {
-                    operations.Add(Operations.Ms2SegmentedScans);
-                }
-                if (order == MSOrderType.Ms3)
-                {
-                    operations.Add(Operations.Ms3SegmentedScans);
-                }
-            }
-
-            CheckIfDone.Check(rawData, rawFile, operations);
-
-            int[] scans = rawData.scanIndex.ScanEnumerators[order];
+            int[] scans = index.ScanEnumerators[order];
 
             if (TIC)
             {
                 ProgressIndicator progress = new ProgressIndicator(scans.Length, String.Format("Writing {0} TIC chromatogram", order));
                 progress.Start();
-                string fileName = ReadWrite.GetPathToFile(outputDirectory, rawData.rawFileName, "_" + order + "_TIC_chromatogram.txt");
+                string fileName = ReadWrite.GetPathToFile(outputDirectory, rawFileName, "_" + order + "_TIC_chromatogram.txt");
 
                 using (StreamWriter f = new StreamWriter(fileName))
                 {
@@ -665,13 +656,13 @@ namespace RawTools.Data.IO
                     {
                         foreach (int scan in scans)
                         {
-                            if (rawData.centroidStreams[scan].Intensities.Length > 0)
+                            if (centroids[scan].Intensities.Length > 0)
                             {
-                                f.WriteLine("{0}\t{1}", rawData.retentionTimes[scan], rawData.centroidStreams[scan].Intensities.Sum());
+                                f.WriteLine("{0}\t{1}", retentionTimes[scan], centroids[scan].Intensities.Sum());
                             }
                             else
                             {
-                                f.WriteLine("{0}\t{1}", rawData.retentionTimes[scan], 0);
+                                f.WriteLine("{0}\t{1}", retentionTimes[scan], 0);
                             }
                             progress.Update();
                         }
@@ -680,13 +671,13 @@ namespace RawTools.Data.IO
                     {
                         foreach (int scan in scans)
                         {
-                            if (rawData.segmentedScans[scan].Intensities.Length > 0)
+                            if (segments[scan].Intensities.Length > 0)
                             {
-                                f.WriteLine("{0}\t{1}", rawData.retentionTimes[scan], rawData.segmentedScans[scan].Intensities.Sum());
+                                f.WriteLine("{0}\t{1}", retentionTimes[scan], segments[scan].Intensities.Sum());
                             }
                             else
                             {
-                                f.WriteLine("{0}\t{1}", rawData.retentionTimes[scan], 0);
+                                f.WriteLine("{0}\t{1}", retentionTimes[scan], 0);
                             }
                             progress.Update();
                         }
@@ -699,7 +690,7 @@ namespace RawTools.Data.IO
                 ProgressIndicator progress = new ProgressIndicator(scans.Length, String.Format("Writing {0} base peak chromatogram", order));
                 progress.Start();
 
-                string fileName = ReadWrite.GetPathToFile(outputDirectory, rawData.rawFileName, "_" + order + "_BP_chromatogram.txt");
+                string fileName = ReadWrite.GetPathToFile(outputDirectory, rawFileName, "_" + order + "_BP_chromatogram.txt");
 
                 using (StreamWriter f = new StreamWriter(fileName))
                 {
@@ -709,13 +700,13 @@ namespace RawTools.Data.IO
                     {
                         foreach (int scan in scans)
                         {
-                            if (rawData.centroidStreams[scan].Intensities.Length > 0)
+                            if (centroids[scan].Intensities.Length > 0)
                             {
-                                f.WriteLine("{0}\t{1}", rawData.retentionTimes[scan], rawData.centroidStreams[scan].Intensities.Max());
+                                f.WriteLine("{0}\t{1}", retentionTimes[scan], centroids[scan].Intensities.Max());
                             }
                             else
                             {
-                                f.WriteLine("{0}\t{1}", rawData.retentionTimes[scan], 0);
+                                f.WriteLine("{0}\t{1}", retentionTimes[scan], 0);
                             }
                             progress.Update();
                         }
@@ -724,13 +715,13 @@ namespace RawTools.Data.IO
                     {
                         foreach (int scan in scans)
                         {
-                            if (rawData.segmentedScans[scan].Intensities.Length > 0)
+                            if (segments[scan].Intensities.Length > 0)
                             {
-                                f.WriteLine("{0}\t{1}", rawData.retentionTimes[scan], rawData.segmentedScans[scan].Intensities.Max());
+                                f.WriteLine("{0}\t{1}", retentionTimes[scan], segments[scan].Intensities.Max());
                             }
                             else
                             {
-                                f.WriteLine("{0}\t{1}", rawData.retentionTimes[scan], 0);
+                                f.WriteLine("{0}\t{1}", retentionTimes[scan], 0);
                             }
                             progress.Update();
                         }

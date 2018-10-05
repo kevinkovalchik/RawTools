@@ -51,6 +51,8 @@ namespace RawTools.Data.Collections
         public Containers.PeakShape PeakShapeMedians;
     }
 
+    // old rawdata collection below
+    /*
     class RawDataCollection
     {
         public string rawFileName, instrument;
@@ -90,6 +92,7 @@ namespace RawTools.Data.Collections
             this.ExtractMethodData(rawFile);
         }
     }
+    */
 
     class QuantDataCollection : Dictionary<int, QuantData>
     {
@@ -122,8 +125,6 @@ namespace RawTools.Data.Collections
             IntensityDistribution = new Dictionary<int, Distribution>();
         }
     }
-
-    
 
     [XmlRoot("dictionary")]
     public class SerializableDictionary<TKey, TValue>

@@ -34,7 +34,7 @@ using RawTools.Algorithms;
 using Serilog;
 
 namespace RawTools.Data.Extraction
-{
+{/*
     class XIC
     {
         IRawDataPlus rawFile;
@@ -756,4 +756,5 @@ namespace RawTools.Data.Extraction
             }
         }
     }
+    */
 }

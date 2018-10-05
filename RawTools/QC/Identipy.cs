@@ -30,6 +30,7 @@ using RawTools.Data.Collections;
 using RawTools.Data.IO;
 using RawTools.Utilities;
 using RawTools.Data.Containers;
+using RawTools.WorkFlows;
 using ThermoFisher.CommonCore.Data.Interfaces;
 using ThermoFisher.CommonCore.Data.FilterEnums;
 using Serilog;
@@ -115,7 +116,7 @@ namespace RawTools.QC
             return ConsoleUtils.Bash(pythonExec, "-c \"import sys; print(sys.version.split(' ')[0])\"").Replace("\r", "").Replace("\n", "");
         }
 
-        public static void CheckIdentipyDependencies(SearchParameters idpyPars)
+        public static void CheckIdentipyDependencies(WorkflowParameters parameters)
         {
             string pyExec;
             // Check if python is installed
@@ -123,13 +124,13 @@ namespace RawTools.QC
             Log.Information("Checking Identipy dependencies");
             //try
             //{
-                if (idpyPars.PythonExecutable == null)
+                if (parameters.QcParams.PythonExecutable == null)
                 {
                     pyExec = GetPythonExec(GetPythonDir());
                 }
                 else
                 {
-                    pyExec = idpyPars.PythonExecutable;
+                    pyExec = parameters.QcParams.PythonExecutable;
                 }
                 string pyV = GetPythonVersion(pyExec);
 
@@ -185,14 +186,12 @@ namespace RawTools.QC
             }
         }
 
-        public static void RunIdentipy(RawDataCollection rawData, IRawDataPlus rawFile, string QcDataDirectory, SearchParameters idpyPars, bool writeMGF = true)
+        public static void RunIdentipy(WorkflowParameters parameters, MethodDataContainer methodData, string mgfFile, string outputFile)
         {
-            
-            int[] scans;
-            string pyExec, idpyScript, mgfFile;
+            string pyExec, idpyScript;
 
             // get the path to the python executable and identipy start script if they have not been specified
-            if (idpyPars.PythonExecutable == null & idpyPars.IdentipyScript == null)
+            if (parameters.QcParams.PythonExecutable == null & parameters.QcParams.IdentipyScript == null)
             {
                 string pyDir = GetPythonDir();
                 pyExec = GetPythonExec(pyDir);
@@ -203,38 +202,25 @@ namespace RawTools.QC
             }
             else
             {
-                pyExec = idpyPars.PythonExecutable;
-                idpyScript = idpyPars.IdentipyScript;
+                pyExec = parameters.QcParams.PythonExecutable;
+                idpyScript = parameters.QcParams.IdentipyScript;
             }
-
-            if (writeMGF)
-            {
-                // get a random subset of scans
-                scans = AdditionalMath.SelectRandomScans(scans: rawData.scanIndex.ScanEnumerators[MSOrderType.Ms2], num: idpyPars.NumSpectra);
-
-                // write them to a mgf file
-                MGF.WriteMGF(rawData, rawFile, QcDataDirectory, scans: scans, cutoff: idpyPars.MgfMassCutoff, intensityCutoff: idpyPars.MgfIntensityCutoff);
-                
-            }
-
-            // recreate the path to the mgf
-            mgfFile = Path.Combine(QcDataDirectory, Path.GetFileName(rawData.rawFileName) + ".mgf");
 
             // run identipy, supresseing RunTimeWarnings
             //IdentipyExecute(idpyExec, idpyPars.FastaDatabase, idpyPars.FixedMods, idpyPars.VariableMods, mgfFile);
             Console.WriteLine("Starting Identipy");
             Log.Information("Starting Identipy");
-            IdentipyExecute(pyExec, idpyScript, mgfFile, idpyPars, rawData.methodData.MassAnalyzers[MSOrderType.Ms2]);
+            IdentipyExecute(pyExec, idpyScript, mgfFile, parameters, methodData.MassAnalyzers[MSOrderType.Ms2]);
 
         }
 
-        public static void IdentipyExecute(string pyExec, string idpyScript, string mgfFile, SearchParameters identipyParameters, MassAnalyzerType Ms2Analyzer)
+        public static void IdentipyExecute(string pyExec, string idpyScript, string mgfFile, WorkflowParameters parameters, MassAnalyzerType Ms2Analyzer)
         {
-            string fastaDB = identipyParameters.FastaDatabase;
-            string fmods = identipyParameters.FixedMods;
+            string fastaDB = parameters.QcParams.FastaDatabase;
+            string fmods = parameters.QcParams.FixedMods;
             string vmods = null;
             
-            var tempMods = from x in (new string[] { identipyParameters.NMod, identipyParameters.KMod, identipyParameters.XMod })
+            var tempMods = from x in (new string[] { parameters.QcParams.NMod, parameters.QcParams.KMod, parameters.QcParams.XMod })
                     where x != null
                     select x;
 
@@ -245,7 +231,7 @@ namespace RawTools.QC
             
             string appDir = AppInformation.AssemblyDirectory;
             string N;
-            string parameters = String.Empty;
+            string clArguments = String.Empty;
             string idpyConfig;
             //string constants = "-ad -method reverse -prefix DECOY_ -at";
             string constants = "";
@@ -273,25 +259,25 @@ namespace RawTools.QC
 
             if (fmods != null & vmods != null)
             {
-                parameters = string.Format("-W ignore " + idpyScript + " -cfg {0} {1} -nproc {2} -db {3} -fmods {4} -vmods {5} {6}", idpyConfig, constants, N, fastaDB, fmods, vmods, mgfFile);
+                clArguments = string.Format("-W ignore " + idpyScript + " -cfg {0} {1} -nproc {2} -db {3} -fmods {4} -vmods {5} {6}", idpyConfig, constants, N, fastaDB, fmods, vmods, mgfFile);
             }
 
             if (fmods == null & vmods != null)
             {
-                parameters = string.Format("-W ignore " + idpyScript + " -cfg {0} {1} -nproc {2} -db {3} -vmods {4} {5}", idpyConfig, constants, N, fastaDB, vmods, mgfFile);
+                clArguments = string.Format("-W ignore " + idpyScript + " -cfg {0} {1} -nproc {2} -db {3} -vmods {4} {5}", idpyConfig, constants, N, fastaDB, vmods, mgfFile);
             }
 
             if (fmods != null & vmods == null)
             {
-                parameters = string.Format("-W ignore " + idpyScript + " -cfg {0} {1} -nproc {2} -db {3} -fmods {4} {5}", idpyConfig, constants, N, fastaDB, fmods, mgfFile);
+                clArguments = string.Format("-W ignore " + idpyScript + " -cfg {0} {1} -nproc {2} -db {3} -fmods {4} {5}", idpyConfig, constants, N, fastaDB, fmods, mgfFile);
             }
 
             if (fmods == null & vmods == null)
             {
-                parameters = string.Format("-W ignore " + idpyScript + " -cfg {0} {1} -nproc {2} -db {3} {4}", idpyConfig, constants, N, fastaDB, mgfFile);
+                clArguments = string.Format("-W ignore " + idpyScript + " -cfg {0} {1} -nproc {2} -db {3} {4}", idpyConfig, constants, N, fastaDB, mgfFile);
             }
 
-            ConsoleUtils.VoidBash(pyExec, parameters);
+            ConsoleUtils.VoidBash(pyExec, clArguments);
         }
     }
 }

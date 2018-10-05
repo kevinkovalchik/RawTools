@@ -281,6 +281,8 @@ namespace RawTools.Algorithms
                 
                 peak.Area = CalculatePeakArea(peak);
 
+                peaks.Add(scan, peak);
+
                 P.Update();
             }
             P.Done();

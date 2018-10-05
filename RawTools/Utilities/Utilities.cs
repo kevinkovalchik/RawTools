@@ -178,7 +178,7 @@ namespace RawTools.Utilities
             Console.WriteLine("{0}: 100%", message);
         }
     }
-
+     /*
     static class CheckIfDone
     {
         public static void Check(this RawDataCollection rawData, IRawDataPlus rawFile, List<Operations> operations)
@@ -313,7 +313,7 @@ namespace RawTools.Utilities
         }
         
     }
-
+    */
     static class AdditionalMath
     {
         public static double Percentile(this double[] Values, int percentile)

@@ -352,7 +352,7 @@ namespace RawTools.Data.Containers
     }
 
     [Serializable]
-    class MetricsData
+    public class MetricsData
     {
         public string RawFileName, Instrument;
         public MassAnalyzerType MS1Analyzer, MS2Analyzer, MS3Analyzer;
@@ -516,6 +516,7 @@ namespace RawTools.Data.Containers
 
     public enum SearchAlgorithm
     {
+        None = 0,
         XTandem = 1,
         IdentiPy = 2
     }

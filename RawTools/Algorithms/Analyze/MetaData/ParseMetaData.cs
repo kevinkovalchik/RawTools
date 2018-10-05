@@ -90,7 +90,7 @@ namespace RawTools.Algorithms.Analyze
         {
             Dictionary<int, double> dutyCycle = new Dictionary<int, double>();
 
-            int[] scans = index.ScanEnumerators[MSOrderType.Any];
+            int[] scans = index.ScanEnumerators[MSOrderType.Ms];
 
             for (int i = 0; i < scans.Length; i++)
             {

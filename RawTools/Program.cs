@@ -91,22 +91,9 @@ namespace RawTools
         {
             Log.Information("Starting QC. Identipy: {Identipy}", opts.Identipy);
             //Console.WriteLine("\n");
-            SearchParameters searchParameters;
-
-            QcParameters qcParameters = new QcParameters();
-            qcParameters.RawFileDirectory = opts.DirectoryToQc;
-            qcParameters.QcDirectory = opts.QcDirectory;
-            qcParameters.QcFile = Path.Combine(opts.QcDirectory, "QC.xml");
-            qcParameters.RefineMassCharge = opts.RefineMassCharge;
-
+            
             if (new List<string>() { "DDA", "DIA", "PRM" }.Contains(opts.ExperimentType))
-            {
-                if (opts.ExperimentType == "DDA") qcParameters.ExpType = ExperimentType.DDA;
-
-                if (opts.ExperimentType == "DIA") qcParameters.ExpType = ExperimentType.DIA;
-
-                if (opts.ExperimentType == "PRM") qcParameters.ExpType = ExperimentType.PRM;
-            }
+            { }
             else
             {
                 Log.Error("Experiment type of {ExpType} was passed", opts.ExperimentType);
@@ -114,7 +101,7 @@ namespace RawTools
                 Environment.Exit(1);
             }
 
-            if (opts.SearchAlgorithm != null & !(new List<string>() { "identipy", "xtandem" }.Contains(opts.SearchAlgorithm)))
+            if (opts.SearchAlgorithm != null & !(new List<string>() { "identipy", "xtandem", "None" }.Contains(opts.SearchAlgorithm)))
             {
                 // the search algorithm is not null but it also it not identipy or xtandem
                 Log.Error("Invalid search algorithm argument: {Argument}", opts.SearchAlgorithm);
@@ -127,6 +114,9 @@ namespace RawTools
                 opts.SearchAlgorithm = "identipy";
             }
 
+            WorkflowParameters parameters = new WorkflowParameters(opts);
+
+
             if (opts.SearchAlgorithm != null)
             {
                 if (opts.FastaDatabase == null)
@@ -136,23 +126,7 @@ namespace RawTools
                         "provide the path to a database.");
                     Environment.Exit(1);
                 }
-
-                searchParameters = new SearchParameters
-                {
-                    PythonExecutable = opts.PythonExecutable,
-                    IdentipyScript = opts.IdentipyScript,
-                    XTandemDirectory = opts.XTandemDirectory,
-                    FastaDatabase = opts.FastaDatabase,
-                    FixedMods = opts.FixedMods,
-                    NMod = opts.VariableNMod,
-                    KMod = opts.VariableKMod,
-                    XMod = opts.VariableXMod,
-                    NumSpectra = opts.NumberSpectra,
-                    MgfIntensityCutoff = opts.IntensityCutoff,
-                    MgfMassCutoff = opts.MassCutOff,
-                    FixedScans = opts.FixedScans
-                };
-
+                
                 if (opts.SearchAlgorithm == "identipy")
                 {
                     if ((opts.IdentipyScript == null & opts.PythonExecutable != null) | (opts.IdentipyScript != null & opts.PythonExecutable == null))
@@ -162,9 +136,8 @@ namespace RawTools
                         Environment.Exit(1);
                     }
 
-                    Identipy.CheckIdentipyDependencies(searchParameters);
-
-                    searchParameters.SearchAlgorithm = SearchAlgorithm.IdentiPy;
+                    Identipy.CheckIdentipyDependencies(parameters);
+                    
                 }
 
                 if (opts.SearchAlgorithm == "xtandem")
@@ -175,16 +148,10 @@ namespace RawTools
                         Console.WriteLine("ERROR: You must specify the X! Tandem directory using the -X argument to perform a search using X! Tandem.");
                         return 1;
                     }
-                    searchParameters.SearchAlgorithm = SearchAlgorithm.XTandem;
                 }
             }
-            else
-            {
-                searchParameters = null;
-            }
-            qcParameters.searchParameters = searchParameters;
 
-            QC.QcWorkflow.DoQc(qcParameters);
+            QC.QcWorkflow.DoQc(parameters);
             
             return 0;
         }
@@ -274,18 +241,7 @@ namespace RawTools
             }
 
             // is the experiment type valid?
-            ExperimentType ExpType = ExperimentType.DDA;
-            if (new List<string>() { "DDA", "DIA", "PRM" }.Contains(opts.ExperimentType))
-            {
-                if (opts.ExperimentType == "DDA") ExpType = ExperimentType.DDA;
-
-                if (opts.ExperimentType == "DIA") ExpType = ExperimentType.DIA;
-
-                if (opts.ExperimentType == "PRM") ExpType = ExperimentType.PRM;
-
-            }
-            
-            else
+            if (! new List<string>() { "DDA", "DIA", "PRM" }.Contains(opts.ExperimentType))
             {
                 Log.Error("Experiment type of {ExpType} was passed", opts.ExperimentType);
                 Console.WriteLine("Experiment type must be one of ['DDA', 'DIA', 'PRM'], not {0}", opts.ExperimentType);
@@ -307,6 +263,10 @@ namespace RawTools
 
                 using (IRawDataPlus rawFile = RawFileReaderFactory.ReadFile(fileName:file))
                 {
+                    if (parameters.ParseParams.OutputDirectory == null)
+                    {
+                        parameters.ParseParams.OutputDirectory = Path.GetDirectoryName(file);
+                    }
                     WorkFlows.DataWorkFlows.DDA(rawFile, parameters);
 
                     /*

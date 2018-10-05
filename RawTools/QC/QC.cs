@@ -74,8 +74,9 @@ namespace RawTools.QC
             string dataDirectory = parameters.RawFileDirectory;
             string qcDirectory = parameters.QcParams.QcDirectory;
             string qcSearchDataDirecotry = parameters.QcParams.QcSearchDataDirectory;
-            SearchParameters searchParameters = parameters.QcParams.SearchParameters;
             List<string> fileList = new List<string>();
+
+            string qcFile = Path.Combine(qcDirectory, "QC.xml");
 
             (fileList, qcDataCollection) = GetFileListAndQcFile(parameters);
 
@@ -105,15 +106,9 @@ namespace RawTools.QC
                     rawFile.SelectInstrument(Device.MS, 1);
 
                     QcDataContainer newQcData = DataWorkFlows.QcDDA(rawFile, parameters);
-
-                    if (searchParameters != null)
-                    {
-                        Search.RunSearch(qcParameters, rawData, rawFile);
-                        newQcData.ParseSearchResults(rawData, rawFile, qcParameters);
-                    }
-
+                    
                     qcDataCollection.QcData.Add(rawFile.CreationDate, newQcData);
-                    qcDataCollection.ProcessedRawFiles.Add(Path.GetFileName(rawData.rawFileName));
+                    qcDataCollection.ProcessedRawFiles.Add(Path.GetFileName(fileName));
                     qcDataCollection.WriteQcToTable();
                 }
 

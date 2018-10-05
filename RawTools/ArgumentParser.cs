@@ -108,7 +108,7 @@ namespace RawTools.ArgumentParser
         [Option('q', "qcdirectory", Required = true, HelpText = "Path to the directory containing (or to contain) the QC data file (called QC.xml)")]
         public string QcDirectory { get; set; }
 
-        [Option('s', "search", Required = false, HelpText = "Specify the search engine to facilitate the calculation of identification related metrics. " +
+        [Option('s', "search", Required = false, Default = "None", HelpText = "Specify the search engine to facilitate the calculation of identification related metrics. " +
             "Must be one of the following: {identipy, xtandem}")]
         public string SearchAlgorithm { get; set; }
 
