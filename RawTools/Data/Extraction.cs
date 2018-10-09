@@ -30,6 +30,7 @@ using System.Collections;
 using RawTools.Data.Containers;
 using RawTools.Data.Collections;
 using RawTools.Utilities;
+using RawTools.Algorithms;
 using Serilog;
 
 namespace RawTools.Data.Extraction
@@ -679,7 +680,7 @@ namespace RawTools.Data.Extraction
 
     static class AllData
     {
-        public static void ExtractAll(this RawDataCollection rawData, IRawDataPlus rawFile)
+        public static void ExtractAll(this RawDataCollection rawData, IRawDataPlus rawFile, bool refineMassCharge = true)
         {
             Log.Information("Beginning extraction of all possible data");
             rawFile.SelectInstrument(Device.MS, 1);
@@ -719,8 +720,30 @@ namespace RawTools.Data.Extraction
                     Log.Error("Extraction failed on scan {Scan}", i);
                     throw e;
                 }
-                
             }
+            P.Done();
+
+            if (refineMassCharge)
+            {
+                P = new ProgressIndicator(rawData.scanIndex.ScanEnumerators[MSOrderType.Ms2].Length, "Refining precursor charge state and monoisotopic mass");
+                P.Start();
+                int refinedCharge;
+                double refinedMass;
+
+
+                foreach (int scan in rawData.scanIndex.ScanEnumerators[MSOrderType.Ms2])
+                {
+                    // refine precursor mass and charge
+                    (refinedCharge, refinedMass) =
+                        MonoIsoPredictor.GetMonoIsotopicMassCharge(rawData.centroidStreams[rawData.precursorScans[scan].MasterScan],
+                        rawData.precursorMasses[scan].ParentMZ, rawData.trailerExtras[scan].ChargeState);
+                    rawData.trailerExtras[scan].ChargeState = refinedCharge;
+                    rawData.precursorMasses[scan].MonoisotopicMZ = refinedMass;
+                    P.Update();
+                }
+                P.Done();
+            }
+            
 
             if (rawData.methodData.AnalysisOrder == MSOrderType.Ms2 | rawData.methodData.AnalysisOrder == MSOrderType.Ms3)
             {
@@ -745,8 +768,6 @@ namespace RawTools.Data.Extraction
                     rawData.Performed.Add(Operations.Ms3SegmentedScans);
                 }
             }
-
-            P.Done();
         }
     }
 }

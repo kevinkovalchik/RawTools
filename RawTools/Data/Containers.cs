@@ -44,7 +44,7 @@ namespace RawTools.Data.Containers
         }
     }
     
-    class CentroidStreamData
+    public class CentroidStreamData
     {
         public double[] Masses, Intensities, Resolutions, Noises, Baselines, SignalToNoise;
 
@@ -62,6 +62,28 @@ namespace RawTools.Data.Containers
             }
         }
         
+    }
+
+    public class SimpleCentroid
+    {
+        public List<double> Masses, Intensities;
+
+        public SimpleCentroid()
+        {
+
+        }
+
+        public SimpleCentroid(List<double> masses, List<double> intensities)
+        {
+            Masses = masses;
+            Intensities = intensities;
+        }
+
+        public SimpleCentroid(CentroidStreamData centroidStream)
+        {
+            Masses = centroidStream.Masses.ToList();
+            Intensities = centroidStream.Intensities.ToList();
+        }
     }
 
     class SegmentedScanData
@@ -421,6 +443,7 @@ namespace RawTools.Data.Containers
         public string RawFileDirectory, QcDirectory, QcFile;
         public SearchParameters searchParameters;
         public string QcSearchDataDirectory { get { return Path.Combine(QcDirectory, "QcSearchData"); } }
+        public bool RefineMassCharge;
     }
 
     public enum SearchAlgorithm
