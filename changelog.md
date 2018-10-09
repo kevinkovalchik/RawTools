@@ -4,13 +4,13 @@ All notable changes to RawTools will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.3.0] 2018-10-09
 ### Fixed
 - RawTools is unable to properly process files from very short duration acquistions. Problems seem to often come up with handeling precursor peaks. As a quick workaround, metrics are not reported for precursor peaks when this issue occurs. A future fix will address the problem more thoroughly. [[issue2]](https://github.com/kevinkovalchik/RawTools/issues/2)
 
 ### Added
 - MS1 isolation interference calculations added to parse and qc outputs.
-- Refinement of precursor charge state and monoisotopic mass. This can be invoked using `-R` as an argument. This can be important if monoisotopic precursor selection is turned off in your instrument method.
+- Refinement of precursor charge state and monoisotopic mass. This can be invoked using `-R` as an argument. This can be important if monoisotopic precursor selection is turned off in your instrument method. The refinement works by creating a list of possible charge states for each precursor based upon isotope neighbors, then generating a set of averagine isotope envelopes representing the possible monoisotopic masses of the precursor m/z value and nearby isotope peaks. Scoring is based on the [Bhattacharyya distance](https://en.wikipedia.org/wiki/Bhattacharyya_distance) between the isotope envelope of the observed spectrum and the theoretical averagine spectrum.
 
 ## [1.2.0] 2018-09-24
 ### Added
