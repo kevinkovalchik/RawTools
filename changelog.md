@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - MS1 isolation interference calculations added to parse and qc outputs.
-- Refinement of precursor charge state and monoisotopic mass. This can be invoked using `-R` as an argument. This can be important if monoisotopic precursor selection is turned off in your instrument method, because up until this point RawTools has relied solely on the monisotopic mass reported in the raw file.
+- Refinement of precursor charge state and monoisotopic mass. This can be invoked using `-R` as an argument. This can be important if monoisotopic precursor selection is turned off in your instrument method.
 
 ## [1.2.0] 2018-09-24
 ### Added
