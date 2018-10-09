@@ -39,6 +39,7 @@ namespace RawTools.Algorithms.ExtractData
     {
         public static ScanIndex ScanIndices(IRawDataPlus rawFile)
         {
+            rawFile.SelectInstrument(Device.MS, 1);
             Log.Information("Extracting scan indices");
             Dictionary<int, (MSOrderType MSOrder, MassAnalyzerType MassAnalyzer)> allScans;
             allScans = new Dictionary<int, (MSOrderType MSOrder, MassAnalyzerType MassAnalyzer)>();
@@ -103,25 +104,30 @@ namespace RawTools.Algorithms.ExtractData
         
         public static (CentroidStreamCollection centroids, SegmentScanCollection segments) MsData(IRawDataPlus rawFile, ScanIndex index)
         {
+            rawFile.SelectInstrument(Device.MS, 1);
             CentroidStreamCollection centroids = new CentroidStreamCollection();
             SegmentScanCollection segments = new SegmentScanCollection();
             var scans = index.allScans;
+            var lockTarget = new object(); // this is so we can keep track of progress in the parallel loop
 
             ProgressIndicator P = new ProgressIndicator(scans.Count(), "Extracting scan data");
             P.Start();
 
-            foreach (int scan in scans.Keys)
+            foreach(int scan in scans.Keys)
             {
                 // first get out the mass spectrum
                 if (index.allScans[scan].MassAnalyzer == MassAnalyzerType.MassAnalyzerFTMS)
-                {
-                    centroids.Add(scan, new CentroidStreamData(rawFile.GetCentroidStream(scan, false)));
-                }
-                else
-                {
-                    segments.Add(scan, new SegmentedScanData(rawFile.GetSegmentedScanFromScanNumber(scan, null)));
-                }
-                P.Update();
+               {
+                   centroids[scan] = new CentroidStreamData(rawFile.GetCentroidStream(scan, false));
+               }
+               else
+               {
+                   segments[scan] = new SegmentedScanData(rawFile.GetSegmentedScanFromScanNumber(scan, null));
+               }
+               lock (lockTarget)
+               {
+                   P.Update();
+               }
             }
             P.Done();
 
@@ -134,10 +140,13 @@ namespace RawTools.Algorithms.ExtractData
         /// <param name="rawFile"></param>
         /// <param name="index"></param>
         /// <returns></returns>
-        public static PrecursorScanCollection PrecursorScansByScanDependents(IRawDataPlus rawFile, ScanIndex index)
+        public static (PrecursorScanCollection PrecursorScans, ScanDependentsCollections ScanDependents)
+            DependentsAndPrecursorScansByScanDependents(IRawDataPlus rawFile, ScanIndex index)
         {
+            rawFile.SelectInstrument(Device.MS, 1);
             Log.Information("Extracting scan dependents/precursor scans");
             PrecursorScanCollection precursorScans = new PrecursorScanCollection();
+            ScanDependentsCollections dependents = new ScanDependentsCollections();
 
             int ms2Scan = -1;
             int ms3Scan = -1;
@@ -146,6 +155,7 @@ namespace RawTools.Algorithms.ExtractData
             foreach (int scan in scans)
             {
                 var scanDependents = rawFile.GetScanDependents(scan, 4);
+                dependents[scan] = scanDependents;
 
                 // check if the ms1 scan has dependent scans
                 if (scanDependents == null)
@@ -158,22 +168,23 @@ namespace RawTools.Algorithms.ExtractData
                     if (index.AnalysisOrder == MSOrderType.Ms2) // it is ms2
                     {
                         ms2Scan = scanDependents.ScanDependentDetailArray[i].ScanIndex;
-                        precursorScans.Add(ms2Scan, new PrecursorScanData(ms2scan: ms2Scan, masterScan: scan));
+                        precursorScans[ms2Scan] = new PrecursorScanData(ms2scan: ms2Scan, masterScan: scan);
                     }
                     else // it is ms3
                     {
                         ms2Scan = scanDependents.ScanDependentDetailArray[i].ScanIndex;
+                        var ms2Dependents = rawFile.GetScanDependents(ms2Scan, 4).ScanDependentDetailArray;
 
-                        if (rawFile.GetScanDependents(ms2Scan, 4).ScanDependentDetailArray.Length != 0) // make sure there is ms3 data
+                        if (ms2Dependents.Length != 0) // make sure there is ms3 data
                         {
-                            ms3Scan = rawFile.GetScanDependents(ms2Scan, 4).ScanDependentDetailArray[0].ScanIndex;
-                            precursorScans.Add(ms2Scan, new PrecursorScanData(ms2scan: ms2Scan, masterScan: scan));
-                            precursorScans.Add(ms3Scan, new PrecursorScanData(ms3scan: ms3Scan, ms2Scan: ms2Scan, masterScan: scan));
+                            ms3Scan = ms2Dependents[0].ScanIndex;
+                            precursorScans[ms2Scan] = new PrecursorScanData(ms2scan: ms2Scan, masterScan: scan);
+                            precursorScans[ms3Scan] = new PrecursorScanData(ms3scan: ms3Scan, ms2Scan: ms2Scan, masterScan: scan);
                         }
                         else
                         {
                             // there is no ms3 scan, so we only add the ms2 scan
-                            precursorScans.Add(ms2Scan, new PrecursorScanData(ms2scan: ms2Scan, masterScan: scan));
+                            precursorScans[ms2Scan] = new PrecursorScanData(ms2scan: ms2Scan, masterScan: scan);
                         }
                     }
                 }
@@ -182,7 +193,7 @@ namespace RawTools.Algorithms.ExtractData
             
             progress.Done();
 
-            return precursorScans;
+            return (precursorScans, dependents);
         }
 
         /// <summary>
@@ -193,6 +204,7 @@ namespace RawTools.Algorithms.ExtractData
         /// <returns></returns>
         public static PrecursorScanCollection PrecursorScansByMasterScanMs2Only(IRawDataPlus rawFile, TrailerExtraCollection trailerExtras, ScanIndex index)
         {
+            rawFile.SelectInstrument(Device.MS, 1);
             Log.Information("Extracting scan dependents/precursor scans");
             PrecursorScanCollection precursorScans = new PrecursorScanCollection();
 
@@ -208,7 +220,7 @@ namespace RawTools.Algorithms.ExtractData
             {
                 int masterScan = trailerExtras[scan].MasterScan;
 
-                precursorScans.Add(scan, new PrecursorScanData(ms2scan: scan, masterScan: masterScan));
+                precursorScans[scan] = new PrecursorScanData(ms2scan: scan, masterScan: masterScan);
             }
 
             progress.Done();
@@ -218,10 +230,11 @@ namespace RawTools.Algorithms.ExtractData
 
         public static ScanDependentsCollections ScanDependents(IRawDataPlus rawFile, ScanIndex index)
         {
+            rawFile.SelectInstrument(Device.MS, 1);
             ScanDependentsCollections scanDependents = new ScanDependentsCollections();
-            foreach (int scan in index.ScanEnumerators[MSOrderType.Any])
+            foreach (int scan in index.ScanEnumerators[MSOrderType.Ms])
             {
-                scanDependents.Add(scan, rawFile.GetScanDependents(scan, 4));
+                scanDependents[scan] = rawFile.GetScanDependents(scan, 4);
             }
 
             return scanDependents;
@@ -229,6 +242,7 @@ namespace RawTools.Algorithms.ExtractData
 
         public static PrecursorMassCollection PrecursorMasses(IRawDataPlus rawFile, PrecursorScanCollection precursorScans, TrailerExtraCollection trailerExtras, ScanIndex index)
         {
+            rawFile.SelectInstrument(Device.MS, 1);
             Log.Information("Extracting precursor masses");
 
             PrecursorMassCollection precursorMasses = new PrecursorMassCollection();
@@ -241,13 +255,13 @@ namespace RawTools.Algorithms.ExtractData
                 if (index.allScans[scan].MSOrder == MSOrderType.Ms2)
                 {
                     double parent_mass = rawFile.GetScanEventForScanNumber(scan).GetReaction(0).PrecursorMass;
-                    precursorMasses.Add(scan, new PrecursorMassData(trailerExtras[scan].MonoisotopicMZ, parent_mass));
+                    precursorMasses[scan] = new PrecursorMassData(trailerExtras[scan].MonoisotopicMZ, parent_mass);
                 }
                 if (index.allScans[scan].MSOrder == MSOrderType.Ms3)
                 {
                     int ms2scan = precursorScans[scan].MS2Scan;
                     double parent_mass = rawFile.GetScanEventForScanNumber(scan).GetReaction(0).PrecursorMass;
-                    precursorMasses.Add(scan, new PrecursorMassData(trailerExtras[ms2scan].MonoisotopicMZ, parent_mass));
+                    precursorMasses[scan] = new PrecursorMassData(trailerExtras[ms2scan].MonoisotopicMZ, parent_mass);
                 }
 
                 progress.Update();
@@ -259,6 +273,7 @@ namespace RawTools.Algorithms.ExtractData
 
         private static TrailerExtraData ExtractOneTrailerExtra(IRawDataPlus rawFile, int scan, TrailerExtraIndices indices)
         {
+            rawFile.SelectInstrument(Device.MS, 1);
             TrailerExtraData trailerExtra = new TrailerExtraData();
             Double[] spsMasses;
 
@@ -329,6 +344,7 @@ namespace RawTools.Algorithms.ExtractData
 
         public static TrailerExtraCollection TrailerExtras(IRawDataPlus rawFile, ScanIndex index)
         {
+            rawFile.SelectInstrument(Device.MS, 1);
             Log.Information("Extracting trailer extras");
             TrailerExtraCollection trailerExtras = new TrailerExtraCollection();
             TrailerExtraIndices trailerIndices = new TrailerExtraIndices(rawFile);
@@ -340,16 +356,17 @@ namespace RawTools.Algorithms.ExtractData
 
             foreach (int scan in scans)
             {
-                trailerExtras.Add(scan, ExtractOneTrailerExtra(rawFile, scan, trailerIndices));
-                P.Update();
+                trailerExtras[scan] = ExtractOneTrailerExtra(rawFile, scan, trailerIndices);
+                //P.Update();
             }
-            P.Done();
+            //P.Done();
 
             return trailerExtras;
         }
 
         public static RetentionTimeCollection RetentionTimes(IRawDataPlus rawFile, ScanIndex index)
         {
+            rawFile.SelectInstrument(Device.MS, 1);
             Log.Information("Extracting retention times");
 
             RetentionTimeCollection retentionTimes = new RetentionTimeCollection();
@@ -358,7 +375,7 @@ namespace RawTools.Algorithms.ExtractData
             ProgressIndicator progress = new ProgressIndicator(scans.Count(), "Extracting retention times");
             foreach (int scan in scans)
             {
-                retentionTimes.Add(scan, rawFile.RetentionTimeFromScanNumber(scan));
+                retentionTimes[scan] = rawFile.RetentionTimeFromScanNumber(scan);
 
                 progress.Update();
             }
@@ -371,6 +388,8 @@ namespace RawTools.Algorithms.ExtractData
 
         public static MethodDataContainer MethodData(IRawDataPlus rawFile, ScanIndex index)
         {
+            rawFile.SelectInstrument(Device.MS, 1);
+
             Log.Information("Extracting method/instrument information");
 
             MethodDataContainer methodData = new MethodDataContainer();

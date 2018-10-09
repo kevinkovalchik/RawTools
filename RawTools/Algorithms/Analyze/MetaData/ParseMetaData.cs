@@ -97,7 +97,7 @@ namespace RawTools.Algorithms.Analyze
                 var scan = scans[i];
                 if (i < scans.Length - 1)
                 {
-                    dutyCycle.Add(scan, (retentionTimes[scan + 1] - retentionTimes[scan]) * 60);
+                    dutyCycle.Add(scan, (retentionTimes[scans[i+1]] - retentionTimes[scan]) * 60);
                 }
                 else
                 {

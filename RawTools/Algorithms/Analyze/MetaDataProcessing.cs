@@ -22,6 +22,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Threading;
 using ThermoFisher;
 using ThermoFisher.CommonCore.Data.Business;
 using ThermoFisher.CommonCore.Data.Interfaces;
@@ -43,12 +44,19 @@ namespace RawTools.Algorithms.Analyze
             PrecursorScanCollection precursorScans, TrailerExtraCollection trailerExtras, PrecursorMassCollection precursorMasses,
             RetentionTimeCollection retentionTimes, ScanDependentsCollections scanDependents, ScanIndex index)
         {
-            ProgressIndicator progress = new ProgressIndicator(index.ScanEnumerators[MSOrderType.Any].Count(),
-                "Formatting scan meta data");
+            //ProgressIndicator progress = new ProgressIndicator(index.ScanEnumerators[MSOrderType.Any].Count(),
+             //   "Formatting scan meta data");
 
             ScanMetaDataCollectionDDA metaData = new ScanMetaDataCollectionDDA();
-            
+
+            int[] scans = index.ScanEnumerators[MSOrderType.Any];
+
             double isoWindow = ParseMetaData.Ms1IsoWindow(methodData);
+
+            Console.WriteLine("Aggregating meta data");
+
+            metaData.Ms1IsolationInterference = ParseMetaData.Ms1Interference(centroidStreams, precursorMasses, trailerExtras,
+                precursorScans, index, isoWindow);
 
             metaData.MS2ScansPerCycle = ParseMetaData.MS2ScansPerCycle(scanDependents, index);
 
@@ -62,18 +70,18 @@ namespace RawTools.Algorithms.Analyze
 
             metaData.FractionConsumingTop80PercentTotalIntensity = ParseMetaData.Top80Frac(centroidStreams, segmentScans, index);
 
-            metaData.Ms1IsolationInterference = ParseMetaData.Ms1Interference(centroidStreams, precursorMasses, trailerExtras,
-                precursorScans, index, isoWindow);
+            //Task.WaitAll();
 
             return metaData;
         }
 
         public static MetricsData GetMetricsDataDDA(ScanMetaDataCollectionDDA metaData, MethodDataContainer methodData,
             string rawFileName, RetentionTimeCollection retentionTimes, ScanIndex index, PrecursorPeakCollection peakData,
-            QuantDataCollection quantData = null)
+            PrecursorScanCollection precursorScans, QuantDataCollection quantData = null)
         {
             MetricsData metricsData = new MetricsData();
-
+            Console.WriteLine("Calculating metrics");
+            
             metricsData.RawFileName = rawFileName;
             metricsData.Instrument = methodData.Instrument;
             metricsData.MS1Analyzer = methodData.MassAnalyzers[MSOrderType.Ms];
@@ -99,37 +107,48 @@ namespace RawTools.Algorithms.Analyze
                 metricsData.MS3Scans = 0;
             }
 
+            var pickedMs1 = new HashSet<int>((from x in index.ScanEnumerators[methodData.AnalysisOrder]
+                                              select precursorScans[x].MasterScan)).ToList();
+
+            Console.WriteLine(metricsData.MS1Scans);
+            Console.WriteLine(pickedMs1.Count());
+
             metricsData.MSOrder = methodData.AnalysisOrder;
 
             metricsData.MedianSummedMS1Intensity = (from x in index.ScanEnumerators[MSOrderType.Ms]
-                                                    select metaData.SummedIntensity[x]).ToArray().Percentile(50);
+                                                                   select metaData.SummedIntensity[x]).ToArray().Percentile(50);
 
             metricsData.MedianSummedMS2Intensity = (from x in index.ScanEnumerators[MSOrderType.Ms2]
-                                                    select metaData.SummedIntensity[x]).ToArray().Percentile(50);
+                                                                   select metaData.SummedIntensity[x]).ToArray().Percentile(50);
 
             metricsData.MedianPrecursorIntensity = (from x in peakData.Keys select peakData[x].ParentIntensity).ToArray().Percentile(50);
 
             metricsData.MedianMS1FillTime = (from x in index.ScanEnumerators[MSOrderType.Ms]
-                                             select metaData.FillTime[x]).ToArray().Percentile(50);
+                                                            select metaData.FillTime[x]).ToArray().Percentile(50);
 
             metricsData.MedianMS2FillTime = (from x in index.ScanEnumerators[MSOrderType.Ms2]
-                                             select metaData.FillTime[x]).ToArray().Percentile(50);
+                                                            select metaData.FillTime[x]).ToArray().Percentile(50);
 
-            metricsData.MedianMS3FillTime = (from x in index.ScanEnumerators[MSOrderType.Ms3]
-                                             select metaData.FillTime[x]).ToArray().Percentile(50);
+            if (methodData.AnalysisOrder == MSOrderType.Ms3)
+            {
+                metricsData.MedianMS3FillTime = (from x in index.ScanEnumerators[MSOrderType.Ms3]
+                                                 select metaData.FillTime[x]).ToArray().Percentile(50);
+            }
 
             metricsData.MeanTopN = metaData.MS2ScansPerCycle.MeanFromDict();
-            
-            metricsData.MeanDutyCycle = (from x in index.ScanEnumerators[MSOrderType.Ms3]
-                                         select metaData.DutyCycle[x]).ToArray().Mean();
-            
-            metricsData.MedianMs2FractionConsumingTop80PercentTotalIntensity =
-                (from x in index.ScanEnumerators[MSOrderType.Ms3]
+
+            metricsData.MeanDutyCycle = (from x in pickedMs1
+                                         select metaData.DutyCycle[x]).ToArray().Percentile(50);
+            Console.WriteLine(metricsData.MeanDutyCycle);
+
+             metricsData.MedianMs2FractionConsumingTop80PercentTotalIntensity =
+                (from x in index.ScanEnumerators[MSOrderType.Ms2]
                  select metaData.FractionConsumingTop80PercentTotalIntensity[x]).ToArray().Percentile(50);
             
+
             metricsData.MS1ScanRate = metricsData.MS1Scans / metricsData.TotalAnalysisTime;
             metricsData.MS2ScanRate = metricsData.MS2Scans / metricsData.TotalAnalysisTime;
-            metricsData.MS3ScanRate = metricsData.MS3Scans / metricsData.TotalAnalysisTime;
+            if (methodData.AnalysisOrder == MSOrderType.Ms3)  metricsData.MS3ScanRate = metricsData.MS3Scans / metricsData.TotalAnalysisTime;
 
             metricsData.MedianBaselinePeakWidth = peakData.PeakShapeMedians.Width.P10;
             metricsData.MedianHalfHeightPeakWidth = peakData.PeakShapeMedians.Width.P50;
@@ -151,7 +170,7 @@ namespace RawTools.Algorithms.Analyze
 
             metricsData.Ms1FillTimeDistribution = new Distribution((from x in index.ScanEnumerators[MSOrderType.Ms] select metaData.FillTime[x]).ToArray());
             metricsData.Ms2FillTimeDistribution = new Distribution((from x in index.ScanEnumerators[MSOrderType.Ms2] select metaData.FillTime[x]).ToArray());
-            metricsData.Ms3FillTimeDistribution = new Distribution((from x in index.ScanEnumerators[MSOrderType.Ms3] select metaData.FillTime[x]).ToArray());
+            if (methodData.AnalysisOrder == MSOrderType.Ms3) metricsData.Ms3FillTimeDistribution = new Distribution((from x in index.ScanEnumerators[MSOrderType.Ms3] select metaData.FillTime[x]).ToArray());
 
             metricsData.PeakShape.Asymmetry.P10 = peakData.PeakShapeMedians.Asymmetry.P10;
             metricsData.PeakShape.Asymmetry.P50 = peakData.PeakShapeMedians.Asymmetry.P50;

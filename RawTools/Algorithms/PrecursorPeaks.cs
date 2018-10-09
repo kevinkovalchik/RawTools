@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -258,32 +259,37 @@ namespace RawTools.Algorithms
             PrecursorPeakData peak = new PrecursorPeakData();
             DistributionMultiple allPeaksAsymmetry = new DistributionMultiple();
             DistributionMultiple allPeaksWidths = new DistributionMultiple();
+            var lockTarget = new object(); // this is so we can keep track of progress in the parallel loop
 
             int[] scans = index.ScanEnumerators[MSOrderType.Ms2];
 
             ProgressIndicator P = new ProgressIndicator(total: scans.Length, message: "Analyzing precursor peaks");
-
-            foreach (int scan in scans)
+            P.Start();
+            foreach(int scan in scans)
             {
-                peak = OnePeak(centroids, retentionTimes, precursorMasses[scan].MonoisotopicMZ, precursorScans[scan].MasterScan, ddScan: scan, index: index);
+               peak = OnePeak(centroids, retentionTimes, precursorMasses[scan].MonoisotopicMZ, precursorScans[scan].MasterScan, ddScan: scan, index: index);
 
-                if (peak.NScans < 5 | peak.PeakFound == false |
-                    peak.ContainsFirstMS1Scan | peak.ContainsLastMS1Scan)
-                {
-                    peak.PeakShape = null;
-                }
-                else
-                {
-                    peak.PeakShape = GetPeakShape(peak);
-                    allPeaksAsymmetry.Add(peak.PeakShape.Asymmetry);
-                    allPeaksWidths.Add(peak.PeakShape.Width);
-                }
-                
-                peak.Area = CalculatePeakArea(peak);
+               if (peak.NScans < 5 | peak.PeakFound == false |
+                   peak.ContainsFirstMS1Scan | peak.ContainsLastMS1Scan)
+               {
+                   peak.PeakShape = null;
+               }
+               else
+               {
+                   var newShape = GetPeakShape(peak);
+                   peak.PeakShape = newShape;
+                   allPeaksAsymmetry.Add(newShape.Asymmetry);
+                   allPeaksWidths.Add(newShape.Width);
+               }
 
-                peaks.Add(scan, peak);
+               peak.Area = CalculatePeakArea(peak);
 
-                P.Update();
+               peaks[scan] = peak;
+
+               lock(lockTarget)
+               {
+                   P.Update();
+               }
             }
             P.Done();
 
@@ -310,7 +316,7 @@ namespace RawTools.Algorithms
 
             foreach (int scan in scans)
             {
-                peaks.Add(scan, OnePeak(centroids, retentionTimes, precursorMasses[scan].MonoisotopicMZ, precursorScans[scan].MasterScan, ddScan: scan, index: index));
+                peaks[scan] = OnePeak(centroids, retentionTimes, precursorMasses[scan].MonoisotopicMZ, precursorScans[scan].MasterScan, ddScan: scan, index: index);
                 P.Update();
             }
             P.Done();
@@ -346,8 +352,8 @@ namespace RawTools.Algorithms
                 {
                     if (Intensities[currentIndex] < Intensities[maxIndex] * percent / 100)
                     {
-                        a.Add(percent, RetTimes[maxIndex] - InterpolateLinear(point0: (RetTimes[currentIndex], Intensities[currentIndex]),
-                            point1: (RetTimes[currentIndex + 1], Intensities[currentIndex + 1]), y: Intensities[maxIndex] * percent / 100));
+                        a[percent] = RetTimes[maxIndex] - InterpolateLinear(point0: (RetTimes[currentIndex], Intensities[currentIndex]),
+                            point1: (RetTimes[currentIndex + 1], Intensities[currentIndex + 1]), y: Intensities[maxIndex] * percent / 100);
                         break;
                     }
                     else
@@ -373,8 +379,8 @@ namespace RawTools.Algorithms
                 {
                     if (Intensities[currentIndex] < Intensities[maxIndex] * percent / 100)
                     {
-                        b.Add(percent, InterpolateLinear(point0: (RetTimes[currentIndex - 1], Intensities[currentIndex - 1]),
-                            point1: (RetTimes[currentIndex], Intensities[currentIndex]), y: Intensities[maxIndex] * percent / 100) - RetTimes[maxIndex]);
+                        b[percent] = InterpolateLinear(point0: (RetTimes[currentIndex - 1], Intensities[currentIndex - 1]),
+                            point1: (RetTimes[currentIndex], Intensities[currentIndex]), y: Intensities[maxIndex] * percent / 100) - RetTimes[maxIndex];
                         break;
                     }
                     else

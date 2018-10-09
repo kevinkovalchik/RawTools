@@ -108,7 +108,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Algorithms\AnalyzePeaks.cs" />
+    <Compile Include="Algorithms\PrecursorPeaks.cs" />
     <Compile Include="Algorithms\Analyze\MetaDataProcessing.cs" />
     <Compile Include="Algorithms\Analyze\MetaData\ParseMetaData.cs" />
     <Compile Include="Algorithms\Averagine.cs" />

@@ -261,7 +261,8 @@ namespace RawTools
 
                 Console.WriteLine("\nProcessing: {0}\n", file);
 
-                using (IRawDataPlus rawFile = RawFileReaderFactory.ReadFile(fileName:file))
+                //using (IRawDataPlus rawFile = RawFileReaderFactory.ReadFile(fileName:file))
+                using (IRawFileThreadManager rawFile = RawFileReaderFactory.CreateThreadManager(file))
                 {
                     if (parameters.ParseParams.OutputDirectory == null)
                     {
