@@ -99,7 +99,7 @@ namespace RawTools.WorkFlows
 
         }
 
-        public static QcDataContainer QcDDA(IRawDataPlus rawFile, WorkflowParameters parameters)
+        public static void QcDDA(IRawDataPlus rawFile, WorkflowParameters parameters)
         {
             rawFile.SelectInstrument(Device.MS, 1);
 
@@ -130,6 +130,8 @@ namespace RawTools.WorkFlows
 
             MetricsData metrics = MetaDataProcessing.GetMetricsDataDDA(metaData, methodData, rawFile.FileName, retentionTimes, Index, peakData, precursorScans);
 
+            QcDataCollection qcDataCollection = QC.QcWorkflow.LoadOrCreateQcCollection(parameters);
+
             QcDataContainer qcData = QC.QcWorkflow.ParseQcData(parameters.QcParams, metrics, methodData);
 
             if (parameters.QcParams.PerformSearch)
@@ -141,8 +143,7 @@ namespace RawTools.WorkFlows
                 qcData = SearchQC.ParseSearchResults(parameters, rawFile.FileName);
             }
 
-            return qcData;
-
+            QC.QcWorkflow.UpdateQcCollection(qcDataCollection, qcData, methodData, rawFile.FileName);
         }
     }
 

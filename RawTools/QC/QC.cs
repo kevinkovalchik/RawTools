@@ -68,6 +68,27 @@ namespace RawTools.QC
             return qcData;
         }
 
+        public static void UpdateQcCollection(QcDataCollection qcDataCollection, QcDataContainer newQcData, MethodDataContainer methodData, string rawFileName)
+        {
+            qcDataCollection.QcData.Add(methodData.CreationDate, newQcData);
+            qcDataCollection.ProcessedRawFiles.Add(Path.GetFileName(rawFileName));
+            qcDataCollection.WriteQcToTable();
+            Console.WriteLine("QC data written to csv file.");
+            
+            try
+            {
+                XmlSerialization.WriteToXmlFile<QcDataCollection>(qcDataCollection.QcFile, qcDataCollection);
+                Log.Information("QC file saved successfully");
+                Console.WriteLine("QC file saved successfully");
+            }
+            catch (Exception e)
+            {
+                Log.Error(e, "Failed during serialization of QC data");
+                Console.WriteLine("ERROR: failure during serialization of QC data.");
+                Environment.Exit(1);
+            }
+        }
+
         public static void DoQc(WorkflowParameters parameters)
         {
             QcDataCollection qcDataCollection;
@@ -105,11 +126,7 @@ namespace RawTools.QC
                 {
                     rawFile.SelectInstrument(Device.MS, 1);
 
-                    QcDataContainer newQcData = DataWorkFlows.QcDDA(rawFile, parameters);
-                    
-                    qcDataCollection.QcData.Add(rawFile.CreationDate, newQcData);
-                    qcDataCollection.ProcessedRawFiles.Add(Path.GetFileName(fileName));
-                    qcDataCollection.WriteQcToTable();
+                    DataWorkFlows.QcDDA(rawFile, parameters);
                 }
 
                 Log.Information("QC finished: {File}", fileName);
@@ -117,18 +134,42 @@ namespace RawTools.QC
 
             Log.Information("QC of all files completed");
             Console.WriteLine("QC of all files completed!");
+        }
 
-            try
+        public static QcDataCollection LoadOrCreateQcCollection(WorkflowParameters parameters)
+        {
+            QcDataCollection qcDataCollection;
+            string qcFile = Path.Combine(parameters.QcParams.QcDirectory, "QC.xml");
+
+            // see if the file exists
+            if (File.Exists(qcFile))
             {
-                XmlSerialization.WriteToXmlFile<QcDataCollection>(qcFile, qcDataCollection);
-                Log.Information("QC file saved successfully");
-                Console.WriteLine("QC file saved successfully");
+                // if so, open it
+                try
+                {
+                    qcDataCollection = XmlSerialization.ReadFromXmlFile<QcDataCollection>(qcFile);
+                    Log.Information("QC data file loaded successfully");
+                }
+                catch (Exception e)
+                {
+                    Log.Error(e, "Failed while loading QC data");
+                    throw e;
+                }
             }
-            catch (Exception e)
+            else
             {
-                Log.Error(e, "Failed during serialization of QC data");
-                throw e;
+                // if not, check if the directory exists
+                if (!Directory.Exists(parameters.QcParams.QcDirectory))
+                {
+                    Directory.CreateDirectory(parameters.QcParams.QcDirectory);
+                }
+
+                qcDataCollection = new QcDataCollection(parameters.RawFileDirectory, parameters.QcParams.QcDirectory);
+                Log.Information("Appears to be a new QC directory. New QC data collection created.");
             }
+
+            return qcDataCollection;
+
         }
 
         private static (List<string> fileList, QcDataCollection qcDataCollection) GetFileListAndQcFile(WorkflowParameters parameters)
