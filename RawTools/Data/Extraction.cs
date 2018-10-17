@@ -30,6 +30,8 @@ using System.Collections;
 using RawTools.Data.Containers;
 using RawTools.Data.Collections;
 using RawTools.Utilities;
+using RawTools.Utilities.ScanData;
+using RawTools.Data.Processing;
 using RawTools.Algorithms;
 using Serilog;
 
@@ -723,28 +725,6 @@ namespace RawTools.Data.Extraction
             }
             P.Done();
 
-            if (refineMassCharge)
-            {
-                P = new ProgressIndicator(rawData.scanIndex.ScanEnumerators[MSOrderType.Ms2].Length, "Refining precursor charge state and monoisotopic mass");
-                P.Start();
-                int refinedCharge;
-                double refinedMass;
-
-
-                foreach (int scan in rawData.scanIndex.ScanEnumerators[MSOrderType.Ms2])
-                {
-                    // refine precursor mass and charge
-                    (refinedCharge, refinedMass) =
-                        MonoIsoPredictor.GetMonoIsotopicMassCharge(rawData.centroidStreams[rawData.precursorScans[scan].MasterScan],
-                        rawData.precursorMasses[scan].ParentMZ, rawData.trailerExtras[scan].ChargeState);
-                    rawData.trailerExtras[scan].ChargeState = refinedCharge;
-                    rawData.precursorMasses[scan].MonoisotopicMZ = refinedMass;
-                    P.Update();
-                }
-                P.Done();
-            }
-            
-
             if (rawData.methodData.AnalysisOrder == MSOrderType.Ms2 | rawData.methodData.AnalysisOrder == MSOrderType.Ms3)
             {
                 rawData.Performed.Add(Operations.Ms1CentroidStreams);
@@ -767,6 +747,35 @@ namespace RawTools.Data.Extraction
                 {
                     rawData.Performed.Add(Operations.Ms3SegmentedScans);
                 }
+            }
+            
+
+            if (refineMassCharge)
+            {
+                P = new ProgressIndicator(rawData.scanIndex.ScanEnumerators[MSOrderType.Ms2].Length, "Refining precursor charge state and monoisotopic mass");
+                P.Start();
+                int refinedCharge;
+                double refinedMass;
+
+                //if (!rawData.Performed.Contains(Operations.PeakRetAndInt))
+                //{
+                //    rawData.CalcPeakRetTimesAndInts(rawFile);
+                //}
+
+                foreach (int scan in rawData.scanIndex.ScanEnumerators[MSOrderType.Ms2])
+                {
+                    // refine precursor mass and charge
+                    var centroid = rawData.GetAverageScan(rawFile, scan);
+                    //rawData.centroidStreams[rawData.precursorScans[scan].MasterScan]
+
+                    (refinedCharge, refinedMass) =
+                        MonoIsoPredictor.GetMonoIsotopicMassCharge(rawData.centroidStreams[rawData.precursorScans[scan].MasterScan],
+                        rawData.precursorMasses[scan].ParentMZ, rawData.trailerExtras[scan].ChargeState);
+                    rawData.trailerExtras[scan].ChargeState = refinedCharge;
+                    rawData.precursorMasses[scan].MonoisotopicMZ = refinedMass;
+                    P.Update();
+                }
+                P.Done();
             }
         }
     }

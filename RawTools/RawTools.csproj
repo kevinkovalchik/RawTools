@@ -131,6 +131,7 @@
     <Compile Include="QC\XTandem.cs" />
     <Compile Include="Utilities\MathStats\FitScores.cs" />
     <Compile Include="Utilities\MathStats\ToleranceCalculator.cs" />
+    <Compile Include="Utilities\ScanData\AveragePeakScans.cs" />
     <Compile Include="Write\DataWrite.cs" />
     <Compile Include="Utilities\Utilities.cs" />
     <Compile Include="Data\Containers.cs" />
