@@ -62,10 +62,8 @@ namespace RawTools.QC
             return XElement.Load(resultsFile);
         }
 
-        public static QcDataContainer ParseSearchResults(WorkflowParameters parameters, string rawFileName)
+        public static QcDataContainer ParseSearchResults(QcDataContainer qcData, WorkflowParameters parameters, string rawFileName)
         {
-            QcDataContainer qcData = new QcDataContainer();
-
             XElement results = LoadSearchResults(parameters, rawFileName);
 
             PsmDataCollection Psms = ExtractPsmData(results, parameters.QcParams.SearchAlgorithm);

@@ -35,6 +35,8 @@ using Serilog;
 
 namespace RawTools.Data.Extraction
 {/*
+    NOTE: This is empty! It is here for reference in case we need it during refactoring.
+
     class XIC
     {
         IRawDataPlus rawFile;

@@ -157,11 +157,19 @@ namespace RawTools.Data.IO
             Delegates.Add("MS2MedianIntensity", WriterDelegates.MS2MedianIntensity);
         }
 
-        public Writer(CentroidStreamCollection centroids, SegmentScanCollection segments, WorkflowParameters parameters)
+        public Writer(CentroidStreamCollection centroids, SegmentScanCollection segments, WorkflowParameters parameters, RetentionTimeCollection retentionTimes,
+            PrecursorMassCollection precursorMasses, PrecursorScanCollection precursorScans, TrailerExtraCollection trailerExtras, MethodDataContainer methodData,
+            ScanIndex Index)
         {
             centroidStreams = centroids;
             segmentScans = segments;
             Writer.parameters = parameters;
+            Writer.retentionTimes = retentionTimes;
+            Writer.precursorMasses = precursorMasses;
+            Writer.precursorScans = precursorScans;
+            Writer.trailerExtras = trailerExtras;
+            Writer.methodData = methodData;
+            Writer.index = Index;
         }
 
         static class WriterDelegates
@@ -405,10 +413,19 @@ namespace RawTools.Data.IO
             WriteMatrix(data);
         }
 
-        public void WriteMGF(string rawFileName, int[] scans = null)
+        public void WriteMGF(string rawFileName, int[] scans = null, string outputFile = null)
         {
+            string fileName;
+
             double intCutoff = 0;
-            string fileName = ReadWrite.GetPathToFile(parameters.ParseParams.OutputDirectory, rawFileName, ".mgf");
+            if (outputFile == null)
+            {
+                fileName = ReadWrite.GetPathToFile(parameters.ParseParams.OutputDirectory, rawFileName, ".mgf");
+            }
+            else
+            {
+                fileName = outputFile;
+            }
 
             MassAnalyzerType ms2MassAnalyzer = methodData.MassAnalyzers[MSOrderType.Ms2];
             
@@ -613,7 +630,7 @@ namespace RawTools.Data.IO
 
                     f.Write(qcData.QcData[key].Ms1FillTimeDistribution.P50 + ",");
                     f.Write(qcData.QcData[key].Ms2FillTimeDistribution.P50 + ",");
-                    f.Write(qcData.QcData[key].Ms3FillTimeDistribution.P50 + ",");
+                    f.Write(qcData.QcData[key]?.Ms3FillTimeDistribution?.P50 + ",");
 
                     f.Write(qcData.QcData[key].PeakShape.Width.P10 * 60 + ",");
                     f.Write(qcData.QcData[key].PeakShape.Width.P50 * 60 + ",");

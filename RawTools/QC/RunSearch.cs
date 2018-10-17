@@ -37,14 +37,18 @@ namespace RawTools.QC
 {
     static class Search
     {
-        public static void WriteSearchMGF(WorkflowParameters parameters, CentroidStreamCollection centroids, SegmentScanCollection segments, ScanIndex index, string rawFileName, bool fixedScans = false)
+        public static void WriteSearchMGF(WorkflowParameters parameters, CentroidStreamCollection centroids, SegmentScanCollection segments, RetentionTimeCollection retentionTimes,
+            PrecursorMassCollection precursorMasses, PrecursorScanCollection precursorScans, TrailerExtraCollection trailerExtras, MethodDataContainer methodData,
+            ScanIndex index, string rawFileName, bool fixedScans = false)
         {
             var pars = parameters.QcParams.SearchParameters;
-            int[] scans = AdditionalMath.SelectRandomScans(scans: index.ScanEnumerators[MSOrderType.Ms2], num: pars.NumSpectra, fixedScans: fixedScans);
+            int[] scans = AdditionalMath.SelectRandomScans(scans: index.ScanEnumerators[MSOrderType.Ms2],
+                num: parameters.QcParams.NumberSpectra, fixedScans: parameters.QcParams.FixedScans);
 
-            Writer writer = new Writer(centroids, segments, parameters);
+            Writer writer = new Writer(centroids, segments, parameters, retentionTimes, precursorMasses, precursorScans, trailerExtras, methodData, index);
+            string mgfFile = ReadWrite.GetPathToFile(parameters.QcParams.QcSearchDataDirectory, rawFileName, ".mgf");
 
-            writer.WriteMGF(rawFileName, scans);            
+            writer.WriteMGF(rawFileName, scans, mgfFile);            
         }
 
         public static void RunSearch(WorkflowParameters parameters, MethodDataContainer methodData, string rawFileName)

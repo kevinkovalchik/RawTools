@@ -93,7 +93,7 @@ namespace RawTools.WorkFlows
             }
             if (parameters.ParseParams.WriteMgf)
             {
-                Writer writerMGF = new Writer(centroidStreams, segmentScans, parameters);
+                Writer writerMGF = new Writer(centroidStreams, segmentScans, parameters, retentionTimes, precursorMasses, precursorScans, trailerExtras, methodData, Index);
                 writerMGF.WriteMGF(staticRawFile.FileName);
             }
 
@@ -136,11 +136,12 @@ namespace RawTools.WorkFlows
 
             if (parameters.QcParams.PerformSearch)
             {
-                Search.WriteSearchMGF(parameters, centroidStreams, segmentScans, Index, rawFile.FileName, parameters.QcParams.FixedScans);
+                Search.WriteSearchMGF(parameters, centroidStreams, segmentScans, retentionTimes, precursorMasses, precursorScans, trailerExtras, methodData,
+                    Index, rawFile.FileName, parameters.QcParams.FixedScans);
 
                 Search.RunSearch(parameters, methodData, rawFile.FileName);
 
-                qcData = SearchQC.ParseSearchResults(parameters, rawFile.FileName);
+                qcData = SearchQC.ParseSearchResults(qcData, parameters, rawFile.FileName);
             }
 
             QC.QcWorkflow.UpdateQcCollection(qcDataCollection, qcData, methodData, rawFile.FileName);

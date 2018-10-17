@@ -76,6 +76,7 @@ namespace RawTools.WorkFlows
             QcParams.NumberSpectra = qcOptions.NumberSpectra;
             QcParams.PythonExecutable = qcOptions.PythonExecutable;
             QcParams.QcDirectory = qcOptions.QcDirectory;
+            QcParams.XTandemDirectory = qcOptions.XTandemDirectory;
 
             if (QcParams.SearchAlgorithm != SearchAlgorithm.None)
             {
