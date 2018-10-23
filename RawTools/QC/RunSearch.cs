@@ -41,6 +41,11 @@ namespace RawTools.QC
             var pars = qcParameters.searchParameters;
             int[] scans = AdditionalMath.SelectRandomScans(scans: rawData.scanIndex.ScanEnumerators[MSOrderType.Ms2], num: pars.NumSpectra, fixedScans: fixedScans);
             MGF.WriteMGF(rawData, rawFile, qcParameters.QcSearchDataDirectory, pars.MgfMassCutoff, scans, pars.MgfIntensityCutoff);
+
+            if (pars.NumSpectra > rawData.scanIndex.ScanEnumerators[MSOrderType.Ms2].Length)
+            {
+                pars.NumSpectra = rawData.scanIndex.ScanEnumerators[MSOrderType.Ms2].Length;
+            }
         }
 
         public static void RunSearch(QcParameters qcParameters, RawDataCollection rawData, IRawDataPlus rawFile)
