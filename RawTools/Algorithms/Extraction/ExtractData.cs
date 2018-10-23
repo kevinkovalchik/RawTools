@@ -357,9 +357,9 @@ namespace RawTools.Algorithms.ExtractData
             foreach (int scan in scans)
             {
                 trailerExtras[scan] = ExtractOneTrailerExtra(rawFile, scan, trailerIndices);
-                //P.Update();
+                P.Update();
             }
-            //P.Done();
+            P.Done();
 
             return trailerExtras;
         }
