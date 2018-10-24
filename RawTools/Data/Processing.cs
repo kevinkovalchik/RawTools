@@ -643,6 +643,7 @@ namespace RawTools.Data.Processing
                 // Check to make sure the ms1 scan isn't the last one....
                 if (scanIndex >= MS1Scans.Length)
                 {
+                    currentScan = MS1Scans.Last();
                     nextMS1scan = currentScan;
                     break;
                 }
