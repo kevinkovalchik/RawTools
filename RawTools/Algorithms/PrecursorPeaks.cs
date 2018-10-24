@@ -146,6 +146,7 @@ namespace RawTools.Algorithms
                 // Check to make sure the ms1 scan isn't the last one....
                 if (scanIndex >= MS1Scans.Length)
                 {
+                    currentScan = MS1Scans.Last();
                     nextMS1scan = currentScan;
                     break;
                 }
@@ -220,6 +221,11 @@ namespace RawTools.Algorithms
             {
                 profileTimes.Add(retentionTimes[scan]);
                 profileIntensities.Add(indexedIntensities[scan]);
+            }
+
+            if (profileIntensities[0] == 0 & profileIntensities[1] == 0)
+            {
+
             }
 
             maxIntensity = profileIntensities.Max();
