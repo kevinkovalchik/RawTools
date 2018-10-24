@@ -271,7 +271,7 @@ namespace RawTools.Data.Extraction
                 {
                     InjectionTime = i;
                 }
-                if (header[i].Label.ToLower().Contains("master scan"))
+                if (header[i].Label.ToLower().Contains("master scan") | header[i].Label.ToLower().Contains("master index"))
                 {
                     MasterScan = i;
                 }
