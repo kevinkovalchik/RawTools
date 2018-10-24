@@ -765,7 +765,7 @@ namespace RawTools.Data.Extraction
                 foreach (int scan in rawData.scanIndex.ScanEnumerators[MSOrderType.Ms2])
                 {
                     // refine precursor mass and charge
-                    var centroid = rawData.GetAverageScan(rawFile, scan);
+                    // var centroid = rawData.GetAverageScan(rawFile, scan);
                     //rawData.centroidStreams[rawData.precursorScans[scan].MasterScan]
 
                     (refinedCharge, refinedMass) =
