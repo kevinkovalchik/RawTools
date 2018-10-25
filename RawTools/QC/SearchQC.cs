@@ -62,15 +62,15 @@ namespace RawTools.QC
             return XElement.Load(resultsFile);
         }
 
-        public static QcDataContainer ParseSearchResults(QcDataContainer qcData, WorkflowParameters parameters, string rawFileName)
+        public static SearchMetricsContainer ParseSearchResults(SearchMetricsContainer searchMetrics, WorkflowParameters parameters, string rawFileName)
         {
             XElement results = LoadSearchResults(parameters, rawFileName);
 
             PsmDataCollection Psms = ExtractPsmData(results, parameters.QcParams.SearchAlgorithm);
 
-            qcData.ParsePSMs(Psms, parameters);
+            searchMetrics.ParsePSMs(Psms, parameters);
 
-            return qcData;
+            return searchMetrics;
         }
         
         public static PsmDataCollection ExtractPsmData(XElement results, SearchAlgorithm searchAlgorithm)
@@ -217,7 +217,7 @@ namespace RawTools.QC
             return psms;
         }
 
-        public static void ParsePSMs(this QcDataContainer qcData, PsmDataCollection psmCollection, WorkflowParameters parameters)
+        public static void ParsePSMs(this SearchMetricsContainer searchMetrics, PsmDataCollection psmCollection, WorkflowParameters parameters)
         {
             XElement results, searchSummary;
             IEnumerable<XElement> decoyPSMs, search_hits, spectrumQueries;
@@ -294,22 +294,22 @@ namespace RawTools.QC
             // get labeling efficiency metrics
             if ((parameters.QcParams.NMod != null) | (parameters.QcParams.KMod != null) | (parameters.QcParams.XMod != null))
             {
-                qcData.GetModificationFrequency(goodPsms, parameters);
+                searchMetrics.GetModificationFrequency(goodPsms, parameters);
             }
 
             // get median mass drift
-            qcData.MedianMassDrift = (from x in goodPsms
+            searchMetrics.MedianMassDrift = (from x in goodPsms
                                       select x.MassDrift)
                                       .ToArray().Percentile(50);
 
-            qcData.IdentificationRate = IdRate;
-            qcData.MissedCleavageRate = missedCleavageRate;
-            qcData.DigestionEfficiency = digestionEfficiency;
-            qcData.ChargeRatio3to2 = chargeRatio3to2;
-            qcData.ChargeRatio4to2 = chargeRatio4to2;
+            searchMetrics.IdentificationRate = IdRate;
+            searchMetrics.MissedCleavageRate = missedCleavageRate;
+            searchMetrics.DigestionEfficiency = digestionEfficiency;
+            searchMetrics.ChargeRatio3to2 = chargeRatio3to2;
+            searchMetrics.ChargeRatio4to2 = chargeRatio4to2;
         }
 
-        public static void GetModificationFrequency(this QcDataContainer qcData, IEnumerable<PsmData> psms, WorkflowParameters parameters)
+        public static void GetModificationFrequency(this SearchMetricsContainer searchMetrics, IEnumerable<PsmData> psms, WorkflowParameters parameters)
         {
 
             string nmod = parameters.QcParams.NMod;
@@ -524,20 +524,20 @@ namespace RawTools.QC
                 // if the sites are n-term or K add them to their own attributes
                 if (aa == "[")
                 {
-                    qcData.LabelingEfficiencyAtNTerm = efficiency;
+                    searchMetrics.LabelingEfficiencyAtNTerm = efficiency;
                 }
                 else
                 {
                     if (aa == "K")
                     {
-                        qcData.LabelingEfficiencyAtK = efficiency;
+                        searchMetrics.LabelingEfficiencyAtK = efficiency;
 
                     }
                     // if not, then add it to xmod attributes
                     else
                     {
-                        qcData.LabelingEfficiencyAtX = efficiency;
-                        qcData.LabelX = aa;
+                        searchMetrics.LabelingEfficiencyAtX = efficiency;
+                        searchMetrics.LabelX = aa;
                     }
                 }
             }

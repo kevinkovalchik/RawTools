@@ -37,7 +37,7 @@ using RawTools.WorkFlows;
 
 namespace RawTools.Algorithms.Analyze
 {
-    static class ParseMetaData
+    static class MetaDataCalculations
     {
 
         public static double Ms1IsoWindow(MethodDataContainer methodData)

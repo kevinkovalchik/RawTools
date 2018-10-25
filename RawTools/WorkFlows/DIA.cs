@@ -37,9 +37,9 @@ using RawTools.Algorithms.Analyze;
 
 namespace RawTools.WorkFlows
 {
-    static class WorkFlowsDDA
+    static class WorkFlowsDIA
     {
-        public static void ParseDDA(IRawFileThreadManager rawFile, WorkflowParameters parameters)
+        public static void ParseDIA(IRawFileThreadManager rawFile, WorkflowParameters parameters)
         {
             var staticRawFile = rawFile.CreateThreadAccessor();
             staticRawFile.SelectInstrument(Device.MS, 1);
@@ -55,27 +55,21 @@ namespace RawTools.WorkFlows
             (CentroidStreamCollection centroidStreams, SegmentScanCollection segmentScans) = 
                 Extract.MsData(rawFile: rawFile.CreateThreadAccessor(), index: Index);
 
-            (PrecursorScanCollection precursorScans, ScanDependentsCollections scanDependents) = Extract.DependentsAndPrecursorScansByScanDependents(rawFile.CreateThreadAccessor(), Index);
-
-            PrecursorMassCollection precursorMasses = Extract.PrecursorMasses(rawFile.CreateThreadAccessor(), precursorScans, trailerExtras, Index);
-
             RetentionTimeCollection retentionTimes = Extract.RetentionTimes(rawFile.CreateThreadAccessor(), Index);
 
-            ScanMetaDataCollectionDDA metaData = MetaDataProcessingDDA.AggregateMetaDataDDA(centroidStreams, segmentScans, methodData, precursorScans,
-                trailerExtras, precursorMasses, retentionTimes, scanDependents, Index);
-
-            PrecursorPeakCollection peakData = AnalyzePeaks.AnalyzeAllPeaks(centroidStreams, retentionTimes, precursorMasses, precursorScans, Index);
-            
+            ScanMetaDataCollectionDIA metaData = MetaDataProcessingDIA.AggregateMetaDataDIA(centroidStreams, segmentScans, methodData,
+                trailerExtras, retentionTimes, Index);
+                        
             QuantDataCollection quantData = null;
             if (parameters.ParseParams.Quant)
             {
                 quantData = Quantification.Quantify(centroidStreams, segmentScans, parameters, methodData, Index);
             }
 
-            RawMetricsDataDDA metrics = null;
+            RawMetricsDataDIA metrics = null;
             if (parameters.ParseParams.Metrics)
             {
-                metrics = MetaDataProcessingDDA.GetMetricsDataDDA(metaData, methodData, staticRawFile.FileName, retentionTimes, Index, peakData, precursorScans, quantData);
+                metrics = MetaDataProcessingDIA.GetMetricsDataDIA(metaData, methodData, staticRawFile.FileName, retentionTimes, Index);
                 MetricsWriter.WriteMatrix(metrics, staticRawFile.FileName, parameters.ParseParams.OutputDirectory);
             }
 
@@ -124,11 +118,11 @@ namespace RawTools.WorkFlows
 
             PrecursorPeakCollection peakData = AnalyzePeaks.AnalyzeAllPeaks(centroidStreams, retentionTimes, precursorMasses, precursorScans, Index);
 
-            RawMetricsDataDDA rawMetrics = MetaDataProcessingDDA.GetMetricsDataDDA(metaData, methodData, rawFile.FileName, retentionTimes, Index, peakData, precursorScans);
+            RawMetricsDataDDA metrics = MetaDataProcessingDDA.GetMetricsDataDDA(metaData, methodData, rawFile.FileName, retentionTimes, Index, peakData, precursorScans);
 
             QcDataCollectionDDA qcDataCollection = QC.QcWorkflow.LoadOrCreateQcCollection(parameters);
 
-            SearchMetricsContainer searchMetrics = new SearchMetricsContainer(rawFile.FileName, rawFile.CreationDate, methodData);
+            QcDataContainer qcData = QC.QcWorkflow.ParseQcData(parameters.QcParams, metrics, methodData);
 
             if (parameters.QcParams.PerformSearch)
             {
@@ -137,10 +131,10 @@ namespace RawTools.WorkFlows
 
                 Search.RunSearch(parameters, methodData, rawFile.FileName);
 
-                searchMetrics = SearchQC.ParseSearchResults(searchMetrics, parameters, rawFile.FileName);
+                qcData = SearchQC.ParseSearchResults(qcData, parameters, rawFile.FileName);
             }
 
-            QC.QcWorkflow.UpdateQcCollection(qcDataCollection, searchMetrics, methodData, rawFile.FileName);
+            QC.QcWorkflow.UpdateQcCollection(qcDataCollection, qcData, methodData, rawFile.FileName);
         }
     }
 

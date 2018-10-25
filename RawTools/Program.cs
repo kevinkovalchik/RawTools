@@ -268,7 +268,7 @@ namespace RawTools
                     {
                         parameters.ParseParams.OutputDirectory = Path.GetDirectoryName(file);
                     }
-                    WorkFlows.DataWorkFlows.DDA(rawFile, parameters);
+                    WorkFlows.WorkFlowsDDA.ParseDDA(rawFile, parameters);
 
                     /*
                     if (opts.Chromatogram != null)

@@ -307,13 +307,19 @@ namespace RawTools.Algorithms.ExtractData
 
             if (indices.HCDEnergy != -1)
             {
-                try
+                if (rawFile.GetTrailerExtraValue(scan, indices.HCDEnergy).ToString() != "N/A" &
+                    rawFile.GetTrailerExtraValue(scan, indices.HCDEnergy).ToString() != "")
                 {
-                    trailerExtra.HCDEnergy = Convert.ToDouble(rawFile.GetTrailerExtraValue(scan, indices.HCDEnergy));
+                    try
+                    {
+                        var test = rawFile.GetTrailerExtraValue(scan, indices.HCDEnergy).ToString();
+                        trailerExtra.HCDEnergy = Convert.ToDouble(rawFile.GetTrailerExtraValue(scan, indices.HCDEnergy));
+                    }
+                    catch (FormatException)
+                    {
+                    }
                 }
-                catch (FormatException)
-                {
-                }
+                
             }
 
             if (indices.SPSMasses.Count > 2) // if so, this means with have all SPS masses listed individually

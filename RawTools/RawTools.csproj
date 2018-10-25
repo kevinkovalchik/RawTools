@@ -108,9 +108,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Algorithms\Analyze\MetaData\MetaDataProcessingDIA.cs" />
+    <Compile Include="Algorithms\Analyze\Metrics\MetricsCalculations.cs" />
     <Compile Include="Algorithms\PrecursorPeaks.cs" />
-    <Compile Include="Algorithms\Analyze\MetaDataProcessing.cs" />
-    <Compile Include="Algorithms\Analyze\MetaData\ParseMetaData.cs" />
+    <Compile Include="Algorithms\Analyze\MetaData\MetaDataProcessingDDA.cs" />
+    <Compile Include="Algorithms\Analyze\MetaData\MetaDataCalculations.cs" />
     <Compile Include="Algorithms\Averagine.cs" />
     <Compile Include="Algorithms\ChargeStateCalculator.cs" />
     <Compile Include="Algorithms\Extraction\ExtractData.cs" />
@@ -134,10 +136,11 @@
     <Compile Include="QC\RunSearch.cs" />
     <Compile Include="QC\SearchQC.cs" />
     <Compile Include="QC\Watcher.cs" />
-    <Compile Include="QC\QC.cs" />
+    <Compile Include="QC\QcWorkflow.cs" />
     <Compile Include="QC\XTandem.cs" />
     <Compile Include="Utilities\MathStats\FitScores.cs" />
     <Compile Include="Utilities\MathStats\ToleranceCalculator.cs" />
+    <Compile Include="WorkFlows\DIA.cs" />
     <Compile Include="WorkFlows\DDA.cs" />
     <Compile Include="WorkFlows\WorkflowParameters.cs" />
     <Compile Include="Write\DataWrite.cs" />

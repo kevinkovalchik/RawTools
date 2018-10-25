@@ -45,7 +45,7 @@ namespace RawTools.QC
             int[] scans = AdditionalMath.SelectRandomScans(scans: index.ScanEnumerators[MSOrderType.Ms2],
                 num: parameters.QcParams.NumberSpectra, fixedScans: parameters.QcParams.FixedScans);
 
-            Writer writer = new Writer(centroids, segments, parameters, retentionTimes, precursorMasses, precursorScans, trailerExtras, methodData, index);
+            ParseWriter writer = new ParseWriter(centroids, segments, parameters, retentionTimes, precursorMasses, precursorScans, trailerExtras, methodData, index);
             string mgfFile = ReadWrite.GetPathToFile(parameters.QcParams.QcSearchDataDirectory, rawFileName, ".mgf");
 
             writer.WriteMGF(rawFileName, scans, mgfFile);            

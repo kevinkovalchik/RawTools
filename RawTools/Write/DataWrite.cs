@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -37,7 +38,7 @@ using Serilog;
 
 namespace RawTools.Data.IO
 {
-    class Writer
+    class ParseWriter
     {
         //private List<string> data;
         static private string fileName;
@@ -56,7 +57,35 @@ namespace RawTools.Data.IO
         static private MethodDataContainer methodData;
 
         private delegate void WriteToFile(int scan, StreamWriter f);
-        static private Dictionary<string, WriteToFile> Delegates = new Dictionary<string, WriteToFile>();
+        static private Dictionary<string, WriteToFile> Delegates = new Dictionary<string, WriteToFile>()
+        {
+            {"MS3ScanNumber", WriterDelegates.MS3ScanNumber },
+            {"MS2ScanNumber", WriterDelegates.MS2ScanNumber },
+            {"MS1ScanNumber", WriterDelegates.MS1ScanNumber },
+            {"QuantScanRetTime", WriterDelegates.QuantScanRetTime },
+            {"ParentScanRetTime", WriterDelegates.ParentScanRetTime },
+            {"DutyCycle", WriterDelegates.DutyCycle },
+            {"MS2ScansPerCycle", WriterDelegates.MS2ScansPerCycle },
+            {"ParentIonMass", WriterDelegates.ParentIonMass },
+            {"MonoisotopicMass", WriterDelegates.MonoisotopicMass },
+            {"PrecursorCharge", WriterDelegates.PrecursorCharge },
+            {"MS1IsolationInterference", WriterDelegates.MS1IsolationInterference },
+            {"ParentPeakFound", WriterDelegates.ParentPeakFound },
+            {"ParentPeakArea", WriterDelegates.ParentPeakArea },
+            {"PeakFirstScan", WriterDelegates.PeakFirstScan },
+            {"PeakMaxScan", WriterDelegates.PeakMaxScan },
+            {"PeakLastScan", WriterDelegates.PeakLastScan },
+            {"BaseLinePeakWidth(s)", WriterDelegates.BaseLinePeakWidth },
+            {"PeakParentScanIntensity", WriterDelegates.PeakParentScanIntensity },
+            {"PeakMaxIntensity", WriterDelegates.PeakMaxIntensity },
+            {"MS1IonInjectionTime", WriterDelegates.MS1IonInjectionTime },
+            {"MS2IonInjectionTime", WriterDelegates.MS2IonInjectionTime },
+            {"MS3IonInjectionTime", WriterDelegates.MS3IonInjectionTime },
+            {"HCDEnergy", WriterDelegates.HCDEnergy },
+            {"MS1MedianIntensity", WriterDelegates.MS1MedianIntensity },
+            {"MS2MedianIntensity", WriterDelegates.MS2MedianIntensity }
+        };
+
 
         /// <summary>
         /// Writer for DDA data
@@ -71,48 +100,23 @@ namespace RawTools.Data.IO
         /// <param name="precursorPeaks"></param>
         /// <param name="trailerExtras"></param>
         /// <param name="quantData"></param>
-        public Writer(string fileName, CentroidStreamCollection centroids, SegmentScanCollection segments,
+        public ParseWriter(string fileName, CentroidStreamCollection centroids, SegmentScanCollection segments,
             ScanMetaDataCollectionDDA metaData, RetentionTimeCollection retentionTimes, PrecursorMassCollection precursorMasses,
             PrecursorScanCollection precursorScans, PrecursorPeakCollection precursorPeaks, TrailerExtraCollection trailerExtras,
             ScanIndex Index, QuantDataCollection quantData = null)
         {
-            Writer.fileName = fileName;
+            ParseWriter.fileName = fileName;
             index = Index;
 
             centroidStreams = centroids;
             segmentScans = segments;
             metaDataDDA = metaData;
-            Writer.quantData = quantData;
-            Writer.retentionTimes = retentionTimes;
-            Writer.precursorMasses = precursorMasses;
-            Writer.precursorScans = precursorScans;
-            Writer.trailerExtras = trailerExtras;
-            Writer.precursorPeaks = precursorPeaks;
-            Delegates.Add("MS3ScanNumber", WriterDelegates.MS3ScanNumber);
-            Delegates.Add("MS2ScanNumber", WriterDelegates.MS2ScanNumber);
-            Delegates.Add("MS1ScanNumber", WriterDelegates.MS1ScanNumber);
-            Delegates.Add("QuantScanRetTime", WriterDelegates.QuantScanRetTime);
-            Delegates.Add("ParentScanRetTime", WriterDelegates.ParentScanRetTime);
-            Delegates.Add("DutyCycle", WriterDelegates.DutyCycle);
-            Delegates.Add("MS2ScansPerCycle", WriterDelegates.MS2ScansPerCycle);
-            Delegates.Add("ParentIonMass", WriterDelegates.ParentIonMass);
-            Delegates.Add("MonoisotopicMass", WriterDelegates.MonoisotopicMass);
-            Delegates.Add("PrecursorCharge", WriterDelegates.PrecursorCharge);
-            Delegates.Add("MS1IsolationInterference", WriterDelegates.MS1IsolationInterference);
-            Delegates.Add("ParentPeakFound", WriterDelegates.ParentPeakFound);
-            Delegates.Add("ParentPeakArea", WriterDelegates.ParentPeakArea);
-            Delegates.Add("PeakFirstScan", WriterDelegates.PeakFirstScan);
-            Delegates.Add("PeakMaxScan", WriterDelegates.PeakMaxScan);
-            Delegates.Add("PeakLastScan", WriterDelegates.PeakLastScan);
-            Delegates.Add("BaseLinePeakWidth(s)", WriterDelegates.BaseLinePeakWidth);
-            Delegates.Add("PeakParentScanIntensity", WriterDelegates.PeakParentScanIntensity);
-            Delegates.Add("PeakMaxIntensity", WriterDelegates.PeakMaxIntensity);
-            Delegates.Add("MS1IonInjectionTime", WriterDelegates.MS1IonInjectionTime);
-            Delegates.Add("MS2IonInjectionTime", WriterDelegates.MS2IonInjectionTime);
-            Delegates.Add("MS3IonInjectionTime", WriterDelegates.MS3IonInjectionTime);
-            Delegates.Add("HCDEnergy", WriterDelegates.HCDEnergy);
-            Delegates.Add("MS1MedianIntensity", WriterDelegates.MS1MedianIntensity);
-            Delegates.Add("MS2MedianIntensity", WriterDelegates.MS2MedianIntensity);
+            ParseWriter.quantData = quantData;
+            ParseWriter.retentionTimes = retentionTimes;
+            ParseWriter.precursorMasses = precursorMasses;
+            ParseWriter.precursorScans = precursorScans;
+            ParseWriter.trailerExtras = trailerExtras;
+            ParseWriter.precursorPeaks = precursorPeaks;
         }
 
         /// <summary>
@@ -129,47 +133,37 @@ namespace RawTools.Data.IO
         /// <param name="precursorPeaks"></param>
         /// <param name="trailerExtras"></param>
         /// <param name="quantData"></param>
-        public Writer(string fileName, CentroidStreamCollection centroids, SegmentScanCollection segments,
+        public ParseWriter(string fileName, CentroidStreamCollection centroids, SegmentScanCollection segments,
             ScanMetaDataCollectionDIA metaData, RetentionTimeCollection retentionTimes, PrecursorMassCollection precursorMasses,
             PrecursorScanCollection precursorScans, PrecursorPeakCollection precursorPeaks, TrailerExtraCollection trailerExtras,
             ScanIndex Index, QuantDataCollection quantData = null)
         {
-            Writer.fileName = fileName;
-            Writer.index = Index;
+            ParseWriter.fileName = fileName;
+            ParseWriter.index = Index;
             centroidStreams = centroids;
             segmentScans = segments;
             metaDataDIA = metaData;
-            Writer.quantData = quantData;
-            Writer.retentionTimes = retentionTimes;
-            Writer.precursorMasses = precursorMasses;
-            Writer.precursorScans = precursorScans;
-            Writer.trailerExtras = trailerExtras;
-            Writer.precursorPeaks = precursorPeaks;
-            Delegates.Add("MS2ScanNumber", WriterDelegates.MS2ScanNumber);
-            Delegates.Add("MS1ScanNumber", WriterDelegates.MS1ScanNumber);
-            Delegates.Add("QuantScanRetTime", WriterDelegates.QuantScanRetTime);
-            Delegates.Add("ParentScanRetTime", WriterDelegates.ParentScanRetTime);
-            Delegates.Add("DutyCycle", WriterDelegates.DutyCycle);
-            Delegates.Add("MS1IonInjectionTime", WriterDelegates.MS1IonInjectionTime);
-            Delegates.Add("MS2IonInjectionTime", WriterDelegates.MS2IonInjectionTime);
-            Delegates.Add("HCDEnergy", WriterDelegates.HCDEnergy);
-            Delegates.Add("MS1MedianIntensity", WriterDelegates.MS1MedianIntensity);
-            Delegates.Add("MS2MedianIntensity", WriterDelegates.MS2MedianIntensity);
+            ParseWriter.quantData = quantData;
+            ParseWriter.retentionTimes = retentionTimes;
+            ParseWriter.precursorMasses = precursorMasses;
+            ParseWriter.precursorScans = precursorScans;
+            ParseWriter.trailerExtras = trailerExtras;
+            ParseWriter.precursorPeaks = precursorPeaks;
         }
 
-        public Writer(CentroidStreamCollection centroids, SegmentScanCollection segments, WorkflowParameters parameters, RetentionTimeCollection retentionTimes,
+        public ParseWriter(CentroidStreamCollection centroids, SegmentScanCollection segments, WorkflowParameters parameters, RetentionTimeCollection retentionTimes,
             PrecursorMassCollection precursorMasses, PrecursorScanCollection precursorScans, TrailerExtraCollection trailerExtras, MethodDataContainer methodData,
             ScanIndex Index)
         {
             centroidStreams = centroids;
             segmentScans = segments;
-            Writer.parameters = parameters;
-            Writer.retentionTimes = retentionTimes;
-            Writer.precursorMasses = precursorMasses;
-            Writer.precursorScans = precursorScans;
-            Writer.trailerExtras = trailerExtras;
-            Writer.methodData = methodData;
-            Writer.index = Index;
+            ParseWriter.parameters = parameters;
+            ParseWriter.retentionTimes = retentionTimes;
+            ParseWriter.precursorMasses = precursorMasses;
+            ParseWriter.precursorScans = precursorScans;
+            ParseWriter.trailerExtras = trailerExtras;
+            ParseWriter.methodData = methodData;
+            ParseWriter.index = Index;
         }
 
         static class WriterDelegates
@@ -212,17 +206,17 @@ namespace RawTools.Data.IO
 
             public static void ParentIonMass(int scan, StreamWriter f)
             {
-                f.Write(precursorMasses[scan].ParentMZ);
+                f.Write(precursorMasses[precursorScans[scan].MS2Scan].ParentMZ);
             }
 
             public static void MonoisotopicMass(int scan, StreamWriter f)
             {
-                f.Write(precursorMasses[scan].MonoisotopicMZ);
+                f.Write(precursorMasses[precursorScans[scan].MS2Scan].MonoisotopicMZ);
             }
 
             public static void PrecursorCharge(int scan, StreamWriter f)
             {
-                f.Write(trailerExtras[scan].ChargeState);
+                f.Write(trailerExtras[precursorScans[scan].MS2Scan].ChargeState);
             }
 
             public static void MS1IsolationInterference(int scan, StreamWriter f)
@@ -232,42 +226,43 @@ namespace RawTools.Data.IO
 
             public static void ParentPeakFound(int scan, StreamWriter f)
             {
-                f.Write(precursorPeaks[scan].PeakFound);
+                var test = precursorPeaks;
+                f.Write(precursorPeaks[precursorScans[scan].MS2Scan].PeakFound);
             }
 
             public static void ParentPeakArea(int scan, StreamWriter f)
             {
-                f.Write(precursorPeaks[scan].Area);
+                f.Write(precursorPeaks[precursorScans[scan].MS2Scan].Area);
             }
 
             public static void PeakFirstScan(int scan, StreamWriter f)
             {
-                f.Write(precursorPeaks[scan].FirstScan);
+                f.Write(precursorPeaks[precursorScans[scan].MS2Scan].FirstScan);
             }
 
             public static void PeakMaxScan(int scan, StreamWriter f)
             {
-                f.Write(precursorPeaks[scan].MaxScan);
+                f.Write(precursorPeaks[precursorScans[scan].MS2Scan].MaxScan);
             }
 
             public static void PeakLastScan(int scan, StreamWriter f)
             {
-                f.Write(precursorPeaks[scan].LastScan);
+                f.Write(precursorPeaks[precursorScans[scan].MS2Scan].LastScan);
             }
 
             public static void BaseLinePeakWidth(int scan, StreamWriter f)
             {
-                f.Write(precursorPeaks[scan].BaselineWidth);
+                f.Write(precursorPeaks[precursorScans[scan].MS2Scan].BaselineWidth);
             }
 
             public static void PeakParentScanIntensity(int scan, StreamWriter f)
             {
-                f.Write(precursorPeaks[scan].ParentIntensity);
+                f.Write(precursorPeaks[precursorScans[scan].MS2Scan].ParentIntensity);
             }
 
             public static void PeakMaxIntensity(int scan, StreamWriter f)
             {
-                f.Write(precursorPeaks[scan].MaximumIntensity);
+                f.Write(precursorPeaks[precursorScans[scan].MS2Scan].MaximumIntensity);
             }
 
             public static void MS1IonInjectionTime(int scan, StreamWriter f)
@@ -504,9 +499,9 @@ namespace RawTools.Data.IO
         }
     }
 
-    static class Metrics
+    static class MetricsWriter
     {
-        public static void WriteMatrix(MetricsData metrics,  string rawFileName, string outputDirectory = null)
+        public static void WriteMatrix(RawMetricsDataDDA metrics,  string rawFileName, string outputDirectory = null)
         {
             string fileName = ReadWrite.GetPathToFile(outputDirectory, rawFileName, "_Metrics.txt");
 
@@ -556,11 +551,88 @@ namespace RawTools.Data.IO
                 }
             }
         }
+
+        public static void WriteMatrix(RawMetricsDataDDA metrics, string rawFileName, QcDataContainer qcData, string outputDirectory = null)
+        {
+            string fileName = ReadWrite.GetPathToFile(outputDirectory, rawFileName, "_Metrics.txt");
+
+            using (StreamWriter f = new StreamWriter(fileName)) //Open a new file
+            {
+                f.WriteLine("RawFile:\t" + metrics.RawFileName);
+                f.WriteLine("Instrument:\t" + metrics.Instrument);
+                f.WriteLine("ExperimentOrder:\t" + metrics.MSOrder);
+                f.WriteLine("MS1Analyzer:\t" + metrics.MS1Analyzer);
+                f.WriteLine("MS2Analyzer:\t" + metrics.MS2Analyzer);
+
+                if (metrics.MSOrder == MSOrderType.Ms3)
+                {
+                    f.WriteLine("MS3Analyzer:\t" + metrics.MS3Analyzer);
+                }
+                else
+                {
+                    f.WriteLine("MS3Analyzer:\tNone");
+                }
+
+                f.WriteLine("TotalAnalysisTime(min):\t" + Math.Round(metrics.TotalAnalysisTime, 4));
+                f.WriteLine("TotalScans:\t" + metrics.TotalScans);
+                f.WriteLine("MS1Scans:\t" + metrics.MS1Scans);
+                f.WriteLine("MS2Scans:\t" + metrics.MS2Scans);
+                f.WriteLine("MS3Scans:\t" + metrics.MS3Scans);
+                f.WriteLine("MeanTopN:\t" + Math.Round(metrics.MeanTopN, 4));
+                f.WriteLine("MS1ScanRate(/sec):\t" + Math.Round(metrics.MS1ScanRate / 60, 4));
+                f.WriteLine("MS2ScanRate(/sec):\t" + Math.Round(metrics.MS2ScanRate / 60, 4));
+                f.WriteLine("MeanDutyCycle:\t" + Math.Round(metrics.MeanDutyCycle, 4));
+                f.WriteLine("MedianMS1FillTime:\t" + Math.Round(metrics.MedianMS1FillTime, 4));
+                f.WriteLine("MedianMS2FillTime:\t" + Math.Round(metrics.MedianMS2FillTime, 4));
+                f.WriteLine("MedianMS3FillTime:\t" + Math.Round(metrics.MedianMS3FillTime, 4));
+                f.WriteLine("MedianMS2Intensity:\t" + Math.Round(metrics.MedianSummedMS2Intensity, 4));
+                f.WriteLine("MedianMS1IsolationInterference:\t" + Math.Round(metrics.MedianMs1IsolationInterference, 4));
+                f.WriteLine("MedianPeakWidthAt10Percent(s):\t" + Math.Round(metrics.MedianBaselinePeakWidth * 60, 4));
+                f.WriteLine("MedianPeakWidthAtHalfMax(s):\t" + Math.Round(metrics.MedianHalfHeightPeakWidth * 60, 4));
+                f.WriteLine("MedianAsymmetryFactor:\t" + Math.Round(metrics.MedianAsymmetryFactor, 4));
+                f.WriteLine("ColumnCapacity:\t" + Math.Round(metrics.PeakCapacity, 4));
+                f.WriteLine()
+
+                if (metrics.IncludesQuant == true)
+                {
+                    foreach (string tag in metrics.QuantMeta.quantTags)
+                    {
+                        f.WriteLine("{0}MedianReporterIonIntensity:\t{1}", tag, metrics.QuantMeta.medianReporterIntensityByChannel[tag]);
+                    }
+                    f.WriteLine("OverallMedianReporterIonIntensity:\t{0}", metrics.QuantMeta.medianReporterIntensity);
+                }
+            }
+        }
+
+        public static void WriteMatrix(RawMetricsDataDIA metrics, string rawFileName, string outputDirectory = null)
+        {
+            string fileName = ReadWrite.GetPathToFile(outputDirectory, rawFileName, "_Metrics.txt");
+
+            using (StreamWriter f = new StreamWriter(fileName)) //Open a new file
+            {
+                f.WriteLine("RawFile:\t" + metrics.RawFileName);
+                f.WriteLine("Instrument:\t" + metrics.Instrument);
+                f.WriteLine("ExperimentOrder:\t" + metrics.MSOrder);
+                f.WriteLine("MS1Analyzer:\t" + metrics.MS1Analyzer);
+                f.WriteLine("MS2Analyzer:\t" + metrics.MS2Analyzer);
+                
+                f.WriteLine("TotalAnalysisTime(min):\t" + Math.Round(metrics.TotalAnalysisTime, 4));
+                f.WriteLine("TotalScans:\t" + metrics.TotalScans);
+                f.WriteLine("MS1Scans:\t" + metrics.MS1Scans);
+                f.WriteLine("MS2Scans:\t" + metrics.MS2Scans);
+                f.WriteLine("MS1ScanRate(/sec):\t" + Math.Round(metrics.MS1ScanRate / 60, 4));
+                f.WriteLine("MS2ScanRate(/sec):\t" + Math.Round(metrics.MS2ScanRate / 60, 4));
+                f.WriteLine("MeanDutyCycle:\t" + Math.Round(metrics.MeanDutyCycle, 4));
+                f.WriteLine("MedianMS1FillTime:\t" + Math.Round(metrics.MedianMS1FillTime, 4));
+                f.WriteLine("MedianMS2FillTime:\t" + Math.Round(metrics.MedianMS2FillTime, 4));
+                f.WriteLine("MedianMS2Intensity:\t" + Math.Round(metrics.MedianSummedMS2Intensity, 4));
+            }
+        }
     }
 
-    static class QC
+    static class QcWriter
     {
-        public static void WriteQcToTable(this QcDataCollection qcData)
+        public static void WriteQcToTable(this QcDataCollectionDDA qcData)
         {
             if (File.Exists(Path.Combine(qcData.QcDirectory, "QcDataTable.csv")))
             {
@@ -651,7 +723,7 @@ namespace RawTools.Data.IO
         }
     }
 
-    static class Chromatogram
+    static class ChromatogramWriter
     {
         public static void WriteChromatogram(CentroidStreamCollection centroids, SegmentScanCollection segments, RetentionTimeCollection retentionTimes, MethodDataContainer methodData, ScanIndex index, MSOrderType order, bool TIC, bool BP, string rawFileName, string outputDirectory)
         {

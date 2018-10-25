@@ -135,7 +135,7 @@ namespace RawTools.Data.Containers
         }
     }
 
-    class MethodDataContainer
+    public class MethodDataContainer
     {
         public double IsolationOffset, MS2IsolationWindow, MS3IsolationWindow;
         public MSOrderType AnalysisOrder;
@@ -351,16 +351,25 @@ namespace RawTools.Data.Containers
         { }
     }
 
+
     [Serializable]
-    public class MetricsData
+    public class RawMetricsDataDDA
     {
         public string RawFileName, Instrument;
         public MassAnalyzerType MS1Analyzer, MS2Analyzer, MS3Analyzer;
         public MSOrderType MSOrder;
-        public int TotalScans, MS1Scans, MS2Scans, MS3Scans, NumberOfEsiFlags;
-        public double TotalAnalysisTime, MeanTopN, MS1ScanRate, MS2ScanRate, MS3ScanRate, MeanDutyCycle, MedianMS1FillTime, MedianMS2FillTime,
-            MedianMS3FillTime, MedianPrecursorIntensity, MedianSummedMS1Intensity, MedianSummedMS2Intensity, MedianBaselinePeakWidth, MedianHalfHeightPeakWidth, PeakCapacity, Gradient,
-            MedianAsymmetryFactor, MedianMs2FractionConsumingTop80PercentTotalIntensity, MedianMs1IsolationInterference;
+        public int TotalScans, MS1Scans, MS2Scans, MS3Scans;
+        public int NumberOfEsiFlags;
+        public double TotalAnalysisTime, MeanTopN;
+        public double MS1ScanRate, MS2ScanRate, MS3ScanRate;
+        public double MeanDutyCycle;
+        public double MedianMS1FillTime, MedianMS2FillTime, MedianMS3FillTime;
+        public double MedianPrecursorIntensity;
+        public double MedianSummedMS1Intensity, MedianSummedMS2Intensity;
+        public double MedianBaselinePeakWidth, MedianHalfHeightPeakWidth, PeakCapacity, Gradient,
+            MedianAsymmetryFactor;
+        public double MedianMs2FractionConsumingTop80PercentTotalIntensity;
+        public double MedianMs1IsolationInterference;
         public bool IncludesQuant = false;
         public QuantMetaData QuantMeta;
         public double TimeBeforeFirstScanToExceedPoint1MaxIntensity;
@@ -368,6 +377,51 @@ namespace RawTools.Data.Containers
         public double FractionOfRunAbovePoint1MaxIntensity;
         public Distribution Ms1FillTimeDistribution, Ms2FillTimeDistribution, Ms3FillTimeDistribution;
         public ((double P10, double P50) Asymmetry, (double P10, double P50) Width) PeakShape;
+    }
+
+    [Serializable]
+    public class RawMetricsDataDIA
+    {
+        public string RawFileName, Instrument;
+        public MassAnalyzerType MS1Analyzer, MS2Analyzer;
+        public MSOrderType MSOrder;
+        public int TotalScans, MS1Scans, MS2Scans, NumberOfEsiFlags;
+        public double TotalAnalysisTime, MS1ScanRate, MS2ScanRate, MeanDutyCycle, MedianMS1FillTime, MedianMS2FillTime,
+            MedianSummedMS1Intensity, MedianSummedMS2Intensity, MedianMs2FractionConsumingTop80PercentTotalIntensity;
+        public double TimeBeforeFirstScanToExceedPoint1MaxIntensity;
+        public double TimeAfterLastScanToExceedPoint1MaxIntensity;
+        public double FractionOfRunAbovePoint1MaxIntensity;
+        public Distribution Ms1FillTimeDistribution, Ms2FillTimeDistribution;
+    }
+
+    [Serializable]
+    public class SearchMetricsContainer
+    {
+        public string RawFile, Instrument;
+        public DateTime DateAcquired;
+        public double LabelingEfficiencyAtX, LabelingEfficiencyAtNTerm, LabelingEfficiencyAtK;
+        public string LabelX;
+        public double IdentificationRate, MissedCleavageRate;
+        public double DigestionEfficiency;
+        public double ChargeRatio3to2, ChargeRatio4to2;
+        public double MedianMassDrift;
+        public string SearchParameters = "None";
+        public SearchData SearchData;
+
+        public SearchMetricsContainer()
+        { }
+
+        public SearchMetricsContainer(string rawFile, DateTime dateAquired, MethodDataContainer methodData)
+        {
+            RawFile = rawFile;
+            Instrument = methodData.Instrument;
+            DateAcquired = dateAquired;
+            LabelingEfficiencyAtX = LabelingEfficiencyAtNTerm = LabelingEfficiencyAtK = -1;
+            DigestionEfficiency = IdentificationRate = MissedCleavageRate = -1;
+            ChargeRatio3to2 = ChargeRatio4to2 = -1;
+            MedianMassDrift = -1;
+            SearchData = new SearchData();
+        }
     }
 
     class PrecursorPeakData
@@ -462,6 +516,7 @@ namespace RawTools.Data.Containers
             HeaderItem[] header = rawFile.GetTrailerExtraHeaderInformation();
             for (int i = 0; i < header.Length; i++)
             {
+                //Console.WriteLine("{0} {1}", header[i].Label, i);
                 if (header[i].Label.ToLower().Contains("injection time") & !header[i].Label.ToLower().Contains("reagent"))
                 {
                     InjectionTime = i;
