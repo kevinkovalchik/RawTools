@@ -385,13 +385,19 @@ namespace RawTools.Data.Containers
         public string RawFileName, Instrument;
         public MassAnalyzerType MS1Analyzer, MS2Analyzer;
         public MSOrderType MSOrder;
-        public int TotalScans, MS1Scans, MS2Scans, NumberOfEsiFlags;
-        public double TotalAnalysisTime, MS1ScanRate, MS2ScanRate, MeanDutyCycle, MedianMS1FillTime, MedianMS2FillTime,
-            MedianSummedMS1Intensity, MedianSummedMS2Intensity, MedianMs2FractionConsumingTop80PercentTotalIntensity;
+        public int TotalScans, MS1Scans, MS2Scans;
+        public int NumberOfEsiFlags;
+        public double TotalAnalysisTime;
+        public double MS1ScanRate, MS2ScanRate;
+        public double MeanDutyCycle;
+        public double MedianMS1FillTime, MedianMS2FillTime;
+        public double MedianSummedMS1Intensity, MedianSummedMS2Intensity;
+        public double Gradient;
+        public double MedianMs2FractionConsumingTop80PercentTotalIntensity;
         public double TimeBeforeFirstScanToExceedPoint1MaxIntensity;
         public double TimeAfterLastScanToExceedPoint1MaxIntensity;
         public double FractionOfRunAbovePoint1MaxIntensity;
-        public Distribution Ms1FillTimeDistribution, Ms2FillTimeDistribution;
+        public Distribution Ms1FillTimeDistribution, Ms2FillTimeDistribution, Ms3FillTimeDistribution;
     }
 
     [Serializable]
