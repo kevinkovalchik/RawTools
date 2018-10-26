@@ -591,11 +591,11 @@ namespace RawTools.Data.Containers
 
     public class SearchData
     {
-        public int PeptidesWithMissedCleavages;
-        public int TotalNumPeptides;
+        public int PSMsWithNoMissedCleavages;
+        public int TotalNumGoodPSMs;
         public int NLabelSites, KLabelSites, XLabelSites;
-        public int NLabelSitesMissed, KLabelSitesMissed, XLabelSitesMissed;
-        public int Charge2, Charge3, Charge4;
+        public int NLabelSitesHit, KLabelSitesHit, XLabelSitesHit;
+        public int NumCharge2, NumCharge3, NumCharge4;
     }
 
     class PsmData

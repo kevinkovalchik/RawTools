@@ -760,9 +760,24 @@ namespace RawTools.Data.IO
 
     static class ChromatogramWriter
     {
-        public static void WriteChromatogram(CentroidStreamCollection centroids, SegmentScanCollection segments, RetentionTimeCollection retentionTimes, MethodDataContainer methodData, ScanIndex index, MSOrderType order, bool TIC, bool BP, string rawFileName, string outputDirectory)
+        public static void WriteChromatogram(CentroidStreamCollection centroids, SegmentScanCollection segments, RetentionTimeCollection retentionTimes, MethodDataContainer methodData, ScanIndex index, WorkflowParameters parameters, string rawFileName)
         {
+            string chro = parameters.ParseParams.Chromatogram;
+
+            MSOrderType order = (MSOrderType)Convert.ToInt32((chro.ElementAt(0).ToString()));
+
             MassAnalyzerType analyzer = methodData.MassAnalyzers[order];
+
+            if ((int)order > (int)methodData.AnalysisOrder)
+            {
+                Log.Error("Specified MS order ({Order}) for chromatogram is higher than experiment order ({ExpOrder})",
+                    order, methodData.AnalysisOrder);
+                Console.WriteLine("Specified MS order ({0}) for chromatogram is higher than experiment order ({1}). Chromatogram(s) won't be written.",
+                    order, methodData.AnalysisOrder);
+            }
+
+            bool TIC = chro.Contains("T");
+            bool BP = chro.Contains("B");
 
             int[] scans = index.ScanEnumerators[order];
 
@@ -770,7 +785,7 @@ namespace RawTools.Data.IO
             {
                 ProgressIndicator progress = new ProgressIndicator(scans.Length, String.Format("Writing {0} TIC chromatogram", order));
                 progress.Start();
-                string fileName = ReadWrite.GetPathToFile(outputDirectory, rawFileName, "_" + order + "_TIC_chromatogram.txt");
+                string fileName = ReadWrite.GetPathToFile(parameters.ParseParams.OutputDirectory, rawFileName, "_" + order + "_TIC_chromatogram.txt");
 
                 using (StreamWriter f = new StreamWriter(fileName))
                 {
@@ -814,7 +829,7 @@ namespace RawTools.Data.IO
                 ProgressIndicator progress = new ProgressIndicator(scans.Length, String.Format("Writing {0} base peak chromatogram", order));
                 progress.Start();
 
-                string fileName = ReadWrite.GetPathToFile(outputDirectory, rawFileName, "_" + order + "_BP_chromatogram.txt");
+                string fileName = ReadWrite.GetPathToFile(parameters.ParseParams.OutputDirectory, rawFileName, "_" + order + "_BP_chromatogram.txt");
 
                 using (StreamWriter f = new StreamWriter(fileName))
                 {
@@ -853,8 +868,6 @@ namespace RawTools.Data.IO
                 }
                 progress.Done();
             }
-
-
         }
     }
 }

@@ -93,6 +93,11 @@ namespace RawTools.WorkFlows
                 writerMGF.WriteMGF(staticRawFile.FileName);
             }
 
+            if (parameters.ParseParams.Chromatogram != null)
+            {
+                ChromatogramWriter.WriteChromatogram(centroidStreams, segmentScans, retentionTimes, methodData, Index, parameters, staticRawFile.FileName);
+            }
+
         }
 
         public static void QcDDA(IRawDataPlus rawFile, WorkflowParameters parameters)

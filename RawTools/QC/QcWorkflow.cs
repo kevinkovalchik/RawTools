@@ -46,7 +46,7 @@ namespace RawTools.QC
     {
         public static void UpdateQcCollection(QcDataCollectionDDA qcDataCollection, SearchMetricsContainer newSearchMetrics, RawMetricsDataDDA newRawMetrics, MethodDataContainer methodData, string rawFileName)
         {
-            qcDataCollection.QcData.Add(methodData.CreationDate, (newRawMetrics ,newSearchMetrics));
+            qcDataCollection.QcData.Add(methodData.CreationDate, (newRawMetrics, newSearchMetrics));
             qcDataCollection.ProcessedRawFiles.Add(Path.GetFileName(rawFileName));
             qcDataCollection.WriteQcToTable();
             Console.WriteLine("QC data written to csv file.");
@@ -362,7 +362,19 @@ namespace RawTools.QC
         }
     }
 
-    //[Serializable]
+    public class DdaRawSearchData
+    {
+        RawMetricsDataDDA RawMetrics;
+        SearchMetricsContainer SearchMetrics;
+
+        public DdaRawSearchData(RawMetricsDataDDA rawMetrics, SearchMetricsContainer searchMetrics)
+        {
+            RawMetrics = rawMetrics;
+            SearchMetrics = searchMetrics;
+        }
+    }
+
+    [Serializable]
     public class QcDataCollectionDDA
     {
         public SerializableDictionary<DateTime, (RawMetricsDataDDA RawMetrics,SearchMetricsContainer SearchMetrics)> QcData;

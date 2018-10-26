@@ -302,6 +302,12 @@ namespace RawTools.QC
                                       select x.MassDrift)
                                       .ToArray().Percentile(50);
 
+            searchMetrics.SearchData.PSMsWithNoMissedCleavages = pepsWithNoMissedCleavages;
+            searchMetrics.SearchData.TotalNumGoodPSMs = numGoodPSMs;
+            searchMetrics.SearchData.NumCharge2 = numCharges[2];
+            searchMetrics.SearchData.NumCharge3 = numCharges[3];
+            searchMetrics.SearchData.NumCharge4 = numCharges[4];
+
             searchMetrics.IdentificationRate = IdRate;
             searchMetrics.MissedCleavageRate = missedCleavageRate;
             searchMetrics.DigestionEfficiency = digestionEfficiency;
@@ -525,19 +531,24 @@ namespace RawTools.QC
                 if (aa == "[")
                 {
                     searchMetrics.LabelingEfficiencyAtNTerm = efficiency;
+                    searchMetrics.SearchData.NLabelSites = TotalLabelingSites[aa];
+                    searchMetrics.SearchData.NLabelSitesHit = LabelingSitesHit[aa];
                 }
                 else
                 {
                     if (aa == "K")
                     {
                         searchMetrics.LabelingEfficiencyAtK = efficiency;
-
+                        searchMetrics.SearchData.KLabelSites = TotalLabelingSites[aa];
+                        searchMetrics.SearchData.KLabelSitesHit = LabelingSitesHit[aa];
                     }
                     // if not, then add it to xmod attributes
                     else
                     {
                         searchMetrics.LabelingEfficiencyAtX = efficiency;
                         searchMetrics.LabelX = aa;
+                        searchMetrics.SearchData.XLabelSites = TotalLabelingSites[aa];
+                        searchMetrics.SearchData.XLabelSitesHit = LabelingSitesHit[aa];
                     }
                 }
             }
