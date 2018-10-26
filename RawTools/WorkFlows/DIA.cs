@@ -52,6 +52,8 @@ namespace RawTools.WorkFlows
 
             MethodDataContainer methodData = Extract.MethodData(rawFile.CreateThreadAccessor(), Index);
 
+            PrecursorScanCollection precursorScans = Extract.PrecursorScansByMasterScanMs2Only(rawFile.CreateThreadAccessor(), trailerExtras, Index);
+
             (CentroidStreamCollection centroidStreams, SegmentScanCollection segmentScans) = 
                 Extract.MsData(rawFile: rawFile.CreateThreadAccessor(), index: Index);
 
@@ -71,7 +73,8 @@ namespace RawTools.WorkFlows
             {
                 string matrixFileName = ReadWrite.GetPathToFile(parameters.ParseParams.OutputDirectory, staticRawFile.FileName, "._parse.txt");
 
-                ParseWriter writerDIA = new ParseWriter(matrixFileName, centroidStreams, segmentScans, metaData, retentionTimes, trailerExtras, Index);
+                ParseWriter writerDIA = new ParseWriter(matrixFileName, centroidStreams, segmentScans, metaData,
+                    retentionTimes, trailerExtras, precursorScans, Index);
                 writerDIA.WriteMatrixDIA();
             }
 
@@ -109,9 +112,12 @@ namespace RawTools.WorkFlows
 
             RawMetricsDataDIA metrics = MetaDataProcessingDIA.GetMetricsDataDIA(metaData, methodData, rawFile.FileName, retentionTimes, Index);
 
-            QcDataCollectionDIA qcDataCollection = QC.QcWorkflow.LoadOrCreateQcCollectionDIA(parameters);
+            QcDataContainer qcData = new QcDataContainer();
+            qcData.DIA = metrics;
+
+            QcDataCollection qcDataCollection = QC.QcWorkflow.LoadOrCreateQcCollection(parameters);
             
-            QC.QcWorkflow.UpdateQcCollection(qcDataCollection, metrics, methodData, rawFile.FileName);
+            QC.QcWorkflow.UpdateQcCollection(qcDataCollection, qcData, methodData, rawFile.FileName);
         }
     }
 

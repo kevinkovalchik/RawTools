@@ -81,6 +81,8 @@ namespace RawTools.Algorithms.Analyze
             PrecursorScanCollection precursorScans, QuantDataCollection quantData = null)
         {
             RawMetricsDataDDA metricsData = new RawMetricsDataDDA();
+            metricsData.DateAcquired = methodData.CreationDate;
+            metricsData.Instrument = methodData.Instrument;
             Console.WriteLine("Calculating metrics");
             
             metricsData.RawFileName = rawFileName;

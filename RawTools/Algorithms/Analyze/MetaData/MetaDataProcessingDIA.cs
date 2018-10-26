@@ -74,6 +74,8 @@ namespace RawTools.Algorithms.Analyze
             string rawFileName, RetentionTimeCollection retentionTimes, ScanIndex index)
         {
             RawMetricsDataDIA metricsData = new RawMetricsDataDIA();
+            metricsData.DateAcquired = methodData.CreationDate;
+            metricsData.Instrument = methodData.Instrument;
             Console.WriteLine("Calculating metrics");
             
             metricsData.RawFileName = rawFileName;

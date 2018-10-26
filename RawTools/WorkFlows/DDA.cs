@@ -131,7 +131,7 @@ namespace RawTools.WorkFlows
 
             RawMetricsDataDDA rawMetrics = MetaDataProcessingDDA.GetMetricsDataDDA(metaData, methodData, rawFile.FileName, retentionTimes, Index, peakData, precursorScans);
 
-            QcDataCollectionDDA qcDataCollection = QC.QcWorkflow.LoadOrCreateQcCollectionDDA(parameters);
+            QcDataCollection qcDataCollection = QC.QcWorkflow.LoadOrCreateQcCollection(parameters);
 
             SearchMetricsContainer searchMetrics = new SearchMetricsContainer(rawFile.FileName, rawFile.CreationDate, methodData);
 
@@ -145,7 +145,11 @@ namespace RawTools.WorkFlows
                 searchMetrics = SearchQC.ParseSearchResults(searchMetrics, parameters, rawFile.FileName);
             }
 
-            QC.QcWorkflow.UpdateQcCollection(qcDataCollection, searchMetrics, rawMetrics, methodData, rawFile.FileName);
+            QcDataContainer qcData = new QcDataContainer();
+            qcData.DDA = rawMetrics;
+            qcData.SearchMetrics = searchMetrics;
+
+            QC.QcWorkflow.UpdateQcCollection(qcDataCollection, qcData, methodData, rawFile.FileName);
         }
     }
 

@@ -44,37 +44,16 @@ namespace RawTools.QC
     
     static class QcWorkflow
     {
-        public static void UpdateQcCollection(QcDataCollectionDDA qcDataCollection, SearchMetricsContainer newSearchMetrics, RawMetricsDataDDA newRawMetrics, MethodDataContainer methodData, string rawFileName)
+        public static void UpdateQcCollection(QcDataCollection qcDataCollection, QcDataContainer newQcData, MethodDataContainer methodData, string rawFileName)
         {
-            qcDataCollection.QcData.Add(methodData.CreationDate, (newRawMetrics, newSearchMetrics));
+            qcDataCollection.QcData.Add(methodData.CreationDate, newQcData);
             qcDataCollection.ProcessedRawFiles.Add(Path.GetFileName(rawFileName));
             qcDataCollection.WriteQcToTable();
             Console.WriteLine("QC data written to csv file.");
             
             try
             {
-                XmlSerialization.WriteToXmlFile<QcDataCollectionDDA>(qcDataCollection.QcFile, qcDataCollection);
-                Log.Information("QC file saved successfully");
-                Console.WriteLine("QC file saved successfully");
-            }
-            catch (Exception e)
-            {
-                Log.Error(e, "Failed during serialization of QC data");
-                Console.WriteLine("ERROR: failure during serialization of QC data.");
-                Environment.Exit(1);
-            }
-        }
-
-        public static void UpdateQcCollection(QcDataCollectionDIA qcDataCollection, RawMetricsDataDIA newRawMetrics, MethodDataContainer methodData, string rawFileName)
-        {
-            qcDataCollection.QcData.Add(methodData.CreationDate, newRawMetrics);
-            qcDataCollection.ProcessedRawFiles.Add(Path.GetFileName(rawFileName));
-            qcDataCollection.WriteQcToTable();
-            Console.WriteLine("QC data written to csv file.");
-
-            try
-            {
-                XmlSerialization.WriteToXmlFile<QcDataCollectionDIA>(qcDataCollection.QcFile, qcDataCollection);
+                XmlSerialization.WriteToXmlFile<QcDataCollection>(qcDataCollection.QcFile, qcDataCollection);
                 Log.Information("QC file saved successfully");
                 Console.WriteLine("QC file saved successfully");
             }
@@ -88,7 +67,8 @@ namespace RawTools.QC
 
         public static void DoQc(WorkflowParameters parameters)
         {
-            QcDataCollectionDDA qcDataCollection;
+            //QcDataCollectionDDA qcDataCollection;
+            dynamic qcDataCollection;
             string dataDirectory = parameters.RawFileDirectory;
             string qcDirectory = parameters.QcParams.QcDirectory;
             string qcSearchDataDirecotry = parameters.QcParams.QcSearchDataDirectory;
@@ -123,7 +103,14 @@ namespace RawTools.QC
                 {
                     rawFile.SelectInstrument(Device.MS, 1);
 
-                    WorkFlowsDDA.QcDDA(rawFile, parameters);
+                    if (parameters.ExpType == ExperimentType.DDA)
+                    {
+                        WorkFlowsDDA.QcDDA(rawFile, parameters);
+                    }
+                    else if (parameters.ExpType == ExperimentType.DIA)
+                    {
+                        WorkFlowsDIA.QcDIA(rawFile, parameters);
+                    }
                 }
 
                 Log.Information("QC finished: {File}", fileName);
@@ -133,9 +120,9 @@ namespace RawTools.QC
             Console.WriteLine("QC of all files completed!");
         }
 
-        public static QcDataCollectionDDA LoadOrCreateQcCollectionDDA(WorkflowParameters parameters)
+        public static QcDataCollection LoadOrCreateQcCollection(WorkflowParameters parameters)
         {
-            QcDataCollectionDDA qcDataCollection;
+            QcDataCollection qcDataCollection;
             string qcFile = Path.Combine(parameters.QcParams.QcDirectory, "QC.xml");
 
             // see if the file exists
@@ -144,7 +131,7 @@ namespace RawTools.QC
                 // if so, open it
                 try
                 {
-                    qcDataCollection = XmlSerialization.ReadFromXmlFile<QcDataCollectionDDA>(qcFile);
+                    qcDataCollection = XmlSerialization.ReadFromXmlFile<QcDataCollection>(qcFile);
                     Log.Information("QC data file loaded successfully");
                 }
                 catch (Exception e)
@@ -161,53 +148,15 @@ namespace RawTools.QC
                     Directory.CreateDirectory(parameters.QcParams.QcDirectory);
                 }
 
-                qcDataCollection = new QcDataCollectionDDA(parameters.RawFileDirectory, parameters.QcParams.QcDirectory);
-                Log.Information("Appears to be a new QC directory. New QC data collection created.");
-            }
-
-            return qcDataCollection;
-
-        }
-
-        public static QcDataCollectionDIA LoadOrCreateQcCollectionDIA(WorkflowParameters parameters)
-        {
-            QcDataCollectionDIA qcDataCollection;
-            string qcFile = Path.Combine(parameters.QcParams.QcDirectory, "QC.xml");
-
-            // see if the file exists
-            if (File.Exists(qcFile))
-            {
-                // if so, open it
-                try
-                {
-                    qcDataCollection = XmlSerialization.ReadFromXmlFile<QcDataCollectionDIA>(qcFile);
-                    Log.Information("QC data file loaded successfully");
-                }
-                catch (Exception e)
-                {
-                    Log.Error(e, "Failed while loading QC data");
-                    throw e;
-                }
-            }
-            else
-            {
-                // if not, check if the directory exists
-                if (!Directory.Exists(parameters.QcParams.QcDirectory))
-                {
-                    Directory.CreateDirectory(parameters.QcParams.QcDirectory);
-                }
-
-                qcDataCollection = new QcDataCollectionDIA(parameters.RawFileDirectory, parameters.QcParams.QcDirectory);
+                qcDataCollection = new QcDataCollection(parameters.RawFileDirectory, parameters.QcParams.QcDirectory, parameters.ExpType);
                 Log.Information("Appears to be a new QC directory. New QC data collection created.");
             }
             return qcDataCollection;
         }
-
-
-
-        private static (List<string> fileList, QcDataCollectionDDA qcDataCollection) GetFileListAndQcFile(WorkflowParameters parameters)
+        
+        private static (List<string> fileList, QcDataCollection qcDataCollection) GetFileListAndQcFile(WorkflowParameters parameters)
         {
-            QcDataCollectionDDA qcDataCollection;
+            QcDataCollection qcDataCollection;
             string dataDirectory = parameters.RawFileDirectory;
             string qcDirectory = parameters.QcParams.QcDirectory;
             string qcSearchDataDirecotry = parameters.QcParams.QcSearchDataDirectory;
@@ -222,7 +171,7 @@ namespace RawTools.QC
                 // if so, open it
                 try
                 {
-                    qcDataCollection = XmlSerialization.ReadFromXmlFile<QcDataCollectionDDA>(qcFile);
+                    qcDataCollection = XmlSerialization.ReadFromXmlFile<QcDataCollection>(qcFile);
                     Log.Information("QC data file loaded successfully");
                 }
                 catch (Exception e)
@@ -239,7 +188,7 @@ namespace RawTools.QC
                     Directory.CreateDirectory(qcDirectory);
                 }
 
-                qcDataCollection = new QcDataCollectionDDA(dataDirectory, qcDirectory);
+                qcDataCollection = new QcDataCollection(dataDirectory, qcDirectory, parameters.ExpType);
                 Log.Information("Appears to be a new QC directory. New QC data collection created.");
             }
 
@@ -270,7 +219,7 @@ namespace RawTools.QC
             return (fileList, qcDataCollection);
         }
 
-        private static bool CheckIfFilePresentInQcCollection(string fileName, QcDataCollectionDDA qcDataCollection)
+        private static bool CheckIfFilePresentInQcCollection(string fileName, QcDataCollection qcDataCollection)
         {
             IFileHeader rawHeader = FileHeaderReaderFactory.ReadFile(fileName);
 
@@ -284,7 +233,19 @@ namespace RawTools.QC
             }
         }
     }
+
+    [Serializable]
+    public class QcDataContainer
+    {
+        public RawMetricsDataDDA DDA;
+        public RawMetricsDataDIA DIA;
+        public SearchMetricsContainer SearchMetrics;
+
+        public QcDataContainer()
+        { }
+    }
     
+    /*
     //[Serializable]
     public class QcDataContainer
     {
@@ -361,64 +322,32 @@ namespace RawTools.QC
             Ms3FillTimeDistribution = metricsData.Ms3FillTimeDistribution;
         }
     }
-
-    public class DdaRawSearchData
-    {
-        RawMetricsDataDDA RawMetrics;
-        SearchMetricsContainer SearchMetrics;
-
-        public DdaRawSearchData(RawMetricsDataDDA rawMetrics, SearchMetricsContainer searchMetrics)
-        {
-            RawMetrics = rawMetrics;
-            SearchMetrics = searchMetrics;
-        }
-    }
+    */
+    
 
     [Serializable]
-    public class QcDataCollectionDDA
+    public class QcDataCollection
     {
-        public SerializableDictionary<DateTime, (RawMetricsDataDDA RawMetrics,SearchMetricsContainer SearchMetrics)> QcData;
+        public SerializableDictionary<DateTime, QcDataContainer> QcData;
         public string DirectoryToWatch, QcDirectory, QcFile;
         //public StringBuilder FileOut;
         public List<string> ProcessedRawFiles;
+        public ExperimentType DataType;
 
-        public QcDataCollectionDDA()
+        public QcDataCollection()
         {
             ProcessedRawFiles = new List<string>();
-            QcData = new SerializableDictionary<DateTime, (RawMetricsDataDDA RawMetrics, SearchMetricsContainer SearchMetrics)>();
+            QcData = new SerializableDictionary<DateTime, QcDataContainer>();
         }
 
-        public QcDataCollectionDDA(string directoryToWatch, string qcDirectory)
+        public QcDataCollection(string directoryToWatch, string qcDirectory, ExperimentType experimentType)
         {
             DirectoryToWatch = directoryToWatch;
             QcDirectory = qcDirectory;
+            DataType = experimentType;
             QcFile = Path.Combine(new string[] { qcDirectory, "QC.xml" });
             ProcessedRawFiles = new List<string>();
-            QcData = new SerializableDictionary<DateTime, (RawMetricsDataDDA RawMetrics, SearchMetricsContainer SearchMetrics)>();
-        }
-    }
-
-    //[Serializable]
-    public class QcDataCollectionDIA
-    {
-        public SerializableDictionary<DateTime, RawMetricsDataDIA> QcData;
-        public string DirectoryToWatch, QcDirectory, QcFile;
-        //public StringBuilder FileOut;
-        public List<string> ProcessedRawFiles;
-
-        public QcDataCollectionDIA()
-        {
-            ProcessedRawFiles = new List<string>();
-            QcData = new SerializableDictionary<DateTime, RawMetricsDataDIA>();
-        }
-
-        public QcDataCollectionDIA(string directoryToWatch, string qcDirectory)
-        {
-            DirectoryToWatch = directoryToWatch;
-            QcDirectory = qcDirectory;
-            QcFile = Path.Combine(new string[] { qcDirectory, "QC.xml" });
-            ProcessedRawFiles = new List<string>();
-            QcData = new SerializableDictionary<DateTime, RawMetricsDataDIA>();
+            QcData = new SerializableDictionary<DateTime, QcDataContainer>();
         }
     }
 }

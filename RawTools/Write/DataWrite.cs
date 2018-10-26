@@ -85,6 +85,19 @@ namespace RawTools.Data.IO
             {"MS1MedianIntensity", WriterDelegates.MS1MedianIntensity },
             {"MS2MedianIntensity", WriterDelegates.MS2MedianIntensity }
         };
+        static private Dictionary<string, WriteToFile> DelegatesDIA = new Dictionary<string, WriteToFile>()
+        {
+            {"MS2ScanNumber", WriterDelegatesDIA.MS2ScanNumber },
+            {"MS1ScanNumber", WriterDelegatesDIA.MS1ScanNumber },
+            {"QuantScanRetTime", WriterDelegatesDIA.QuantScanRetTime },
+            {"ParentScanRetTime", WriterDelegatesDIA.ParentScanRetTime },
+            {"DutyCycle", WriterDelegatesDIA.DutyCycle },
+            {"MS1IonInjectionTime", WriterDelegatesDIA.MS1IonInjectionTime },
+            {"MS2IonInjectionTime", WriterDelegatesDIA.MS2IonInjectionTime },
+            {"HCDEnergy", WriterDelegatesDIA.HCDEnergy },
+            {"MS1MedianIntensity", WriterDelegatesDIA.MS1MedianIntensity },
+            {"MS2MedianIntensity", WriterDelegatesDIA.MS2MedianIntensity }
+        };
 
 
         /// <summary>
@@ -135,7 +148,7 @@ namespace RawTools.Data.IO
         /// <param name="quantData"></param>
         public ParseWriter(string fileName, CentroidStreamCollection centroids, SegmentScanCollection segments,
             ScanMetaDataCollectionDIA metaData, RetentionTimeCollection retentionTimes, TrailerExtraCollection trailerExtras,
-            ScanIndex Index)
+            PrecursorScanCollection precursorScans, ScanIndex Index)
         {
             ParseWriter.fileName = fileName;
             ParseWriter.index = Index;
@@ -144,6 +157,7 @@ namespace RawTools.Data.IO
             metaDataDIA = metaData;
             ParseWriter.retentionTimes = retentionTimes;
             ParseWriter.trailerExtras = trailerExtras;
+            ParseWriter.precursorScans = precursorScans;
         }
 
         public ParseWriter(CentroidStreamCollection centroids, SegmentScanCollection segments, WorkflowParameters parameters, RetentionTimeCollection retentionTimes,
@@ -290,7 +304,66 @@ namespace RawTools.Data.IO
                 f.Write(metaDataDDA.IntensityDistribution[precursorScans[scan].MS2Scan].P50);
             }
         }
-        
+
+        static class WriterDelegatesDIA
+        {
+
+            public static void MS3ScanNumber(int scan, StreamWriter f)
+            {
+                f.Write(precursorScans[scan].MS3Scan);
+            }
+
+            public static void MS2ScanNumber(int scan, StreamWriter f)
+            {
+                f.Write(precursorScans[scan].MS2Scan);
+            }
+
+            public static void MS1ScanNumber(int scan, StreamWriter f)
+            {
+                f.Write(precursorScans[scan].MasterScan);
+            }
+
+            public static void QuantScanRetTime(int scan, StreamWriter f)
+            {
+                f.Write(retentionTimes[scan]);
+            }
+
+            public static void ParentScanRetTime(int scan, StreamWriter f)
+            {
+                f.Write(retentionTimes[precursorScans[scan].MasterScan]);
+            }
+
+            public static void DutyCycle(int scan, StreamWriter f)
+            {
+                f.Write(metaDataDIA.DutyCycle[precursorScans[scan].MasterScan]);
+            }
+
+            public static void MS1IonInjectionTime(int scan, StreamWriter f)
+            {
+                f.Write(metaDataDIA.FillTime[precursorScans[scan].MasterScan]);
+            }
+
+            public static void MS2IonInjectionTime(int scan, StreamWriter f)
+            {
+                f.Write(metaDataDIA.FillTime[precursorScans[scan].MS2Scan]);
+            }
+
+            public static void HCDEnergy(int scan, StreamWriter f)
+            {
+                f.Write(trailerExtras[scan].HCDEnergy);
+            }
+
+            public static void MS1MedianIntensity(int scan, StreamWriter f)
+            {
+                f.Write(metaDataDIA.IntensityDistribution[precursorScans[scan].MasterScan].P50);
+            }
+
+            public static void MS2MedianIntensity(int scan, StreamWriter f)
+            {
+                f.Write(metaDataDIA.IntensityDistribution[precursorScans[scan].MS2Scan].P50);
+            }
+        }
+
         private static void WriteMatrix(List<string> Data)
         {
             using (StreamWriter f = new StreamWriter(fileName)) //Open a new file
@@ -405,16 +478,42 @@ namespace RawTools.Data.IO
 
         public void WriteMatrixDIA()
         {
-            List<string> data = new List<string>();
+            List<string> Data = new List<string>();
 
-            data = new List<string>
+            Data = new List<string>
                 {
                 "MS2ScanNumber", "MS1ScanNumber", "QuantScanRetTime", "ParentScanRetTime", "DutyCycle",
-                "MS2ScansPerCycle", "MS1IonInjectionTime", "MS2IonInjectionTime",
+                "MS1IonInjectionTime", "MS2IonInjectionTime",
                 "HCDEnergy", "MS1MedianIntensity", "MS2MedianIntensity"
                 };
 
-            WriteMatrix(data);
+            using (StreamWriter f = new StreamWriter(fileName)) //Open a new file
+            {
+                var scans = index.ScanEnumerators[index.AnalysisOrder];
+
+                for (int i = 0; i < Data.Count(); i++)
+                {
+                    f.Write(Data[i] + "\t");
+                }
+                f.Write("\n");
+
+                ProgressIndicator P = new ProgressIndicator(scans.Count(), "Writing output table");
+                P.Start();
+
+                foreach (int scan in scans)
+                {
+
+                    for (int i = 0; i < Data.Count(); i++)
+                    {
+                        DelegatesDIA[Data[i]](scan, f);
+                        f.Write("\t");
+                    }
+                    
+                    f.Write("\n");
+                    P.Update();
+                }
+                P.Done();
+            }
         }
 
         public void WriteMGF(string rawFileName, int[] scans = null, string outputFile = null)
@@ -609,7 +708,7 @@ namespace RawTools.Data.IO
 
     static class QcWriter
     {
-        public static void WriteQcToTable(this QcDataCollectionDDA qcData)
+        public static void WriteQcToTable(this QcDataCollection qcData)
         {
             if (File.Exists(Path.Combine(qcData.QcDirectory, "QcDataTable.csv")))
             {
@@ -619,139 +718,137 @@ namespace RawTools.Data.IO
                     Console.ReadKey();
                 }
             }
-
-            using (StreamWriter f = new StreamWriter(Path.Combine(qcData.QcDirectory, "QcDataTable.csv"), append: false))
+            if (qcData.DataType == ExperimentType.DDA)
             {
-                f.WriteLine("DateAcquired,FileName,Instrument,ExperimentMsOrder,Ms1Analyzer,Ms2Analyzer,Ms3Analyzer,TotalAnalysisTime,TotalScans,NumMs1Scans,NumMs2Scans," +
-                    "NumMs3Scans,Ms1ScanRate(/s),Ms2ScanRate(/s),Ms3ScanRate(/s),MeanDutyCycle(s),MeanMs2TriggerRate(/Ms1Scan),Ms1MedianSummedIntensity,Ms2MedianSummedIntensity," +
-                    "MedianPrecursorIntensity,MedianMs1IsolationInterence,MedianMs2PeakFractionConsumingTop80PercentTotalIntensity,EsiInstabilityFlags(count),MedianMassDrift(ppm)," +
-                    "IdentificationRate(IDs/Ms2Scan),DigestionEfficiency,MissedCleavageRate(/PSM),ModificationFrequencyAtNTerm,ModificationFrequencyAtK,ModificationFrequencyAtX," +
-                    "MedianMsFillTime(ms),MedianMs2FillTime(ms),MedianMs3FillTime(ms),WidthAt10%H(s),WidthAt50%H(s),AsymmetryAt10%H,AsymmetryAt50%H," +
-                    "PeakCapacity,TimeBeforeFirstExceedanceOf10%MaxIntensity,TimeAfterLastExceedanceOf10%MaxIntensity,FractionOfRunAbove10%MaxIntensity,IdChargeRatio3to2,IdChargeRatio4to2,IdentipyParameters");
-            }
-
-            List<DateTime> keys = qcData.QcData.Keys.ToList();
-            keys.Sort();
-
-            using (StreamWriter f = new StreamWriter(Path.Combine(qcData.QcDirectory, "QcDataTable.csv"), append: true))
-            {
-                foreach (DateTime key in keys)
+                using (StreamWriter f = new StreamWriter(Path.Combine(qcData.QcDirectory, "QcDataTable.csv"), append: false))
                 {
-                    f.Write(qcData.QcData[key].SearchMetrics.DateAcquired + ",");
-                    f.Write(qcData.QcData[key].SearchMetrics.RawFile + ",");
-                    f.Write(qcData.QcData[key].SearchMetrics.Instrument + ",");
+                    f.WriteLine("DateAcquired,FileName,Instrument,ExperimentMsOrder,Ms1Analyzer,Ms2Analyzer,Ms3Analyzer,TotalAnalysisTime,TotalScans,NumMs1Scans,NumMs2Scans," +
+                        "NumMs3Scans,Ms1ScanRate(/s),Ms2ScanRate(/s),Ms3ScanRate(/s),MeanDutyCycle(s),MeanMs2TriggerRate(/Ms1Scan),Ms1MedianSummedIntensity,Ms2MedianSummedIntensity," +
+                        "MedianPrecursorIntensity,MedianMs1IsolationInterence,MedianMs2PeakFractionConsumingTop80PercentTotalIntensity,EsiInstabilityFlags(count),MedianMassDrift(ppm)," +
+                        "IdentificationRate(IDs/Ms2Scan),DigestionEfficiency,MissedCleavageRate(/PSM),ModificationFrequencyAtNTerm,ModificationFrequencyAtK,ModificationFrequencyAtX," +
+                        "MedianMsFillTime(ms),MedianMs2FillTime(ms),MedianMs3FillTime(ms),WidthAt10%H(s),WidthAt50%H(s),AsymmetryAt10%H,AsymmetryAt50%H," +
+                        "PeakCapacity,TimeBeforeFirstExceedanceOf10%MaxIntensity,TimeAfterLastExceedanceOf10%MaxIntensity,FractionOfRunAbove10%MaxIntensity,IdChargeRatio3to2,IdChargeRatio4to2,IdentipyParameters");
+                }
 
-                    f.Write(qcData.QcData[key].RawMetrics.MSOrder + ",");
-                    f.Write(qcData.QcData[key].RawMetrics.MS1Analyzer + ",");
-                    f.Write(qcData.QcData[key].RawMetrics.MS2Analyzer + ",");
-                    f.Write(qcData.QcData[key].RawMetrics.MS3Analyzer + ",");
+                List<DateTime> keys = qcData.QcData.Keys.ToList();
+                keys.Sort();
 
-                    f.Write(qcData.QcData[key].RawMetrics.Gradient + ",");
-                    f.Write(qcData.QcData[key].RawMetrics.TotalScans + ",");
-                    f.Write(qcData.QcData[key].RawMetrics.MS1Scans + ",");
-                    f.Write(qcData.QcData[key].RawMetrics.MS2Scans + ",");
-                    f.Write(qcData.QcData[key].RawMetrics.MS3Scans + ",");
+                using (StreamWriter f = new StreamWriter(Path.Combine(qcData.QcDirectory, "QcDataTable.csv"), append: true))
+                {
+                    foreach (DateTime key in keys)
+                    {
+                        RawMetricsDataDDA rawMetrics = qcData.QcData[key].DDA;
+                        SearchMetricsContainer searchMetrics = qcData.QcData[key].SearchMetrics;
+                        f.Write(rawMetrics.DateAcquired + ",");
+                        f.Write(rawMetrics.RawFileName + ",");
+                        f.Write(rawMetrics.Instrument + ",");
 
-                    f.Write(qcData.QcData[key].RawMetrics.MS1ScanRate / 60 + ",");
-                    f.Write(qcData.QcData[key].RawMetrics.MS2ScanRate / 60 + ",");
-                    f.Write(qcData.QcData[key].RawMetrics.MS3ScanRate / 60 + ",");
-                    f.Write(qcData.QcData[key].RawMetrics.MeanDutyCycle + ",");
-                    f.Write(qcData.QcData[key].RawMetrics.MeanTopN + ",");
+                        f.Write(rawMetrics.MSOrder + ",");
+                        f.Write(rawMetrics.MS1Analyzer + ",");
+                        f.Write(rawMetrics.MS2Analyzer + ",");
+                        f.Write(rawMetrics.MS3Analyzer + ",");
 
-                    f.Write(qcData.QcData[key].RawMetrics.MedianSummedMS1Intensity + ",");
-                    f.Write(qcData.QcData[key].RawMetrics.MedianSummedMS2Intensity + ",");
-                    f.Write(qcData.QcData[key].RawMetrics.MedianPrecursorIntensity + ",");
-                    f.Write(qcData.QcData[key].RawMetrics.MedianMs1IsolationInterference + ",");
-                    f.Write(qcData.QcData[key].RawMetrics.MedianMs2FractionConsumingTop80PercentTotalIntensity + ",");
+                        f.Write(rawMetrics.Gradient + ",");
+                        f.Write(rawMetrics.TotalScans + ",");
+                        f.Write(rawMetrics.MS1Scans + ",");
+                        f.Write(rawMetrics.MS2Scans + ",");
+                        f.Write(rawMetrics.MS3Scans + ",");
 
-                    f.Write(qcData.QcData[key].RawMetrics.NumberOfEsiFlags + ",");
-                    f.Write(qcData.QcData[key].SearchMetrics.MedianMassDrift + ",");
+                        f.Write(rawMetrics.MS1ScanRate / 60 + ",");
+                        f.Write(rawMetrics.MS2ScanRate / 60 + ",");
+                        f.Write(rawMetrics.MS3ScanRate / 60 + ",");
+                        f.Write(rawMetrics.MeanDutyCycle + ",");
+                        f.Write(rawMetrics.MeanTopN + ",");
 
-                    //f.Write(qcData.QcData[key].QuantMeta.medianReporterIntensity + ",");
+                        f.Write(rawMetrics.MedianSummedMS1Intensity + ",");
+                        f.Write(rawMetrics.MedianSummedMS2Intensity + ",");
+                        f.Write(rawMetrics.MedianPrecursorIntensity + ",");
+                        f.Write(rawMetrics.MedianMs1IsolationInterference + ",");
+                        f.Write(rawMetrics.MedianMs2FractionConsumingTop80PercentTotalIntensity + ",");
 
-                    f.Write(qcData.QcData[key].SearchMetrics.IdentificationRate + ",");
-                    f.Write(qcData.QcData[key].SearchMetrics.DigestionEfficiency + ",");
-                    f.Write(qcData.QcData[key].SearchMetrics.MissedCleavageRate + ",");
+                        f.Write(rawMetrics.NumberOfEsiFlags + ",");
+                        f.Write(searchMetrics.MedianMassDrift + ",");
 
-                    f.Write(qcData.QcData[key].SearchMetrics.LabelingEfficiencyAtNTerm + ",");
-                    f.Write(qcData.QcData[key].SearchMetrics.LabelingEfficiencyAtK + ",");
-                    f.Write(qcData.QcData[key].SearchMetrics.LabelingEfficiencyAtX + ",");
+                        //f.Write(qcData.QcData[key].QuantMeta.medianReporterIntensity + ",");
 
-                    f.Write(qcData.QcData[key].RawMetrics.Ms1FillTimeDistribution.P50 + ",");
-                    f.Write(qcData.QcData[key].RawMetrics.Ms2FillTimeDistribution.P50 + ",");
-                    f.Write(qcData.QcData[key].RawMetrics?.Ms3FillTimeDistribution?.P50 + ",");
+                        f.Write(searchMetrics.IdentificationRate + ",");
+                        f.Write(searchMetrics.DigestionEfficiency + ",");
+                        f.Write(searchMetrics.MissedCleavageRate + ",");
 
-                    f.Write(qcData.QcData[key].RawMetrics.PeakShape.Width.P10 * 60 + ",");
-                    f.Write(qcData.QcData[key].RawMetrics.PeakShape.Width.P50 * 60 + ",");
-                    f.Write(qcData.QcData[key].RawMetrics.PeakShape.Asymmetry.P10 + ",");
-                    f.Write(qcData.QcData[key].RawMetrics.PeakShape.Asymmetry.P50 + ",");
-                    f.Write(qcData.QcData[key].RawMetrics.PeakCapacity + ",");
-                    f.Write(qcData.QcData[key].RawMetrics.TimeBeforeFirstScanToExceedPoint1MaxIntensity + ",");
-                    f.Write(qcData.QcData[key].RawMetrics.TimeAfterLastScanToExceedPoint1MaxIntensity + ",");
-                    f.Write(qcData.QcData[key].RawMetrics.FractionOfRunAbovePoint1MaxIntensity + ",");
+                        f.Write(searchMetrics.LabelingEfficiencyAtNTerm + ",");
+                        f.Write(searchMetrics.LabelingEfficiencyAtK + ",");
+                        f.Write(searchMetrics.LabelingEfficiencyAtX + ",");
 
-                    f.Write(qcData.QcData[key].SearchMetrics.ChargeRatio3to2 + ",");
-                    f.Write(qcData.QcData[key].SearchMetrics.ChargeRatio4to2 + ",");
+                        f.Write(rawMetrics.Ms1FillTimeDistribution.P50 + ",");
+                        f.Write(rawMetrics.Ms2FillTimeDistribution.P50 + ",");
+                        f.Write(rawMetrics?.Ms3FillTimeDistribution?.P50 + ",");
 
-                    f.Write(qcData.QcData[key].SearchMetrics.SearchParameters + "\n");
+                        f.Write(rawMetrics.PeakShape.Width.P10 * 60 + ",");
+                        f.Write(rawMetrics.PeakShape.Width.P50 * 60 + ",");
+                        f.Write(rawMetrics.PeakShape.Asymmetry.P10 + ",");
+                        f.Write(rawMetrics.PeakShape.Asymmetry.P50 + ",");
+                        f.Write(rawMetrics.PeakCapacity + ",");
+                        f.Write(rawMetrics.TimeBeforeFirstScanToExceedPoint1MaxIntensity + ",");
+                        f.Write(rawMetrics.TimeAfterLastScanToExceedPoint1MaxIntensity + ",");
+                        f.Write(rawMetrics.FractionOfRunAbovePoint1MaxIntensity + ",");
+
+                        f.Write(searchMetrics.ChargeRatio3to2 + ",");
+                        f.Write(searchMetrics.ChargeRatio4to2 + ",");
+
+                        f.Write(searchMetrics.SearchParameters + "\n");
+                    }
                 }
             }
-            Console.WriteLine("Finished writing QC data to csv\n");
-        }
-
-        public static void WriteQcToTable(this QcDataCollectionDIA qcData)
-        {
-            if (File.Exists(Path.Combine(qcData.QcDirectory, "QcDataTable.csv")))
+            else if (qcData.DataType == ExperimentType.DIA)
             {
-                while (Utilities.ReadWrite.IsFileLocked(Path.Combine(qcData.QcDirectory, "QcDataTable.csv")))
+                using (StreamWriter f = new StreamWriter(Path.Combine(qcData.QcDirectory, "QcDataTable.csv"), append: false))
                 {
-                    Console.WriteLine("{0} is in use. Please close the file and press any key to continue.", Path.Combine(qcData.QcDirectory, "QcDataTable.csv"));
-                    Console.ReadKey();
+                    f.WriteLine("DateAcquired,FileName,Instrument,ExperimentMsOrder,Ms1Analyzer,Ms2Analyzer,TotalAnalysisTime,TotalScans,NumMs1Scans,NumMs2Scans," +
+                        "Ms1ScanRate(/s),Ms2ScanRate(/s),MeanDutyCycle(s),Ms1MedianSummedIntensity,Ms2MedianSummedIntensity," +
+                        "MedianMs2PeakFractionConsumingTop80PercentTotalIntensity,EsiInstabilityFlags(count)," +
+                        "MedianMsFillTime(ms),MedianMs2FillTime(ms)," +
+                        "TimeBeforeFirstExceedanceOf10%MaxIntensity,TimeAfterLastExceedanceOf10%MaxIntensity,FractionOfRunAbove10%MaxIntensity");
                 }
-            }
 
-            using (StreamWriter f = new StreamWriter(Path.Combine(qcData.QcDirectory, "QcDataTable.csv"), append: false))
-            {
-                f.WriteLine("DateAcquired,FileName,Instrument,ExperimentMsOrder,Ms1Analyzer,Ms2Analyzer,TotalAnalysisTime,TotalScans,NumMs1Scans,NumMs2Scans," +
-                    "Ms1ScanRate(/s),Ms2ScanRate(/s),MeanDutyCycle(s),MeanMs2TriggerRate(/Ms1Scan),Ms1MedianSummedIntensity,Ms2MedianSummedIntensity," +
-                    "MedianMs2PeakFractionConsumingTop80PercentTotalIntensity,EsiInstabilityFlags(count)," +
-                    "MedianMsFillTime(ms),MedianMs2FillTime(ms),MedianMs3FillTime(ms)," +
-                    "TimeBeforeFirstExceedanceOf10%MaxIntensity,TimeAfterLastExceedanceOf10%MaxIntensity,FractionOfRunAbove10%MaxIntensity");
-            }
+                List<DateTime> keys = qcData.QcData.Keys.ToList();
+                keys.Sort();
 
-            List<DateTime> keys = qcData.QcData.Keys.ToList();
-            keys.Sort();
-
-            using (StreamWriter f = new StreamWriter(Path.Combine(qcData.QcDirectory, "QcDataTable.csv"), append: true))
-            {
-                foreach (DateTime key in keys)
+                using (StreamWriter f = new StreamWriter(Path.Combine(qcData.QcDirectory, "QcDataTable.csv"), append: true))
                 {
+                    foreach (DateTime key in keys)
+                    {
+                        RawMetricsDataDIA rawMetrics = qcData.QcData[key].DIA;
 
-                    f.Write(qcData.QcData[key].MSOrder + ",");
-                    f.Write(qcData.QcData[key].MS1Analyzer + ",");
-                    f.Write(qcData.QcData[key].MS2Analyzer + ",");
+                        f.Write(rawMetrics.DateAcquired + ",");
+                        f.Write(rawMetrics.RawFileName + ",");
+                        f.Write(rawMetrics.Instrument + ",");
 
-                    f.Write(qcData.QcData[key].Gradient + ",");
-                    f.Write(qcData.QcData[key].TotalScans + ",");
-                    f.Write(qcData.QcData[key].MS1Scans + ",");
-                    f.Write(qcData.QcData[key].MS2Scans + ",");
+                        f.Write(rawMetrics.MSOrder + ",");
+                        f.Write(rawMetrics.MS1Analyzer + ",");
+                        f.Write(rawMetrics.MS2Analyzer + ",");
 
-                    f.Write(qcData.QcData[key].MS1ScanRate / 60 + ",");
-                    f.Write(qcData.QcData[key].MS2ScanRate / 60 + ",");
-                    f.Write(qcData.QcData[key].MeanDutyCycle + ",");
+                        f.Write(rawMetrics.TotalAnalysisTime + ",");
+                        f.Write(rawMetrics.TotalScans + ",");
+                        f.Write(rawMetrics.MS1Scans + ",");
+                        f.Write(rawMetrics.MS2Scans + ",");
 
-                    f.Write(qcData.QcData[key].MedianSummedMS1Intensity + ",");
-                    f.Write(qcData.QcData[key].MedianSummedMS2Intensity + ",");
-                    f.Write(qcData.QcData[key].MedianMs2FractionConsumingTop80PercentTotalIntensity + ",");
+                        f.Write(rawMetrics.MS1ScanRate / 60 + ",");
+                        f.Write(rawMetrics.MS2ScanRate / 60 + ",");
+                        f.Write(rawMetrics.MeanDutyCycle + ",");
 
-                    f.Write(qcData.QcData[key].NumberOfEsiFlags + ",");
-                    
-                    f.Write(qcData.QcData[key].Ms1FillTimeDistribution.P50 + ",");
-                    f.Write(qcData.QcData[key].Ms2FillTimeDistribution.P50 + ",");
-                    
-                    f.Write(qcData.QcData[key].TimeBeforeFirstScanToExceedPoint1MaxIntensity + ",");
-                    f.Write(qcData.QcData[key].TimeAfterLastScanToExceedPoint1MaxIntensity + ",");
-                    f.Write(qcData.QcData[key].FractionOfRunAbovePoint1MaxIntensity + ",");
+                        f.Write(rawMetrics.MedianSummedMS1Intensity + ",");
+                        f.Write(rawMetrics.MedianSummedMS2Intensity + ",");
+                        f.Write(rawMetrics.MedianMs2FractionConsumingTop80PercentTotalIntensity + ",");
+
+                        f.Write(rawMetrics.NumberOfEsiFlags + ",");
+
+                        f.Write(rawMetrics.Ms1FillTimeDistribution.P50 + ",");
+                        f.Write(rawMetrics.Ms2FillTimeDistribution.P50 + ",");
+
+                        f.Write(rawMetrics.TimeBeforeFirstScanToExceedPoint1MaxIntensity + ",");
+                        f.Write(rawMetrics.TimeAfterLastScanToExceedPoint1MaxIntensity + ",");
+                        f.Write(rawMetrics.FractionOfRunAbovePoint1MaxIntensity + "\n");
+                    }
                 }
             }
             Console.WriteLine("Finished writing QC data to csv\n");

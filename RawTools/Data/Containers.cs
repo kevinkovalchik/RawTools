@@ -355,6 +355,7 @@ namespace RawTools.Data.Containers
     [Serializable]
     public class RawMetricsDataDDA
     {
+        public DateTime DateAcquired;
         public string RawFileName, Instrument;
         public MassAnalyzerType MS1Analyzer, MS2Analyzer, MS3Analyzer;
         public MSOrderType MSOrder;
@@ -382,6 +383,7 @@ namespace RawTools.Data.Containers
     [Serializable]
     public class RawMetricsDataDIA
     {
+        public DateTime DateAcquired;
         public string RawFileName, Instrument;
         public MassAnalyzerType MS1Analyzer, MS2Analyzer;
         public MSOrderType MSOrder;

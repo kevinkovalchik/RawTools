@@ -117,12 +117,12 @@ namespace RawTools
             WorkflowParameters parameters = new WorkflowParameters(opts);
 
 
-            if (opts.SearchAlgorithm != null)
+            if (opts.SearchAlgorithm != "None")
             {
                 if (opts.FastaDatabase == null)
                 {
                     Log.Error("No fasta database provided for Identipy search");
-                    Console.WriteLine("ERROR: A fasta protein database is required for an Identipy search. Please use the --db parameter to " +
+                    Console.WriteLine("ERROR: A fasta protein database is required for a database search. Please use the --db parameter to " +
                         "provide the path to a database.");
                     Environment.Exit(1);
                 }
@@ -268,26 +268,15 @@ namespace RawTools
                     {
                         parameters.ParseParams.OutputDirectory = Path.GetDirectoryName(file);
                     }
-                    WorkFlows.WorkFlowsDDA.ParseDDA(rawFile, parameters);
 
-                    /*
-                    if (opts.Chromatogram != null)
+                    if (parameters.ExpType == ExperimentType.DDA)
                     {
-                        int order = Convert.ToInt32((opts.Chromatogram.ElementAt(0).ToString()));
-
-                        if (order > (int)rawData.methodData.AnalysisOrder)
-                        {
-                            Log.Error("Specified MS order ({Order}) for chromatogram is higher than experiment order ({ExpOrder})",
-                                (MSOrderType)order, rawData.methodData.AnalysisOrder);
-                            Console.WriteLine("Specified MS order ({0}) for chromatogram is higher than experiment order ({1}). Chromatogram(s) won't be written.",
-                                (MSOrderType)order, rawData.methodData.AnalysisOrder);
-                        }
-                        else
-                        {
-                        rawData.WriteChromatogram(rawFile, (MSOrderType)order, opts.Chromatogram.Contains("T"), opts.Chromatogram.Contains("B"), opts.OutputDirectory);
-                        }
+                        WorkFlowsDDA.ParseDDA(rawFile, parameters);
                     }
-                    */
+                    else if (parameters.ExpType == ExperimentType.DIA)
+                    {
+                        WorkFlowsDIA.ParseDIA(rawFile, parameters);
+                    }
                 }
 
                 singleFileTime.Stop();

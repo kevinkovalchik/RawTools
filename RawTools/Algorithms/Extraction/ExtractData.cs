@@ -402,6 +402,7 @@ namespace RawTools.Algorithms.ExtractData
             MethodDataContainer methodData = new MethodDataContainer();
 
             methodData.CreationDate = rawFile.CreationDate;
+            methodData.Instrument = rawFile.GetInstrumentData().Name;
 
             methodData.AnalysisOrder = index.AnalysisOrder;
             int firstQuantScan = index.ScanEnumerators[index.AnalysisOrder][0];
