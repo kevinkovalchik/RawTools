@@ -133,7 +133,7 @@ namespace RawTools.QC
             Console.WriteLine("QC of all files completed!");
         }
 
-        public static QcDataCollectionDDA LoadOrCreateQcCollection(WorkflowParameters parameters)
+        public static QcDataCollectionDDA LoadOrCreateQcCollectionDDA(WorkflowParameters parameters)
         {
             QcDataCollectionDDA qcDataCollection;
             string qcFile = Path.Combine(parameters.QcParams.QcDirectory, "QC.xml");
@@ -168,6 +168,42 @@ namespace RawTools.QC
             return qcDataCollection;
 
         }
+
+        public static QcDataCollectionDIA LoadOrCreateQcCollectionDIA(WorkflowParameters parameters)
+        {
+            QcDataCollectionDIA qcDataCollection;
+            string qcFile = Path.Combine(parameters.QcParams.QcDirectory, "QC.xml");
+
+            // see if the file exists
+            if (File.Exists(qcFile))
+            {
+                // if so, open it
+                try
+                {
+                    qcDataCollection = XmlSerialization.ReadFromXmlFile<QcDataCollectionDIA>(qcFile);
+                    Log.Information("QC data file loaded successfully");
+                }
+                catch (Exception e)
+                {
+                    Log.Error(e, "Failed while loading QC data");
+                    throw e;
+                }
+            }
+            else
+            {
+                // if not, check if the directory exists
+                if (!Directory.Exists(parameters.QcParams.QcDirectory))
+                {
+                    Directory.CreateDirectory(parameters.QcParams.QcDirectory);
+                }
+
+                qcDataCollection = new QcDataCollectionDIA(parameters.RawFileDirectory, parameters.QcParams.QcDirectory);
+                Log.Information("Appears to be a new QC directory. New QC data collection created.");
+            }
+            return qcDataCollection;
+        }
+
+
 
         private static (List<string> fileList, QcDataCollectionDDA qcDataCollection) GetFileListAndQcFile(WorkflowParameters parameters)
         {

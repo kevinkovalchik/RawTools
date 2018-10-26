@@ -134,21 +134,16 @@ namespace RawTools.Data.IO
         /// <param name="trailerExtras"></param>
         /// <param name="quantData"></param>
         public ParseWriter(string fileName, CentroidStreamCollection centroids, SegmentScanCollection segments,
-            ScanMetaDataCollectionDIA metaData, RetentionTimeCollection retentionTimes, PrecursorMassCollection precursorMasses,
-            PrecursorScanCollection precursorScans, PrecursorPeakCollection precursorPeaks, TrailerExtraCollection trailerExtras,
-            ScanIndex Index, QuantDataCollection quantData = null)
+            ScanMetaDataCollectionDIA metaData, RetentionTimeCollection retentionTimes, TrailerExtraCollection trailerExtras,
+            ScanIndex Index)
         {
             ParseWriter.fileName = fileName;
             ParseWriter.index = Index;
             centroidStreams = centroids;
             segmentScans = segments;
             metaDataDIA = metaData;
-            ParseWriter.quantData = quantData;
             ParseWriter.retentionTimes = retentionTimes;
-            ParseWriter.precursorMasses = precursorMasses;
-            ParseWriter.precursorScans = precursorScans;
             ParseWriter.trailerExtras = trailerExtras;
-            ParseWriter.precursorPeaks = precursorPeaks;
         }
 
         public ParseWriter(CentroidStreamCollection centroids, SegmentScanCollection segments, WorkflowParameters parameters, RetentionTimeCollection retentionTimes,
@@ -404,6 +399,20 @@ namespace RawTools.Data.IO
             {
                 Log.Error("Incompatible ms order: {MSOrder}", order);
             }
+
+            WriteMatrix(data);
+        }
+
+        public void WriteMatrixDIA()
+        {
+            List<string> data = new List<string>();
+
+            data = new List<string>
+                {
+                "MS2ScanNumber", "MS1ScanNumber", "QuantScanRetTime", "ParentScanRetTime", "DutyCycle",
+                "MS2ScansPerCycle", "MS1IonInjectionTime", "MS2IonInjectionTime",
+                "HCDEnergy", "MS1MedianIntensity", "MS2MedianIntensity"
+                };
 
             WriteMatrix(data);
         }

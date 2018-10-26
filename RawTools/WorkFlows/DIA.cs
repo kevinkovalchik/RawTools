@@ -59,12 +59,6 @@ namespace RawTools.WorkFlows
 
             ScanMetaDataCollectionDIA metaData = MetaDataProcessingDIA.AggregateMetaDataDIA(centroidStreams, segmentScans, methodData,
                 trailerExtras, retentionTimes, Index);
-                        
-            QuantDataCollection quantData = null;
-            if (parameters.ParseParams.Quant)
-            {
-                quantData = Quantification.Quantify(centroidStreams, segmentScans, parameters, methodData, Index);
-            }
 
             RawMetricsDataDIA metrics = null;
             if (parameters.ParseParams.Metrics)
@@ -77,19 +71,20 @@ namespace RawTools.WorkFlows
             {
                 string matrixFileName = ReadWrite.GetPathToFile(parameters.ParseParams.OutputDirectory, staticRawFile.FileName, "._parse.txt");
 
-                ParseWriter writerDDA = new ParseWriter(matrixFileName, centroidStreams, segmentScans, metaData, retentionTimes,
-                precursorMasses, precursorScans, peakData, trailerExtras, Index, quantData);
-                writerDDA.WriteMatrixDDA(methodData.AnalysisOrder);
+                ParseWriter writerDIA = new ParseWriter(matrixFileName, centroidStreams, segmentScans, metaData, retentionTimes, trailerExtras, Index);
+                writerDIA.WriteMatrixDIA();
             }
-            if (parameters.ParseParams.WriteMgf)
-            {
-                ParseWriter writerMGF = new ParseWriter(centroidStreams, segmentScans, parameters, retentionTimes, precursorMasses, precursorScans, trailerExtras, methodData, Index);
-                writerMGF.WriteMGF(staticRawFile.FileName);
-            }
+
+            // I'm not sure what goes into a DIA mgf file, so we aren't making one yet
+            //if (parameters.ParseParams.WriteMgf)
+            //{
+            //    ParseWriter writerMGF = new ParseWriter(centroidStreams, segmentScans, parameters, retentionTimes, precursorMasses, precursorScans, trailerExtras, methodData, Index);
+            //    writerMGF.WriteMGF(staticRawFile.FileName);
+            //}
 
         }
 
-        public static void QcDDA(IRawDataPlus rawFile, WorkflowParameters parameters)
+        public static void QcDIA(IRawDataPlus rawFile, WorkflowParameters parameters)
         {
             rawFile.SelectInstrument(Device.MS, 1);
 
@@ -107,34 +102,16 @@ namespace RawTools.WorkFlows
 
             TrailerExtraCollection trailerExtras = Extract.TrailerExtras(rawFile, Index);
 
-            (PrecursorScanCollection precursorScans, ScanDependentsCollections scanDependents) = Extract.DependentsAndPrecursorScansByScanDependents(rawFile, Index);
-
-            PrecursorMassCollection precursorMasses = Extract.PrecursorMasses(rawFile, precursorScans, trailerExtras, Index);
-
             RetentionTimeCollection retentionTimes = Extract.RetentionTimes(rawFile, Index);
 
-            ScanMetaDataCollectionDDA metaData = MetaDataProcessingDDA.AggregateMetaDataDDA(centroidStreams, segmentScans, methodData, precursorScans,
-                trailerExtras, precursorMasses, retentionTimes, scanDependents, Index);
+            ScanMetaDataCollectionDIA metaData = MetaDataProcessingDIA.AggregateMetaDataDIA(centroidStreams, segmentScans, methodData,
+                trailerExtras, retentionTimes, Index);
 
-            PrecursorPeakCollection peakData = AnalyzePeaks.AnalyzeAllPeaks(centroidStreams, retentionTimes, precursorMasses, precursorScans, Index);
+            RawMetricsDataDIA metrics = MetaDataProcessingDIA.GetMetricsDataDIA(metaData, methodData, rawFile.FileName, retentionTimes, Index);
 
-            RawMetricsDataDDA metrics = MetaDataProcessingDDA.GetMetricsDataDDA(metaData, methodData, rawFile.FileName, retentionTimes, Index, peakData, precursorScans);
-
-            QcDataCollectionDDA qcDataCollection = QC.QcWorkflow.LoadOrCreateQcCollection(parameters);
-
-            QcDataContainer qcData = QC.QcWorkflow.ParseQcData(parameters.QcParams, metrics, methodData);
-
-            if (parameters.QcParams.PerformSearch)
-            {
-                Search.WriteSearchMGF(parameters, centroidStreams, segmentScans, retentionTimes, precursorMasses, precursorScans, trailerExtras, methodData,
-                    Index, rawFile.FileName, parameters.QcParams.FixedScans);
-
-                Search.RunSearch(parameters, methodData, rawFile.FileName);
-
-                qcData = SearchQC.ParseSearchResults(qcData, parameters, rawFile.FileName);
-            }
-
-            QC.QcWorkflow.UpdateQcCollection(qcDataCollection, qcData, methodData, rawFile.FileName);
+            QcDataCollectionDIA qcDataCollection = QC.QcWorkflow.LoadOrCreateQcCollectionDIA(parameters);
+            
+            QC.QcWorkflow.UpdateQcCollection(qcDataCollection, metrics, methodData, rawFile.FileName);
         }
     }
 

@@ -72,11 +72,11 @@ namespace RawTools.WorkFlows
                 quantData = Quantification.Quantify(centroidStreams, segmentScans, parameters, methodData, Index);
             }
 
-            RawMetricsDataDDA metrics = null;
+            RawMetricsDataDDA rawMetrics = null;
             if (parameters.ParseParams.Metrics)
             {
-                metrics = MetaDataProcessingDDA.GetMetricsDataDDA(metaData, methodData, staticRawFile.FileName, retentionTimes, Index, peakData, precursorScans, quantData);
-                MetricsWriter.WriteMatrix(metrics, staticRawFile.FileName, parameters.ParseParams.OutputDirectory);
+                rawMetrics = MetaDataProcessingDDA.GetMetricsDataDDA(metaData, methodData, staticRawFile.FileName, retentionTimes, Index, peakData, precursorScans, quantData);
+                MetricsWriter.WriteMatrix(rawMetrics, null, staticRawFile.FileName, parameters.ParseParams.OutputDirectory);
             }
 
             if (parameters.ParseParams.Parse)
@@ -126,7 +126,7 @@ namespace RawTools.WorkFlows
 
             RawMetricsDataDDA rawMetrics = MetaDataProcessingDDA.GetMetricsDataDDA(metaData, methodData, rawFile.FileName, retentionTimes, Index, peakData, precursorScans);
 
-            QcDataCollectionDDA qcDataCollection = QC.QcWorkflow.LoadOrCreateQcCollection(parameters);
+            QcDataCollectionDDA qcDataCollection = QC.QcWorkflow.LoadOrCreateQcCollectionDDA(parameters);
 
             SearchMetricsContainer searchMetrics = new SearchMetricsContainer(rawFile.FileName, rawFile.CreationDate, methodData);
 
@@ -140,7 +140,7 @@ namespace RawTools.WorkFlows
                 searchMetrics = SearchQC.ParseSearchResults(searchMetrics, parameters, rawFile.FileName);
             }
 
-            QC.QcWorkflow.UpdateQcCollection(qcDataCollection, searchMetrics, methodData, rawFile.FileName);
+            QC.QcWorkflow.UpdateQcCollection(qcDataCollection, searchMetrics, rawMetrics, methodData, rawFile.FileName);
         }
     }
 
