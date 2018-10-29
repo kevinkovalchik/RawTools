@@ -110,6 +110,8 @@
   <ItemGroup>
     <Compile Include="Algorithms\Analyze\MetaData\MetaDataProcessingDIA.cs" />
     <Compile Include="Algorithms\Analyze\Metrics\MetricsCalculations.cs" />
+    <Compile Include="Algorithms\MatchBewteen\AlignTimeAndMass.cs" />
+    <Compile Include="Algorithms\MatchBewteen\TimeMassIndex.cs" />
     <Compile Include="Algorithms\PrecursorPeaks.cs" />
     <Compile Include="Algorithms\Analyze\MetaData\MetaDataProcessingDDA.cs" />
     <Compile Include="Algorithms\Analyze\MetaData\MetaDataCalculations.cs" />

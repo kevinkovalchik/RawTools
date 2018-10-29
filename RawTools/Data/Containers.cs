@@ -604,6 +604,11 @@ namespace RawTools.Data.Containers
     {
         public double Hyperscore, ExpectationValue, MassDrift;
         public int Id;
+        public int Scan;
+        public int MasterScan;
+        public double RetentionTime;
+        public double MasterScanRetentionTime;
+        public double mz;
         public bool Decoy;
         public string Seq;
         public int Start, End, Charge, MissedCleavages;
