@@ -4,6 +4,15 @@ All notable changes to RawTools will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+### Changed
+- We came across a file with an apparently corrupted MS3 scan in it which was cause RawTools to crash. The MS data for the scan was in the raw file,
+but the meta data was incomplete. To address this, the scan lists RawTools uses to process are now built off of the scan dependents found in the
+raw file meta data. This means scans which are missing meta data will not appear in the output data table. Note that these occurances are rare, and
+we are planning to add a text output to alert the user when this happens.
+### Fixed
+- MS3ScanRate was not referecing the correct data. Is fixed now.
+
 ## [1.3.1] 2018-10-26
 ### Fixed
 - Fixed a QC bug in which the -N argument was always used as the number of ms2 spectra, even if it was greater than the actual number of spectra in the raw file.
