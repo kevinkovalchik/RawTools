@@ -469,14 +469,44 @@ namespace RawTools.Data.Extraction
             // we need to check if it is a boxcar file because those have some scan index issues
             bool isBoxCar = rawFile.GetScanEventForScanNumber(1).MassRangeCount > 1;
 
-            rawData.Performed.Add(Operations.ScanIndex);
-
             if (isBoxCar)
             {
                 Log.Information("Raw file looks like a boxcar run. Scan indices being adjusted to account for missing scan dependents.");
                 rawData.ExtractPrecursorScans(rawFile);
                 rawData.scanIndex.ScanEnumerators[rawData.scanIndex.AnalysisOrder] = rawData.precursorScans.Keys.ToArray();
             }
+
+            rawData.Performed.Add(Operations.ScanIndex);
+
+            // adjust the scan index lists to account for any missing scan indices
+            rawData.ExtractPrecursorScans(rawFile);
+            HashSet<int> anyscans = new HashSet<int>();
+            HashSet<int> ms1scans = new HashSet<int>();
+            HashSet<int> ms2scans = new HashSet<int>();
+            HashSet<int> ms3scans = new HashSet<int>();
+
+            foreach (var precursor in rawData.precursorScans)
+            {
+                ms1scans.Add(precursor.Value.MasterScan);
+                ms2scans.Add(precursor.Value.MS2Scan);
+                anyscans.Add(precursor.Value.MasterScan);
+                anyscans.Add(precursor.Value.MS2Scan);
+                if (AnalysisOrder == MSOrderType.Ms3)
+                {
+                    anyscans.Add(precursor.Value.MS3Scan);
+                    ms3scans.Add(precursor.Value.MS3Scan);
+                }
+            }
+            anyscans.Remove(0);
+            ms1scans.Remove(0);
+            ms2scans.Remove(0);
+            ms3scans.Remove(0);
+            rawData.scanIndex.ScanEnumerators[MSOrderType.Ms] = ms1scans.ToArray();
+            rawData.scanIndex.ScanEnumerators[MSOrderType.Ms2] = ms2scans.ToArray();
+            rawData.scanIndex.ScanEnumerators[MSOrderType.Ms3] = ms3scans.ToArray();
+            rawData.scanIndex.ScanEnumerators[MSOrderType.Any] = anyscans.ToArray();
+
+            rawData.Performed.Add(Operations.ScanIndex);
         }
     }
 
@@ -689,10 +719,11 @@ namespace RawTools.Data.Extraction
             rawData.ExtractPrecursorScans(rawFile);
             ProgressIndicator P = new ProgressIndicator(rawData.scanIndex.allScans.Count(), "Extracting raw data");
             TrailerExtraIndices indices = new TrailerExtraIndices(rawFile);
-            for (int i = 1; i <= rawData.scanIndex.allScans.Count(); i++)
+            //for (int i = 1; i <= rawData.scanIndex.allScans.Count(); i++)
+            foreach (var i in rawData.scanIndex.ScanEnumerators[MSOrderType.Any])
             {
-                try
-                {
+                //try
+                //{
                     // first get out the mass spectrum
                     if (rawData.scanIndex.allScans[i].MassAnalyzer == MassAnalyzerType.MassAnalyzerFTMS)
                     {
@@ -716,12 +747,12 @@ namespace RawTools.Data.Extraction
                     rawData.Performed.Add(Operations.PrecursorMasses);
 
                     P.Update();
-                }
-                catch (Exception e)
-                {
-                    Log.Error("Extraction failed on scan {Scan}", i);
-                    throw e;
-                }
+                //}
+                //catch (Exception e)
+                //{
+                //    Log.Error("Extraction failed on scan {Scan}", i);
+                //    throw e;
+                //}
             }
             P.Done();
 
