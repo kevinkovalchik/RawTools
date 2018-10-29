@@ -73,6 +73,7 @@ namespace RawTools.QC
 
             qcData.Ms1ScanRate = metricsData.MS1ScanRate;
             qcData.Ms2ScanRate = metricsData.MS2ScanRate;
+            qcData.Ms3ScanRate = metricsData.MS3ScanRate;
 
             qcData.MeanDutyCycle = metricsData.MeanDutyCycle;
 
@@ -388,7 +389,6 @@ namespace RawTools.QC
             LabelingEfficiencyAtX = LabelingEfficiencyAtNTerm = LabelingEfficiencyAtK = -1;
             DigestionEfficiency = IdentificationRate = MissedCleavageRate = -1;
             ChargeRatio3to2 = ChargeRatio4to2 = -1;
-            Ms3ScanRate = -1;
             MedianMassDrift = -1;
             SearchData = new SearchData();
         }
