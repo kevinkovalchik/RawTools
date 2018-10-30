@@ -95,5 +95,147 @@ namespace RawTools.Algorithms.MatchBewteen
 
             return psms;
         }
+
+        public static PsmDataCollection AddPeakApex(PsmDataCollection psms, PrecursorPeakCollection peakData)
+        {
+            foreach (var key in psms.Keys)
+            {
+                var psm = psms[key];
+                int scan = psm.Scan;
+                psms[key].PeakApexRT = peakData[scan].MaximumRetTime;
+            }
+
+            return psms;
+        }
+
+        public static MultiRunFeatureCollection CorrelateFeatures(PsmDataCollection psms1, PsmDataCollection psms2, PrecursorPeakCollection peaks1, PrecursorPeakCollection peaks2, PrecursorMassCollection masses1, PrecursorMassCollection masses2)
+        {
+            MultiRunFeatureCollection features = new MultiRunFeatureCollection();
+
+            int ID = 0;
+
+            foreach (var key1 in psms1.Keys)
+            {
+                // get basic info on the feature
+                List<PsmData> possibles = new List<PsmData>();
+                int ms2scan1 = psms1[key1].Scan;
+                double rt1 = psms1[key1].PeakApexRT;
+                double mass1 = masses1[key1].MonoisotopicMZ;
+                bool found = false;
+                MultiRunFeature feature = new MultiRunFeature();
+                feature.FoundIn1 = true;
+                feature.IdIn1 = true;
+
+                // look for the feature in the other set of psms
+                foreach (var key2 in psms2.Keys)
+                {
+                    double rt2 = psms2[key2].PeakApexRT;
+                    double mass2 = masses2[key2].MonoisotopicMZ;
+                    int ms2scan2 = psms2[key2].Scan;
+
+                    if ((Math.Abs(rt1 - rt2)/rt1 < 0.05) & ((mass1 - mass2)/mass1 * 1e6 < 6))
+                    {
+                        feature.Add(psms1.FileName, psms1[key1]);
+                        feature.Add(psms2.FileName, psms1[key2]);
+                        feature.IdIn2 = true;
+                        feature.FoundIn2 = true;
+
+                        features.Add(ID, feature);
+                        ID++;
+                        found = true;
+                        break;
+                    }
+                }
+
+                if (found) continue;
+
+                foreach (var peak2 in peaks2.Values)
+                {
+                    double rt2 = peak2.MaximumRetTime;
+                    double mass2 = masses2[peak2.Ms2Scan].MonoisotopicMZ;
+
+                    if ((Math.Abs(rt1 - rt2) / rt1 < 0.05) & ((mass1 - mass2) / mass1 * 1e6 < 6))
+                    {
+                        feature.Add(psms1.FileName, psms1[key1]);
+                        feature.Add(psms2.FileName, null);
+                        feature.IdIn2 = false;
+                        feature.FoundIn2 = true;
+
+                        features.Add(ID, feature);
+                        ID++;
+                        found = true;
+                        break;
+                    }
+                }
+
+                if (found) continue;
+
+                feature.IdIn2 = false;
+                feature.FoundIn2 = false;
+
+                features.Add(ID, feature);
+                ID++;
+            }
+
+            foreach (var key2 in psms2.Keys)
+            {
+                // get basic info on the feature
+                List<PsmData> possibles = new List<PsmData>();
+                int ms2scan2 = psms2[key2].Scan;
+                double rt2 = psms2[key2].PeakApexRT;
+                double mass2 = masses1[key2].MonoisotopicMZ;
+                bool found = false;
+                MultiRunFeature feature = new MultiRunFeature();
+                feature.FoundIn2 = true;
+                feature.IdIn2 = true;
+
+                // look for the feature in the other set of psms
+                foreach (var key1 in psms1.Keys)
+                {
+                    double rt1 = psms1[key1].PeakApexRT;
+                    double mass1 = masses1[key1].MonoisotopicMZ;
+                    int ms2scan1 = psms1[key1].Scan;
+
+                    if ((Math.Abs(rt2 - rt1) / rt2 < 0.05) & ((mass2 - mass1) / mass2 * 1e6 < 6))
+                    {
+                        found = true;
+                        break;
+                    }
+                }
+
+                if (found) continue;
+
+                foreach (var peak1 in peaks1.Values)
+                {
+                    double rt1 = peak1.MaximumRetTime;
+                    double mass1 = masses1[peak1.Ms2Scan].MonoisotopicMZ;
+
+                    if ((Math.Abs(rt2 - rt1) / rt2 < 0.05) & ((mass2 - mass1) / mass2 * 1e6 < 6))
+                    {
+                        feature.Add(psms2.FileName, psms2[key2]);
+                        feature.Add(psms1.FileName, null);
+                        feature.IdIn1 = false;
+                        feature.FoundIn1 = true;
+
+                        features.Add(ID, feature);
+                        ID++;
+                        found = true;
+                        break;
+                    }
+                }
+
+                if (found) continue;
+
+                features.Add(ID, null);
+                ID++;
+            }
+
+            return features;
+        }
+
+        public static void AlignRT(PsmDataCollection psms1, PsmDataCollection psms2)
+        {
+            
+        }
     }
 }

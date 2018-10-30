@@ -436,6 +436,7 @@ namespace RawTools.Data.Containers
     {
         public double BaselineWidth, MaximumIntensity, ParentIntensity, MaximumRetTime, ParentRetTime;
         public double Area = 0;
+        public int Ms2Scan;
         public int FirstScan, LastScan, MaxScan, ParentScan, NScans;// PreviousScan, NextScan, NScans;
         public double[] Intensities, RetTimes;
         public bool PeakFound = false, ContainsFirstMS1Scan = false, ContainsLastMS1Scan = false;
@@ -608,6 +609,8 @@ namespace RawTools.Data.Containers
         public int MasterScan;
         public double RetentionTime;
         public double MasterScanRetentionTime;
+        public double PeakApexRT;
+        public double AlignedPeakApexRT;
         public double mz;
         public bool Decoy;
         public string Seq;

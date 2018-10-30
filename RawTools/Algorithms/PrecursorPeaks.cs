@@ -64,6 +64,8 @@ namespace RawTools.Algorithms
 
             Dictionary<int, double> indexedIntensities = new Dictionary<int, double>();
 
+            peak.Ms2Scan = ddScan;
+
             // first take care of the parent scan data. In QE data sometimes the parent mass is missing from the parent spectrum, so we need to deal with that.
 
             masses = centroids[currentScan].Masses;//.Where(i => (i > parentMass - 1 & i < parentMass + 1)).ToArray();

@@ -195,6 +195,26 @@ namespace RawTools.Data.Collections
     }
 
     class PsmDataCollection: Dictionary<int, PsmData>
+    {
+        public string FileName;
+    }
+
+    class MultiRunFeatureCollection: Dictionary<int, MultiRunFeature>
     { }
 
+    class MultiRunFeature: Dictionary<string, PsmData>
+    {
+        public bool IdIn1;
+        public bool IdIn2;
+        public bool FoundIn1;
+        public bool FoundIn2;
+
+        public MultiRunFeature()
+        {
+            IdIn1 = false;
+            IdIn2 = false;
+            FoundIn1 = false;
+            FoundIn2 = false;
+        }
+    }
 }
