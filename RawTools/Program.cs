@@ -35,6 +35,9 @@ using RawTools.Utilities;
 using RawTools.Algorithms;
 using RawTools.QC;
 using RawTools.WorkFlows;
+using RawTools.Algorithms.Analyze;
+using RawTools.Algorithms.ExtractData;
+using RawTools.Algorithms.MatchBewteen;
 using System.Xml.Linq;
 using Serilog;
 //using Serilog.Sinks.File;
@@ -78,10 +81,133 @@ namespace RawTools
 
         static int DoStuff(ArgumentParser.TestOptions opts)
         {
-            using (IRawDataPlus rawFile = RawFileReaderFactory.ReadFile(fileName: opts.File))
+            List<string> files = Directory.GetFiles(opts.Directory, "*.*", SearchOption.TopDirectoryOnly).Where(s => s.EndsWith(".raw", StringComparison.OrdinalIgnoreCase)).ToList();
+
+            WorkflowParameters parameters = new WorkflowParameters();
+            parameters.QcParams.NumberSpectra = 1000000;
+            parameters.QcParams.FixedScans = true;
+            parameters.QcParams.QcDirectory = opts.Directory + "\\SearchData";
+            parameters.QcParams.SearchAlgorithm = SearchAlgorithm.XTandem;
+            parameters.QcParams.XMod = "15.99491@M";
+            parameters.QcParams.FixedMods = opts.FixedMods;
+            parameters.QcParams.XTandemDirectory = opts.XTandemDirectory;
+            parameters.QcParams.FastaDatabase = opts.FastaDatabase;
+
+
+            IRawFileThreadManager rawFile1 = RawFileReaderFactory.CreateThreadManager(fileName: files[0]);
+            IRawFileThreadManager rawFile2 = RawFileReaderFactory.CreateThreadManager(fileName: files[1]);
+
+            var staticRawFile1 = rawFile1.CreateThreadAccessor();
+            var staticRawFile2 = rawFile2.CreateThreadAccessor();
+            staticRawFile1.SelectInstrument(Device.MS, 1);
+            staticRawFile2.SelectInstrument(Device.MS, 1);
+
+            staticRawFile1.CheckIfBoxcar();
+            staticRawFile2.CheckIfBoxcar();
+
+            ScanIndex Index1 = Extract.ScanIndices(rawFile1.CreateThreadAccessor());
+
+            TrailerExtraCollection trailerExtras1 = Extract.TrailerExtras(rawFile1.CreateThreadAccessor(), Index1);
+
+            MethodDataContainer methodData1 = Extract.MethodData(rawFile1.CreateThreadAccessor(), Index1);
+
+            (CentroidStreamCollection centroidStreams1, SegmentScanCollection segmentScans1) =
+                Extract.MsData(rawFile: rawFile1.CreateThreadAccessor(), index: Index1);
+
+            (PrecursorScanCollection precursorScans1, ScanDependentsCollections scanDependents1) = Extract.DependentsAndPrecursorScansByScanDependents(rawFile1.CreateThreadAccessor(), Index1);
+
+            PrecursorMassCollection precursorMasses1 = Extract.PrecursorMasses(rawFile1.CreateThreadAccessor(), precursorScans1, trailerExtras1, Index1);
+
+            RetentionTimeCollection retentionTimes1 = Extract.RetentionTimes(rawFile1.CreateThreadAccessor(), Index1);
+            
+            PrecursorPeakCollection peakData1 = AnalyzePeaks.AnalyzeAllPeaks(centroidStreams1, retentionTimes1, precursorMasses1, precursorScans1, Index1);
+
+            
+            Search.WriteSearchMGF(parameters, centroidStreams1, segmentScans1, retentionTimes1, precursorMasses1, precursorScans1, trailerExtras1, methodData1,
+                    Index1, staticRawFile1.FileName, parameters.QcParams.FixedScans);
+
+            Search.RunSearch(parameters, methodData1, staticRawFile1.FileName);
+            
+
+
+            ScanIndex Index2 = Extract.ScanIndices(rawFile2.CreateThreadAccessor());
+
+            TrailerExtraCollection trailerExtras2 = Extract.TrailerExtras(rawFile2.CreateThreadAccessor(), Index2);
+
+            MethodDataContainer methodData2 = Extract.MethodData(rawFile2.CreateThreadAccessor(), Index2);
+
+            (CentroidStreamCollection centroidStreams2, SegmentScanCollection segmentScans2) =
+                Extract.MsData(rawFile: rawFile2.CreateThreadAccessor(), index: Index2);
+
+            (PrecursorScanCollection precursorScans2, ScanDependentsCollections scanDependents2) = Extract.DependentsAndPrecursorScansByScanDependents(rawFile2.CreateThreadAccessor(), Index2);
+
+            PrecursorMassCollection precursorMasses2 = Extract.PrecursorMasses(rawFile2.CreateThreadAccessor(), precursorScans2, trailerExtras2, Index2);
+
+            RetentionTimeCollection retentionTimes2 = Extract.RetentionTimes(rawFile2.CreateThreadAccessor(), Index2);
+
+            PrecursorPeakCollection peakData2 = AnalyzePeaks.AnalyzeAllPeaks(centroidStreams2, retentionTimes2, precursorMasses2, precursorScans2, Index2);
+
+
+            
+            Search.WriteSearchMGF(parameters, centroidStreams2, segmentScans2, retentionTimes2, precursorMasses2, precursorScans2, trailerExtras2, methodData2,
+                    Index2, staticRawFile2.FileName, parameters.QcParams.FixedScans);
+
+            Search.RunSearch(parameters, methodData2, staticRawFile2.FileName);
+            
+
+            PsmDataCollection psms1 = AlignTimeAndMass.LoadPsmData(retentionTimes1, precursorScans1, parameters, staticRawFile1.FileName);
+            PsmDataCollection psms2 = AlignTimeAndMass.LoadPsmData(retentionTimes2, precursorScans2, parameters, staticRawFile2.FileName);
+
+            MultiRunFeatureCollection features = AlignTimeAndMass.CorrelateFeatures(psms1, psms2, peakData1, peakData2, precursorMasses1, precursorMasses2);
+
+            int OnlyIn1 = 0;
+            int IdIn1FeatureIn2 = 0;
+            int IdInBoth = 0;
+            int FeatureIn1IdIn2 = 0;
+            int OnlyIn2 = 0;
+
+            foreach (var feature in features.Values)
             {
-                //WorkFlows.WorkflowParameters = new WorkFlows.WorkflowParameters();
-                //WorkFlows.WorkFlows.DDA(rawFile);
+                if (feature.IdIn1 & feature.FoundIn1 & feature.IdIn2 & feature.FoundIn2)
+                {
+                    IdInBoth += 1;
+                }
+                else if (feature.IdIn1 & feature.FoundIn1 & feature.FoundIn2 & !feature.IdIn2)
+                {
+                    IdIn1FeatureIn2 += 1;
+                }
+                else if (feature.IdIn1 & feature.FoundIn1 & !feature.FoundIn2 & !feature.FoundIn2)
+                {
+                    OnlyIn1 += 1;
+                }
+                else if (feature.IdIn2 & feature.FoundIn2 & feature.FoundIn1 & !feature.IdIn1)
+                {
+                    FeatureIn1IdIn2 += 1;
+                }
+                else if (feature.IdIn2 & feature.FoundIn2 & !feature.FoundIn1 & !feature.IdIn1)
+                {
+                    OnlyIn2 += 1;
+                }
+            }
+
+            Console.WriteLine("\n");
+            Console.WriteLine("Features ID'd in both: {0}", IdInBoth);
+            Console.WriteLine("Features found only in file 1: {0}", OnlyIn1);
+            Console.WriteLine("Features found only in file 2: {0}", OnlyIn2);
+            Console.WriteLine("Features found in both, but only ID'd in file 1: {0}", IdIn1FeatureIn2);
+            Console.WriteLine("Features found in both, but only ID'd in file 2: {0}", FeatureIn1IdIn2);
+
+            using (StreamWriter f = new StreamWriter(Path.Combine(opts.Directory, "results.txt")))
+            {
+                f.WriteLine("File 1: {0}", staticRawFile1.FileName);
+                f.WriteLine("File 2: {0}", staticRawFile2.FileName);
+                f.WriteLine();
+
+                f.WriteLine("Features ID'd in both: {0}", IdInBoth);
+                f.WriteLine("Features found only in file 1: {0}", OnlyIn1);
+                f.WriteLine("Features found only in file 2: {0}", OnlyIn2);
+                f.WriteLine("Features found in both, but only ID'd in file 1: {0}", IdIn1FeatureIn2);
+                f.WriteLine("Features found in both, but only ID'd in file 2: {0}", FeatureIn1IdIn2);
             }
 
             return 0;

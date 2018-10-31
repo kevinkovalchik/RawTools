@@ -34,6 +34,12 @@ namespace RawTools.WorkFlows
         public ParseWorkflowParameters ParseParams;
         public QcWorkflowParameters QcParams;
 
+        public WorkflowParameters()
+        {
+            QcParams = new QcWorkflowParameters();
+            ParseParams = new ParseWorkflowParameters();
+        }
+
         public WorkflowParameters(ArgumentParser.ParseOptions parseOptions)
         {
             ParseParams = new ParseWorkflowParameters();

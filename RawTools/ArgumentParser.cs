@@ -31,6 +31,20 @@ namespace RawTools.ArgumentParser
     {
         [Option('f', HelpText = "file to make the test go")]
         public string File { get; set; }
+
+        [Option('d', HelpText = "directory to make the test go")]
+        public string Directory { get; set; }
+
+        [Option("db", Default = "C:\\Users\\Kevin\\Documents\\GSC\\Projects\\RawToolsHelaFiles\\uniprot-human-ref-20180807.fasta", HelpText = "Required for X! Tandem or IdentiPy search. Path to a fasta protein database.")]
+        public string FastaDatabase { get; set; }
+
+        [Option("fmods", Default = "57.02146@C,229.16293@K,229.16293@[", HelpText = "Optional. Fixed modifications to pass to the search, if desired. Use mass@aminoacid1,mass@aminoacid2 format. " +
+            "It is important that the values are separated with a comma and not spaces. IMPORTANT: Do not include isobaric quantification tags here  (e.g. TMT, iTRAQ). Instead, these must " +
+            "be specified using the --qmod argument. Invoke \">RawTools qc -e\" to see examples of some common modifications")]
+        public string FixedMods { get; set; }
+
+        [Option('X', Default = "C:\\Users\\Kevin\\Documents\\GSC\\Projects\\tandem-win-17-02-01-4\\tandem-win-17-02-01-4\\bin", HelpText = "Specify the path to the X! Tandem directory (the directory containing \"tandem.exe\").")]
+        public string XTandemDirectory { get; set; }
     }
 
     [Verb("examples", HelpText = "Display some common peptide modification in mass@aa format and examples of usage.")]
