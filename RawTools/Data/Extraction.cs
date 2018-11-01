@@ -459,7 +459,6 @@ namespace RawTools.Data.Extraction
             }
 
             rawData.scanIndex = new ScanIndex();
-            rawData.scanIndex.allScans = allScans;
             rawData.scanIndex.AnalysisOrder = AnalysisOrder;
             rawData.scanIndex.ScanEnumerators.Add(MSOrderType.Any, msAny.ToArray());
             rawData.scanIndex.ScanEnumerators.Add(MSOrderType.Ms, ms1.ToArray());
@@ -505,6 +504,18 @@ namespace RawTools.Data.Extraction
             rawData.scanIndex.ScanEnumerators[MSOrderType.Ms2] = ms2scans.ToArray();
             rawData.scanIndex.ScanEnumerators[MSOrderType.Ms3] = ms3scans.ToArray();
             rawData.scanIndex.ScanEnumerators[MSOrderType.Any] = anyscans.ToArray();
+
+            // refine allscans values
+            var everyScan = allScans.Keys.ToList();
+            foreach (var scan in everyScan)
+            {
+                if (!anyscans.Contains(scan))
+                {
+                    allScans.Remove(scan);
+                }
+            }
+            rawData.scanIndex.allScans = allScans;
+
 
             rawData.Performed.Add(Operations.ScanIndex);
         }
