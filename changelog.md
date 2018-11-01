@@ -10,8 +10,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 but the meta data was incomplete. To address this, the scan lists RawTools uses to process are now built off of the scan dependents found in the
 raw file meta data. This means scans which are missing meta data will not appear in the output data table. Note that these occurances are rare, and
 we are planning to add a text output to alert the user when this happens.
+
 ### Fixed
 - MS3ScanRate was not referecing the correct data. Is fixed now.
+- Fixed a bug which caused a crash when MS scan data was absent or corrupted for a scan.
 
 ## [1.3.1] 2018-10-26
 ### Fixed
