@@ -724,29 +724,37 @@ namespace RawTools.Data.Extraction
             {
                 //try
                 //{
-                    // first get out the mass spectrum
-                    if (rawData.scanIndex.allScans[i].MassAnalyzer == MassAnalyzerType.MassAnalyzerFTMS)
+                // first get out the mass spectrum
+                if (rawData.scanIndex.allScans[i].MassAnalyzer == MassAnalyzerType.MassAnalyzerFTMS)
+                {
+                    var centroid = rawFile.GetCentroidStream(i, false);
+
+                    if (centroid.Masses == null)
                     {
-                        rawData.centroidStreams.Add(i, new CentroidStreamData(rawFile.GetCentroidStream(i, false)));
-                    }
-                    else
-                    {
-                        rawData.segmentedScans.Add(i, new SegmentedScanData(rawFile.GetSegmentedScanFromScanNumber(i, null)));
+                        ConsoleUtils.ClearLastLine();
+                        Console.WriteLine("NOTE: There is no MS data for scan {0}", i);
                     }
 
-                    // add the trailer extra data
-                    rawData.trailerExtras.Add(i, TrailerExtras.ExtractTrailerExtra(rawData, rawFile, i, indices));
-                    rawData.Performed.Add(Operations.TrailerExtras);
+                    rawData.centroidStreams.Add(i, new CentroidStreamData(centroid));
+                }
+                else
+                {
+                    rawData.segmentedScans.Add(i, new SegmentedScanData(rawFile.GetSegmentedScanFromScanNumber(i, null)));
+                }
 
-                    // add the retention time
-                    rawData.retentionTimes.Add(i, rawFile.RetentionTimeFromScanNumber(i));
-                    rawData.Performed.Add(Operations.RetentionTimes);
+                // add the trailer extra data
+                rawData.trailerExtras.Add(i, TrailerExtras.ExtractTrailerExtra(rawData, rawFile, i, indices));
+                rawData.Performed.Add(Operations.TrailerExtras);
 
-                    // add the precursor mass
-                    PrecursorMasses.ExtractPrecursorMasses(rawData, rawFile, i);
-                    rawData.Performed.Add(Operations.PrecursorMasses);
+                // add the retention time
+                rawData.retentionTimes.Add(i, rawFile.RetentionTimeFromScanNumber(i));
+                rawData.Performed.Add(Operations.RetentionTimes);
 
-                    P.Update();
+                // add the precursor mass
+                PrecursorMasses.ExtractPrecursorMasses(rawData, rawFile, i);
+                rawData.Performed.Add(Operations.PrecursorMasses);
+
+                P.Update();
                 //}
                 //catch (Exception e)
                 //{
