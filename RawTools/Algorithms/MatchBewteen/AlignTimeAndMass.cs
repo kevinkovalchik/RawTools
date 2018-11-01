@@ -131,6 +131,9 @@ namespace RawTools.Algorithms.MatchBewteen
                 feature.FoundIn1 = true;
                 feature.IdIn1 = true;
 
+                feature.RT1 = rt1;
+                feature.Mass1 = mass1;
+
                 // look for the feature in the other set of psms
                 foreach (var key2 in psms2.Keys)
                 {
@@ -144,6 +147,17 @@ namespace RawTools.Algorithms.MatchBewteen
                         //feature.Add(psms2.FileName, psms1[key2]);
                         feature.IdIn2 = true;
                         feature.FoundIn2 = true;
+
+                        feature.RT2 = rt2;
+                        feature.Mass2 = mass2;
+                        //Console.WriteLine("{0}\t{1}", psms1[key1].Seq, psms2[key2].Seq);
+                        string seq1 = psms1[key1].Seq;
+                        string seq2 = psms2[key2].Seq;
+
+                        if (seq1 == seq2)
+                        {
+                            feature.ConfirmSeqMatch = true;
+                        }
 
                         features.Add(ID, feature);
                         ID++;
@@ -165,6 +179,9 @@ namespace RawTools.Algorithms.MatchBewteen
                         //feature.Add(psms2.FileName, null);
                         feature.IdIn2 = false;
                         feature.FoundIn2 = true;
+
+                        feature.RT2 = rt2;
+                        feature.Mass2 = mass2;
 
                         features.Add(ID, feature);
                         ID++;
@@ -194,6 +211,9 @@ namespace RawTools.Algorithms.MatchBewteen
                 feature.FoundIn2 = true;
                 feature.IdIn2 = true;
 
+                feature.RT2 = rt2;
+                feature.Mass2 = mass2;
+
                 // look for the feature in the other set of psms
                 foreach (var key1 in psms1.Keys)
                 {
@@ -221,6 +241,9 @@ namespace RawTools.Algorithms.MatchBewteen
                         //feature.Add(psms1.FileName, null);
                         feature.IdIn1 = false;
                         feature.FoundIn1 = true;
+
+                        feature.RT1 = rt1;
+                        feature.Mass1 = mass1;
 
                         features.Add(ID, feature);
                         ID++;

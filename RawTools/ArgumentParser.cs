@@ -45,6 +45,9 @@ namespace RawTools.ArgumentParser
 
         [Option('X', Default = "C:\\Users\\Kevin\\Documents\\GSC\\Projects\\tandem-win-17-02-01-4\\tandem-win-17-02-01-4\\bin", HelpText = "Specify the path to the X! Tandem directory (the directory containing \"tandem.exe\").")]
         public string XTandemDirectory { get; set; }
+
+        [Option("static", HelpText = "Will use mgf and search results aleady present. Only used for development purposes.")]
+        public bool StaticSearch { get; set; }
     }
 
     [Verb("examples", HelpText = "Display some common peptide modification in mass@aa format and examples of usage.")]

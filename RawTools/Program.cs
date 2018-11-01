@@ -122,11 +122,13 @@ namespace RawTools
             
             PrecursorPeakCollection peakData1 = AnalyzePeaks.AnalyzeAllPeaks(centroidStreams1, retentionTimes1, precursorMasses1, precursorScans1, Index1);
 
-            
-            Search.WriteSearchMGF(parameters, centroidStreams1, segmentScans1, retentionTimes1, precursorMasses1, precursorScans1, trailerExtras1, methodData1,
-                    Index1, staticRawFile1.FileName, parameters.QcParams.FixedScans);
+            if (!opts.StaticSearch)
+            {
+                Search.WriteSearchMGF(parameters, centroidStreams1, segmentScans1, retentionTimes1, precursorMasses1, precursorScans1, trailerExtras1, methodData1,
+                        Index1, staticRawFile1.FileName, parameters.QcParams.FixedScans);
 
-            Search.RunSearch(parameters, methodData1, staticRawFile1.FileName);
+                Search.RunSearch(parameters, methodData1, staticRawFile1.FileName);
+            }
             
 
 
@@ -148,11 +150,13 @@ namespace RawTools
             PrecursorPeakCollection peakData2 = AnalyzePeaks.AnalyzeAllPeaks(centroidStreams2, retentionTimes2, precursorMasses2, precursorScans2, Index2);
 
 
-            
-            Search.WriteSearchMGF(parameters, centroidStreams2, segmentScans2, retentionTimes2, precursorMasses2, precursorScans2, trailerExtras2, methodData2,
+            if (!opts.StaticSearch)
+            {
+                Search.WriteSearchMGF(parameters, centroidStreams2, segmentScans2, retentionTimes2, precursorMasses2, precursorScans2, trailerExtras2, methodData2,
                     Index2, staticRawFile2.FileName, parameters.QcParams.FixedScans);
 
-            Search.RunSearch(parameters, methodData2, staticRawFile2.FileName);
+                Search.RunSearch(parameters, methodData2, staticRawFile2.FileName);
+            }
             
 
             PsmDataCollection psms1 = AlignTimeAndMass.LoadPsmData(retentionTimes1, precursorScans1, parameters, staticRawFile1.FileName);
@@ -165,16 +169,31 @@ namespace RawTools
             int IdInBoth = 0;
             int FeatureIn1IdIn2 = 0;
             int OnlyIn2 = 0;
+            int SeqMatch = 0;
+
+            StreamWriter BothID = new StreamWriter(Path.Combine(opts.Directory, "IdInBoth.csv"));
+            StreamWriter IdInFile1 = new StreamWriter(Path.Combine(opts.Directory, "IdInFile1.csv"));
+            StreamWriter IdInFile2 = new StreamWriter(Path.Combine(opts.Directory, "IdInFile2.csv"));
+            BothID.WriteLine("RTdiff,MassDiff");
+            IdInFile1.WriteLine("RTdiff,MassDiff");
+            IdInFile2.WriteLine("RTdiff,MassDiff");
 
             foreach (var feature in features.Values)
             {
                 if (feature.IdIn1 & feature.FoundIn1 & feature.IdIn2 & feature.FoundIn2)
                 {
                     IdInBoth += 1;
+                    BothID.WriteLine("{0},{1}", feature.RT1 - feature.RT2, feature.Mass1 - feature.Mass2);
+                    if (feature.ConfirmSeqMatch)
+                    {
+                        SeqMatch += 1;
+                    }
                 }
                 else if (feature.IdIn1 & feature.FoundIn1 & feature.FoundIn2 & !feature.IdIn2)
                 {
                     IdIn1FeatureIn2 += 1;
+                    IdInFile1.WriteLine("{0},{1}", feature.RT1 - feature.RT2, feature.Mass1 - feature.Mass2);
+
                 }
                 else if (feature.IdIn1 & feature.FoundIn1 & !feature.FoundIn2 & !feature.FoundIn2)
                 {
@@ -183,6 +202,8 @@ namespace RawTools
                 else if (feature.IdIn2 & feature.FoundIn2 & feature.FoundIn1 & !feature.IdIn1)
                 {
                     FeatureIn1IdIn2 += 1;
+                    IdInFile2.WriteLine("{0},{1}", feature.RT1 - feature.RT2, feature.Mass1 - feature.Mass2);
+
                 }
                 else if (feature.IdIn2 & feature.FoundIn2 & !feature.FoundIn1 & !feature.IdIn1)
                 {
@@ -190,12 +211,17 @@ namespace RawTools
                 }
             }
 
+            BothID.Close();
+            IdInFile1.Close();
+            IdInFile2.Close();
+
             Console.WriteLine("\n");
             Console.WriteLine("Features ID'd in both: {0}", IdInBoth);
             Console.WriteLine("Features found only in file 1: {0}", OnlyIn1);
             Console.WriteLine("Features found only in file 2: {0}", OnlyIn2);
             Console.WriteLine("Features found in both, but only ID'd in file 1: {0}", IdIn1FeatureIn2);
             Console.WriteLine("Features found in both, but only ID'd in file 2: {0}", FeatureIn1IdIn2);
+            Console.WriteLine("Confirmed sequence matches: {0}%", Convert.ToDouble(SeqMatch) / IdInBoth * 100);
 
             using (StreamWriter f = new StreamWriter(Path.Combine(opts.Directory, "results.txt")))
             {
@@ -208,6 +234,7 @@ namespace RawTools
                 f.WriteLine("Features found only in file 2: {0}", OnlyIn2);
                 f.WriteLine("Features found in both, but only ID'd in file 1: {0}", IdIn1FeatureIn2);
                 f.WriteLine("Features found in both, but only ID'd in file 2: {0}", FeatureIn1IdIn2);
+                f.WriteLine("Confirmed sequence matches: {0}%", Convert.ToDouble(SeqMatch) / IdInBoth * 100);
             }
 
             return 0;

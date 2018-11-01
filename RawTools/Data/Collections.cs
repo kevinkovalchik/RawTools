@@ -208,6 +208,9 @@ namespace RawTools.Data.Collections
         public bool IdIn2;
         public bool FoundIn1;
         public bool FoundIn2;
+        public bool ConfirmSeqMatch;
+        public double RT1, RT2;
+        public double Mass1, Mass2;
 
         public MultiRunFeature()
         {
@@ -215,6 +218,7 @@ namespace RawTools.Data.Collections
             IdIn2 = false;
             FoundIn1 = false;
             FoundIn2 = false;
+            ConfirmSeqMatch = false;
         }
     }
 }
