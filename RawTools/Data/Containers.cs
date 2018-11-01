@@ -61,7 +61,6 @@ namespace RawTools.Data.Containers
                 SignalToNoise[i] = Intensities[i] / Noises[i];
             }
         }
-        
     }
 
     public class SimpleCentroid

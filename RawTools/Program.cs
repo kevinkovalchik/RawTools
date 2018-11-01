@@ -86,19 +86,33 @@ namespace RawTools
             WorkflowParameters parameters = new WorkflowParameters();
             parameters.QcParams.NumberSpectra = 1000000;
             parameters.QcParams.FixedScans = true;
-            parameters.QcParams.QcDirectory = opts.Directory + "\\SearchData";
+            parameters.QcParams.QcDirectory = opts.Directory + "/SearchData";
             parameters.QcParams.SearchAlgorithm = SearchAlgorithm.XTandem;
             parameters.QcParams.XMod = "15.99491@M";
             parameters.QcParams.FixedMods = opts.FixedMods;
             parameters.QcParams.XTandemDirectory = opts.XTandemDirectory;
             parameters.QcParams.FastaDatabase = opts.FastaDatabase;
 
+            if (!RawFileInfo.CheckIfValid(files[0]) | !RawFileInfo.CheckIfValid(files[1]))
+            {
+                if (!RawFileInfo.CheckIfValid(files[0]))
+                {
+                    Console.WriteLine("{0} is not a valid raw file.", files[0]);
+                }
+
+                if (!RawFileInfo.CheckIfValid(files[1]))
+                {
+                    Console.WriteLine("{0} is not a valid raw file.", files[1]);
+                }
+                Environment.Exit(1);
+            }
 
             IRawFileThreadManager rawFile1 = RawFileReaderFactory.CreateThreadManager(fileName: files[0]);
             IRawFileThreadManager rawFile2 = RawFileReaderFactory.CreateThreadManager(fileName: files[1]);
 
             var staticRawFile1 = rawFile1.CreateThreadAccessor();
             var staticRawFile2 = rawFile2.CreateThreadAccessor();
+            
             staticRawFile1.SelectInstrument(Device.MS, 1);
             staticRawFile2.SelectInstrument(Device.MS, 1);
 

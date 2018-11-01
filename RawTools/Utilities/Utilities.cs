@@ -688,6 +688,7 @@ namespace RawTools.Utilities
     {
         public static void CheckIfBoxcar(this IRawDataPlus rawFile)
         {
+            rawFile.SelectInstrument(Device.MS, 1);
             bool isBoxCar = rawFile.GetScanEventForScanNumber(1).MassRangeCount > 1;
 
             if (isBoxCar)
