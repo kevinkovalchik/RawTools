@@ -211,6 +211,7 @@ namespace RawTools.Data.Collections
         public bool ConfirmSeqMatch;
         public double RT1, RT2;
         public double Mass1, Mass2;
+        public int Ms2Scan1, Ms2Scan2;
 
         public MultiRunFeature()
         {

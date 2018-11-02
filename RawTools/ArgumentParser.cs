@@ -48,6 +48,12 @@ namespace RawTools.ArgumentParser
 
         [Option("static", HelpText = "Will use mgf and search results aleady present. Only used for development purposes.")]
         public bool StaticSearch { get; set; }
+
+        [Option('m', Default = 6, HelpText = "Mass difference tolerance in ppm to use in matching features.")]
+        public double MassPPM { get; set; }
+
+        [Option('t', Default = 0.01, HelpText = "Retention times difference in relative magnitude to use in matching features")]
+        public double TimePercentTol { get; set; }
     }
 
     [Verb("examples", HelpText = "Display some common peptide modification in mass@aa format and examples of usage.")]

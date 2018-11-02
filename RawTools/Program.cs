@@ -176,7 +176,8 @@ namespace RawTools
             PsmDataCollection psms1 = AlignTimeAndMass.LoadPsmData(retentionTimes1, precursorScans1, parameters, staticRawFile1.FileName);
             PsmDataCollection psms2 = AlignTimeAndMass.LoadPsmData(retentionTimes2, precursorScans2, parameters, staticRawFile2.FileName);
 
-            MultiRunFeatureCollection features = AlignTimeAndMass.CorrelateFeatures(psms1, psms2, peakData1, peakData2, precursorMasses1, precursorMasses2);
+            MultiRunFeatureCollection features = AlignTimeAndMass.CorrelateFeatures(psms1, psms2, peakData1, peakData2, precursorMasses1,
+                precursorMasses2, opts.TimePercentTol, opts.MassPPM);
 
             int OnlyIn1 = 0;
             int IdIn1FeatureIn2 = 0;
@@ -188,16 +189,22 @@ namespace RawTools
             StreamWriter BothID = new StreamWriter(Path.Combine(opts.Directory, "IdInBoth.csv"));
             StreamWriter IdInFile1 = new StreamWriter(Path.Combine(opts.Directory, "IdInFile1.csv"));
             StreamWriter IdInFile2 = new StreamWriter(Path.Combine(opts.Directory, "IdInFile2.csv"));
-            BothID.WriteLine("RTdiff,MassDiff");
-            IdInFile1.WriteLine("RTdiff,MassDiff");
-            IdInFile2.WriteLine("RTdiff,MassDiff");
+            BothID.WriteLine("RT1,RT2,Mass1,Mass2");
+            IdInFile1.WriteLine("RT1,RT2,Mass1,Mass2");
+            IdInFile2.WriteLine("RT1,RT2,Mass1,Mass2");
+
+            List<(int scan1, int scan2)> BothIdScans = new List<(int scan1, int scan2)>();
+            List<(int scan1, int scan2)> IdInFile1Scans = new List<(int scan1, int scan2)>();
+            List<(int scan1, int scan2)> IdInFile2Scans = new List<(int scan1, int scan2)>();
 
             foreach (var feature in features.Values)
             {
                 if (feature.IdIn1 & feature.FoundIn1 & feature.IdIn2 & feature.FoundIn2)
                 {
                     IdInBoth += 1;
-                    BothID.WriteLine("{0},{1}", feature.RT1 - feature.RT2, feature.Mass1 - feature.Mass2);
+                    BothID.WriteLine("{0},{1},{2},{3}", feature.RT1, feature.RT2, feature.Mass1, feature.Mass2);
+                    BothIdScans.Add((feature.Ms2Scan1, feature.Ms2Scan2));
+
                     if (feature.ConfirmSeqMatch)
                     {
                         SeqMatch += 1;
@@ -206,7 +213,8 @@ namespace RawTools
                 else if (feature.IdIn1 & feature.FoundIn1 & feature.FoundIn2 & !feature.IdIn2)
                 {
                     IdIn1FeatureIn2 += 1;
-                    IdInFile1.WriteLine("{0},{1}", feature.RT1 - feature.RT2, feature.Mass1 - feature.Mass2);
+                    IdInFile1.WriteLine("{0},{1},{2},{3}", feature.RT1, feature.RT2, feature.Mass1, feature.Mass2);
+                    IdInFile1Scans.Add((feature.Ms2Scan1, feature.Ms2Scan2));
 
                 }
                 else if (feature.IdIn1 & feature.FoundIn1 & !feature.FoundIn2 & !feature.FoundIn2)
@@ -216,8 +224,8 @@ namespace RawTools
                 else if (feature.IdIn2 & feature.FoundIn2 & feature.FoundIn1 & !feature.IdIn1)
                 {
                     FeatureIn1IdIn2 += 1;
-                    IdInFile2.WriteLine("{0},{1}", feature.RT1 - feature.RT2, feature.Mass1 - feature.Mass2);
-
+                    IdInFile2.WriteLine("{0},{1},{2},{3}", feature.RT1, feature.RT2, feature.Mass1, feature.Mass2);
+                    IdInFile2Scans.Add((feature.Ms2Scan1, feature.Ms2Scan2));
                 }
                 else if (feature.IdIn2 & feature.FoundIn2 & !feature.FoundIn1 & !feature.IdIn1)
                 {
@@ -250,6 +258,22 @@ namespace RawTools
                 f.WriteLine("Features found in both, but only ID'd in file 2: {0}", FeatureIn1IdIn2);
                 f.WriteLine("Confirmed sequence matches: {0}%", Convert.ToDouble(SeqMatch) / IdInBoth * 100);
             }
+
+            var centroids = new List<CentroidStreamCollection>() { centroidStreams1, centroidStreams2 };
+            var segments = new List<SegmentScanCollection>() { segmentScans1, segmentScans2 };
+            var retentionTimes = new List<RetentionTimeCollection>() { retentionTimes1, retentionTimes2 };
+            var precursorMasses = new List<PrecursorMassCollection>() { precursorMasses1, precursorMasses2 };
+            var trailerExtras = new List<TrailerExtraCollection>() { trailerExtras1, trailerExtras2 };
+            var rawFileNames = new List<string>() { staticRawFile1.FileName, staticRawFile2.FileName };
+
+            MatchedMgfWriter.WriteMGF(parameters, BothIdScans, Path.Combine(opts.Directory, "IdInBoth.mgf"), centroids, segments,
+                retentionTimes, precursorMasses, trailerExtras, methodData1, rawFileNames);
+
+            MatchedMgfWriter.WriteMGF(parameters, IdInFile1Scans, Path.Combine(opts.Directory, "IdInFile1.mgf"), centroids, segments,
+                retentionTimes, precursorMasses, trailerExtras, methodData1, rawFileNames);
+
+            MatchedMgfWriter.WriteMGF(parameters, IdInFile2Scans, Path.Combine(opts.Directory, "IdInFile2.mgf"), centroids, segments,
+                retentionTimes, precursorMasses, trailerExtras, methodData1, rawFileNames);
 
             return 0;
         }

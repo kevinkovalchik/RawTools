@@ -113,7 +113,7 @@ namespace RawTools.Algorithms.MatchBewteen
             return psms;
         }
 
-        public static MultiRunFeatureCollection CorrelateFeatures(PsmDataCollection psms1, PsmDataCollection psms2, PrecursorPeakCollection peaks1, PrecursorPeakCollection peaks2, PrecursorMassCollection masses1, PrecursorMassCollection masses2)
+        public static MultiRunFeatureCollection CorrelateFeatures(PsmDataCollection psms1, PsmDataCollection psms2, PrecursorPeakCollection peaks1, PrecursorPeakCollection peaks2, PrecursorMassCollection masses1, PrecursorMassCollection masses2, double rtTolerance, double massTolerance)
         {
             MultiRunFeatureCollection features = new MultiRunFeatureCollection();
 
@@ -134,6 +134,8 @@ namespace RawTools.Algorithms.MatchBewteen
                 feature.RT1 = rt1;
                 feature.Mass1 = mass1;
 
+                feature.Ms2Scan1 = psms1[key1].Scan;
+
                 // look for the feature in the other set of psms
                 foreach (var key2 in psms2.Keys)
                 {
@@ -141,7 +143,7 @@ namespace RawTools.Algorithms.MatchBewteen
                     double mass2 = masses2[key2].MonoisotopicMZ;
                     int ms2scan2 = psms2[key2].Scan;
 
-                    if ((Math.Abs(rt1 - rt2)/rt1 < 0.05) & (Math.Abs(mass1 - mass2)/mass1 * 1e6 < 6))
+                    if ((Math.Abs(rt1 - rt2)/rt1 < rtTolerance) & (Math.Abs(mass1 - mass2)/mass1 * 1e6 < massTolerance))
                     {
                         //feature.Add(psms1.FileName, psms1[key1]);
                         //feature.Add(psms2.FileName, psms1[key2]);
@@ -153,6 +155,8 @@ namespace RawTools.Algorithms.MatchBewteen
                         //Console.WriteLine("{0}\t{1}", psms1[key1].Seq, psms2[key2].Seq);
                         string seq1 = psms1[key1].Seq;
                         string seq2 = psms2[key2].Seq;
+
+                        feature.Ms2Scan2 = psms2[key2].Scan;
 
                         if (seq1 == seq2)
                         {
@@ -173,7 +177,7 @@ namespace RawTools.Algorithms.MatchBewteen
                     double rt2 = peak2.MaximumRetTime;
                     double mass2 = masses2[peak2.Ms2Scan].MonoisotopicMZ;
 
-                    if ((Math.Abs(rt1 - rt2) / rt1 < 0.05) & (Math.Abs(mass1 - mass2) / mass1 * 1e6 < 6))
+                    if ((Math.Abs(rt1 - rt2) / rt1 < rtTolerance) & (Math.Abs(mass1 - mass2) / mass1 * 1e6 < massTolerance))
                     {
                         //feature.Add(psms1.FileName, psms1[key1]);
                         //feature.Add(psms2.FileName, null);
@@ -182,6 +186,8 @@ namespace RawTools.Algorithms.MatchBewteen
 
                         feature.RT2 = rt2;
                         feature.Mass2 = mass2;
+
+                        feature.Ms2Scan2 = peak2.Ms2Scan;
 
                         features.Add(ID, feature);
                         ID++;
@@ -214,6 +220,8 @@ namespace RawTools.Algorithms.MatchBewteen
                 feature.RT2 = rt2;
                 feature.Mass2 = mass2;
 
+                feature.Ms2Scan2 = psms2[key2].Scan;
+
                 // look for the feature in the other set of psms
                 foreach (var key1 in psms1.Keys)
                 {
@@ -221,7 +229,7 @@ namespace RawTools.Algorithms.MatchBewteen
                     double mass1 = masses1[key1].MonoisotopicMZ;
                     int ms2scan1 = psms1[key1].Scan;
 
-                    if ((Math.Abs(rt2 - rt1) / rt2 < 0.05) & (Math.Abs(mass2 - mass1) / mass2 * 1e6 < 6))
+                    if ((Math.Abs(rt2 - rt1) / rt2 < rtTolerance) & (Math.Abs(mass2 - mass1) / mass2 * 1e6 < massTolerance))
                     {
                         found = true;
                         break;
@@ -235,7 +243,7 @@ namespace RawTools.Algorithms.MatchBewteen
                     double rt1 = peak1.MaximumRetTime;
                     double mass1 = masses1[peak1.Ms2Scan].MonoisotopicMZ;
 
-                    if ((Math.Abs(rt2 - rt1) / rt2 < 0.05) & (Math.Abs(mass2 - mass1) / mass2 * 1e6 < 6))
+                    if ((Math.Abs(rt2 - rt1) / rt2 < rtTolerance) & (Math.Abs(mass2 - mass1) / mass2 * 1e6 < massTolerance))
                     {
                         //feature.Add(psms2.FileName, psms2[key2]);
                         //feature.Add(psms1.FileName, null);
@@ -244,6 +252,8 @@ namespace RawTools.Algorithms.MatchBewteen
 
                         feature.RT1 = rt1;
                         feature.Mass1 = mass1;
+
+                        feature.Ms2Scan1 = peak1.Ms2Scan;
 
                         features.Add(ID, feature);
                         ID++;

@@ -967,4 +967,98 @@ namespace RawTools.Data.IO
             }
         }
     }
+
+    static class MatchedMgfWriter
+    {
+        static public void WriteMGF(WorkflowParameters parameters, List<(int scans1, int scans2)> scans,
+            string outputFile, List<CentroidStreamCollection> centroids, List<SegmentScanCollection> segmentScans,
+            List<RetentionTimeCollection> retentionTimes, List<PrecursorMassCollection> precursorMasses,
+            List<TrailerExtraCollection> trailerExtras, MethodDataContainer methodData, List<string> rawFileNames)
+        {
+            string fileName;
+
+            double intCutoff = 0;
+            
+            fileName = outputFile;
+
+            parameters.MgfMassCutoff = 0;
+            parameters.MgfIntensityCutoff = 0;
+
+            MassAnalyzerType ms2MassAnalyzer = methodData.MassAnalyzers[MSOrderType.Ms2];
+
+            const int BufferSize = 65536;  // 64 Kilobytes
+
+            using (StreamWriter f = new StreamWriter(fileName, false, Encoding.UTF8, BufferSize)) //Open a new file, the MGF file
+            {
+                ProgressIndicator progress = new ProgressIndicator(scans.Count(), String.Format("Writing MGF file"));
+
+                int MatchID = 0;
+                foreach (var i in scans)
+                {
+                    MatchID++;
+
+                    int[] scan = new int[] { i.scans1, i.scans2 };
+
+                    foreach(int file in new int[] { 0, 1 })
+                    {
+                        f.WriteLine("\nBEGIN IONS");
+                        f.WriteLine("RAWFILE={0}", rawFileNames[file]);
+                        f.WriteLine("TITLE=Spectrum_{0}_File{1}", scan[file], file+1);
+                        f.WriteLine("MATCH_ID={0}", MatchID);
+                        f.WriteLine("SCAN={0}", scan[file]);
+                        f.WriteLine("RTINSECONDS={0}", retentionTimes[file][scan[file]]);
+                        f.WriteLine("PEPMASS={0}", precursorMasses[file][scan[file]].MonoisotopicMZ);
+                        f.WriteLine("CHARGE={0}", trailerExtras[file][scan[file]].ChargeState);
+
+                        if (ms2MassAnalyzer == MassAnalyzerType.MassAnalyzerFTMS)
+                        {
+                            CentroidStreamData centroid = centroids[file][scan[file]];
+
+                            if (centroid.Intensities.Length > 0)
+                            {
+                                intCutoff = centroid.Intensities.Max() * parameters.MgfIntensityCutoff;
+                            }
+                            else
+                            {
+                                intCutoff = 0;
+                            }
+
+                            for (int j = 0; j < centroid.Masses.Length; j++)
+                            {
+                                //f.WriteLine(Math.Round(centroid.Masses[j], 4).ToString() + " " + Math.Round(centroid.Intensities[j], 4).ToString());
+                                if (centroid.Masses[j] > parameters.MgfMassCutoff & centroid.Intensities[j] > intCutoff)
+                                {
+                                    f.WriteLine("{0} {1}", Math.Round(centroid.Masses[j], 5), Math.Round(centroid.Intensities[j], 4));
+                                }
+                            }
+                        }
+                        else
+                        {
+                            SegmentedScanData segments = segmentScans[file][scan[file]];
+
+                            if (segments.Intensities.Length > 0)
+                            {
+                                intCutoff = segments.Intensities.Max() * parameters.MgfIntensityCutoff;
+                            }
+                            else
+                            {
+                                intCutoff = 0;
+                            }
+
+                            for (int j = 0; j < segments.Positions.Length; j++)
+                            {
+                                if (segments.Positions[j] > parameters.MgfMassCutoff & segments.Intensities[j] > intCutoff)
+                                {
+                                    f.WriteLine("{0} {1}", Math.Round(segments.Positions[j], 5), Math.Round(segments.Intensities[j], 4));
+                                }
+                            }
+                        }
+                        f.WriteLine("END IONS");
+                    }
+                    progress.Update();
+                }
+                progress.Done();
+            }
+        }
+    }
 }
