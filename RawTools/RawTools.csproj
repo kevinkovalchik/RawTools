@@ -117,6 +117,7 @@
     <Compile Include="Constants\Constants.cs" />
     <Compile Include="Data\Collections.cs" />
     <Compile Include="Data\Processing.cs" />
+    <Compile Include="Examples.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

@@ -60,19 +60,27 @@ namespace RawTools
             Log.Information("Program started with arguments: {0}", String.Join(" ", args));
             
 
-            Parser.Default.ParseArguments<ArgumentParser.ParseOptions, ArgumentParser.QcOptions, ArgumentParser.TestOptions, ArgumentParser.ExampleMods>(args)
+            Parser.Default.ParseArguments<ArgumentParser.ParseOptions, ArgumentParser.QcOptions, ArgumentParser.TestOptions, ArgumentParser.ExampleOptions>(args)
                 .WithParsed<ArgumentParser.ParseOptions>(opts => DoStuff(opts))
                 .WithParsed<ArgumentParser.QcOptions>(opts => DoStuff(opts))
                 .WithParsed<ArgumentParser.TestOptions>(opts => DoStuff(opts))
-                .WithParsed<ArgumentParser.ExampleMods>(opts => DoStuff(opts))
+                .WithParsed<ArgumentParser.ExampleOptions>(opts => DoStuff(opts))
                 .WithNotParsed((errs) => HandleParseError(args));
 
             Log.CloseAndFlush();
         }
 
-        static int DoStuff(ArgumentParser.ExampleMods opts)
+        static int DoStuff(ArgumentParser.ExampleOptions opts)
         {
-            SearchQC.ExampleMods();
+            if (opts.DisplayModifications)
+            {
+                Examples.ExampleMods();
+            }
+            if (opts.InterfaceExamples)
+            {
+                Examples.CommandLineUsage();
+            }
+            
             return 0;
         }
 

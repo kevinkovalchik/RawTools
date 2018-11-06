@@ -26,16 +26,23 @@ using CommandLine.Text;
 
 namespace RawTools.ArgumentParser
 {
-    [Verb("testing", HelpText = "A place to contain testing routines during development")]
+    [Verb("testing", HelpText = "A place to contain testing routines during development. This is not for general usage.")]
     class TestOptions
     {
         [Option('f', HelpText = "file to make the test go")]
         public string File { get; set; }
     }
 
-    [Verb("examples", HelpText = "Display some common peptide modification in mass@aa format and examples of usage.")]
-    class ExampleMods
-    { }
+    [Verb("examples", HelpText = "Examples of command line usage and common peptide modification in mass@aa format.")]
+    class ExampleOptions
+    {
+        [Option("modifications", HelpText = "Display some common peptide modification in mass@aa format and examples of how to use " +
+            "the --fmods, --nmod, --kmod and --xmod arguments.")]
+        public bool DisplayModifications { get; set; }
+
+        [Option("interface", HelpText = "Display examples of of to use RawTools command line interface.")]
+        public bool InterfaceExamples { get; set; }
+    }
 
     [Verb("parse", HelpText = "Perform meta and quant data parsing. Also performs data processing, MGF file creation, and saves meta/quant data and run metrics to disk.")]
     class ParseOptions
