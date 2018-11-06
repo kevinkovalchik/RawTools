@@ -222,6 +222,21 @@ namespace RawTools
 
         static int DoStuff(ArgumentParser.ParseOptions opts)
         {
+            if (!opts.ParseData | !opts.Quant | !opts.Metrics | !opts.WriteMGF)
+            {
+                Console.WriteLine("You have not indicated what output you want (i.e. one or more of -p, -q, -m, -x). " +
+                    "Are you sure you want to proceed? Nothing will be written to disk.");
+                Console.Write("(press y to poceed): ");
+
+                string proceed = Console.ReadKey().KeyChar.ToString();
+                Console.WriteLine();
+
+                if (proceed != "y")
+                {
+                    Environment.Exit(0);
+                }
+            }
+
             List<string> files = new List<string>();
 
             if (opts.InputFiles.Count() > 0) // did the user give us a list of files?
