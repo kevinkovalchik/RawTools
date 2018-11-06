@@ -441,6 +441,7 @@ namespace RawTools.Data.Containers
         public bool PeakFound = false, ContainsFirstMS1Scan = false, ContainsLastMS1Scan = false;
         public int[] Scans;
         public PeakShape PeakShape;
+        public PsmData PSM;
     }
 
     class NewMetaData
@@ -610,7 +611,7 @@ namespace RawTools.Data.Containers
         public double MasterScanRetentionTime;
         public double PeakApexRT;
         public double AlignedPeakApexRT;
-        public double mz;
+        public double MonoisotopicMZ;
         public bool Decoy;
         public string Seq;
         public int Start, End, Charge, MissedCleavages;

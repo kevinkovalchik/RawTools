@@ -222,4 +222,21 @@ namespace RawTools.Data.Collections
             ConfirmSeqMatch = false;
         }
     }
+
+    class Ms1Feature
+    {
+        public bool Identified;
+        public PsmData PSM;
+        public PrecursorPeakData Peak;
+        public double MonoisotopicMZ;
+        public int Ms2Scan;
+
+        public Ms1Feature()
+        {
+            Identified = false;
+        }
+    }
+
+    class Ms1FeatureCollection: Dictionary<int, Ms1Feature>
+    { }
 }

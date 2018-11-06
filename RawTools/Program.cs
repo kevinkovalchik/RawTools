@@ -176,8 +176,15 @@ namespace RawTools
             PsmDataCollection psms1 = AlignTimeAndMass.LoadPsmData(retentionTimes1, precursorScans1, parameters, staticRawFile1.FileName);
             PsmDataCollection psms2 = AlignTimeAndMass.LoadPsmData(retentionTimes2, precursorScans2, parameters, staticRawFile2.FileName);
 
-            MultiRunFeatureCollection features = AlignTimeAndMass.CorrelateFeatures(psms1, psms2, peakData1, peakData2, precursorMasses1,
-                precursorMasses2, opts.TimePercentTol, opts.MassPPM);
+            Ms1FeatureCollection features1 = AlignTimeAndMass.AggregateMs1Features(peakData1, psms1, precursorMasses1);
+            Ms1FeatureCollection features2 = AlignTimeAndMass.AggregateMs1Features(peakData2, psms2, precursorMasses2);
+
+            //MultiRunFeatureCollection features = AlignTimeAndMass.MatchFeatures(psms1, psms2, peakData1, peakData2, precursorMasses1,
+            //    precursorMasses2, opts.TimePercentTol, opts.MassPPM);
+
+            //MultiRunFeatureCollection features = AlignTimeAndMass.CorrelateFeatures(psms1, psms2, peakData1, peakData2, precursorMasses1, precursorMasses2, opts.TimePercentTol, opts.MassPPM);
+
+            MultiRunFeatureCollection features = AlignTimeAndMass.CorrelateFeatures2(features1, features2, opts.TimePercentTol, opts.MassPPM);
 
             int OnlyIn1 = 0;
             int IdIn1FeatureIn2 = 0;
