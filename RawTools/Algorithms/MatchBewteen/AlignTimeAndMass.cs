@@ -89,9 +89,16 @@ namespace RawTools.Algorithms.MatchBewteen
                 psmList.Add(psm);
             }
 
+
             double topDecoyScore = (from x in psmList where x.Decoy select x.Hyperscore).ToArray().Percentile(95);
 
+            //Console.WriteLine("Top decoy score: {0}", topDecoyScore);
+
             IEnumerable<PsmData> goodPsms = from x in psmList where !x.Decoy & x.Hyperscore > topDecoyScore select x;
+            //IEnumerable<PsmData> goodPsms = from x in psmList where !x.Decoy select x;
+            
+            //Console.WriteLine("Median decoy expectation value: {0}", (from x in psmList where x.Decoy select x.ExpectationValue).ToArray().Percentile(50));
+            //Console.WriteLine("Median non-decoy expectation value: {0}", (from x in psmList where !x.Decoy select x.ExpectationValue).ToArray().Percentile(50));
 
             double numDecoys = (from x in psmList where x.Decoy & x.Hyperscore > topDecoyScore select x.Hyperscore).Count();
             double numNotDecoys = (from x in psmList where !x.Decoy & x.Hyperscore > topDecoyScore select x.Hyperscore).Count();
@@ -743,6 +750,7 @@ namespace RawTools.Algorithms.MatchBewteen
             P.Start();
 
             var keys1 = features1.Keys.ToList();
+            var file2ScansAlreadyMatched = new HashSet<int>();
 
             foreach (var key in keys1)
             {
@@ -758,6 +766,7 @@ namespace RawTools.Algorithms.MatchBewteen
                 multiFeature.Ms2Scan1 = feature.Ms2Scan;
 
                 Ms1FeatureCollection closeFeaturesFrom2 = GetFeatureBin(features2, rt1, mass1, rtTolerance, massTolerance);
+                //Ms1FeatureCollection closeFeaturesFrom2 = features2;
                 Ms1Feature closestFrom2;
 
                 if (closeFeaturesFrom2.Count() != 0)
@@ -769,8 +778,9 @@ namespace RawTools.Algorithms.MatchBewteen
                     multiFeature.RT2 = closestFrom2.Peak.MaximumRetTime;
                     multiFeature.Mass2 = closestFrom2.MonoisotopicMZ;
                     multiFeature.Ms2Scan2 = closestFrom2.Ms2Scan;
+                    file2ScansAlreadyMatched.Add(closestFrom2.Ms2Scan);
 
-                    features2.Remove(closestFrom2.Ms2Scan);
+                    //features2.Remove(closestFrom2.Ms2Scan);
 
                     if (feature.PSM != null & feature?.PSM?.Seq == closestFrom2?.PSM?.Seq)
                     {
@@ -780,7 +790,7 @@ namespace RawTools.Algorithms.MatchBewteen
 
                 MatchedFeatures.Add(featureID++, multiFeature);
 
-                features1.Remove(key);
+                //features1.Remove(key);
                 P.Update();
             }
             P.Done();
@@ -793,6 +803,9 @@ namespace RawTools.Algorithms.MatchBewteen
             foreach (var key in keys2)
             {
                 var feature = features2[key];
+
+                if (file2ScansAlreadyMatched.Contains(feature.Ms2Scan)) continue;
+
                 MultiRunFeature multiFeature = new MultiRunFeature();
                 multiFeature.FoundIn2 = true;
                 multiFeature.IdIn2 = feature.Identified;

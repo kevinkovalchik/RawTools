@@ -971,7 +971,7 @@ namespace RawTools.Data.IO
     static class MatchedMgfWriter
     {
         static public void WriteMGF(WorkflowParameters parameters, List<(int scans1, int scans2)> scans,
-            string outputFile, List<CentroidStreamCollection> centroids, List<SegmentScanCollection> segmentScans,
+            string outputFile, List<Ms1FeatureCollection> features, List<CentroidStreamCollection> centroids, List<SegmentScanCollection> segmentScans,
             List<RetentionTimeCollection> retentionTimes, List<PrecursorMassCollection> precursorMasses,
             List<TrailerExtraCollection> trailerExtras, MethodDataContainer methodData, List<string> rawFileNames)
         {
@@ -1009,6 +1009,20 @@ namespace RawTools.Data.IO
                         f.WriteLine("RTINSECONDS={0}", retentionTimes[file][scan[file]]);
                         f.WriteLine("PEPMASS={0}", precursorMasses[file][scan[file]].MonoisotopicMZ);
                         f.WriteLine("CHARGE={0}", trailerExtras[file][scan[file]].ChargeState);
+
+                        f.Write("HYPERSCORE=");
+                        if (features[file][scan[file]].Identified)
+                        {
+                            f.WriteLine(features[file][scan[file]].PSM.Hyperscore);
+                        }
+                        else f.WriteLine();
+
+                        f.Write("EXPECTATIONVALUE=");
+                        if (features[file][scan[file]].Identified)
+                        {
+                            f.WriteLine(features[file][scan[file]].PSM.ExpectationValue);
+                        }
+                        else f.WriteLine();
 
                         if (ms2MassAnalyzer == MassAnalyzerType.MassAnalyzerFTMS)
                         {

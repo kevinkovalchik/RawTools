@@ -179,6 +179,8 @@ namespace RawTools
             Ms1FeatureCollection features1 = AlignTimeAndMass.AggregateMs1Features(peakData1, psms1, precursorMasses1);
             Ms1FeatureCollection features2 = AlignTimeAndMass.AggregateMs1Features(peakData2, psms2, precursorMasses2);
 
+            
+
             //MultiRunFeatureCollection features = AlignTimeAndMass.MatchFeatures(psms1, psms2, peakData1, peakData2, precursorMasses1,
             //    precursorMasses2, opts.TimePercentTol, opts.MassPPM);
 
@@ -272,14 +274,15 @@ namespace RawTools
             var precursorMasses = new List<PrecursorMassCollection>() { precursorMasses1, precursorMasses2 };
             var trailerExtras = new List<TrailerExtraCollection>() { trailerExtras1, trailerExtras2 };
             var rawFileNames = new List<string>() { staticRawFile1.FileName, staticRawFile2.FileName };
+            var featuresFromBoth = new List<Ms1FeatureCollection>() { features1, features2 };
 
-            MatchedMgfWriter.WriteMGF(parameters, BothIdScans, Path.Combine(opts.Directory, "IdInBoth.mgf"), centroids, segments,
+            MatchedMgfWriter.WriteMGF(parameters, BothIdScans, Path.Combine(opts.Directory, "IdInBoth.mgf"), featuresFromBoth, centroids, segments,
                 retentionTimes, precursorMasses, trailerExtras, methodData1, rawFileNames);
 
-            MatchedMgfWriter.WriteMGF(parameters, IdInFile1Scans, Path.Combine(opts.Directory, "IdInFile1.mgf"), centroids, segments,
+            MatchedMgfWriter.WriteMGF(parameters, IdInFile1Scans, Path.Combine(opts.Directory, "IdInFile1.mgf"), featuresFromBoth, centroids, segments,
                 retentionTimes, precursorMasses, trailerExtras, methodData1, rawFileNames);
 
-            MatchedMgfWriter.WriteMGF(parameters, IdInFile2Scans, Path.Combine(opts.Directory, "IdInFile2.mgf"), centroids, segments,
+            MatchedMgfWriter.WriteMGF(parameters, IdInFile2Scans, Path.Combine(opts.Directory, "IdInFile2.mgf"), featuresFromBoth, centroids, segments,
                 retentionTimes, precursorMasses, trailerExtras, methodData1, rawFileNames);
 
             return 0;
