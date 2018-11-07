@@ -48,40 +48,41 @@ namespace RawTools
             c.AppendLine("Command line interface usage");
             c.AppendLine("----------------------------");
             c.AppendLine("\n");
-            c.AppendLine("--- parse ---");
+            c.AppendLine("=== parse ===");
             c.AppendLine("");
             c.AppendLine("The parse functionality of RawTools has the following general syntax:");
             c.AppendLine("");
-            c.AppendLine(">RawTools parse -f [path(s) to raw file(s)] [further options]");
+            c.AppendLine(">RawTools parse -f [path(s) to raw file(s)] [further arguments]");
             c.AppendLine("");
             c.AppendLine("\tor");
             c.AppendLine("");
-            c.AppendLine(">RawTools parse -d [path to a directory containing one or more raw files] [further options]");
+            c.AppendLine(">RawTools parse -d [path to a directory containing one or more raw files] [further arguments]");
             c.AppendLine("");
-            c.AppendLine("Following -f or -d, you must include one or more of -p, -m, -x, or -q, which represent the parse, MGF, metrics, and quantification " +
+            c.AppendLine("Following -f or -d, you must include one or more of -p, -m, -x, -q, or --chro which represent the parse, MGF, metrics, quantification, and chromatogram " +
                 "functionalities, respectively. If you do not include at least one of these nothing will be written to disk. Note that if " +
-                "you use -q you must also include -r to indicate the labeling reagents used.");
+                "you use -q you must also include -r to indicate the labeling reagents used. For more detailed information on these " +
+                "arguments invoke \">RawTools parse --help\".");
             c.AppendLine("");
-            c.AppendLine("There are several completely optional arguments, including -o, -R, -c, -y, -u, and --chro. " +
+            c.AppendLine("There are several completely optional arguments, including -o, -R, -c, -y, and -u. " +
                 "For more detailed information on these arguments invoke \">RawTools parse --help\".");
-            c.AppendLine("");
-            c.AppendLine("Examples:");
-            c.AppendLine("");
+            c.AppendLine("\n");
+            c.AppendLine("Examples of parse:");
+            c.AppendLine("\n");
             c.AppendLine(">RawTools parse -d C:\\MyRawFiles -p -m");
             c.AppendLine("");
             c.AppendLine("The above command processes all the raw files in C:\\MyRawFiles and writes a parse table and MGF file " +
-                "to that directory.");
-            c.AppendLine("");
-            c.AppendLine(">RawTools parse -d C:\\MyRawFiles -pm -o C:\\MyRawFiles\\results");
+                "to the same directory.");
             c.AppendLine("\n");
-            c.AppendLine("The above command similarly processes all the raw files in C:\\MyRawFiles, but this time it will write " +
-                "the parse table and MGF file to C:\\MyRawFiles\\results. Note that -p and -m have been combined into a single argument -pm. " +
-                "This can be done with any arguments which do not require text after them.");
+            c.AppendLine(">RawTools parse -d C:\\MyRawFiles -pm -o C:\\MyRawFiles\\results");
             c.AppendLine("");
+            c.AppendLine("The above command similarly processes all the raw files in C:\\MyRawFiles, but this time it will write " +
+                "the parse table and MGF file to C:\\MyRawFiles\\results. Note that -p and -m have been \"stacked\" into a single argument -pm. " +
+                "This can be done with any arguments which do not require text after them.");
+            c.AppendLine("\n");
             c.AppendLine(">RawTools parse -f C:\\MyRawFiles\\file1.raw -m");
             c.AppendLine("");
             c.AppendLine("The above command reads the single raw file C:\\MyRawFiles\\file1.raw and writes and MGF into the containing directory.");
-            c.AppendLine("");
+            c.AppendLine("\n");
             c.AppendLine(">RawTools parse -d C:\\MyRawFiles -qmx -r TMT10 -o C:\\MyRawFiles\\results");
             c.AppendLine("");
             c.AppendLine("The above command processes all the files in C:\\MyRawFiles and writes a parse table including reporter ion " +
@@ -89,7 +90,7 @@ namespace RawTools
                 "to quantify reporter ions, we need to also include -r to indicate what labeling reagents were used. In this case, TMT10.");
             c.AppendLine("For more detailed information on specific arguments, invoke \">RawTools parse --help\".");
             c.AppendLine("\n");
-            c.AppendLine("--- qc ---");
+            c.AppendLine("=== qc ===");
             c.AppendLine("\n");
             c.AppendLine("The QC functionality of RawTools has the following general syntax:");
             c.AppendLine("");
@@ -107,7 +108,7 @@ namespace RawTools
             c.AppendLine("");
             c.AppendLine(">RawTools qc -d C:\\MyRawFiles -q C:\\MyRawFiles\\QC -s identipy --db C:\\FastaFiles\\current_human.fasta");
             c.AppendLine("");
-            c.AppendLine("RawTools will search for Python 2.7 and IdentiPy on your system. If it fails, then you can tell it where to look " +
+            c.AppendLine("RawTools will search for Python 2.7 and IdentiPy on your system. If it fails it will let you know, and then you can tell it where to look " +
                 "using -P and -I. See \"RawTools qc --help\" for more details on these arguments.");
             c.AppendLine("");
             c.AppendLine("If you use X! Tandem, you need to tell RawTools where to find it using the -X argument to indicate the directory " +
@@ -118,6 +119,7 @@ namespace RawTools
             c.AppendLine("");
             c.AppendLine("If you invoke a search tool, you can also indicate peptide modifications using the --fmods, --nmod, --xmod and --kmod " +
                 "arguments. For examples of these, please see \"RawTools examples --modifications\"");
+            c.AppendLine("");
             c.AppendLine("For more detailed information on specific arguments, invoke \">RawTools qc --help\".");
 
             Console.Write(c);

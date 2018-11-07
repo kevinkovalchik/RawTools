@@ -33,14 +33,17 @@ namespace RawTools.ArgumentParser
         public string File { get; set; }
     }
 
-    [Verb("examples", HelpText = "Examples of command line usage and common peptide modification in mass@aa format.")]
+    [Verb("examples", HelpText = "This function provides command line examples and explanations of how to use RawTools. " +
+        "Examples of common peptide modifications in the mass@aa format used in RawTools can also be found here. " +
+        "To view the examples, enter \">RawTools examples --help\".")]
     class ExampleOptions
     {
         [Option("modifications", HelpText = "Display some common peptide modification in mass@aa format and examples of how to use " +
-            "the --fmods, --nmod, --kmod and --xmod arguments.")]
+            "the --fmods, --nmod, --kmod and --xmod arguments. To view these examples enter \">RawTools examples --modifications\"")]
         public bool DisplayModifications { get; set; }
 
-        [Option("interface", HelpText = "Display examples of of to use RawTools command line interface.")]
+        [Option("interface", HelpText = "Display examples of of to use RawTools command line interface. " +
+            "To view these examples enter \">RawTools examples --interface\"")]
         public bool InterfaceExamples { get; set; }
     }
 

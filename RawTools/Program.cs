@@ -60,11 +60,11 @@ namespace RawTools
             Log.Information("Program started with arguments: {0}", String.Join(" ", args));
             
 
-            Parser.Default.ParseArguments<ArgumentParser.ParseOptions, ArgumentParser.QcOptions, ArgumentParser.TestOptions, ArgumentParser.ExampleOptions>(args)
+            Parser.Default.ParseArguments<ArgumentParser.ParseOptions, ArgumentParser.QcOptions, ArgumentParser.ExampleOptions, ArgumentParser.TestOptions>(args)
                 .WithParsed<ArgumentParser.ParseOptions>(opts => DoStuff(opts))
                 .WithParsed<ArgumentParser.QcOptions>(opts => DoStuff(opts))
-                .WithParsed<ArgumentParser.TestOptions>(opts => DoStuff(opts))
                 .WithParsed<ArgumentParser.ExampleOptions>(opts => DoStuff(opts))
+                .WithParsed<ArgumentParser.TestOptions>(opts => DoStuff(opts))
                 .WithNotParsed((errs) => HandleParseError(args));
 
             Log.CloseAndFlush();
@@ -79,6 +79,11 @@ namespace RawTools
             if (opts.InterfaceExamples)
             {
                 Examples.CommandLineUsage();
+            }
+            if (!opts.DisplayModifications & !opts.InterfaceExamples)
+            {
+                Console.WriteLine("Please indicate either --interface or --modifications. See " +
+                    "\">RawTools examples --help\" for more information.");
             }
             
             return 0;
@@ -222,11 +227,11 @@ namespace RawTools
 
         static int DoStuff(ArgumentParser.ParseOptions opts)
         {
-            if (!opts.ParseData | !opts.Quant | !opts.Metrics | !opts.WriteMGF)
+            if (!opts.ParseData & !opts.Quant & !opts.Metrics & !opts.WriteMGF & (opts.Chromatogram == null))
             {
-                Console.WriteLine("You have not indicated what output you want (i.e. one or more of -p, -q, -m, -x). " +
+                Console.WriteLine("You have not indicated what output you want (i.e. one or more of -p, -q, -m, -x, --chro). " +
                     "Are you sure you want to proceed? Nothing will be written to disk.");
-                Console.Write("(press y to poceed): ");
+                Console.Write("(press y to proceed): ");
 
                 string proceed = Console.ReadKey().KeyChar.ToString();
                 Console.WriteLine();
