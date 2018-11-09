@@ -74,6 +74,9 @@
     <Reference Include="CommandLine, Version=2.2.1.0, Culture=neutral, PublicKeyToken=de6f01bd326f8c32, processorArchitecture=MSIL">
       <HintPath>..\packages\CommandLineParser.2.2.1\lib\net45\CommandLine.dll</HintPath>
     </Reference>
+    <Reference Include="MathNet.Numerics, Version=4.6.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MathNet.Numerics.4.6.0\lib\net461\MathNet.Numerics.dll</HintPath>
+    </Reference>
     <Reference Include="Serilog, Version=2.0.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
       <HintPath>..\packages\Serilog.2.7.1\lib\net46\Serilog.dll</HintPath>
     </Reference>
@@ -110,7 +113,8 @@
   <ItemGroup>
     <Compile Include="Algorithms\Analyze\MetaData\MetaDataProcessingDIA.cs" />
     <Compile Include="Algorithms\Analyze\Metrics\MetricsCalculations.cs" />
-    <Compile Include="Algorithms\MatchBewteen\AlignTimeAndMass.cs" />
+    <Compile Include="Algorithms\MatchBewteen\AlignRetentionTimes.cs" />
+    <Compile Include="Algorithms\MatchBewteen\CorrelateFeatures.cs" />
     <Compile Include="Algorithms\MatchBewteen\TimeMassIndex.cs" />
     <Compile Include="Algorithms\PrecursorPeaks.cs" />
     <Compile Include="Algorithms\Analyze\MetaData\MetaDataProcessingDDA.cs" />

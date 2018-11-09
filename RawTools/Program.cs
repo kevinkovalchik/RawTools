@@ -173,20 +173,23 @@ namespace RawTools
             }
             
 
-            PsmDataCollection psms1 = AlignTimeAndMass.LoadPsmData(retentionTimes1, precursorScans1, parameters, staticRawFile1.FileName);
-            PsmDataCollection psms2 = AlignTimeAndMass.LoadPsmData(retentionTimes2, precursorScans2, parameters, staticRawFile2.FileName);
+            PsmDataCollection psms1 = MatchBetween.LoadPsmData(retentionTimes1, precursorScans1, parameters, staticRawFile1.FileName);
+            PsmDataCollection psms2 = MatchBetween.LoadPsmData(retentionTimes2, precursorScans2, parameters, staticRawFile2.FileName);
 
-            Ms1FeatureCollection features1 = AlignTimeAndMass.AggregateMs1Features(peakData1, psms1, precursorMasses1);
-            Ms1FeatureCollection features2 = AlignTimeAndMass.AggregateMs1Features(peakData2, psms2, precursorMasses2);
+            Ms1FeatureCollection features1 = MatchBetween.AggregateMs1Features(peakData1, psms1, precursorMasses1);
+            Ms1FeatureCollection features2 = MatchBetween.AggregateMs1Features(peakData2, psms2, precursorMasses2);
 
-            
+            //using (var f = new StreamWriter(Path.Combine(staticRawFile1.FileName + ".massdrift.txt")))
+            //{
+            //    foreach (var x in features1) if (x.Value.PSM != null) f.WriteLine("{0}\t{1}", retentionTimes1[x.Value.Peak.Ms2Scan], x.Value.PSM.MassDrift);
+            //}
 
             //MultiRunFeatureCollection features = AlignTimeAndMass.MatchFeatures(psms1, psms2, peakData1, peakData2, precursorMasses1,
             //    precursorMasses2, opts.TimePercentTol, opts.MassPPM);
 
             //MultiRunFeatureCollection features = AlignTimeAndMass.CorrelateFeatures(psms1, psms2, peakData1, peakData2, precursorMasses1, precursorMasses2, opts.TimePercentTol, opts.MassPPM);
 
-            MultiRunFeatureCollection features = AlignTimeAndMass.CorrelateFeatures2(features1, features2, opts.TimePercentTol, opts.MassPPM);
+            MultiRunFeatureCollection features = MatchBetween.CorrelateFeatures2(features1, features2, opts.TimePercentTol, opts.MassPPM);
 
             int OnlyIn1 = 0;
             int IdIn1FeatureIn2 = 0;

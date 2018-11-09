@@ -13,7 +13,7 @@ using RawTools.WorkFlows;
 
 namespace RawTools.Algorithms.MatchBewteen
 {
-    static class AlignTimeAndMass
+    static class MatchBetween
     {
         public static Dictionary<double, int> MasterReverseRetentionTimeLookup(RetentionTimeCollection retentionTimes, PrecursorScanCollection precursorScans)
         {
@@ -102,6 +102,11 @@ namespace RawTools.Algorithms.MatchBewteen
 
             double numDecoys = (from x in psmList where x.Decoy & x.Hyperscore > topDecoyScore select x.Hyperscore).Count();
             double numNotDecoys = (from x in psmList where !x.Decoy & x.Hyperscore > topDecoyScore select x.Hyperscore).Count();
+            
+            //using (var f = new StreamWriter(Path.Combine(rawFileName + ".massdrift.txt")))
+            //{
+            //    foreach (var x in goodPsms) f.WriteLine("{0}\t{1}",x.PeakApexRT,x.MassDrift);
+            //}
 
             Console.WriteLine("FDR: {0}", numDecoys / numNotDecoys);
             foreach (var x in goodPsms)
