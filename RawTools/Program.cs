@@ -384,7 +384,7 @@ namespace RawTools
                     if (opts.WriteMGF)
                     {
                         MGF.WriteMGF(rawData: rawData, rawFile: rawFile, outputDirectory: opts.OutputDirectory, cutoff: opts.MassCutOff,
-                            intensityCutoff: opts.IntensityCutoff);
+                            intensityCutoff: opts.IntensityCutoff, refineMassCharge: opts.RefineMassCharge);
                     }
 
                     if (opts.Metrics)

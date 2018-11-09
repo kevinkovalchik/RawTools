@@ -27,6 +27,7 @@ using RawTools.Data.Collections;
 using RawTools.Data.Extraction;
 using RawTools.Utilities;
 using RawTools.QC;
+using RawTools.Algorithms;
 using ThermoFisher;
 using ThermoFisher.CommonCore.Data.Business;
 using ThermoFisher.CommonCore.Data.Interfaces;
@@ -209,7 +210,7 @@ namespace RawTools.Data.IO
 
     static class MGF
     {
-        public static void WriteMGF(RawDataCollection rawData, IRawDataPlus rawFile, string outputDirectory, double cutoff = 0, int[] scans = null, double intensityCutoff = 0.01)
+        public static void WriteMGF(RawDataCollection rawData, IRawDataPlus rawFile, string outputDirectory, double cutoff = 0, int[] scans = null, double intensityCutoff = 0.01, bool refineMassCharge = false)
         {
             double intCutoff = 0;
             string fileName = ReadWrite.GetPathToFile(outputDirectory, rawData.rawFileName, ".mgf");
@@ -227,7 +228,37 @@ namespace RawTools.Data.IO
                 operations.Add(Operations.Ms2SegmentedScans);
             }
 
+            if (refineMassCharge) operations.Add(Operations.Ms1CentroidStreams);
+
             CheckIfDone.Check(rawData, rawFile, operations);
+
+            if (refineMassCharge)
+            {
+                ProgressIndicator P = new ProgressIndicator(rawData.scanIndex.ScanEnumerators[MSOrderType.Ms2].Length, "Refining precursor charge state and monoisotopic mass");
+                P.Start();
+                int refinedCharge;
+                double refinedMass;
+
+                //if (!rawData.Performed.Contains(Operations.PeakRetAndInt))
+                //{
+                //    rawData.CalcPeakRetTimesAndInts(rawFile);
+                //}
+
+                foreach (int scan in rawData.scanIndex.ScanEnumerators[MSOrderType.Ms2])
+                {
+                    // refine precursor mass and charge
+                    // var centroid = rawData.GetAverageScan(rawFile, scan);
+                    //rawData.centroidStreams[rawData.precursorScans[scan].MasterScan]
+
+                    (refinedCharge, refinedMass) =
+                        MonoIsoPredictor.GetMonoIsotopicMassCharge(rawData.centroidStreams[rawData.precursorScans[scan].MasterScan],
+                        rawData.precursorMasses[scan].ParentMZ, rawData.trailerExtras[scan].ChargeState);
+                    rawData.trailerExtras[scan].ChargeState = refinedCharge;
+                    rawData.precursorMasses[scan].MonoisotopicMZ = refinedMass;
+                    P.Update();
+                }
+                P.Done();
+            }
 
             const int BufferSize = 65536;  // 64 Kilobytes
 
