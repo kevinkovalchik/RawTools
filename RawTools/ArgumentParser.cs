@@ -29,6 +29,12 @@ namespace RawTools.ArgumentParser
     [Verb("testing", HelpText = "A place to contain testing routines during development")]
     class TestOptions
     {
+        [Option('e', "expvalue", Default = 1e-4, HelpText = "The expectation value cutoff to use when selecting a retention time alignment training set.")]
+        public double ExpectationValue { get; set; }
+
+        [Option('a', "align", HelpText = "Perform retention time alignment prior to feature matching.")]
+        public bool Align { get; set; }
+
         [Option('f', HelpText = "file to make the test go")]
         public string File { get; set; }
 

@@ -115,6 +115,7 @@
     <Compile Include="Algorithms\Analyze\Metrics\MetricsCalculations.cs" />
     <Compile Include="Algorithms\MatchBewteen\AlignRetentionTimes.cs" />
     <Compile Include="Algorithms\MatchBewteen\CorrelateFeatures.cs" />
+    <Compile Include="Algorithms\MatchBewteen\SearchAverageScans.cs" />
     <Compile Include="Algorithms\MatchBewteen\TimeMassIndex.cs" />
     <Compile Include="Algorithms\PrecursorPeaks.cs" />
     <Compile Include="Algorithms\Analyze\MetaData\MetaDataProcessingDDA.cs" />

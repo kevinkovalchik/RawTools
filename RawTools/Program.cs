@@ -189,8 +189,14 @@ namespace RawTools
 
             //MultiRunFeatureCollection features = AlignTimeAndMass.CorrelateFeatures(psms1, psms2, peakData1, peakData2, precursorMasses1, precursorMasses2, opts.TimePercentTol, opts.MassPPM);
 
+            if (opts.Align)
+            {
+                AlignRetentionTimes.AlignRT(features1, features2, opts.ExpectationValue);
+            }
+
             MultiRunFeatureCollection features = MatchBetween.CorrelateFeatures2(features1, features2, opts.TimePercentTol, opts.MassPPM);
 
+            int NoId = 0;
             int OnlyIn1 = 0;
             int IdIn1FeatureIn2 = 0;
             int IdInBoth = 0;
@@ -198,13 +204,16 @@ namespace RawTools
             int OnlyIn2 = 0;
             int SeqMatch = 0;
 
+            StreamWriter NeitherID = new StreamWriter(Path.Combine(opts.Directory, "IdInNeither.csv"));
             StreamWriter BothID = new StreamWriter(Path.Combine(opts.Directory, "IdInBoth.csv"));
             StreamWriter IdInFile1 = new StreamWriter(Path.Combine(opts.Directory, "IdInFile1.csv"));
             StreamWriter IdInFile2 = new StreamWriter(Path.Combine(opts.Directory, "IdInFile2.csv"));
+            NeitherID.WriteLine("RT1,RT2,Mass1,Mass2");
             BothID.WriteLine("RT1,RT2,Mass1,Mass2");
             IdInFile1.WriteLine("RT1,RT2,Mass1,Mass2");
             IdInFile2.WriteLine("RT1,RT2,Mass1,Mass2");
 
+            List<(int scan1, int scan2)> IdInNeither = new List<(int scan1, int scan2)>();
             List<(int scan1, int scan2)> BothIdScans = new List<(int scan1, int scan2)>();
             List<(int scan1, int scan2)> IdInFile1Scans = new List<(int scan1, int scan2)>();
             List<(int scan1, int scan2)> IdInFile2Scans = new List<(int scan1, int scan2)>();
@@ -243,6 +252,12 @@ namespace RawTools
                 {
                     OnlyIn2 += 1;
                 }
+                else if (feature.FoundIn1 & feature.FoundIn2 & ! feature.IdIn1 & !feature.IdIn2)
+                {
+                    NoId += 1;
+                    NeitherID.WriteLine("{0},{1},{2},{3}", feature.RT1, feature.RT2, feature.Mass1, feature.Mass2);
+                    IdInNeither.Add((feature.Ms2Scan1, feature.Ms2Scan2));
+                }
             }
 
             BothID.Close();
@@ -251,6 +266,7 @@ namespace RawTools
 
             Console.WriteLine("\n");
             Console.WriteLine("Features ID'd in both: {0}", IdInBoth);
+            Console.WriteLine("Features ID'd in neither: {0}", NoId);
             Console.WriteLine("Features found only in file 1: {0}", OnlyIn1);
             Console.WriteLine("Features found only in file 2: {0}", OnlyIn2);
             Console.WriteLine("Features found in both, but only ID'd in file 1: {0}", IdIn1FeatureIn2);
