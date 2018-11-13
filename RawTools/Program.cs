@@ -133,9 +133,30 @@ namespace RawTools
             PrecursorMassCollection precursorMasses1 = Extract.PrecursorMasses(rawFile1.CreateThreadAccessor(), precursorScans1, trailerExtras1, Index1);
 
             RetentionTimeCollection retentionTimes1 = Extract.RetentionTimes(rawFile1.CreateThreadAccessor(), Index1);
-            
-            PrecursorPeakCollection peakData1 = AnalyzePeaks.AnalyzeAllPeaks(centroidStreams1, retentionTimes1, precursorMasses1, precursorScans1, Index1);
 
+            if (opts.RefineMassCharge)
+            {
+                ProgressIndicator P = new ProgressIndicator(Index1.ScanEnumerators[MSOrderType.Ms2].Length, "Refining precursor charge state and monoisotopic mass");
+                P.Start();
+                int refinedCharge;
+                double refinedMass;
+
+
+                foreach (int scan in Index1.ScanEnumerators[MSOrderType.Ms2])
+                {
+                    // refine precursor mass and charge
+                    (refinedCharge, refinedMass) =
+                        MonoIsoPredictor.GetMonoIsotopicMassCharge(centroidStreams1[precursorScans1[scan].MasterScan],
+                        precursorMasses1[scan].ParentMZ, trailerExtras1[scan].ChargeState);
+                    trailerExtras1[scan].ChargeState = refinedCharge;
+                    precursorMasses1[scan].MonoisotopicMZ = refinedMass;
+                    P.Update();
+                }
+                P.Done();
+            }
+
+            PrecursorPeakCollection peakData1 = AnalyzePeaks.AnalyzeAllPeaks(centroidStreams1, retentionTimes1, precursorMasses1, precursorScans1, Index1);
+            
             if (!opts.StaticSearch)
             {
                 Search.WriteSearchMGF(parameters, centroidStreams1, segmentScans1, retentionTimes1, precursorMasses1, precursorScans1, trailerExtras1, methodData1,
@@ -143,8 +164,6 @@ namespace RawTools
 
                 Search.RunSearch(parameters, methodData1, staticRawFile1.FileName);
             }
-            
-
 
             ScanIndex Index2 = Extract.ScanIndices(rawFile2.CreateThreadAccessor());
 
@@ -160,6 +179,27 @@ namespace RawTools
             PrecursorMassCollection precursorMasses2 = Extract.PrecursorMasses(rawFile2.CreateThreadAccessor(), precursorScans2, trailerExtras2, Index2);
 
             RetentionTimeCollection retentionTimes2 = Extract.RetentionTimes(rawFile2.CreateThreadAccessor(), Index2);
+
+            if (opts.RefineMassCharge)
+            {
+                ProgressIndicator P = new ProgressIndicator(Index2.ScanEnumerators[MSOrderType.Ms2].Length, "Refining precursor charge state and monoisotopic mass");
+                P.Start();
+                int refinedCharge;
+                double refinedMass;
+
+
+                foreach (int scan in Index2.ScanEnumerators[MSOrderType.Ms2])
+                {
+                    // refine precursor mass and charge
+                    (refinedCharge, refinedMass) =
+                        MonoIsoPredictor.GetMonoIsotopicMassCharge(centroidStreams2[precursorScans2[scan].MasterScan],
+                        precursorMasses2[scan].ParentMZ, trailerExtras2[scan].ChargeState);
+                    trailerExtras2[scan].ChargeState = refinedCharge;
+                    precursorMasses2[scan].MonoisotopicMZ = refinedMass;
+                    P.Update();
+                }
+                P.Done();
+            }
 
             PrecursorPeakCollection peakData2 = AnalyzePeaks.AnalyzeAllPeaks(centroidStreams2, retentionTimes2, precursorMasses2, precursorScans2, Index2);
 
@@ -252,7 +292,7 @@ namespace RawTools
                 {
                     OnlyIn2 += 1;
                 }
-                else if (feature.FoundIn1 & feature.FoundIn2 & ! feature.IdIn1 & !feature.IdIn2)
+                else if (feature.FoundIn1 & feature.FoundIn2 & !feature.IdIn1 & !feature.IdIn2)
                 {
                     NoId += 1;
                     NeitherID.WriteLine("{0},{1},{2},{3}", feature.RT1, feature.RT2, feature.Mass1, feature.Mass2);

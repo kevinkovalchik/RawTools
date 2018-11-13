@@ -60,6 +60,10 @@ namespace RawTools.ArgumentParser
 
         [Option('t', Default = 0.005, HelpText = "Retention times difference in relative magnitude to use in matching features")]
         public double TimePercentTol { get; set; }
+
+        [Option('R', "refinemasscharge", HelpText = "Optional. Refine precursor charge and monoisotopic mass assignments. Highly recommended if " +
+            "monoisotopic precursor selection was turned off in the instrument method.")]
+        public bool RefineMassCharge { get; set; }
     }
 
     [Verb("examples", HelpText = "Display some common peptide modification in mass@aa format and examples of usage.")]
