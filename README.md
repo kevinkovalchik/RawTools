@@ -14,7 +14,7 @@ To obtain the latest compiled release of RawTools or to obtain an older version,
 
 ### Notable news
 
-* We are sorting out some issues with the image file downloads not working. The latest Shiny application should be online shortly.  [2018-11-08]
+* We are sorting out some issues with the image file downloads not working. This issue should be fixed shortly.  [2018-11-08]
 
 * The Shiny application has been updated to allow downloading of pdf versions of the created plots. These images can be imported to programs like Adobe Illustrator and will be treated as vector images. We have also added the ability to mouseover data points to see values, as well as corrected some bugs. We have also added the ability to add mean and median lines to the QC plots. The latest Shiny web interface is available [here](https://rawtoolsqcdv.bcgsc.ca/). [2018-11-07] 
 
