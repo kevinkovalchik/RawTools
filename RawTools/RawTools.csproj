@@ -147,6 +147,7 @@
     <Compile Include="QC\XTandem.cs" />
     <Compile Include="Utilities\MathStats\FitScores.cs" />
     <Compile Include="Utilities\MathStats\ToleranceCalculator.cs" />
+    <Compile Include="Utilities\MathStats\XCorr.cs" />
     <Compile Include="WorkFlows\DIA.cs" />
     <Compile Include="WorkFlows\DDA.cs" />
     <Compile Include="WorkFlows\WorkflowParameters.cs" />

@@ -212,6 +212,8 @@ namespace RawTools.Data.Collections
         public double RT1, RT2;
         public double Mass1, Mass2;
         public int Ms2Scan1, Ms2Scan2;
+        public double XCorr;
+        public Dictionary<(int scan1, int scan2), double> AllScores;
 
         public MultiRunFeature()
         {
@@ -220,6 +222,7 @@ namespace RawTools.Data.Collections
             FoundIn1 = false;
             FoundIn2 = false;
             ConfirmSeqMatch = false;
+            AllScores = new Dictionary<(int scan1, int scan2), double>();
         }
     }
 

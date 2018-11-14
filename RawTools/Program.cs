@@ -38,6 +38,7 @@ using RawTools.WorkFlows;
 using RawTools.Algorithms.Analyze;
 using RawTools.Algorithms.ExtractData;
 using RawTools.Algorithms.MatchBewteen;
+using RawTools.Utilities.MathStats;
 using System.Xml.Linq;
 using Serilog;
 //using Serilog.Sinks.File;
@@ -231,10 +232,20 @@ namespace RawTools
 
             if (opts.Align)
             {
-                AlignRetentionTimes.AlignRT(features1, features2, opts.ExpectationValue);
+                AlignRetentionTimes.AlignRT(features1, features2, segmentScans1, segmentScans2, opts.ExpectationValue);
             }
 
-            MultiRunFeatureCollection features = MatchBetween.CorrelateFeatures2(features1, features2, opts.TimePercentTol, opts.MassPPM);
+            MultiRunFeatureCollection features = MatchBetween.CorrelateFeatures2(features1, features2, segmentScans1, segmentScans2, opts.TimePercentTol, opts.MassPPM);
+
+            XCorr.ScoreMultiRunSpectra(features, segmentScans1, segmentScans2);
+            StreamWriter score = new StreamWriter(Path.Combine(opts.Directory, "AllScores.csv"));
+            List<double> scores = new List<double>();
+            foreach (var feature in features) scores = scores.Concat(feature.Value.AllScores.Values).ToList();
+            foreach (var s in scores) score.WriteLine(s);
+            score.Close();
+            score = new StreamWriter(Path.Combine(opts.Directory, "Matched.csv"));
+            foreach (var feature in features) if (feature.Value.ConfirmSeqMatch) score.WriteLine(feature.Value.XCorr);
+            score.Close();
 
             int NoId = 0;
             int OnlyIn1 = 0;

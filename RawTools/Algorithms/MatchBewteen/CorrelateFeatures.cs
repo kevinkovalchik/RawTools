@@ -10,6 +10,7 @@ using RawTools.Data.Collections;
 using RawTools.Data.Containers;
 using RawTools.Utilities;
 using RawTools.WorkFlows;
+using RawTools.Utilities.MathStats;
 
 namespace RawTools.Algorithms.MatchBewteen
 {
@@ -746,7 +747,7 @@ namespace RawTools.Algorithms.MatchBewteen
             return features;
         }
 
-        public static MultiRunFeatureCollection CorrelateFeatures2(Ms1FeatureCollection features1, Ms1FeatureCollection features2, double rtTolerance, double massTolerance)
+        public static MultiRunFeatureCollection CorrelateFeatures2(Ms1FeatureCollection features1, Ms1FeatureCollection features2, SegmentScanCollection scans1, SegmentScanCollection scans2, double rtTolerance, double massTolerance)
         {
             MultiRunFeatureCollection MatchedFeatures = new MultiRunFeatureCollection();
             int featureID = 0;
@@ -776,7 +777,16 @@ namespace RawTools.Algorithms.MatchBewteen
 
                 if (closeFeaturesFrom2.Count() != 0)
                 {
+
+                    foreach (var close in closeFeaturesFrom2)
+                    {
+                        multiFeature.AllScores.Add((multiFeature.Ms2Scan1, close.Value.Ms2Scan),
+                            XCorr.ScoreMultiRunSpectra(scans1[multiFeature.Ms2Scan1], scans2[close.Value.Ms2Scan]));
+                    }
+
                     closestFrom2 = closeFeaturesFrom2.FindClosest(rt1, mass1);
+                    //int closestScan2 = (from x in multiFeature.AllScores where x.Value == multiFeature.AllScores.Values.Min() select x.Key.scan2).First();
+                    //closestFrom2 = (from x in closeFeaturesFrom2 where x.Value.Ms2Scan == closestScan2 select x.Value).First();
                     multiFeature.FoundIn2 = true;
                     multiFeature.IdIn2 = closestFrom2.Identified;
 
