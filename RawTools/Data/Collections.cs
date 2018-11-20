@@ -214,6 +214,7 @@ namespace RawTools.Data.Collections
         public int Ms2Scan1, Ms2Scan2;
         public double XCorr;
         public Dictionary<(int scan1, int scan2), double> AllScores;
+        public Dictionary<(int scan1, int scan2), double> LowScores;
 
         public MultiRunFeature()
         {
@@ -223,23 +224,15 @@ namespace RawTools.Data.Collections
             FoundIn2 = false;
             ConfirmSeqMatch = false;
             AllScores = new Dictionary<(int scan1, int scan2), double>();
+            LowScores = new Dictionary<(int scan1, int scan2), double>();
         }
     }
 
-    class Ms1Feature
-    {
-        public bool Identified;
-        public PsmData PSM;
-        public PrecursorPeakData Peak;
-        public double MonoisotopicMZ;
-        public int Ms2Scan;
-
-        public Ms1Feature()
-        {
-            Identified = false;
-        }
-    }
+    
 
     class Ms1FeatureCollection: Dictionary<int, Ms1Feature>
+    { }
+
+    class FeaturePreMatchDataCollection: Dictionary<int, FeaturePreMatchData>
     { }
 }

@@ -11,6 +11,7 @@ using RawTools.Data.Containers;
 using RawTools.Utilities;
 using RawTools.WorkFlows;
 using RawTools.Utilities.MathStats;
+using ThermoFisher.CommonCore.Data.FilterEnums;
 
 namespace RawTools.Algorithms.MatchBewteen
 {
@@ -91,7 +92,8 @@ namespace RawTools.Algorithms.MatchBewteen
             }
 
 
-            double topDecoyScore = (from x in psmList where x.Decoy select x.Hyperscore).ToArray().Percentile(95);
+            //double topDecoyScore = (from x in psmList where x.Decoy select x.Hyperscore).ToArray().Max();
+            double topDecoyScore = (from x in psmList where x.Decoy select x.Hyperscore).ToArray().Percentile(99);
 
             //Console.WriteLine("Top decoy score: {0}", topDecoyScore);
 
@@ -129,171 +131,7 @@ namespace RawTools.Algorithms.MatchBewteen
 
             return psms;
         }
-
-        public static MultiRunFeatureCollection CorrelateFeatures(PsmDataCollection psms1, PsmDataCollection psms2, PrecursorPeakCollection peaks1, PrecursorPeakCollection peaks2, PrecursorMassCollection masses1, PrecursorMassCollection masses2, double rtTolerance, double massTolerance)
-        {
-            MultiRunFeatureCollection features = new MultiRunFeatureCollection();
-
-            int ID = 0;
-
-            foreach (var key1 in psms1.Keys)
-            {
-                // get basic info on the feature
-                List<PsmData> possibles = new List<PsmData>();
-                int ms2scan1 = psms1[key1].Scan;
-                double rt1 = peaks1[key1].MaximumRetTime;
-                double mass1 = masses1[key1].MonoisotopicMZ;
-                bool found = false;
-                MultiRunFeature feature = new MultiRunFeature();
-                feature.FoundIn1 = true;
-                feature.IdIn1 = true;
-
-                feature.RT1 = rt1;
-                feature.Mass1 = mass1;
-
-                feature.Ms2Scan1 = psms1[key1].Scan;
-
-                // look for the feature in the other set of psms
-
-
-
-                foreach (var key2 in psms2.Keys)
-                {
-                    double rt2 = peaks2[key2].MaximumRetTime;
-                    double mass2 = masses2[key2].MonoisotopicMZ;
-                    int ms2scan2 = psms2[key2].Scan;
-
-                    if ((Math.Abs(rt1 - rt2)/rt1 < rtTolerance) & (Math.Abs(mass1 - mass2)/mass1 * 1e6 < massTolerance))
-                    {
-                        //feature.Add(psms1.FileName, psms1[key1]);
-                        //feature.Add(psms2.FileName, psms1[key2]);
-                        feature.IdIn2 = true;
-                        feature.FoundIn2 = true;
-
-                        feature.RT2 = rt2;
-                        feature.Mass2 = mass2;
-                        //Console.WriteLine("{0}\t{1}", psms1[key1].Seq, psms2[key2].Seq);
-                        string seq1 = psms1[key1].Seq;
-                        string seq2 = psms2[key2].Seq;
-
-                        feature.Ms2Scan2 = psms2[key2].Scan;
-
-                        if (seq1 == seq2)
-                        {
-                            feature.ConfirmSeqMatch = true;
-                        }
-
-                        features.Add(ID, feature);
-                        ID++;
-                        found = true;
-                        break;
-                    }
-                }
-
-                if (found) continue;
-
-                foreach (var peak2 in peaks2.Values)
-                {
-                    double rt2 = peak2.MaximumRetTime;
-                    double mass2 = masses2[peak2.Ms2Scan].MonoisotopicMZ;
-
-                    if ((Math.Abs(rt1 - rt2) / rt1 < rtTolerance) & (Math.Abs(mass1 - mass2) / mass1 * 1e6 < massTolerance))
-                    {
-                        //feature.Add(psms1.FileName, psms1[key1]);
-                        //feature.Add(psms2.FileName, null);
-                        feature.IdIn2 = false;
-                        feature.FoundIn2 = true;
-
-                        feature.RT2 = rt2;
-                        feature.Mass2 = mass2;
-
-                        feature.Ms2Scan2 = peak2.Ms2Scan;
-
-                        features.Add(ID, feature);
-                        ID++;
-                        found = true;
-                        break;
-                    }
-                }
-
-                if (found) continue;
-
-                feature.IdIn2 = false;
-                feature.FoundIn2 = false;
-
-                features.Add(ID, feature);
-                ID++;
-            }
-
-            foreach (var key2 in psms2.Keys)
-            {
-                // get basic info on the feature
-                List<PsmData> possibles = new List<PsmData>();
-                int ms2scan2 = psms2[key2].Scan;
-                double rt2 = peaks2[key2].MaximumRetTime;
-                double mass2 = masses2[key2].MonoisotopicMZ;
-                bool found = false;
-                MultiRunFeature feature = new MultiRunFeature();
-                feature.FoundIn2 = true;
-                feature.IdIn2 = true;
-
-                feature.RT2 = rt2;
-                feature.Mass2 = mass2;
-
-                feature.Ms2Scan2 = psms2[key2].Scan;
-
-                // look for the feature in the other set of psms
-                foreach (var key1 in psms1.Keys)
-                {
-                    double rt1 = peaks1[key1].MaximumRetTime;
-                    double mass1 = masses1[key1].MonoisotopicMZ;
-                    int ms2scan1 = psms1[key1].Scan;
-
-                    if ((Math.Abs(rt2 - rt1) / rt2 < rtTolerance) & (Math.Abs(mass2 - mass1) / mass2 * 1e6 < massTolerance))
-                    {
-                        found = true;
-                        break;
-                    }
-                }
-
-                if (found) continue;
-
-                foreach (var peak1 in peaks1.Values)
-                {
-                    double rt1 = peak1.MaximumRetTime;
-                    double mass1 = masses1[peak1.Ms2Scan].MonoisotopicMZ;
-
-                    if ((Math.Abs(rt2 - rt1) / rt2 < rtTolerance) & (Math.Abs(mass2 - mass1) / mass2 * 1e6 < massTolerance))
-                    {
-                        //feature.Add(psms2.FileName, psms2[key2]);
-                        //feature.Add(psms1.FileName, null);
-                        feature.IdIn1 = false;
-                        feature.FoundIn1 = true;
-
-                        feature.RT1 = rt1;
-                        feature.Mass1 = mass1;
-
-                        feature.Ms2Scan1 = peak1.Ms2Scan;
-
-                        features.Add(ID, feature);
-                        ID++;
-                        found = true;
-                        break;
-                    }
-                }
-
-                if (found) continue;
-
-                feature.IdIn1 = false;
-                feature.FoundIn1 = false;
-
-                features.Add(ID, feature);
-                ID++;
-            }
-
-            return features;
-        }
-
+        
         public static void AlignRT(PsmDataCollection psms1, PsmDataCollection psms2)
         {
             
@@ -424,7 +262,7 @@ namespace RawTools.Algorithms.MatchBewteen
             {
                 double mass = feature.Value.MonoisotopicMZ;
                 double rt = feature.Value.Peak.MaximumRetTime;
-                if ((Math.Abs(mass - MassTarget) / (mass + MassTarget) * 2e6 < MassTol) & (Math.Abs(rt - RtTarget) / (rt + RtTarget) * 2 < RtTol))
+                if ((Math.Abs(mass - MassTarget) / MassTarget * 1e6 < MassTol) & (Math.Abs(rt - RtTarget) / RtTarget < RtTol))
                 {
                     features.Add(feature.Value.Ms2Scan, feature.Value);
                 }
@@ -480,260 +318,33 @@ namespace RawTools.Algorithms.MatchBewteen
             return Features[closest];
         }
 
-        public static MultiRunFeatureCollection MatchFeatures(PsmDataCollection psms1, PsmDataCollection psms2, PrecursorPeakCollection peaks1, PrecursorPeakCollection peaks2, PrecursorMassCollection masses1, PrecursorMassCollection masses2, double rtTolerance, double massTolerance)
-        {
-            AddPeakApex(psms1, peaks1);
-            AddPeakApex(psms2, peaks2);
-
-            // remove features with no associated ms1 peak
-            var toRemove = (from p in psms1 where p.Value.PeakApexRT == 0 select p.Key).ToList();
-            foreach (var k in toRemove) psms1.Remove(k);
-
-            toRemove = (from p in psms2 where p.Value.PeakApexRT == 0 select p.Key).ToList();
-            foreach (var k in toRemove) psms2.Remove(k);
-
-            toRemove = (from p in peaks1 where p.Value.MaximumRetTime == 0 select p.Key).ToList();
-            foreach (var k in toRemove) peaks1.Remove(k);
-
-            toRemove = (from p in peaks2 where p.Value.MaximumRetTime == 0 select p.Key).ToList();
-            foreach (var k in toRemove) peaks2.Remove(k);
-
-
-            int featureID = 0;
-
-            MultiRunFeatureCollection Features = new MultiRunFeatureCollection();
-            ProgressIndicator P = new ProgressIndicator(psms1.Count(), "Correlating features: first pass");
-            P.Start();
-
-            foreach(var psm1 in psms1)
-            {
-                P.Update();
-                if (psm1.Value.PeakApexRT == 0) continue;
-
-                MultiRunFeature feature = new MultiRunFeature();
-
-                double rt1 = psm1.Value.PeakApexRT;
-                double mass1 = masses1[psm1.Value.Scan].MonoisotopicMZ;
-                bool found = false;
-
-                feature.RT1 = rt1;
-                feature.Mass1 = mass1;
-                feature.Ms2Scan1 = psm1.Value.Scan;
-                feature.IdIn1 = true;
-                feature.FoundIn1 = true;
-
-                var closePsms2 = GetPsmBin(psms2, rt1, 0.5);
-
-                while (true)
-                {
-                    if (closePsms2.Count() == 0) break;
-                    int closestPSM2 = GetKeyOfClosestPsmRT(closePsms2, rt1);
-
-                    double rt2 = closePsms2[closestPSM2].PeakApexRT;
-                    double mass2 = masses2[closePsms2[closestPSM2].Scan].MonoisotopicMZ;
-
-                    double tDiff = Math.Abs(rt1 - rt2) / (rt1 + rt2) * 2;
-                    double mDiff = Math.Abs(mass1 - mass2) / (mass1 + mass2) * 2e6;
-
-                    //foreach (var tol in new List<double> { 0.001, 0.002, 0.003, 0.004, 0.005, 0.006, 0.007 })
-                    foreach (var tol in new List<double> { rtTolerance })
-                    {
-                        if (tDiff < tol & mDiff < massTolerance)
-                        {
-                            feature.IdIn2 = true;
-                            feature.FoundIn2 = true;
-                            feature.RT2 = rt2;
-                            feature.Mass2 = mass2;
-                            feature.Ms2Scan2 = psms2[closestPSM2].Scan;
-                            found = true;
-
-                            string seq1 = psm1.Value.Seq;
-                            string seq2 = closePsms2[closestPSM2].Seq;
-                            if (seq1 == seq2)
-                            {
-                                feature.ConfirmSeqMatch = true;
-                            }
-
-                            break;
-                        }
-                    }
-
-                    if (found)
-                    {
-                        Features.Add(featureID, feature);
-                        featureID++;
-                        break;
-                    }
-                    else
-                    {
-                        closePsms2.Remove(closestPSM2);
-                    }
-
-                    if (closePsms2.Keys.Count() == 0)
-                    {
-                        break;
-                    }
-                }
-
-                if (found) continue;
-
-                // if we didn't find a PSM, continue on to looking for a matching ms2 scan
-                var closePeaks2 = GetPeakBin(peaks2, rt1, 0.5);
-
-                while (true)
-                {
-                    if (closePeaks2.Count() == 0) break;
-                    int closestPeak2 = GetKeyOfClosestPeakRT(closePeaks2, rt1);
-
-                    double rt2 = closePeaks2[closestPeak2].MaximumRetTime;
-                    double mass2 = masses2[closePeaks2[closestPeak2].Ms2Scan].MonoisotopicMZ;
-
-                    double tDiff = Math.Abs(rt1 - rt2) / (rt1 + rt2) * 2;
-                    double mDiff = Math.Abs(mass1 - mass2) / (mass1 + mass2) * 2e6;
-
-                    //foreach (var tol in new List<double> { 0.001, 0.002, 0.003, 0.004, 0.005, 0.006, 0.007 })
-                    foreach (var tol in new List<double> { rtTolerance })
-                    {
-                        if (tDiff < tol & mDiff < massTolerance)
-                        {
-                            feature.IdIn2 = false;
-                            feature.FoundIn2 = true;
-                            feature.RT2 = rt2;
-                            feature.Mass2 = mass2;
-                            feature.Ms2Scan2 = peaks2[closestPeak2].Ms2Scan;
-                            found = true;
-                            break;
-                        }
-                    }
-
-                    if (found)
-                    {
-                        Features.Add(featureID, feature);
-                        featureID++;
-                        break;
-                    }
-                    else
-                    {
-                        closePeaks2.Remove(closestPeak2);
-                    }
-
-                    if (closePeaks2.Keys.Count() == 0)
-                    {
-                        break;
-                    }
-                }
-
-                if (!found)
-                {
-                    feature.IdIn2 = false;
-                    feature.FoundIn2 = false;
-                    Features.Add(featureID, feature);
-                    featureID++;
-                }
-            }
-            P.Done();
-
-            // now look at file 2 psms
-
-            var matchedAlready = (from f in Features select f.Value.Ms2Scan2).ToList();
-            P = new ProgressIndicator(psms2.Count(), "Correlating features: second pass");
-            P.Start();
-
-            foreach(var psm2 in psms2)
-            {
-                P.Update();
-                if (matchedAlready.Contains(psm2.Value.Scan)) continue;
-                if (psm2.Value.PeakApexRT == 0) continue;
-
-                MultiRunFeature feature = new MultiRunFeature();
-
-                double rt2 = psm2.Value.PeakApexRT;
-                double mass2 = masses2[psm2.Value.Scan].MonoisotopicMZ;
-                bool found = false;
-
-                feature.RT2 = rt2;
-                feature.Mass2 = mass2;
-                feature.Ms2Scan2 = psm2.Value.Scan;
-                feature.IdIn2 = true;
-                feature.FoundIn2 = true;
-                
-
-                // we don't need to look at file 1 psms, because they have already been matched to file 2 psms
-                // so gp right on to file 1 peaks
-
-                // looking for a matching ms2 scan
-                var closePeaks1 = GetPeakBin(peaks1, rt2, 0.5);
-
-                while (true)
-                {
-                    if (closePeaks1.Count() == 0) break;
-                    int closestPeak1 = GetKeyOfClosestPeakRT(closePeaks1, rt2);
-
-                    double rt1 = closePeaks1[closestPeak1].MaximumRetTime;
-                    double mass1 = masses1[closePeaks1[closestPeak1].Ms2Scan].MonoisotopicMZ;
-
-                    double tDiff = Math.Abs(rt1 - rt2) / (rt1 + rt2) * 2;
-                    double mDiff = Math.Abs(mass1 - mass2) / (mass1 + mass2) * 2e6;
-
-                    //foreach (var tol in new List<double> { 0.001, 0.002, 0.003, 0.004, 0.005, 0.006, 0.007 })
-                    foreach (var tol in new List<double> { rtTolerance })
-                    {
-                        if (tDiff < tol & mDiff < massTolerance)
-                        {
-                            feature.IdIn1 = false;
-                            feature.FoundIn1 = true;
-                            feature.RT1 = rt1;
-                            feature.Mass1 = mass1;
-                            feature.Ms2Scan1 = peaks1[closestPeak1].Ms2Scan;
-                            found = true;
-                            break;
-                        }
-                    }
-
-                    if (found)
-                    {
-                        Features.Add(featureID, feature);
-                        featureID++;
-                        break;
-                    }
-                    else
-                    {
-                        closePeaks1.Remove(closestPeak1);
-                    }
-
-                    if (closePeaks1.Keys.Count() == 0)
-                    {
-                        break;
-                    }
-                }
-
-                if (!found)
-                {
-                    feature.IdIn1 = false;
-                    feature.FoundIn1 = false;
-                    Features.Add(featureID, feature);
-                    featureID++;
-                }
-            }
-            P.Done();
-            return Features;
-        }
-
-        public static Ms1FeatureCollection AggregateMs1Features(PrecursorPeakCollection Peaks, PsmDataCollection PSMs, PrecursorMassCollection precursorMasses)
+        public static Ms1FeatureCollection AggregateMs1Features(PrecursorPeakCollection Peaks, PsmDataCollection PSMs, PrecursorMassCollection precursorMasses, CentroidStreamCollection centroids, SegmentScanCollection segments, MethodDataContainer methodData)
         {
             Ms1FeatureCollection features = new Ms1FeatureCollection();
+
+            ProgressIndicator P = new ProgressIndicator(Peaks.Count(), "Aggregating Ms1 features and precomputing sums and self-dot products");
+            P.Start();
 
             foreach (var peak in Peaks)
             {
                 if (peak.Value.MaximumRetTime == 0) continue;
 
                 Ms1Feature feature = new Ms1Feature();
+                SimpleCentroid spectrum;
 
                 int ms2scan = peak.Value.Ms2Scan;
 
                 feature.Peak = peak.Value;
                 feature.MonoisotopicMZ = precursorMasses[ms2scan].MonoisotopicMZ;
                 feature.Ms2Scan = ms2scan;
+                feature.RT = feature.Peak.MaximumRetTime;
+
+                if (methodData.MassAnalyzers[MSOrderType.Ms2] == MassAnalyzerType.MassAnalyzerFTMS) spectrum = centroids[ms2scan].ToSimpleCentroid();
+                else spectrum = segments[ms2scan].ToSimpleCentroid();
+
+                feature.BinnedMs2Intensities = SpectraCorrelation.BinData2(spectrum.Masses, spectrum.Intensities, 1.005, 0.4, 132, 1100);
+
+                feature.Ms2Spectrum = spectrum;
 
                 if (PSMs.Keys.Contains(ms2scan))
                 {
@@ -741,8 +352,13 @@ namespace RawTools.Algorithms.MatchBewteen
                     feature.Identified = true;
                 }
 
+                feature.Ms2Sum = feature.BinnedMs2Intensities.Sum();
+                feature.Ms2SelfDotProduct = feature.BinnedMs2Intensities.SelfDotProduct();
+
                 features.Add(ms2scan, feature);
+                P.Update();
             }
+            P.Done();
 
             return features;
         }
@@ -757,6 +373,8 @@ namespace RawTools.Algorithms.MatchBewteen
 
             var keys1 = features1.Keys.ToList();
             var file2ScansAlreadyMatched = new HashSet<int>();
+            StreamWriter unmatched = new StreamWriter("C:\\Users\\Kevin\\Documents\\GSC\\Projects\\FeatureCorrelation\\Hela\\nonmatched.txt");
+
 
             foreach (var key in keys1)
             {
@@ -777,16 +395,28 @@ namespace RawTools.Algorithms.MatchBewteen
 
                 if (closeFeaturesFrom2.Count() != 0)
                 {
-
+                    if (closeFeaturesFrom2.Count() > 3)
+                    { }
                     foreach (var close in closeFeaturesFrom2)
                     {
-                        multiFeature.AllScores.Add((multiFeature.Ms2Scan1, close.Value.Ms2Scan),
-                            XCorr.ScoreMultiRunSpectra(scans1[multiFeature.Ms2Scan1], scans2[close.Value.Ms2Scan]));
-                    }
+                        var score = FitScores.ModifiedSteinScott(feature, close.Value);
+                        multiFeature.AllScores.Add((multiFeature.Ms2Scan1, close.Value.Ms2Scan), score);
 
-                    closestFrom2 = closeFeaturesFrom2.FindClosest(rt1, mass1);
-                    //int closestScan2 = (from x in multiFeature.AllScores where x.Value == multiFeature.AllScores.Values.Min() select x.Key.scan2).First();
-                    //closestFrom2 = (from x in closeFeaturesFrom2 where x.Value.Ms2Scan == closestScan2 select x.Value).First();
+                        if (feature.PSM != null & close.Value?.PSM != null)
+                        {
+                            if (feature.PSM.Seq != close.Value.PSM.Seq)
+                            {
+                                multiFeature.LowScores.Add((multiFeature.Ms2Scan1, close.Value.Ms2Scan), score);
+                            }
+                        }
+                    }
+                    
+                    //closestFrom2 = closeFeaturesFrom2.FindClosest(rt1, mass1);
+                    int closestScan2 = (from x in multiFeature.AllScores where x.Value == multiFeature.AllScores.Values.Max() select x.Key.scan2).First();
+                    closestFrom2 = (from x in closeFeaturesFrom2 where x.Value.Ms2Scan == closestScan2 select x.Value).First();
+
+                    multiFeature.XCorr = multiFeature.AllScores.Values.Max();
+                    
                     multiFeature.FoundIn2 = true;
                     multiFeature.IdIn2 = closestFrom2.Identified;
 
@@ -801,6 +431,10 @@ namespace RawTools.Algorithms.MatchBewteen
                     {
                         multiFeature.ConfirmSeqMatch = true;
                     }
+                    else if (feature.PSM != null & closestFrom2?.PSM?.Seq != null & feature?.PSM?.Seq != closestFrom2?.PSM?.Seq)
+                    {
+                        unmatched.WriteLine("{0}\t{1}\t{2}\t{3}\t{4}", multiFeature.XCorr, feature.PSM.Seq, closestFrom2.PSM.Seq, feature.PSM.ExpectationValue, closestFrom2.PSM.ExpectationValue);
+                    }
                 }
 
                 MatchedFeatures.Add(featureID++, multiFeature);
@@ -809,6 +443,8 @@ namespace RawTools.Algorithms.MatchBewteen
                 P.Update();
             }
             P.Done();
+
+            unmatched.Close();
 
             P = new ProgressIndicator(features2.Count(), "Correlating features, second pass");
             P.Start();
@@ -837,6 +473,8 @@ namespace RawTools.Algorithms.MatchBewteen
 
             return MatchedFeatures;
         }
+
+        
 
     }
 }

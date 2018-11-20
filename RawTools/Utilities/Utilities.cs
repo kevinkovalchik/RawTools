@@ -333,6 +333,25 @@ namespace RawTools.Utilities
             }
         }
 
+        public static double Percentile(this List<double> Values, int percentile)
+        {
+            int end = Values.Count() - 1;
+            double endAsDouble = Convert.ToDouble(end);
+            List<double> sortedValues = new List<double>();
+            foreach (var value in Values) sortedValues.Add(value);
+
+            sortedValues.Sort();
+
+            if ((endAsDouble * percentile / 100) % 1 == 0)
+            {
+                return sortedValues[end * percentile / 100];
+            }
+            else
+            {
+                return (sortedValues[end * percentile / 100] + sortedValues[end * percentile / 100 + 1]) / 2;
+            }
+        }
+
         /// <summary>
         /// Return the nth percentile from a dictionary.
         /// </summary>

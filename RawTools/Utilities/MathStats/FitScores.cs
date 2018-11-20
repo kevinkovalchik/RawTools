@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using RawTools.Data.Containers;
 
 namespace RawTools.Utilities.MathStats
 {
-    public class FitScores
+    static class FitScores
     {
         /// <summary>
         /// Calculate the Bhattacharyya distance for the provided data
@@ -292,6 +293,74 @@ namespace RawTools.Utilities.MathStats
             if (double.IsNaN(fitScore) || fitScore > 1) fitScore = 1;
 
             return fitScore;
+        }
+
+        public static double ModifiedSteinScott(double[] M, double[] N)
+        {
+            double E = M.Sum() * N.Sum() / (M.Length * N.Length);
+
+            double score = (DotProduct(M, N) - E) / (Math.Sqrt(DotProduct(M, M) * DotProduct(N, N)));
+
+            if (Double.IsNaN(score))
+            {
+                return 0;
+            }
+            else
+            {
+                return (DotProduct(M, N) - E) / (Math.Sqrt(DotProduct(M, M) * DotProduct(N, N)));
+            }
+        }
+
+        public static double ModifiedSteinScott(Ms1Feature M, Ms1Feature N)
+        {
+            double E = M.Ms2Sum * N.Ms2Sum / (M.BinnedMs2Intensities.Count() * N.BinnedMs2Intensities.Count());
+
+            double score = (DotProduct(M.BinnedMs2Intensities, N.BinnedMs2Intensities) - E) / (Math.Sqrt(M.Ms2SelfDotProduct * N.Ms2SelfDotProduct));
+
+            if (Double.IsNaN(score))
+            {
+                return 0;
+            }
+            else
+            {
+                return score;
+            }
+        }
+
+        public static double DotProduct(double[] M, double[] N)
+        {
+            double innerProduct = 0;
+
+            for (int i = 0; i < M.Length; i++) innerProduct += M[i] * N[i];
+
+            return innerProduct;
+        }
+
+        public static double DotProduct(List<double> M, List<double> N)
+        {
+            double innerProduct = 0;
+
+            for (int i = 0; i < M.Count(); i++) innerProduct += M[i] * N[i];
+
+            return innerProduct;
+        }
+
+        public static double SelfDotProduct(this List<double> M)
+        {
+            double innerProduct = 0;
+
+            for (int i = 0; i < M.Count(); i++) innerProduct += M[i] * M[i];
+
+            return innerProduct;
+        }
+
+        public static double SelfDotProduct(this double[] M)
+        {
+            double innerProduct = 0;
+
+            for (int i = 0; i < M.Length; i++) innerProduct += M[i] * M[i];
+
+            return innerProduct;
         }
     }
 }

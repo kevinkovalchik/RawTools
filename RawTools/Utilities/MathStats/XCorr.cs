@@ -10,7 +10,7 @@ using RawTools.Utilities;
 
 namespace RawTools.Utilities.MathStats
 {
-    static class XCorr
+    static class SpectraCorrelation
     {
         public static List<double> YPrime(List<double> Intensities)
         {
@@ -130,7 +130,7 @@ namespace RawTools.Utilities.MathStats
                 if (Masses[i] > HiMass)
                 {
                     if (currentBin.Count() > 0)
-                    { binsOut.Add(Math.Sqrt(currentBin.Max())); }
+                    { binsOut.Add(currentBin.Max()); }
                     else
                     { binsOut.Add(0); }
 
@@ -138,7 +138,63 @@ namespace RawTools.Utilities.MathStats
                 }
 
                 if (currentBin.Count() > 0)
-                { binsOut.Add(Math.Sqrt(currentBin.Max())); }
+                { binsOut.Add(currentBin.Max()); }
+                else
+                { binsOut.Add(0); }
+                currentLeft += BinWidth;
+                currentRight += BinWidth;
+                currentBin = new List<double>();
+            }
+
+            while (binsOut.Count() < numBins)
+            {
+                binsOut.Add(0);
+            }
+
+            for (int j = 0; j < 75; j++) binsOut.Add(0);
+            for (int j = 0; j < 75; j++) binsOut.Insert(0, 0);
+
+            return binsOut;
+        }
+
+        public static List<double> BinData2(List<double> Masses, List<double> Intensities, double BinWidth,
+            double BinOffset, double LoMass, double HiMass)
+        {
+            List<double> binsOut = new List<double>();
+            List<double> currentBin = new List<double>();
+
+            double currentLeft = LoMass - (BinWidth - BinOffset);
+            double currentRight = currentLeft + BinWidth;
+            int i = 0;
+            int numBins = Convert.ToInt32(Math.Ceiling((HiMass - LoMass) / BinWidth) + 1);
+
+            //for (int j = 0; j < 75; j++) binsOut.Add(0);
+
+            while (i < Masses.Count())
+            {
+                if (Masses[i] < LoMass)
+                {
+                    i++;
+                    continue;
+                }
+                if (Masses[i] > currentLeft & Masses[i] <= currentRight)
+                {
+                    currentBin.Add(Intensities[i]);
+                    i++;
+                    continue;
+                }
+                if (Masses[i] > HiMass)
+                {
+                    if (currentBin.Count() > 0)
+                    { binsOut.Add(currentBin.Max()); }
+                    else
+                    { binsOut.Add(0); }
+
+                    break;
+                }
+
+                if (currentBin.Count() > 0)
+                { binsOut.Add(currentBin.Max()); }
                 else
                 { binsOut.Add(0); }
                 currentLeft += BinWidth;
@@ -235,6 +291,20 @@ namespace RawTools.Utilities.MathStats
             }
         }
 
+        public static List<double> MedianNormalize(this List<double> Values)
+        {
+            double median = Values.Percentile(50);
+
+            List<double> normalized = new List<double>();
+
+            for (int i = 0; i < Values.Count(); i++)
+            {
+                normalized.Add(Values[i] / median);
+            }
+
+            return normalized;
+        }
+
         public static double ScoreMultiRunSpectra(SimpleCentroid scan1, SimpleCentroid scan2)
         {
             var y = BinData2(scan1.Masses.ToArray(), scan1.Intensities.ToArray(), 1.005, 0.4, 132, 1000);
@@ -256,11 +326,15 @@ namespace RawTools.Utilities.MathStats
             //y = y.Normalize();
             //x = x.Normalize();
 
+            //y = y.MedianNormalize();
+            //x = x.MedianNormalize();
+
             //var yPrime = YPrime(y);
 
             //return CalcXCorr(x, yPrime);
 
-            return MathStats.FitScores.GetBhattacharyyaDistance(x.ToArray(), y.ToArray());
+            //return MathStats.FitScores.GetBhattacharyyaDistance(x.ToArray(), y.ToArray());
+            return MathStats.FitScores.ModifiedSteinScott(x.ToArray(), y.ToArray());
             //return MathStats.FitScores.GetCosine(x.ToArray(), y.ToArray());
             //return MathStats.FitScores.GetPearsonCorrelation(x.ToArray(), y.ToArray());
         }

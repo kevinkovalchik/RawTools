@@ -61,6 +61,11 @@ namespace RawTools.Data.Containers
                 SignalToNoise[i] = Intensities[i] / Noises[i];
             }
         }
+
+        public SimpleCentroid ToSimpleCentroid()
+        {
+            return new SimpleCentroid(this);
+        }
     }
 
     public class SimpleCentroid
@@ -83,9 +88,15 @@ namespace RawTools.Data.Containers
             Masses = centroidStream.Masses.ToList();
             Intensities = centroidStream.Intensities.ToList();
         }
+
+        public SimpleCentroid(SegmentedScanData segmentedScan)
+        {
+            Masses = segmentedScan.Positions.ToList();
+            Intensities = segmentedScan.Intensities.ToList();
+        }
     }
 
-    class SegmentedScanData
+    public class SegmentedScanData
     {
         public double[] Positions, Intensities;
 
@@ -93,6 +104,11 @@ namespace RawTools.Data.Containers
         {
             Positions = segmentedScan.Positions;
             Intensities = segmentedScan.Intensities;
+        }
+
+        public SimpleCentroid ToSimpleCentroid()
+        {
+            return new SimpleCentroid(this);
         }
     }
 
@@ -631,6 +647,81 @@ namespace RawTools.Data.Containers
             {
                 return String.Concat(Mass, "@", AA);
             }
+        }
+    }
+
+    class FeaturePreMatchData
+    {
+        public double RT;
+        public double Mass;
+        public double Ms2Sum;
+        public double Ms2SelfDotProduct;
+
+        public SimpleCentroid Ms2Spectra;
+
+        public int Ms2Scan;
+    }
+
+    class Ms1Feature
+    {
+        public bool Identified;
+        public PsmData PSM;
+        public PrecursorPeakData Peak;
+        public double MonoisotopicMZ;
+        public double RT;
+        public int Ms2Scan;
+
+        public double Ms2Sum;
+        public double Ms2SelfDotProduct;
+
+        public List<double> BinnedMs2Intensities;
+        public SimpleCentroid Ms2Spectrum;
+
+        public Ms1Feature()
+        {
+            Identified = false;
+        }
+    }
+
+    /// <summary>
+    /// Contains data on features found in one or more runs.
+    /// </summary>
+    class FeatureCorrelationData
+    {
+        public Dictionary<int, string> Runs;
+
+        public Dictionary<int, double> Id;
+        public Dictionary<int, double> Found;
+        public Dictionary<int, int> Ms2Scans;
+
+        public Dictionary<int, double> RT;
+        public Dictionary<int, double> MonoisotopicMZ;
+
+        public Dictionary<int, PsmData> PSM;
+        public Dictionary<int, PrecursorPeakData> PeakData;
+
+        public Dictionary<(int, int), double> Score;
+        public Dictionary<(int, int), double> MassError;
+        public Dictionary<(int, int), double> RtError;
+        public Dictionary<(int, int), double> SeqMatch;
+
+        public double AverageRt{ get { return RT.MeanFromDict(); } }
+        public double AverageMonoisotopicMZ { get { return MonoisotopicMZ.MeanFromDict(); } }
+        
+        public FeatureCorrelationData()
+        {
+            Runs = new Dictionary<int, string>();
+            Id = new Dictionary<int, double>();
+            Found = new Dictionary<int, double>();
+            Ms2Scans = new Dictionary<int, int>();
+            RT = new Dictionary<int, double>();
+            MonoisotopicMZ = new Dictionary<int, double>();
+            Score = new Dictionary<(int, int), double>();
+            MassError = new Dictionary<(int, int), double>();
+            RtError = new Dictionary<(int, int), double>();
+            SeqMatch = new Dictionary<(int, int), double>();
+            PSM = new Dictionary<int, PsmData>();
+            PeakData = new Dictionary<int, PrecursorPeakData>();
         }
     }
 }

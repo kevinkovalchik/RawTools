@@ -212,13 +212,12 @@ namespace RawTools
 
                 Search.RunSearch(parameters, methodData2, staticRawFile2.FileName);
             }
-            
 
             PsmDataCollection psms1 = MatchBetween.LoadPsmData(retentionTimes1, precursorScans1, parameters, staticRawFile1.FileName);
             PsmDataCollection psms2 = MatchBetween.LoadPsmData(retentionTimes2, precursorScans2, parameters, staticRawFile2.FileName);
 
-            Ms1FeatureCollection features1 = MatchBetween.AggregateMs1Features(peakData1, psms1, precursorMasses1);
-            Ms1FeatureCollection features2 = MatchBetween.AggregateMs1Features(peakData2, psms2, precursorMasses2);
+            Ms1FeatureCollection features1 = MatchBetween.AggregateMs1Features(peakData1, psms1, precursorMasses1, centroidStreams1, segmentScans1, methodData1);
+            Ms1FeatureCollection features2 = MatchBetween.AggregateMs1Features(peakData2, psms2, precursorMasses2, centroidStreams2, segmentScans2, methodData2);
 
             //using (var f = new StreamWriter(Path.Combine(staticRawFile1.FileName + ".massdrift.txt")))
             //{
@@ -237,14 +236,18 @@ namespace RawTools
 
             MultiRunFeatureCollection features = MatchBetween.CorrelateFeatures2(features1, features2, segmentScans1, segmentScans2, opts.TimePercentTol, opts.MassPPM);
 
-            XCorr.ScoreMultiRunSpectra(features, segmentScans1, segmentScans2);
+            //SpectraCorrelation.ScoreMultiRunSpectra(features, segmentScans1, segmentScans2);
             StreamWriter score = new StreamWriter(Path.Combine(opts.Directory, "AllScores.csv"));
-            List<double> scores = new List<double>();
-            foreach (var feature in features) scores = scores.Concat(feature.Value.AllScores.Values).ToList();
-            foreach (var s in scores) score.WriteLine(s);
+            //List<double> scores = new List<double>();
+            //foreach (var feature in features) foreach (var s in feature.Value.AllScores.Values) score.WriteLine(s);
             score.Close();
-            score = new StreamWriter(Path.Combine(opts.Directory, "Matched.csv"));
+
+            score = new StreamWriter(Path.Combine(opts.Directory, "MatchedScores.csv"));
             foreach (var feature in features) if (feature.Value.ConfirmSeqMatch) score.WriteLine(feature.Value.XCorr);
+            score.Close();
+
+            score = new StreamWriter(Path.Combine(opts.Directory, "UnmatchedScores.csv"));
+            foreach (var feature in features) foreach (var s in feature.Value.LowScores.Values) score.WriteLine(s);
             score.Close();
 
             int NoId = 0;

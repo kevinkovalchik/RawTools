@@ -87,7 +87,7 @@ namespace RawTools.Algorithms
 
             minMassDiff = massDiff.Min();
 
-            if (minMassDiff / monoIsoMass * 1e6 < 4)
+            if (minMassDiff / monoIsoMass * 1e6 < 10)
             {
                 peak.PeakFound = true;
             }
@@ -115,7 +115,7 @@ namespace RawTools.Algorithms
 
                 minMassDiff = massDiff.Min();
 
-                if (minMassDiff / monoIsoMass * 1e6 < 4)
+                if (minMassDiff / monoIsoMass * 1e6 < 10)
                 {
                     scans.Add(currentScan);
                     scanIndex -= 1;
@@ -166,7 +166,7 @@ namespace RawTools.Algorithms
 
                 minMassDiff = massDiff.Min();
 
-                if (minMassDiff / monoIsoMass * 1e6 < 4)
+                if (minMassDiff / monoIsoMass * 1e6 < 10)
                 {
                     scans.Add(currentScan);
                     scanIndex += 1;
