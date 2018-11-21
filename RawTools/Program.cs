@@ -328,6 +328,13 @@ namespace RawTools
 
                 Console.WriteLine("\nProcessing: {0}\n", file);
 
+                if (!File.Exists(file))
+                {
+                    Console.WriteLine("NOTICE: {0} file does not appear to exist. Please check the file name and location.", file);
+                    Log.Error("File not found: {File}", file);
+                    continue;
+                }
+
                 using (IRawDataPlus rawFile = RawFileReaderFactory.ReadFile(fileName:file))
                 {
                     rawFile.SelectInstrument(Device.MS, 1);
