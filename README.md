@@ -2,7 +2,7 @@
 
 Welcome to the RawTools page! RawTools is an open-source and freely available package designed to perform scan data parsing and quantification, and quality control analysis of Thermo Orbitrap raw mass spectrometer files. RawTools is written in C# and uses the Thermo RawFileReader library. RawTools is fully compatible with Windows, Linux, and MacOS operating systems. RawTools is the replacement for the previously described [RawQuant](https://github.com/kevinkovalchik/RawQuant) Python package. 
 
-The RawTools manuscript preprint is [available on bioRxiv](https://www.biorxiv.org/content/early/2018/09/15/418400).
+The RawTools manuscript was just accepted for the Journal of Proteome Research special issue on Software Tools and Resources, [here](https://pubs.acs.org/doi/10.1021/acs.jproteome.8b00721). The RawTools original manuscript preprint is [available on bioRxiv](https://www.biorxiv.org/content/early/2018/09/15/418400).
 
 <br>
 
@@ -14,7 +14,7 @@ To obtain the latest compiled release of RawTools or to obtain an older version,
 
 ### Notable news
 
-* We are sorting out some issues with the image file downloads not working. The latest Shiny application should be online shortly.  [2018-11-08]
+* We are sorting out some issues with the image file downloads not working. This issue is proving more difficult than initially anticipated, but we are still working on it. Note - if you [download](https://github.com/kevinkovalchik/RawTools/tree/master/documentation/manuscript/RawTools_RShiny_Application) the Shiny application and run it locally, the file downloads will work.  [2018-11-21]
 
 * The Shiny application has been updated to allow downloading of pdf versions of the created plots. These images can be imported to programs like Adobe Illustrator and will be treated as vector images. We have also added the ability to mouseover data points to see values, as well as corrected some bugs. We have also added the ability to add mean and median lines to the QC plots. The latest Shiny web interface is available [here](https://rawtoolsqcdv.bcgsc.ca/). [2018-11-07] 
 
