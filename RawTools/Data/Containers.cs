@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Linq;
 using System.Text;
 using System.IO;
@@ -677,51 +678,95 @@ namespace RawTools.Data.Containers
         public List<double> BinnedMs2Intensities;
         public SimpleCentroid Ms2Spectrum;
 
+        public QuantData QuantData;
+
         public Ms1Feature()
         {
             Identified = false;
         }
     }
 
+    
+    class GroupedMs1Feature: Dictionary<(string Run, int Ms2Scan), Ms1Feature>
+    {
+
+    }
+
+    /// <summary>
+    /// Information on picked and identified features. Key is the Ms2 scan number.
+    /// </summary>
+    class IdData : Dictionary<int, (bool Identified, bool Picked)> { };
+
+    class RunAndScanNumber
+    {
+        int Run;
+        int Ms2Scan;
+    }
+
+    class SingleFeatureMatchData
+    {
+        public bool IdInSelf;
+        public bool IdInOther;
+        public bool PickedInSelf;
+        public bool PickedInOther;
+        public bool ConfirmSeqMatch;
+        public double RtSelf, RtOther;
+        public double MassSelf, MassOther;
+        public int Ms2ScanSelf, Ms2ScanOther;
+        public double Score;
+        public Dictionary<(int scanSelf, int scanOther), double> AllScores;
+        //public Dictionary<(int scanSelf, int scanOther), double> LowScores;
+
+        public SingleFeatureMatchData()
+        {
+            IdInSelf = false;
+            IdInOther = false;
+            PickedInSelf = false;
+            PickedInOther = false;
+            ConfirmSeqMatch = false;
+            AllScores = new Dictionary<(int scanSelf, int scanOther), double>();
+            //LowScores = new Dictionary<(int scanSelf, int scanOther), double>();
+        }
+    }
+
     /// <summary>
     /// Contains data on features found in one or more runs.
     /// </summary>
-    class FeatureCorrelationData
+    class MultiRunFeatureMatchData
     {
         public Dictionary<int, string> Runs;
 
-        public Dictionary<int, double> Id;
-        public Dictionary<int, double> Found;
-        public Dictionary<int, int> Ms2Scans;
-
-        public Dictionary<int, double> RT;
-        public Dictionary<int, double> MonoisotopicMZ;
-
-        public Dictionary<int, PsmData> PSM;
-        public Dictionary<int, PrecursorPeakData> PeakData;
-
-        public Dictionary<(int, int), double> Score;
-        public Dictionary<(int, int), double> MassError;
-        public Dictionary<(int, int), double> RtError;
-        public Dictionary<(int, int), double> SeqMatch;
-
-        public double AverageRt{ get { return RT.MeanFromDict(); } }
-        public double AverageMonoisotopicMZ { get { return MonoisotopicMZ.MeanFromDict(); } }
+        public Dictionary<int, IdData> IdData;
         
-        public FeatureCorrelationData()
+        public Dictionary<int, List<int>> Ms2Scans;
+
+        public Dictionary<RunAndScanNumber, double> RT;
+        public Dictionary<RunAndScanNumber, double> MonoisotopicMZ;
+
+        public Dictionary<RunAndScanNumber, PsmData> PSM;
+        public Dictionary<RunAndScanNumber, PrecursorPeakData> PeakData;
+
+        public Dictionary<(RunAndScanNumber, RunAndScanNumber), double> Score;
+        public Dictionary<(RunAndScanNumber, RunAndScanNumber), double> MassError;
+        public Dictionary<(RunAndScanNumber, RunAndScanNumber), double> RtError;
+        public Dictionary<(RunAndScanNumber, RunAndScanNumber), double> SeqMatch;
+
+        public double AverageRt { get { return RT.Values.Average(); } }
+        public double AverageMonoisotopicMZ { get { return MonoisotopicMZ.Values.Average(); } }
+        
+        public MultiRunFeatureMatchData()
         {
             Runs = new Dictionary<int, string>();
-            Id = new Dictionary<int, double>();
-            Found = new Dictionary<int, double>();
-            Ms2Scans = new Dictionary<int, int>();
-            RT = new Dictionary<int, double>();
-            MonoisotopicMZ = new Dictionary<int, double>();
-            Score = new Dictionary<(int, int), double>();
-            MassError = new Dictionary<(int, int), double>();
-            RtError = new Dictionary<(int, int), double>();
-            SeqMatch = new Dictionary<(int, int), double>();
-            PSM = new Dictionary<int, PsmData>();
-            PeakData = new Dictionary<int, PrecursorPeakData>();
+            IdData = new Dictionary<int, IdData>();
+            Ms2Scans = new Dictionary<int, List<int>>();
+            RT = new Dictionary<RunAndScanNumber, double>();
+            MonoisotopicMZ = new Dictionary<RunAndScanNumber, double>();
+            Score = new Dictionary<(RunAndScanNumber, RunAndScanNumber), double>();
+            MassError = new Dictionary<(RunAndScanNumber, RunAndScanNumber), double>();
+            RtError = new Dictionary<(RunAndScanNumber, RunAndScanNumber), double>();
+            SeqMatch = new Dictionary<(RunAndScanNumber, RunAndScanNumber), double>();
+            PSM = new Dictionary<RunAndScanNumber, PsmData>();
+            PeakData = new Dictionary<RunAndScanNumber, PrecursorPeakData>();
         }
     }
 }

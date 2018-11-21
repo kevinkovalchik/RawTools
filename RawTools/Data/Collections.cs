@@ -235,4 +235,22 @@ namespace RawTools.Data.Collections
 
     class FeaturePreMatchDataCollection: Dictionary<int, FeaturePreMatchData>
     { }
+
+    class FeatureMatchDataCollection : Dictionary<int, MultiRunFeatureMatchData>
+    {
+        Dictionary<int, string> RunNameKeys;
+
+        public FeatureMatchDataCollection()
+        {
+            RunNameKeys = new Dictionary<int, string>();
+        }
+
+        public void AddFeature(Ms1Feature feature)
+        {
+            
+        }
+    }
+
+    class GroupedFeatureCollection: Dictionary<Guid, GroupedMs1Feature>
+    { }
 }

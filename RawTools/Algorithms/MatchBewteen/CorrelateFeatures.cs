@@ -415,7 +415,8 @@ namespace RawTools.Algorithms.MatchBewteen
                     int closestScan2 = (from x in multiFeature.AllScores where x.Value == multiFeature.AllScores.Values.Max() select x.Key.scan2).First();
                     closestFrom2 = (from x in closeFeaturesFrom2 where x.Value.Ms2Scan == closestScan2 select x.Value).First();
 
-                    multiFeature.XCorr = multiFeature.AllScores.Values.Max();
+                    //multiFeature.XCorr = multiFeature.AllScores.Values.Max();
+                    multiFeature.XCorr = multiFeature.AllScores[(feature.Ms2Scan, closestFrom2.Ms2Scan)];
                     
                     multiFeature.FoundIn2 = true;
                     multiFeature.IdIn2 = closestFrom2.Identified;

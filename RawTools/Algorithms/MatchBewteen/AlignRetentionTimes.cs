@@ -38,7 +38,7 @@ namespace RawTools.Algorithms.MatchBewteen
             foreach (var feature in features1) anchors1.Add(feature.Key, feature.Value);
             foreach (var feature in features2) anchors2.Add(feature.Key, feature.Value);
 
-            MultiRunFeatureCollection matchedAnchors = MatchBetween.CorrelateFeatures2(anchors1, anchors2, scans1, scans2, 0.1, 200);
+            MultiRunFeatureCollection matchedAnchors = MatchBetween.CorrelateFeatures2(anchors1, anchors2, scans1, scans2, 0.05, 20);
 
             var filteredAnchors = from x in matchedAnchors
                                   where x.Value.ConfirmSeqMatch
