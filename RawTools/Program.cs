@@ -234,6 +234,23 @@ namespace RawTools
                 AlignRetentionTimes.AlignRT(features1, features2, segmentScans1, segmentScans2, opts.ExpectationValue);
             }
 
+            Console.WriteLine("testing out the new thing");
+            var featuresList = new List<Ms1FeatureCollection>() { features1, features2 };
+            var testFeatures1 = MultiRunFeatureMatch.ProcessAll(featuresList, new List<string>() { "Run1", "Run2" }, opts.TimePercentTol, opts.MassPPM);
+
+            int allIDsMatch = 0;
+            int allIDsDontMatch = 0;
+            foreach (var feat in testFeatures1)
+            {
+                bool match = true;
+                //string seq = feat.Value.First().Value.PSM
+
+                foreach (var scanevent in feat.Value)
+                {
+                    
+                }
+            }
+
             MultiRunFeatureCollection features = MatchBetween.CorrelateFeatures2(features1, features2, segmentScans1, segmentScans2, opts.TimePercentTol, opts.MassPPM);
 
             //SpectraCorrelation.ScoreMultiRunSpectra(features, segmentScans1, segmentScans2);

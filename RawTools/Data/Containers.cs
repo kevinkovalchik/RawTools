@@ -689,7 +689,26 @@ namespace RawTools.Data.Containers
     
     class GroupedMs1Feature: Dictionary<(string Run, int Ms2Scan), Ms1Feature>
     {
+        public double AverageRT;
+        public double AverageMonoIsoMZ;
 
+        public void UpdateAverageMassAndRT()
+        {
+            List<double> rts = new List<double>();
+            List<double> masses = new List<double>();
+            foreach (var value in Values)
+            {
+                rts.Add(value.Peak.MaximumRetTime);
+                masses.Add(value.MonoisotopicMZ);
+            }
+            AverageRT = rts.Average();
+            AverageMonoIsoMZ = masses.Average();
+        }
+
+        /*
+        public double AverageRT { get { return (from x in this.Values select x.RT).Average(); } }
+        public double AverageMonoIsoMZ { get { return (from x in this.Values select x.MonoisotopicMZ).Average(); } }
+        */
     }
 
     /// <summary>
