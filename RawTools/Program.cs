@@ -242,14 +242,32 @@ namespace RawTools
             int allIDsDontMatch = 0;
             foreach (var feat in testFeatures1)
             {
+                if ((from x in feat.Value.Values where x.Identified select 1).Count() < 2) continue;
+
                 bool match = true;
-                //string seq = feat.Value.First().Value.PSM
+                string seq = string.Empty;
 
                 foreach (var scanevent in feat.Value)
                 {
-                    
+                    if (!scanevent.Value.Identified) continue;
+
+                    if (seq == scanevent.Value.PSM.Seq)
+                    { }
+                    else if (seq == string.Empty)
+                    {
+                        seq = scanevent.Value.PSM.Seq;
+                    }
+                    else
+                    {
+                        match = false;
+                        break;
+                    }
                 }
+
+                if (match) allIDsMatch++;
+                else allIDsDontMatch++;
             }
+            Console.WriteLine("All match: {0}, Don't: {1}", allIDsMatch, allIDsDontMatch);
 
             MultiRunFeatureCollection features = MatchBetween.CorrelateFeatures2(features1, features2, segmentScans1, segmentScans2, opts.TimePercentTol, opts.MassPPM);
 
