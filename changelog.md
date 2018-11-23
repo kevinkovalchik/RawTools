@@ -4,6 +4,12 @@ All notable changes to RawTools will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.3] 2018-11-23
+### Changed
+- Users with heightened Windows security settings might have difficulty running RawTools since it is acquired via internet download. The
+solution has been to modify the RawTools.exe.config file to allow the app to load assemblies from remote locations. This has come up enough that we've
+decided to make the change permanent. [[issue5]](https://github.com/kevinkovalchik/RawTools/issues/5)
+
 ## [1.3.2] 2018-11-09
 ### Changed
 - We came across a file with an apparently corrupted MS3 scan in it which was cause RawTools to crash. The MS data for the scan was in the raw file,
