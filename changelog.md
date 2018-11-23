@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 solution has been to modify the RawTools.exe.config file to allow the app to load assemblies from remote locations. This has come up enough that we've
 decided to make the change permanent. [[issue5]](https://github.com/kevinkovalchik/RawTools/issues/5)
 
+###Fixed
+- The program will now give a warning when a filename provided via -f does not exist (as opposed to simply crashing).
+
 ## [1.3.2] 2018-11-09
 ### Changed
 - We came across a file with an apparently corrupted MS3 scan in it which was cause RawTools to crash. The MS data for the scan was in the raw file,
