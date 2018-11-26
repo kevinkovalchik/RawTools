@@ -38,6 +38,7 @@ using RawTools.WorkFlows;
 using RawTools.Algorithms.Analyze;
 using RawTools.Algorithms.ExtractData;
 using RawTools.Algorithms.MatchBewteen;
+using RawTools.Algorithms.MatchBewteen.ML;
 using RawTools.Utilities.MathStats;
 using System.Xml.Linq;
 using Serilog;
@@ -237,19 +238,48 @@ namespace RawTools
             Console.WriteLine("testing out the new thing");
             var featuresList = new List<Ms1FeatureCollection>() { features1, features2 };
             var testFeatures1 = MultiRunFeatureMatch.ProcessAll(featuresList, new List<string>() { "Run1", "Run2" }, opts.TimePercentTol, opts.MassPPM);
+            testFeatures1.ScoreFeatures();
 
+            Run.Go(testFeatures1);
+
+            int totalScans = 0;
+            int totalScansWId = 0;
+            int totalFeatures = 0;
+            int totalFeaturesWithMoreThan1Scan = 0;
             int allIDsMatch = 0;
             int allIDsDontMatch = 0;
+            int potentialRescue = 0;
+            int matchedBetween = 0;
+            int scansMatchedBetween = 0;
+
+            totalScans = (from x in testFeatures1.Values select x.Count()).Sum();
+
             foreach (var feat in testFeatures1)
             {
-                if ((from x in feat.Value.Values where x.Identified select 1).Count() < 2) continue;
+                totalFeatures++;
+                totalScansWId += (from x in feat.Value.Values where x.Identified select 1).Count();
+
+                bool run1 = false;
+                bool run2 = false;
+
+                foreach (var scanevent in feat.Value)
+                {
+                    if (scanevent.Key.Run == "Run1") run1 = true;
+                    if (scanevent.Key.Run == "Run2") run2 = true;
+                }
+
+                if (run1 & run2) matchedBetween++;
+                if (run1 & run2) scansMatchedBetween += feat.Value.Count();
+
+                if ((from x in feat.Value.Values where x.Identified select 1).Count() < 1) continue;
+                totalFeaturesWithMoreThan1Scan++;
 
                 bool match = true;
                 string seq = string.Empty;
 
                 foreach (var scanevent in feat.Value)
                 {
-                    if (!scanevent.Value.Identified) continue;
+                    if (!scanevent.Value.Identified) { potentialRescue++; continue; }
 
                     if (seq == scanevent.Value.PSM.Seq)
                     { }
@@ -263,12 +293,19 @@ namespace RawTools
                         break;
                     }
                 }
-
+                
                 if (match) allIDsMatch++;
                 else allIDsDontMatch++;
             }
-            Console.WriteLine("All match: {0}, Don't: {1}", allIDsMatch, allIDsDontMatch);
 
+            Console.WriteLine("===========================");
+            Console.WriteLine("Total scans:{0}, WithID:{1}, Total features:{2}, With more than 1 PSM: {3}", totalScans, totalScansWId, totalFeatures, totalFeaturesWithMoreThan1Scan);
+            Console.WriteLine("Features matched between runs: {0}", matchedBetween);
+            Console.WriteLine("Scans matched between and within runs: {0}", scansMatchedBetween);
+            Console.WriteLine("All match: {0}, Don't: {1}", allIDsMatch, allIDsDontMatch);
+            Console.WriteLine("Potential rescues: {0}", potentialRescue);
+            Console.WriteLine("===========================");
+            /*
             MultiRunFeatureCollection features = MatchBetween.CorrelateFeatures2(features1, features2, segmentScans1, segmentScans2, opts.TimePercentTol, opts.MassPPM);
 
             //SpectraCorrelation.ScoreMultiRunSpectra(features, segmentScans1, segmentScans2);
@@ -392,7 +429,7 @@ namespace RawTools
 
             MatchedMgfWriter.WriteMGF(parameters, IdInFile2Scans, Path.Combine(opts.Directory, "IdInFile2.mgf"), featuresFromBoth, centroids, segments,
                 retentionTimes, precursorMasses, trailerExtras, methodData1, rawFileNames);
-
+            */
             return 0;
         }
 

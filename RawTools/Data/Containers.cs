@@ -691,6 +691,9 @@ namespace RawTools.Data.Containers
     {
         public double AverageRT;
         public double AverageMonoIsoMZ;
+        public double AverageScore;
+        public Dictionary<((string run, int ms2scan), (string run, int ms2scan)), double> Scores = new Dictionary<((string run, int ms2scan), (string run, int ms2scan)), double>();
+        public Dictionary<((string run, int ms2scan), (string run, int ms2scan)), double> SeqMatch = new Dictionary<((string run, int ms2scan), (string run, int ms2scan)), double>();
 
         public void UpdateAverageMassAndRT()
         {
@@ -703,6 +706,18 @@ namespace RawTools.Data.Containers
             }
             AverageRT = rts.Average();
             AverageMonoIsoMZ = masses.Average();
+        }
+
+        public void UpdateAverageScore()
+        {
+            if (Scores.Values.Count() == 0)
+            {
+                AverageScore = 0;
+            }
+            else
+            {
+                AverageScore = Scores.Values.Average();
+            }
         }
 
         /*
@@ -718,8 +733,14 @@ namespace RawTools.Data.Containers
 
     class RunAndScanNumber
     {
-        int Run;
+        string Run;
         int Ms2Scan;
+
+        public RunAndScanNumber(string run, int ms2scan)
+        {
+            Run = run;
+            Ms2Scan = ms2scan;
+        }
     }
 
     class SingleFeatureMatchData

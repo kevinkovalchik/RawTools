@@ -55,17 +55,12 @@ namespace RawTools.Algorithms.MatchBewteen
 
         public static Guid GetClosestFeatureGroupIndex(this GroupedFeatureCollection GroupedFeatures, Ms1Feature Feature, double RtTol, double MassTol)
         {
-            //List<Guid> closeFeatures = new List<Guid>();
-            ConcurrentDictionary<Guid, double> RtErrors = new ConcurrentDictionary<Guid, double>();
-            ConcurrentDictionary<Guid, double> MassErrors = new ConcurrentDictionary<Guid, double>();
-
-            //Dictionary<Guid, double> RtErrors = new Dictionary<Guid, double>();
-            //Dictionary<Guid, double> MassErrors = new Dictionary<Guid, double>();
+            Dictionary<Guid, double> RtErrors = new Dictionary<Guid, double>();
+            Dictionary<Guid, double> MassErrors = new Dictionary<Guid, double>();
             double mass, rt, massErr, rtErr, topScore, currentScore;
             Guid index = Guid.Empty;
 
-            // find the "nearby" features
-            /*
+            // find the "nearby" features            
             foreach (var feature in GroupedFeatures)
             {
                 mass = feature.Value.AverageMonoIsoMZ;
@@ -79,23 +74,7 @@ namespace RawTools.Algorithms.MatchBewteen
                     RtErrors.Add(feature.Key, rtErr);
                     MassErrors.Add(feature.Key, massErr);
                 }
-            }*/
-            
-            Parallel.ForEach(GroupedFeatures, (feature) =>
-            {
-                mass = feature.Value.AverageMonoIsoMZ;
-                rt = feature.Value.AverageRT;
-                massErr = Math.Abs(Feature.MonoisotopicMZ - mass) / mass * 1e6;
-                rtErr = Math.Abs(Feature.RT - rt) / rt;
-
-                if ((massErr < MassTol) & (rtErr < RtTol))
-                {
-                    //closeFeatures.Add(feature.Key);
-                    RtErrors.TryAdd(feature.Key, rtErr);
-                    MassErrors.TryAdd(feature.Key, massErr);
-                }
             }
-            );
 
             // check if it is empty
             if (RtErrors.Count() == 0)
@@ -145,7 +124,7 @@ namespace RawTools.Algorithms.MatchBewteen
             P.Start();
             foreach (var key in keys)
             {
-                features.AddAdditionalFeature(SingleRunFeatures[key], Run, rtTolerance, massTolerance);
+                features.AddAdditionalFeature(SingleRunFeatures[key], Run, 0, massTolerance);
                 P.Update();
             }
             P.Done();
@@ -155,14 +134,14 @@ namespace RawTools.Algorithms.MatchBewteen
         
         public static Guid GetClosestFeatureGroupIndex(this GroupedFeatureCollection GroupedFeatures, GroupedMs1Feature Feature, double RtTol, double MassTol)
         {
-            ConcurrentDictionary<Guid, double> RtErrors = new ConcurrentDictionary<Guid, double>();
-            ConcurrentDictionary<Guid, double> MassErrors = new ConcurrentDictionary<Guid, double>();
+            Dictionary<Guid, double> RtErrors = new Dictionary<Guid, double>();
+            Dictionary<Guid, double> MassErrors = new Dictionary<Guid, double>();
             
             double mass, rt, massErr, rtErr, topScore, currentScore;
             Guid index = Guid.Empty;
 
             // find the "nearby" features
-            Parallel.ForEach(GroupedFeatures, (candidateFeature) =>
+            foreach(var candidateFeature in GroupedFeatures)
             {
                 mass = candidateFeature.Value.AverageMonoIsoMZ;
                 rt = candidateFeature.Value.AverageRT;
@@ -172,11 +151,10 @@ namespace RawTools.Algorithms.MatchBewteen
                 if ((massErr < MassTol) & (rtErr < RtTol))
                 {
                     //closeFeatures.Add(feature.Key);
-                    RtErrors.TryAdd(candidateFeature.Key, rtErr);
-                    MassErrors.TryAdd(candidateFeature.Key, massErr);
+                    RtErrors.Add(candidateFeature.Key, rtErr);
+                    MassErrors.Add(candidateFeature.Key, massErr);
                 }
             }
-            );
 
             // check if it is empty
             if (RtErrors.Count() == 0)
@@ -226,6 +204,7 @@ namespace RawTools.Algorithms.MatchBewteen
         public static void AddToExistingGroup(this GroupedFeatureCollection Features, GroupedMs1Feature NewGroup, Guid Key)
         {
             Features[Key].CombineGroups(NewGroup);
+            Features[Key].UpdateAverageMassAndRT();
         }
 
         public static void GroupMultipleRunFeatures(this GroupedFeatureCollection RunA, GroupedFeatureCollection RunB, double RtTol, double MassTol)
@@ -260,6 +239,29 @@ namespace RawTools.Algorithms.MatchBewteen
             }
 
             return groupedFeatures;
+        }
+
+        public static void ScoreFeatures(this GroupedFeatureCollection Features)
+        {
+            ProgressIndicator P = new ProgressIndicator(Features.Count(), "Scoring grouped spectra");
+            P.Start();
+            foreach (var feature in Features)
+            {
+                foreach (var scan in feature.Value)
+                {
+                    foreach (var otherScan in feature.Value)
+                    {
+                        if ((otherScan.Key.Run == scan.Key.Run) & (otherScan.Key.Ms2Scan == scan.Key.Ms2Scan)) continue;
+
+                        double score = FitScores.ModifiedSteinScott(scan.Value, otherScan.Value);
+
+                        feature.Value.Scores.Add((scan.Key, otherScan.Key), score);
+                    }
+                }
+                feature.Value.UpdateAverageScore();
+                P.Update();
+            }
+            P.Done();
         }
     }
 }
