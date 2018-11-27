@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -53,6 +54,8 @@ namespace RawTools.Algorithms.ExtractData
             // populate the scan indices
             IEnumerable<int> scans = rawFile.GetFilteredScanEnumerator(rawFile.GetFilterFromString("")); // get all scans
 
+            ProgressIndicator P = new ProgressIndicator(scans.Count(), "Extracting scan indices");
+
             foreach (int scan in scans)
             {
                 IScanEvent scanEvent = rawFile.GetScanEventForScanNumber(scan);
@@ -72,7 +75,9 @@ namespace RawTools.Algorithms.ExtractData
                 {
                     ms3.Add(scan);
                 }
+                P.Update();
             }
+            P.Done();
 
             // determine the msorder of the experiment
             if ((ms1.Count > 0) & (ms2.Count == 0) & (ms3.Count == 0))
@@ -198,6 +203,128 @@ namespace RawTools.Algorithms.ExtractData
         }
 
         /// <summary>
+        /// Gets precursor scans by looking at the scan dependents of the scans. This is for DDA files.
+        /// </summary>
+        /// <param name="rawFile"></param>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        public static (PrecursorScanCollection PrecursorScans, ScanDependentsCollections ScanDependents)
+            DependentsAndPrecursorScansByScanDependentsParallel(IRawFileThreadManager rawFileManager, ScanIndex index)
+        {
+            //rawFile.SelectInstrument(Device.MS, 1);
+            Log.Information("Extracting scan dependents/precursor scans");
+            ConcurrentDictionary<int, PrecursorScanData> precursorScans = new ConcurrentDictionary<int, PrecursorScanData>();
+            ConcurrentDictionary<int, IScanDependents> dependents = new ConcurrentDictionary<int, IScanDependents>();
+
+            //Dictionary<int, PrecursorScanData> precursorScans = new Dictionary<int, PrecursorScanData>();
+            //Dictionary<int, IScanDependents> dependents = new Dictionary<int, IScanDependents>();
+
+            //ConcurrentBag<(int scan, PrecursorScanData data)> precursorBag = new ConcurrentBag<(int scan, PrecursorScanData data)>();
+            //ConcurrentBag<(int scan, IScanDependents data)> dependentsBag = new ConcurrentBag<(int scan, IScanDependents data)>();
+
+            var updateProgressLock = new object();
+            var addLockTarget = new object();
+
+            IEnumerable<int> scans = index.ScanEnumerators[MSOrderType.Ms];
+            ProgressIndicator progress = new ProgressIndicator(scans.Count(), "Indexing linked scan events");
+
+            var batches = scans.Chunk(300);
+
+            Parallel.ForEach(batches, batch =>
+           {
+               int ms2Scan = -1;
+               int ms3Scan = -1;
+               IScanDependents scanDependents;
+               var rawFile = rawFileManager.CreateThreadAccessor();
+               rawFile.SelectInstrument(Device.MS, 1);
+               foreach (int scan in batch)
+               {
+                   scanDependents = rawFile.GetScanDependents(scan, 4);
+                   dependents.AddOrUpdate(scan, scanDependents, (a, b) => b);
+                   //lock(addLockTarget)
+                   //{
+                   //    dependents.Add(scan, scanDependents);
+                   //}
+                   //dependentsBag.Add((scan, scanDependents));
+
+                   // check if the ms1 scan has dependent scans
+                   if (scanDependents == null)
+                   {
+                       return;
+                   }
+
+                   for (int i = 0; i < scanDependents.ScanDependentDetailArray.Length; i++)
+                   {
+                       if (index.AnalysisOrder == MSOrderType.Ms2) // it is ms2
+                       {
+                           ms2Scan = scanDependents.ScanDependentDetailArray[i].ScanIndex;
+                           precursorScans.AddOrUpdate(ms2Scan, new PrecursorScanData(ms2scan: ms2Scan, masterScan: scan), (a, b) => b);
+                           //lock(addLockTarget)
+                           //{
+                           //    precursorScans.Add(ms2Scan, new PrecursorScanData(ms2scan: ms2Scan, masterScan: scan));
+                           //}
+                           
+                           //precursorBag.Add((ms2Scan, new PrecursorScanData(ms2scan: ms2Scan, masterScan: scan)));
+                       }
+                       else // it is ms3
+                       {
+                           ms2Scan = scanDependents.ScanDependentDetailArray[i].ScanIndex;
+                           var ms2Dependents = rawFile.GetScanDependents(ms2Scan, 4).ScanDependentDetailArray;
+
+                           if (ms2Dependents.Length != 0) // make sure there is ms3 data
+                           {
+                               ms3Scan = ms2Dependents[0].ScanIndex;
+                               precursorScans.AddOrUpdate(ms2Scan, new PrecursorScanData(ms2scan: ms2Scan, masterScan: scan), (a, b) => b);
+                               //lock (addLockTarget)
+                               //{
+                               //    precursorScans.Add(ms2Scan, new PrecursorScanData(ms2scan: ms2Scan, masterScan: scan));
+                               //}
+                               //precursorBag.Add((ms2Scan, new PrecursorScanData(ms2scan: ms2Scan, masterScan: scan)));
+                               precursorScans.AddOrUpdate(ms3Scan, new PrecursorScanData(ms3scan: ms3Scan, ms2Scan: ms2Scan, masterScan: scan), (a, b) => b);
+                               //lock (addLockTarget)
+                               //{
+                               //    precursorScans.Add(ms3Scan, new PrecursorScanData(ms3scan: ms3Scan, ms2Scan: ms2Scan, masterScan: scan));
+                               //}
+                               //precursorBag.Add((ms3Scan, new PrecursorScanData(ms3scan: ms3Scan, ms2Scan: ms2Scan, masterScan: scan)));
+                           }
+                           else
+                           {
+                               // there is no ms3 scan, so we only add the ms2 scan
+                               precursorScans.AddOrUpdate(ms2Scan, new PrecursorScanData(ms2scan: ms2Scan, masterScan: scan), (a, b) => b);
+                               //lock (addLockTarget)
+                               //{
+                               //    precursorScans.Add(ms2Scan, new PrecursorScanData(ms2scan: ms2Scan, masterScan: scan));
+                               //}
+                               //precursorBag.Add((ms2Scan, new PrecursorScanData(ms2scan: ms2Scan, masterScan: scan)));
+                           }
+                       }
+                   }
+                   lock (updateProgressLock)
+                   {
+                       progress.Update();
+                   }
+               }
+               
+           });
+
+            progress.Done();
+
+            var outScans = new PrecursorScanCollection();
+            var outDependents = new ScanDependentsCollections();
+
+            foreach (var item in precursorScans)
+            {
+                outScans.Add(item.Key, item.Value);
+            }
+            foreach (var item in dependents)
+            {
+                outDependents.Add(item.Key, item.Value);
+            }
+
+            return (outScans, outDependents);
+        }
+
+        /// <summary>
         /// Gets precursor scans directly from the trailer extra. This is intended for DIA files, and by extension only for Ms2 experiments.
         /// </summary>
         /// <param name="rawFile"></param>
@@ -274,7 +401,6 @@ namespace RawTools.Algorithms.ExtractData
 
         private static TrailerExtraData ExtractOneTrailerExtra(IRawDataPlus rawFile, int scan, TrailerExtraIndices indices)
         {
-            rawFile.SelectInstrument(Device.MS, 1);
             TrailerExtraData trailerExtra = new TrailerExtraData();
             Double[] spsMasses;
 
@@ -307,19 +433,17 @@ namespace RawTools.Algorithms.ExtractData
 
             if (indices.HCDEnergy != -1)
             {
-                if (rawFile.GetTrailerExtraValue(scan, indices.HCDEnergy).ToString() != "N/A" &
-                    rawFile.GetTrailerExtraValue(scan, indices.HCDEnergy).ToString() != "")
+                var hcd = rawFile.GetTrailerExtraValue(scan, indices.HCDEnergy).ToString();
+                if (hcd != "N/A" & hcd != "" & !hcd.All(x => x == ' '))
                 {
                     try
                     {
-                        var test = rawFile.GetTrailerExtraValue(scan, indices.HCDEnergy).ToString();
                         trailerExtra.HCDEnergy = Convert.ToDouble(rawFile.GetTrailerExtraValue(scan, indices.HCDEnergy));
                     }
                     catch (FormatException)
                     {
                     }
                 }
-                
             }
 
             if (indices.SPSMasses.Count > 2) // if so, this means with have all SPS masses listed individually

@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -111,81 +112,112 @@ namespace RawTools.Algorithms.Analyze
         public static Dictionary<int, Distribution> IntensityDistributions(CentroidStreamCollection centroidStreams,
             SegmentScanCollection segmentScans, ScanIndex index)
         {
-            Dictionary<int, Distribution> intDist = new Dictionary<int, Distribution>();
-            var scans = index.allScans.Keys.ToArray();
+            ConcurrentDictionary<int, Distribution> intDist = new ConcurrentDictionary<int, Distribution>();
 
-            foreach (int scan in scans)
+            var batches = index.allScans.Keys.Chunk(300);
+
+            Parallel.ForEach(batches, batch =>
             {
-                if (index.allScans[scan].MassAnalyzer == MassAnalyzerType.MassAnalyzerFTMS)
+                foreach (int scan in batch)
                 {
-                    intDist.Add(scan, new Distribution(centroidStreams[scan].Intensities));
+                    if (index.allScans[scan].MassAnalyzer == MassAnalyzerType.MassAnalyzerFTMS)
+                    {
+                        intDist.AddOrUpdate(scan, new Distribution(centroidStreams[scan].Intensities), (a, b) => b);
+                    }
+                    else
+                    {
+                        intDist.AddOrUpdate(scan, new Distribution(segmentScans[scan].Intensities), (a, b) => b);
+                    }
                 }
-                else
-                {
-                    intDist.Add(scan, new Distribution(segmentScans[scan].Intensities));
-                }
-            }
+                
+            });
 
-            return intDist;
+            Dictionary<int, Distribution> distOut = new Dictionary<int, Distribution>();
+            foreach (var item in intDist)
+            {
+                distOut.Add(item.Key, item.Value);
+            }
+            return distOut;
         }
 
         public static Dictionary<int, double> SummedIntensities(CentroidStreamCollection centroidStreams,
             SegmentScanCollection segmentScans, ScanIndex index)
         {
-            Dictionary<int, double> summedInt = new Dictionary<int, double>();
-            var scans = index.allScans.Keys.ToArray();
+            ConcurrentDictionary<int, double> summedInt = new ConcurrentDictionary<int, double>();
+            var batches = index.allScans.Keys.Chunk(500);
 
-            foreach (int scan in scans)
+            Parallel.ForEach(batches, batch =>
             {
-                if (index.allScans[scan].MassAnalyzer == MassAnalyzerType.MassAnalyzerFTMS)
+                foreach (int scan in batch)
                 {
-                    summedInt.Add(scan, centroidStreams[scan].Intensities.Sum());
+                    if (index.allScans[scan].MassAnalyzer == MassAnalyzerType.MassAnalyzerFTMS)
+                    {
+                        summedInt.AddOrUpdate(scan, centroidStreams[scan].Intensities.Sum(), (a, b) => b);
+                    }
+                    else
+                    {
+                        summedInt.AddOrUpdate(scan, segmentScans[scan].Intensities.Sum(), (a, b) => b);
+                    }
                 }
-                else
-                {
-                    summedInt.Add(scan, segmentScans[scan].Intensities.Sum());
-                }
-            }
+            });
 
-            return summedInt;
+            var sumsOut = new Dictionary<int, double>();
+
+            foreach (var item in summedInt) sumsOut.Add(item.Key, item.Value);
+
+            return sumsOut;
         }
 
         public static Dictionary<int, double> Top80Frac(CentroidStreamCollection centroidStreams,
             SegmentScanCollection segmentScans, ScanIndex index)
         {
-            Dictionary<int, double> top80 = new Dictionary<int, double>();
-            var scans = index.allScans.Keys.ToArray();
+            ConcurrentDictionary<int, double> top80 = new ConcurrentDictionary<int, double>();
+            var batches = index.allScans.Keys.Chunk(300);
 
-            foreach (int scan in scans)
+            Parallel.ForEach(batches, batch =>
             {
-                if (index.allScans[scan].MassAnalyzer == MassAnalyzerType.MassAnalyzerFTMS)
+                foreach (int scan in batch)
                 {
-                    top80.Add(scan, centroidStreams[scan].Intensities.FractionOfScansConsumingTotalIntensity(percent: 80));
+                    if (index.allScans[scan].MassAnalyzer == MassAnalyzerType.MassAnalyzerFTMS)
+                    {
+                        top80.AddOrUpdate(scan, centroidStreams[scan].Intensities.FractionOfScansConsumingTotalIntensity(percent: 80), (a, b) => b);
+                    }
+                    else
+                    {
+                        top80.AddOrUpdate(scan, segmentScans[scan].Intensities.FractionOfScansConsumingTotalIntensity(percent: 80), (a, b) => b);
+                    }
                 }
-                else
-                {
-                    top80.Add(scan, segmentScans[scan].Intensities.FractionOfScansConsumingTotalIntensity(percent: 80));
-                }
-            }
+            });
 
-            return top80;
+            var topOut = new Dictionary<int, double>();
+
+            foreach (var item in top80) topOut.Add(item.Key, item.Value);
+
+            return topOut;
         }
 
         public static Dictionary<int, double> Ms1Interference(CentroidStreamCollection centroidStreams, PrecursorMassCollection precursorMasses,
             TrailerExtraCollection trailerExtras, PrecursorScanCollection precursorScans, ScanIndex index, double isoWindow)
         {
-            Dictionary<int, double> interference = new Dictionary<int, double>();
+            ConcurrentDictionary<int, double> interference = new ConcurrentDictionary<int, double>();
 
-            int[] scans = index.ScanEnumerators[index.AnalysisOrder];
+            var batches = index.ScanEnumerators[index.AnalysisOrder].Chunk(300);
 
-            foreach (int scan in scans)
+            Parallel.ForEach(batches, batch =>
             {
-                int preScan = precursorScans[scan].MasterScan;
-                interference.Add(scan, Algorithms.Ms1Interference.CalculateForOneScan(centroidStreams[preScan],
-                            precursorMasses[scan].MonoisotopicMZ, isoWindow, trailerExtras[scan].ChargeState));
-            }
+                foreach (int scan in batch)
+                {
+                    int preScan = precursorScans[scan].MasterScan;
+                    interference.AddOrUpdate(scan, Algorithms.Ms1Interference.CalculateForOneScan(centroidStreams[preScan],
+                                precursorMasses[scan].MonoisotopicMZ, isoWindow, trailerExtras[scan].ChargeState), (a, b) => b);
+                }
+            });
 
-            return interference;
+            var interferenceOut = new Dictionary<int, double>();
+
+            foreach (var item in interference) interferenceOut.Add(item.Key, item.Value);
+
+            return interferenceOut;
         }
 
         /* The instrument method is inaccesible on Linux and Mac, so we won't use this method to get the gradient time. Instead we will

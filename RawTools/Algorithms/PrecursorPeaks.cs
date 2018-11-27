@@ -263,54 +263,62 @@ namespace RawTools.Algorithms
         public static PrecursorPeakCollection AnalyzeAllPeaks(CentroidStreamCollection centroids, RetentionTimeCollection retentionTimes,
             PrecursorMassCollection precursorMasses, PrecursorScanCollection precursorScans, ScanIndex index)
         {
-            PrecursorPeakCollection peaks = new PrecursorPeakCollection();
-            PrecursorPeakData peak = new PrecursorPeakData();
+            ConcurrentDictionary<int, PrecursorPeakData> peaks = new ConcurrentDictionary<int, PrecursorPeakData>();
+            
             DistributionMultiple allPeaksAsymmetry = new DistributionMultiple();
             DistributionMultiple allPeaksWidths = new DistributionMultiple();
             var lockTarget = new object(); // this is so we can keep track of progress in the parallel loop
 
-            int[] scans = index.ScanEnumerators[MSOrderType.Ms2];
+            var batches = index.ScanEnumerators[MSOrderType.Ms2].Chunk(300);
 
-            ProgressIndicator P = new ProgressIndicator(total: scans.Length, message: "Analyzing precursor peaks");
+            ProgressIndicator P = new ProgressIndicator(total: index.ScanEnumerators[MSOrderType.Ms2].Length, message: "Analyzing precursor peaks");
             P.Start();
-            foreach(int scan in scans)
+
+            Parallel.ForEach(batches, batch =>
             {
-               peak = OnePeak(centroids, retentionTimes, precursorMasses[scan].MonoisotopicMZ, precursorScans[scan].MasterScan, ddScan: scan, index: index);
+                PrecursorPeakData peak;
+                foreach (int scan in batch)
+                {
+                    peak = OnePeak(centroids, retentionTimes, precursorMasses[scan].MonoisotopicMZ, precursorScans[scan].MasterScan, ddScan: scan, index: index);
 
-               if (peak.NScans < 5 | peak.PeakFound == false |
-                   peak.ContainsFirstMS1Scan | peak.ContainsLastMS1Scan)
-               {
-                   peak.PeakShape = null;
-               }
-               else
-               {
-                   var newShape = GetPeakShape(peak);
-                   peak.PeakShape = newShape;
-                   allPeaksAsymmetry.Add(newShape.Asymmetry);
-                   allPeaksWidths.Add(newShape.Width);
-               }
+                    if (peak.NScans < 5 | peak.PeakFound == false |
+                        peak.ContainsFirstMS1Scan | peak.ContainsLastMS1Scan)
+                    {
+                        peak.PeakShape = null;
+                    }
+                    else
+                    {
+                        var newShape = GetPeakShape(peak);
+                        peak.PeakShape = newShape;
+                        allPeaksAsymmetry.Add(newShape.Asymmetry);
+                        allPeaksWidths.Add(newShape.Width);
+                    }
 
-               peak.Area = CalculatePeakArea(peak);
+                    peak.Area = CalculatePeakArea(peak);
 
-               peaks[scan] = peak;
+                    peaks.AddOrUpdate(scan, peak, (a, b) => b);
 
-               lock(lockTarget)
-               {
-                   P.Update();
-               }
-            }
+                    lock (lockTarget)
+                    {
+                        P.Update();
+                    }
+                }
+            });
             P.Done();
+
+            var peaksOut = new PrecursorPeakCollection();
+            foreach (var item in peaks) peaksOut.Add(item.Key, item.Value);
 
             if (allPeaksWidths.P50.Count() == 0)
             {
-                peaks.PeakShapeMedians = new Data.Containers.PeakShape(width: new Width(), asymmetry: new Asymmetry(), peakMax: 0);
+                peaksOut.PeakShapeMedians = new Data.Containers.PeakShape(width: new Width(), asymmetry: new Asymmetry(), peakMax: 0);
             }
             else
             {
-                peaks.PeakShapeMedians = new Data.Containers.PeakShape(width: allPeaksWidths.GetMedians(), asymmetry: allPeaksAsymmetry.GetMedians(), peakMax: 0);
+                peaksOut.PeakShapeMedians = new Data.Containers.PeakShape(width: allPeaksWidths.GetMedians(), asymmetry: allPeaksAsymmetry.GetMedians(), peakMax: 0);
             }
 
-            return peaks;
+            return peaksOut;
         }
 
         private static PrecursorPeakCollection CalcPeakRetTimesAndInts(CentroidStreamCollection centroids, IRawDataPlus rawFile, RetentionTimeCollection retentionTimes,

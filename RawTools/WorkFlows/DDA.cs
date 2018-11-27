@@ -55,7 +55,7 @@ namespace RawTools.WorkFlows
             (CentroidStreamCollection centroidStreams, SegmentScanCollection segmentScans) = 
                 Extract.MsData(rawFile: rawFile.CreateThreadAccessor(), index: Index);
 
-            (PrecursorScanCollection precursorScans, ScanDependentsCollections scanDependents) = Extract.DependentsAndPrecursorScansByScanDependents(rawFile.CreateThreadAccessor(), Index);
+            (PrecursorScanCollection precursorScans, ScanDependentsCollections scanDependents) = Extract.DependentsAndPrecursorScansByScanDependentsParallel(rawFile, Index);
 
             PrecursorMassCollection precursorMasses = Extract.PrecursorMasses(rawFile.CreateThreadAccessor(), precursorScans, trailerExtras, Index);
 

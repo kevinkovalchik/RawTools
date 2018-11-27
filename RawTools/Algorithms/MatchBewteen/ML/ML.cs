@@ -75,8 +75,7 @@ namespace RawTools.Algorithms.MatchBewteen.ML
                 if (!(run1 & run2)) continue;
 
                 if ((from x in feat.Value.Values where x.Identified select 1).Count() < 1) continue;
-
-                bool match = true;
+                
                 string seq = string.Empty;
 
                 foreach (var scan in feat.Value)

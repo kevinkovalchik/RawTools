@@ -56,17 +56,23 @@ namespace RawTools.Algorithms.Analyze
 
             Console.WriteLine("Aggregating meta data");
 
+            Console.WriteLine("  MS1 isolation interference");
             metaData.Ms1IsolationInterference = MetaDataCalculations.Ms1Interference(centroidStreams, precursorMasses, trailerExtras,
                 precursorScans, index, isoWindow);
 
+            Console.WriteLine("  MS2 scan cycle density");
             metaData.MS2ScansPerCycle = MetaDataCalculations.MS2ScansPerCycle(scanDependents, index);
 
+            Console.WriteLine("  Ion injection time");
             metaData.FillTime = MetaDataCalculations.FillTimes(trailerExtras, index);
 
+            Console.WriteLine("  Duty cycle");
             metaData.DutyCycle = MetaDataCalculations.DutyCycle(retentionTimes, index);
 
+            Console.WriteLine("  Intensity distribution");
             metaData.IntensityDistribution = MetaDataCalculations.IntensityDistributions(centroidStreams, segmentScans, index);
 
+            Console.WriteLine("  Summed intensities");
             metaData.SummedIntensity = MetaDataCalculations.SummedIntensities(centroidStreams, segmentScans, index);
 
             metaData.FractionConsumingTop80PercentTotalIntensity = MetaDataCalculations.Top80Frac(centroidStreams, segmentScans, index);

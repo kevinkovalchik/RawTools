@@ -111,7 +111,7 @@ namespace RawTools
 
             IRawFileThreadManager rawFile1 = RawFileReaderFactory.CreateThreadManager(fileName: files[0]);
             IRawFileThreadManager rawFile2 = RawFileReaderFactory.CreateThreadManager(fileName: files[1]);
-
+            
             var staticRawFile1 = rawFile1.CreateThreadAccessor();
             var staticRawFile2 = rawFile2.CreateThreadAccessor();
             
