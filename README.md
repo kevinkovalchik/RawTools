@@ -6,9 +6,11 @@ The RawTools manuscript was just accepted for the Journal of Proteome Research s
 
 <br>
 
-### RawTools releases
+### RawTools releases and installation
 
 To obtain the latest compiled release of RawTools or to obtain an older version, please visit the [Releases page](https://github.com/kevinkovalchik/RawTools/releases). 
+
+If you need help installing and using RawTools, please visit the wiki page appropriate for your system and follow the instructions outlined [here](https://github.com/kevinkovalchik/RawTools/wiki).
 
 <br>
 
