@@ -114,9 +114,11 @@ namespace RawTools.Algorithms.Analyze
         {
             ConcurrentDictionary<int, Distribution> intDist = new ConcurrentDictionary<int, Distribution>();
 
-            var batches = index.allScans.Keys.Chunk(300);
+            int chunkSize = Constants.MultiThreading.ChunkSize(index.allScans.Keys.Count());
 
-            Parallel.ForEach(batches, batch =>
+            var batches = index.allScans.Keys.Chunk(chunkSize);
+
+            Parallel.ForEach(batches, Constants.MultiThreading.Options(), batch =>
             {
                 foreach (int scan in batch)
                 {
@@ -144,9 +146,12 @@ namespace RawTools.Algorithms.Analyze
             SegmentScanCollection segmentScans, ScanIndex index)
         {
             ConcurrentDictionary<int, double> summedInt = new ConcurrentDictionary<int, double>();
-            var batches = index.allScans.Keys.Chunk(500);
 
-            Parallel.ForEach(batches, batch =>
+            int chunkSize = Constants.MultiThreading.ChunkSize(index.allScans.Keys.Count());
+
+            var batches = index.allScans.Keys.Chunk(chunkSize);
+
+            Parallel.ForEach(batches, Constants.MultiThreading.Options(), batch =>
             {
                 foreach (int scan in batch)
                 {
@@ -172,9 +177,12 @@ namespace RawTools.Algorithms.Analyze
             SegmentScanCollection segmentScans, ScanIndex index)
         {
             ConcurrentDictionary<int, double> top80 = new ConcurrentDictionary<int, double>();
-            var batches = index.allScans.Keys.Chunk(300);
 
-            Parallel.ForEach(batches, batch =>
+            int chunkSize = Constants.MultiThreading.ChunkSize(index.allScans.Keys.Count());
+
+            var batches = index.allScans.Keys.Chunk(chunkSize);
+
+            Parallel.ForEach(batches, Constants.MultiThreading.Options(), batch =>
             {
                 foreach (int scan in batch)
                 {
@@ -201,9 +209,11 @@ namespace RawTools.Algorithms.Analyze
         {
             ConcurrentDictionary<int, double> interference = new ConcurrentDictionary<int, double>();
 
-            var batches = index.ScanEnumerators[index.AnalysisOrder].Chunk(300);
+            int chunkSize = Constants.MultiThreading.ChunkSize(index.ScanEnumerators[index.AnalysisOrder].Count());
 
-            Parallel.ForEach(batches, batch =>
+            var batches = index.ScanEnumerators[index.AnalysisOrder].Chunk(chunkSize);
+
+            Parallel.ForEach(batches, Constants.MultiThreading.Options(), batch =>
             {
                 foreach (int scan in batch)
                 {

@@ -108,6 +108,40 @@ namespace RawTools.Algorithms.MatchBewteen
             return index;
         }
 
+        public static List<Ms1Feature> GetNearbyFeatures(this GroupedFeatureCollection GroupedFeatures, Ms1Feature Feature, double RtTol, double MassTol)
+        {
+            Dictionary<Guid, double> RtErrors = new Dictionary<Guid, double>();
+            Dictionary<Guid, double> MassErrors = new Dictionary<Guid, double>();
+            double mass, rt, massErr, rtErr, topScore, currentScore;
+            List<Ms1Feature> listOut = new List<Ms1Feature>();
+
+            // find the "nearby" features            
+            foreach (var feature in GroupedFeatures)
+            {
+                mass = feature.Value.AverageMonoIsoMZ;
+                rt = feature.Value.AverageRT;
+                massErr = Math.Abs(Feature.MonoisotopicMZ - mass) / mass * 1e6;
+                rtErr = Math.Abs(Feature.RT - rt) / rt;
+
+                if ((massErr < MassTol) & (rtErr < RtTol))
+                {
+                    foreach (var ms1feature in feature.Value.Values)
+                    {
+                        mass = ms1feature.MonoisotopicMZ;
+                        rt = ms1feature.Peak.MaximumRetTime;
+                        massErr = Math.Abs(Feature.MonoisotopicMZ - mass) / mass * 1e6;
+                        rtErr = Math.Abs(Feature.RT - rt) / rt;
+                        if ((massErr < MassTol) & (rtErr < RtTol))
+                        {
+                            listOut.Add(ms1feature);
+                        }
+                    }
+                }
+            }
+
+            return listOut;
+        }
+
         public static GroupedFeatureCollection GroupSameRunFeatures(Ms1FeatureCollection SingleRunFeatures, string Run, double massTolerance, double rtTolerance)
         {
             GroupedFeatureCollection features = new GroupedFeatureCollection();

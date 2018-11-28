@@ -269,12 +269,14 @@ namespace RawTools.Algorithms
             DistributionMultiple allPeaksWidths = new DistributionMultiple();
             var lockTarget = new object(); // this is so we can keep track of progress in the parallel loop
 
-            var batches = index.ScanEnumerators[MSOrderType.Ms2].Chunk(300);
+            int chunkSize = Constants.MultiThreading.ChunkSize(index.ScanEnumerators[MSOrderType.Ms2].Count());
+
+            var batches = index.ScanEnumerators[MSOrderType.Ms2].Chunk(chunkSize);
 
             ProgressIndicator P = new ProgressIndicator(total: index.ScanEnumerators[MSOrderType.Ms2].Length, message: "Analyzing precursor peaks");
             P.Start();
 
-            Parallel.ForEach(batches, batch =>
+            Parallel.ForEach(batches, Constants.MultiThreading.Options(), batch =>
             {
                 PrecursorPeakData peak;
                 foreach (int scan in batch)

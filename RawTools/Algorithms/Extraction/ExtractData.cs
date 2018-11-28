@@ -227,10 +227,10 @@ namespace RawTools.Algorithms.ExtractData
 
             IEnumerable<int> scans = index.ScanEnumerators[MSOrderType.Ms];
             ProgressIndicator progress = new ProgressIndicator(scans.Count(), "Indexing linked scan events");
+            
+            var batches = scans.Chunk(Constants.MultiThreading.ChunkSize(scans.Count()));
 
-            var batches = scans.Chunk(300);
-
-            Parallel.ForEach(batches, batch =>
+            Parallel.ForEach(batches, Constants.MultiThreading.Options(), batch =>
            {
                int ms2Scan = -1;
                int ms3Scan = -1;

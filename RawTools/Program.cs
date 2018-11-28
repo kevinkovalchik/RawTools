@@ -305,6 +305,7 @@ namespace RawTools
             Console.WriteLine("All match: {0}, Don't: {1}", allIDsMatch, allIDsDontMatch);
             Console.WriteLine("Potential rescues: {0}", potentialRescue);
             Console.WriteLine("===========================");
+            Console.ReadKey();
             /*
             MultiRunFeatureCollection features = MatchBetween.CorrelateFeatures2(features1, features2, segmentScans1, segmentScans2, opts.TimePercentTol, opts.MassPPM);
 
