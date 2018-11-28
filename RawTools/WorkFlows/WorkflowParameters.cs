@@ -43,8 +43,8 @@ namespace RawTools.WorkFlows
         public WorkflowParameters(ArgumentParser.ParseOptions parseOptions)
         {
             ParseParams = new ParseWorkflowParameters();
-            Enum.TryParse(parseOptions.ExperimentType, true, out ExpType);
 
+            ExpType = ExperimentType.DDA;
             MgfIntensityCutoff = parseOptions.IntensityCutoff;
             MgfMassCutoff = parseOptions.MassCutOff;
             InputFiles = parseOptions.InputFiles;
@@ -65,7 +65,8 @@ namespace RawTools.WorkFlows
         {
             QcParams = new QcWorkflowParameters();
             Enum.TryParse(qcOptions.SearchAlgorithm, true, out QcParams.SearchAlgorithm);
-            Enum.TryParse(qcOptions.ExperimentType, true, out ExpType);
+
+            ExpType = ExperimentType.DDA;
 
             MgfIntensityCutoff = qcOptions.IntensityCutoff;
             MgfMassCutoff = qcOptions.MassCutOff;

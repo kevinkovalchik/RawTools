@@ -37,8 +37,6 @@ using RawTools.QC;
 using RawTools.WorkFlows;
 using RawTools.Algorithms.Analyze;
 using RawTools.Algorithms.ExtractData;
-using RawTools.Algorithms.MatchBewteen;
-using RawTools.Algorithms.MatchBewteen.ML;
 using RawTools.Utilities.MathStats;
 using System.Xml.Linq;
 using Serilog;
@@ -81,364 +79,14 @@ namespace RawTools
             return 0;
         }
 
-        static int DoStuff(ArgumentParser.TestOptions opts)
-        {
-            List<string> files = Directory.GetFiles(opts.Directory, "*.*", SearchOption.TopDirectoryOnly).Where(s => s.EndsWith(".raw", StringComparison.OrdinalIgnoreCase)).ToList();
-
-            WorkflowParameters parameters = new WorkflowParameters();
-            parameters.QcParams.NumberSpectra = 1000000;
-            parameters.QcParams.FixedScans = true;
-            parameters.QcParams.QcDirectory = opts.Directory + "/SearchData";
-            parameters.QcParams.SearchAlgorithm = SearchAlgorithm.XTandem;
-            parameters.QcParams.XMod = "15.99491@M";
-            parameters.QcParams.FixedMods = opts.FixedMods;
-            parameters.QcParams.XTandemDirectory = opts.XTandemDirectory;
-            parameters.QcParams.FastaDatabase = opts.FastaDatabase;
-
-            if (!RawFileInfo.CheckIfValid(files[0]) | !RawFileInfo.CheckIfValid(files[1]))
-            {
-                if (!RawFileInfo.CheckIfValid(files[0]))
-                {
-                    Console.WriteLine("{0} is not a valid raw file.", files[0]);
-                }
-
-                if (!RawFileInfo.CheckIfValid(files[1]))
-                {
-                    Console.WriteLine("{0} is not a valid raw file.", files[1]);
-                }
-                Environment.Exit(1);
-            }
-
-            IRawFileThreadManager rawFile1 = RawFileReaderFactory.CreateThreadManager(fileName: files[0]);
-            IRawFileThreadManager rawFile2 = RawFileReaderFactory.CreateThreadManager(fileName: files[1]);
-            
-            var staticRawFile1 = rawFile1.CreateThreadAccessor();
-            var staticRawFile2 = rawFile2.CreateThreadAccessor();
-            
-            staticRawFile1.SelectInstrument(Device.MS, 1);
-            staticRawFile2.SelectInstrument(Device.MS, 1);
-
-            staticRawFile1.CheckIfBoxcar();
-            staticRawFile2.CheckIfBoxcar();
-
-            ScanIndex Index1 = Extract.ScanIndices(rawFile1.CreateThreadAccessor());
-
-            TrailerExtraCollection trailerExtras1 = Extract.TrailerExtras(rawFile1.CreateThreadAccessor(), Index1);
-
-            MethodDataContainer methodData1 = Extract.MethodData(rawFile1.CreateThreadAccessor(), Index1);
-
-            (CentroidStreamCollection centroidStreams1, SegmentScanCollection segmentScans1) =
-                Extract.MsData(rawFile: rawFile1.CreateThreadAccessor(), index: Index1);
-
-            (PrecursorScanCollection precursorScans1, ScanDependentsCollections scanDependents1) = Extract.DependentsAndPrecursorScansByScanDependents(rawFile1.CreateThreadAccessor(), Index1);
-
-            PrecursorMassCollection precursorMasses1 = Extract.PrecursorMasses(rawFile1.CreateThreadAccessor(), precursorScans1, trailerExtras1, Index1);
-
-            RetentionTimeCollection retentionTimes1 = Extract.RetentionTimes(rawFile1.CreateThreadAccessor(), Index1);
-
-            if (opts.RefineMassCharge)
-            {
-                ProgressIndicator P = new ProgressIndicator(Index1.ScanEnumerators[MSOrderType.Ms2].Length, "Refining precursor charge state and monoisotopic mass");
-                P.Start();
-                int refinedCharge;
-                double refinedMass;
-
-
-                foreach (int scan in Index1.ScanEnumerators[MSOrderType.Ms2])
-                {
-                    // refine precursor mass and charge
-                    (refinedCharge, refinedMass) =
-                        MonoIsoPredictor.GetMonoIsotopicMassCharge(centroidStreams1[precursorScans1[scan].MasterScan],
-                        precursorMasses1[scan].ParentMZ, trailerExtras1[scan].ChargeState);
-                    trailerExtras1[scan].ChargeState = refinedCharge;
-                    precursorMasses1[scan].MonoisotopicMZ = refinedMass;
-                    P.Update();
-                }
-                P.Done();
-            }
-
-            PrecursorPeakCollection peakData1 = AnalyzePeaks.AnalyzeAllPeaks(centroidStreams1, retentionTimes1, precursorMasses1, precursorScans1, Index1);
-            
-            if (!opts.StaticSearch)
-            {
-                Search.WriteSearchMGF(parameters, centroidStreams1, segmentScans1, retentionTimes1, precursorMasses1, precursorScans1, trailerExtras1, methodData1,
-                        Index1, staticRawFile1.FileName, parameters.QcParams.FixedScans);
-
-                Search.RunSearch(parameters, methodData1, staticRawFile1.FileName);
-            }
-
-            ScanIndex Index2 = Extract.ScanIndices(rawFile2.CreateThreadAccessor());
-
-            TrailerExtraCollection trailerExtras2 = Extract.TrailerExtras(rawFile2.CreateThreadAccessor(), Index2);
-
-            MethodDataContainer methodData2 = Extract.MethodData(rawFile2.CreateThreadAccessor(), Index2);
-
-            (CentroidStreamCollection centroidStreams2, SegmentScanCollection segmentScans2) =
-                Extract.MsData(rawFile: rawFile2.CreateThreadAccessor(), index: Index2);
-
-            (PrecursorScanCollection precursorScans2, ScanDependentsCollections scanDependents2) = Extract.DependentsAndPrecursorScansByScanDependents(rawFile2.CreateThreadAccessor(), Index2);
-
-            PrecursorMassCollection precursorMasses2 = Extract.PrecursorMasses(rawFile2.CreateThreadAccessor(), precursorScans2, trailerExtras2, Index2);
-
-            RetentionTimeCollection retentionTimes2 = Extract.RetentionTimes(rawFile2.CreateThreadAccessor(), Index2);
-
-            if (opts.RefineMassCharge)
-            {
-                ProgressIndicator P = new ProgressIndicator(Index2.ScanEnumerators[MSOrderType.Ms2].Length, "Refining precursor charge state and monoisotopic mass");
-                P.Start();
-                int refinedCharge;
-                double refinedMass;
-
-
-                foreach (int scan in Index2.ScanEnumerators[MSOrderType.Ms2])
-                {
-                    // refine precursor mass and charge
-                    (refinedCharge, refinedMass) =
-                        MonoIsoPredictor.GetMonoIsotopicMassCharge(centroidStreams2[precursorScans2[scan].MasterScan],
-                        precursorMasses2[scan].ParentMZ, trailerExtras2[scan].ChargeState);
-                    trailerExtras2[scan].ChargeState = refinedCharge;
-                    precursorMasses2[scan].MonoisotopicMZ = refinedMass;
-                    P.Update();
-                }
-                P.Done();
-            }
-
-            PrecursorPeakCollection peakData2 = AnalyzePeaks.AnalyzeAllPeaks(centroidStreams2, retentionTimes2, precursorMasses2, precursorScans2, Index2);
-
-
-            if (!opts.StaticSearch)
-            {
-                Search.WriteSearchMGF(parameters, centroidStreams2, segmentScans2, retentionTimes2, precursorMasses2, precursorScans2, trailerExtras2, methodData2,
-                    Index2, staticRawFile2.FileName, parameters.QcParams.FixedScans);
-
-                Search.RunSearch(parameters, methodData2, staticRawFile2.FileName);
-            }
-
-            PsmDataCollection psms1 = MatchBetween.LoadPsmData(retentionTimes1, precursorScans1, parameters, staticRawFile1.FileName);
-            PsmDataCollection psms2 = MatchBetween.LoadPsmData(retentionTimes2, precursorScans2, parameters, staticRawFile2.FileName);
-
-            Ms1FeatureCollection features1 = MatchBetween.AggregateMs1Features(peakData1, psms1, precursorMasses1, centroidStreams1, segmentScans1, methodData1);
-            Ms1FeatureCollection features2 = MatchBetween.AggregateMs1Features(peakData2, psms2, precursorMasses2, centroidStreams2, segmentScans2, methodData2);
-
-            //using (var f = new StreamWriter(Path.Combine(staticRawFile1.FileName + ".massdrift.txt")))
-            //{
-            //    foreach (var x in features1) if (x.Value.PSM != null) f.WriteLine("{0}\t{1}", retentionTimes1[x.Value.Peak.Ms2Scan], x.Value.PSM.MassDrift);
-            //}
-
-            //MultiRunFeatureCollection features = AlignTimeAndMass.MatchFeatures(psms1, psms2, peakData1, peakData2, precursorMasses1,
-            //    precursorMasses2, opts.TimePercentTol, opts.MassPPM);
-
-            //MultiRunFeatureCollection features = AlignTimeAndMass.CorrelateFeatures(psms1, psms2, peakData1, peakData2, precursorMasses1, precursorMasses2, opts.TimePercentTol, opts.MassPPM);
-
-            if (opts.Align)
-            {
-                AlignRetentionTimes.AlignRT(features1, features2, segmentScans1, segmentScans2, opts.ExpectationValue);
-            }
-
-            Console.WriteLine("testing out the new thing");
-            var featuresList = new List<Ms1FeatureCollection>() { features1, features2 };
-            var testFeatures1 = MultiRunFeatureMatch.ProcessAll(featuresList, new List<string>() { "Run1", "Run2" }, opts.TimePercentTol, opts.MassPPM);
-            testFeatures1.ScoreFeatures();
-
-            Run.Go(testFeatures1);
-
-            int totalScans = 0;
-            int totalScansWId = 0;
-            int totalFeatures = 0;
-            int totalFeaturesWithMoreThan1Scan = 0;
-            int allIDsMatch = 0;
-            int allIDsDontMatch = 0;
-            int potentialRescue = 0;
-            int matchedBetween = 0;
-            int scansMatchedBetween = 0;
-
-            totalScans = (from x in testFeatures1.Values select x.Count()).Sum();
-
-            foreach (var feat in testFeatures1)
-            {
-                totalFeatures++;
-                totalScansWId += (from x in feat.Value.Values where x.Identified select 1).Count();
-
-                bool run1 = false;
-                bool run2 = false;
-
-                foreach (var scanevent in feat.Value)
-                {
-                    if (scanevent.Key.Run == "Run1") run1 = true;
-                    if (scanevent.Key.Run == "Run2") run2 = true;
-                }
-
-                if (run1 & run2) matchedBetween++;
-                if (run1 & run2) scansMatchedBetween += feat.Value.Count();
-
-                if ((from x in feat.Value.Values where x.Identified select 1).Count() < 1) continue;
-                totalFeaturesWithMoreThan1Scan++;
-
-                bool match = true;
-                string seq = string.Empty;
-
-                foreach (var scanevent in feat.Value)
-                {
-                    if (!scanevent.Value.Identified) { potentialRescue++; continue; }
-
-                    if (seq == scanevent.Value.PSM.Seq)
-                    { }
-                    else if (seq == string.Empty)
-                    {
-                        seq = scanevent.Value.PSM.Seq;
-                    }
-                    else
-                    {
-                        match = false;
-                        break;
-                    }
-                }
-                
-                if (match) allIDsMatch++;
-                else allIDsDontMatch++;
-            }
-
-            Console.WriteLine("===========================");
-            Console.WriteLine("Total scans:{0}, WithID:{1}, Total features:{2}, With more than 1 PSM: {3}", totalScans, totalScansWId, totalFeatures, totalFeaturesWithMoreThan1Scan);
-            Console.WriteLine("Features matched between runs: {0}", matchedBetween);
-            Console.WriteLine("Scans matched between and within runs: {0}", scansMatchedBetween);
-            Console.WriteLine("All match: {0}, Don't: {1}", allIDsMatch, allIDsDontMatch);
-            Console.WriteLine("Potential rescues: {0}", potentialRescue);
-            Console.WriteLine("===========================");
-            Console.ReadKey();
-            /*
-            MultiRunFeatureCollection features = MatchBetween.CorrelateFeatures2(features1, features2, segmentScans1, segmentScans2, opts.TimePercentTol, opts.MassPPM);
-
-            //SpectraCorrelation.ScoreMultiRunSpectra(features, segmentScans1, segmentScans2);
-            StreamWriter score = new StreamWriter(Path.Combine(opts.Directory, "AllScores.csv"));
-            //List<double> scores = new List<double>();
-            //foreach (var feature in features) foreach (var s in feature.Value.AllScores.Values) score.WriteLine(s);
-            score.Close();
-
-            score = new StreamWriter(Path.Combine(opts.Directory, "MatchedScores.csv"));
-            foreach (var feature in features) if (feature.Value.ConfirmSeqMatch) score.WriteLine(feature.Value.XCorr);
-            score.Close();
-
-            score = new StreamWriter(Path.Combine(opts.Directory, "UnmatchedScores.csv"));
-            foreach (var feature in features) foreach (var s in feature.Value.LowScores.Values) score.WriteLine(s);
-            score.Close();
-
-            int NoId = 0;
-            int OnlyIn1 = 0;
-            int IdIn1FeatureIn2 = 0;
-            int IdInBoth = 0;
-            int FeatureIn1IdIn2 = 0;
-            int OnlyIn2 = 0;
-            int SeqMatch = 0;
-
-            StreamWriter NeitherID = new StreamWriter(Path.Combine(opts.Directory, "IdInNeither.csv"));
-            StreamWriter BothID = new StreamWriter(Path.Combine(opts.Directory, "IdInBoth.csv"));
-            StreamWriter IdInFile1 = new StreamWriter(Path.Combine(opts.Directory, "IdInFile1.csv"));
-            StreamWriter IdInFile2 = new StreamWriter(Path.Combine(opts.Directory, "IdInFile2.csv"));
-            NeitherID.WriteLine("RT1,RT2,Mass1,Mass2");
-            BothID.WriteLine("RT1,RT2,Mass1,Mass2");
-            IdInFile1.WriteLine("RT1,RT2,Mass1,Mass2");
-            IdInFile2.WriteLine("RT1,RT2,Mass1,Mass2");
-
-            List<(int scan1, int scan2)> IdInNeither = new List<(int scan1, int scan2)>();
-            List<(int scan1, int scan2)> BothIdScans = new List<(int scan1, int scan2)>();
-            List<(int scan1, int scan2)> IdInFile1Scans = new List<(int scan1, int scan2)>();
-            List<(int scan1, int scan2)> IdInFile2Scans = new List<(int scan1, int scan2)>();
-
-            foreach (var feature in features.Values)
-            {
-                if (feature.IdIn1 & feature.FoundIn1 & feature.IdIn2 & feature.FoundIn2)
-                {
-                    IdInBoth += 1;
-                    BothID.WriteLine("{0},{1},{2},{3}", feature.RT1, feature.RT2, feature.Mass1, feature.Mass2);
-                    BothIdScans.Add((feature.Ms2Scan1, feature.Ms2Scan2));
-
-                    if (feature.ConfirmSeqMatch)
-                    {
-                        SeqMatch += 1;
-                    }
-                }
-                else if (feature.IdIn1 & feature.FoundIn1 & feature.FoundIn2 & !feature.IdIn2)
-                {
-                    IdIn1FeatureIn2 += 1;
-                    IdInFile1.WriteLine("{0},{1},{2},{3}", feature.RT1, feature.RT2, feature.Mass1, feature.Mass2);
-                    IdInFile1Scans.Add((feature.Ms2Scan1, feature.Ms2Scan2));
-
-                }
-                else if (feature.IdIn1 & feature.FoundIn1 & !feature.FoundIn2 & !feature.FoundIn2)
-                {
-                    OnlyIn1 += 1;
-                }
-                else if (feature.IdIn2 & feature.FoundIn2 & feature.FoundIn1 & !feature.IdIn1)
-                {
-                    FeatureIn1IdIn2 += 1;
-                    IdInFile2.WriteLine("{0},{1},{2},{3}", feature.RT1, feature.RT2, feature.Mass1, feature.Mass2);
-                    IdInFile2Scans.Add((feature.Ms2Scan1, feature.Ms2Scan2));
-                }
-                else if (feature.IdIn2 & feature.FoundIn2 & !feature.FoundIn1 & !feature.IdIn1)
-                {
-                    OnlyIn2 += 1;
-                }
-                else if (feature.FoundIn1 & feature.FoundIn2 & !feature.IdIn1 & !feature.IdIn2)
-                {
-                    NoId += 1;
-                    NeitherID.WriteLine("{0},{1},{2},{3}", feature.RT1, feature.RT2, feature.Mass1, feature.Mass2);
-                    IdInNeither.Add((feature.Ms2Scan1, feature.Ms2Scan2));
-                }
-            }
-
-            BothID.Close();
-            IdInFile1.Close();
-            IdInFile2.Close();
-
-            Console.WriteLine("\n");
-            Console.WriteLine("Features ID'd in both: {0}", IdInBoth);
-            Console.WriteLine("Features ID'd in neither: {0}", NoId);
-            Console.WriteLine("Features found only in file 1: {0}", OnlyIn1);
-            Console.WriteLine("Features found only in file 2: {0}", OnlyIn2);
-            Console.WriteLine("Features found in both, but only ID'd in file 1: {0}", IdIn1FeatureIn2);
-            Console.WriteLine("Features found in both, but only ID'd in file 2: {0}", FeatureIn1IdIn2);
-            Console.WriteLine("Confirmed sequence matches: {0}%", Convert.ToDouble(SeqMatch) / IdInBoth * 100);
-
-            using (StreamWriter f = new StreamWriter(Path.Combine(opts.Directory, "results.txt")))
-            {
-                f.WriteLine("File 1: {0}", staticRawFile1.FileName);
-                f.WriteLine("File 2: {0}", staticRawFile2.FileName);
-                f.WriteLine();
-
-                f.WriteLine("Features ID'd in both: {0}", IdInBoth);
-                f.WriteLine("Features found only in file 1: {0}", OnlyIn1);
-                f.WriteLine("Features found only in file 2: {0}", OnlyIn2);
-                f.WriteLine("Features found in both, but only ID'd in file 1: {0}", IdIn1FeatureIn2);
-                f.WriteLine("Features found in both, but only ID'd in file 2: {0}", FeatureIn1IdIn2);
-                f.WriteLine("Confirmed sequence matches: {0}%", Convert.ToDouble(SeqMatch) / IdInBoth * 100);
-            }
-
-            var centroids = new List<CentroidStreamCollection>() { centroidStreams1, centroidStreams2 };
-            var segments = new List<SegmentScanCollection>() { segmentScans1, segmentScans2 };
-            var retentionTimes = new List<RetentionTimeCollection>() { retentionTimes1, retentionTimes2 };
-            var precursorMasses = new List<PrecursorMassCollection>() { precursorMasses1, precursorMasses2 };
-            var trailerExtras = new List<TrailerExtraCollection>() { trailerExtras1, trailerExtras2 };
-            var rawFileNames = new List<string>() { staticRawFile1.FileName, staticRawFile2.FileName };
-            var featuresFromBoth = new List<Ms1FeatureCollection>() { features1, features2 };
-
-            MatchedMgfWriter.WriteMGF(parameters, BothIdScans, Path.Combine(opts.Directory, "IdInBoth.mgf"), featuresFromBoth, centroids, segments,
-                retentionTimes, precursorMasses, trailerExtras, methodData1, rawFileNames);
-
-            MatchedMgfWriter.WriteMGF(parameters, IdInFile1Scans, Path.Combine(opts.Directory, "IdInFile1.mgf"), featuresFromBoth, centroids, segments,
-                retentionTimes, precursorMasses, trailerExtras, methodData1, rawFileNames);
-
-            MatchedMgfWriter.WriteMGF(parameters, IdInFile2Scans, Path.Combine(opts.Directory, "IdInFile2.mgf"), featuresFromBoth, centroids, segments,
-                retentionTimes, precursorMasses, trailerExtras, methodData1, rawFileNames);
-            */
-            return 0;
-        }
+        static int DoStuff(ArgumentParser.TestOptions opts) { return 0; }
 
         static int DoStuff(ArgumentParser.QcOptions opts)
         {
             Log.Information("Starting QC. Identipy: {Identipy}", opts.Identipy);
             //Console.WriteLine("\n");
             
+            /*
             if (new List<string>() { "DDA", "DIA", "PRM" }.Contains(opts.ExperimentType))
             { }
             else
@@ -446,7 +94,7 @@ namespace RawTools
                 Log.Error("Experiment type of {ExpType} was passed", opts.ExperimentType);
                 Console.WriteLine("Experiment type must be one of ['DDA', 'DIA', 'PRM'], not {0}", opts.ExperimentType);
                 Environment.Exit(1);
-            }
+            }*/
 
             if (opts.SearchAlgorithm != null & !(new List<string>() { "identipy", "xtandem", "None" }.Contains(opts.SearchAlgorithm)))
             {
@@ -586,14 +234,14 @@ namespace RawTools
                     return 1;
                 }
             }
-
+            /*
             // is the experiment type valid?
             if (! new List<string>() { "DDA", "DIA", "PRM" }.Contains(opts.ExperimentType))
             {
                 Log.Error("Experiment type of {ExpType} was passed", opts.ExperimentType);
                 Console.WriteLine("Experiment type must be one of ['DDA', 'DIA', 'PRM'], not {0}", opts.ExperimentType);
                 Environment.Exit(1);
-            }
+            }*/
 
 
             System.Diagnostics.Stopwatch singleFileTime = new System.Diagnostics.Stopwatch();
