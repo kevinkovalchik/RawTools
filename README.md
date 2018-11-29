@@ -16,6 +16,8 @@ If you need help installing and using RawTools, please visit the wiki page appro
 
 ### Notable news
 
+* The R Shiny application now has greater support for axes customisation. We have also added the ability to highlight points on QC plots. Lastly, we have added a new 'multi-plot' page where multiple scan matrix files can be input at once and plots for all files will be generated alongside one another in the same space. This version is already on the GitHub page, and will be hosted to the web in the coming days.  [2018-11-29]
+
 * We are sorting out some issues with the image file downloads not working. This issue is proving more difficult than initially anticipated, but we are still working on it. Note - if you [download](https://github.com/kevinkovalchik/RawTools/tree/master/documentation/manuscript/RawTools_RShiny_Application) the Shiny application and run it locally, the file downloads will work.  [2018-11-21]
 
 * The Shiny application has been updated to allow downloading of pdf versions of the created plots. These images can be imported to programs like Adobe Illustrator and will be treated as vector images. We have also added the ability to mouseover data points to see values, as well as corrected some bugs. We have also added the ability to add mean and median lines to the QC plots. The latest Shiny web interface is available [here](https://rawtoolsqcdv.bcgsc.ca/). [2018-11-07] 
