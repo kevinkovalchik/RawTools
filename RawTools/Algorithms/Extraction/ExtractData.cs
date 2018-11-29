@@ -158,7 +158,8 @@ namespace RawTools.Algorithms.ExtractData
             int ms3Scan = -1;
             IEnumerable<int> scans = index.ScanEnumerators[MSOrderType.Ms];
             ProgressIndicator progress = new ProgressIndicator(scans.Count(), "Indexing linked scan events");
-            foreach (int scan in scans)
+            
+                foreach (int scan in scans)
             {
                 var scanDependents = rawFile.GetScanDependents(scan, 4);
                 dependents[scan] = scanDependents;
