@@ -54,7 +54,7 @@ namespace RawTools.Algorithms.Analyze
 
             double isoWindow = MetaDataCalculations.Ms1IsoWindow(methodData);
 
-            Console.WriteLine("Aggregating meta data");
+            Console.WriteLine("Calculating meta data");
 
             Console.WriteLine("  MS1 isolation interference");
             metaData.Ms1IsolationInterference = MetaDataCalculations.Ms1Interference(centroidStreams, precursorMasses, trailerExtras,
