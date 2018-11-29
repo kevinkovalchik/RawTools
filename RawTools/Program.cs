@@ -130,8 +130,12 @@ namespace RawTools
 
             }
 
+            Console.WriteLine();
+
             foreach (var file in files)
             {
+                Console.WriteLine(Path.GetFileName(file));
+                Console.WriteLine("----------------------------------------");
                 using (IRawDataPlus rawFile = RawFileReaderFactory.ReadFile(file))
                 {
                     rawFile.SelectMsData();
@@ -143,14 +147,18 @@ namespace RawTools
 
                     Dictionary<int, ISingleValueStatusLog> log = new Dictionary<int, ISingleValueStatusLog>();
 
+                    ProgressIndicator P = new ProgressIndicator(logInfo.Count(), "Preparing log data");
+                    P.Start();
                     for (int i = 0; i < logInfo.Count(); i++)
                     {
                         log.Add(i, rawFile.GetStatusLogAtPosition(i));
+                        P.Update();
                     }
+                    P.Done();
 
                     using (StreamWriter f = new StreamWriter(logName))
                     {
-                        ProgressIndicator P = new ProgressIndicator(numberOfLogs, $"Writing {Path.GetFileName(file)} instrument log");
+                        P = new ProgressIndicator(numberOfLogs, $"Writing log");
                         P.Start();
                         f.Write("Time\t");
                         foreach (var x in logInfo)
@@ -180,6 +188,7 @@ namespace RawTools
                         P.Done();
                     }
                 }
+                Console.WriteLine("\n");
             }
             return 0;
         }
