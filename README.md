@@ -16,7 +16,7 @@ If you need help installing and using RawTools, please visit the wiki page appro
 
 ### Notable news
 
-* The R Shiny application now has greater support for plot customisation. We have also added the ability to highlight points on QC plots. Lastly, we have added a new 'multi-plot' page where multiple scan matrix files can be input at once and plots for all files will be generated alongside one another in the same space. This version is already on the GitHub page, and will be hosted to the web in the coming days.  [2018-11-29]
+* The R Shiny application now has greater support for plot customisation. We have also added the ability to highlight points on QC plots. Lastly, we have added a new 'multi-plot' page where multiple scan matrix files can be input at once and plots for all files will be generated alongside one another in the same space. The latest version is live on the web and available here.  [2018-11-29]
 
 * We are sorting out some issues with the image file downloads not working. This issue is proving more difficult than initially anticipated, but we are still working on it. Note - if you [download](https://github.com/kevinkovalchik/RawTools/tree/master/documentation/manuscript/RawTools_RShiny_Application) the Shiny application and run it locally, the file downloads will work.  [2018-11-21]
 
