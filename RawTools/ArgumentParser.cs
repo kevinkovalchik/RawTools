@@ -26,9 +26,23 @@ using CommandLine.Text;
 
 namespace RawTools.ArgumentParser
 {
-    [Verb("testing", HelpText = "A place to contain testing routines during development")]
+    [Verb("logdump", HelpText = "Dumps the instrument log for the specified file(s) into text format.")]
+    class LogDumpOptions
+    {
+        [Option('f', "files", SetName = "files", HelpText = "Indicates input file(s) to be processed, separated by a space if there are multiple files. " +
+            "Must be Thermo .raw files. You must use either -f or -d to indicate the file(s) to process.")]
+        public IEnumerable<string> InputFiles { get; set; }
+
+        [Option('d', "directory", SetName = "directory", HelpText = "Indicates directory to be processed. Files other than .raw files will be ignored. " +
+            "You must use either -d or -f to indicate the file(s) to process.")]
+        public string InputDirectory { get; set; }
+    }
+
+    [Verb("testing", HelpText = "A place to contain testing routines during development.")]
     class TestOptions
     {
+        [Option('f', "file", SetName = "files", HelpText = "Indicates input file to be processed.")]
+        public IEnumerable<string> InputFiles { get; set; }
     }
 
     [Verb("examples", HelpText = "Display some common peptide modification in mass@aa format and examples of usage.")]

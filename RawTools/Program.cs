@@ -50,27 +50,138 @@ namespace RawTools
     {
         static void Main(string[] args)
         {
-            if(Environment.OSVersion.Platform == PlatformID.Unix | Environment.OSVersion.Platform == PlatformID.MacOSX)
+            if (Environment.OSVersion.Platform == PlatformID.Unix | Environment.OSVersion.Platform == PlatformID.MacOSX)
             {
                 Console.Out.NewLine = "\n\n";
             }
-            
+
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Debug()
                 .WriteTo.File("rawtools_log.txt", rollOnFileSizeLimit: true, retainedFileCountLimit: 3, fileSizeLimitBytes: 2097152)
                 .CreateLogger();
 
             Log.Information("Program started with arguments: {0}", String.Join(" ", args));
-            
 
-            Parser.Default.ParseArguments<ArgumentParser.ParseOptions, ArgumentParser.QcOptions, ArgumentParser.TestOptions, ArgumentParser.ExampleMods>(args)
+
+            Parser.Default.ParseArguments<ArgumentParser.ParseOptions, ArgumentParser.QcOptions, ArgumentParser.TestOptions, ArgumentParser.ExampleMods, ArgumentParser.LogDumpOptions>(args)
                 .WithParsed<ArgumentParser.ParseOptions>(opts => DoStuff(opts))
                 .WithParsed<ArgumentParser.QcOptions>(opts => DoStuff(opts))
                 .WithParsed<ArgumentParser.TestOptions>(opts => DoStuff(opts))
                 .WithParsed<ArgumentParser.ExampleMods>(opts => DoStuff(opts))
+                .WithParsed<ArgumentParser.LogDumpOptions>(opts => DoStuff(opts))
                 .WithNotParsed((errs) => HandleParseError(args));
 
             Log.CloseAndFlush();
+        }
+
+        static int DoStuff(ArgumentParser.LogDumpOptions opts)
+        {
+            List<string> files = new List<string>();
+
+            if (opts.InputFiles.Count() > 0) // did the user give us a list of files?
+            {
+                List<string> problems = new List<string>();
+                files = opts.InputFiles.ToList();
+
+                // check if the list provided contains only .raw files
+                foreach (string file in files)
+                {
+
+                    if (!file.EndsWith(".raw", StringComparison.OrdinalIgnoreCase))
+                    {
+                        problems.Add(file);
+                    }
+                }
+
+                if (problems.Count() == 1)
+                {
+                    Console.WriteLine("\nERROR: {0} does not appear to be a .raw file. Invoke '>RawTools --help' if you need help.", problems.ElementAt(0));
+                    Log.Error("Invalid file provided: {0}", problems.ElementAt(0));
+
+                    return 1;
+                }
+
+                if (problems.Count() > 1)
+                {
+                    Console.WriteLine("\nERROR: The following {0} files do not appear to be .raw files. Invoke '>RawTools --help' if you need help." +
+                        "\n\n{1}", problems.Count(), String.Join("\n", problems));
+                    Log.Error("Invalid files provided: {0}", String.Join(" ", problems));
+                    return 1;
+                }
+
+                Log.Information("Files to be processed, provided as list: {0}", String.Join(" ", files));
+            }
+
+            else // did the user give us a directory?
+            {
+                if (Directory.Exists(opts.InputDirectory))
+                {
+                    files = Directory.GetFiles(opts.InputDirectory, "*.*", SearchOption.TopDirectoryOnly)
+                    .Where(s => s.EndsWith(".raw", StringComparison.OrdinalIgnoreCase)).ToList();
+                }
+                else
+                {
+                    Console.WriteLine("ERROR: The provided directory does not appear to be valid.");
+                    Log.Error("Invalid directory provided: {0}", opts.InputDirectory);
+                    return 1;
+                }
+
+                Log.Information("Files to be processed, provided as directory: {0}", String.Join(" ", files));
+
+            }
+
+            foreach (var file in files)
+            {
+                using (IRawDataPlus rawFile = RawFileReaderFactory.ReadFile(file))
+                {
+                    rawFile.SelectMsData();
+
+                    var numberOfLogs = rawFile.GetStatusLogEntriesCount();
+                    var logInfo = rawFile.GetStatusLogHeaderInformation();
+
+                    string logName = file + ".INST_LOG.txt";
+
+                    Dictionary<int, ISingleValueStatusLog> log = new Dictionary<int, ISingleValueStatusLog>();
+
+                    for (int i = 0; i < logInfo.Count(); i++)
+                    {
+                        log.Add(i, rawFile.GetStatusLogAtPosition(i));
+                    }
+
+                    using (StreamWriter f = new StreamWriter(logName))
+                    {
+                        ProgressIndicator P = new ProgressIndicator(numberOfLogs, $"Writing {Path.GetFileName(file)} instrument log");
+                        P.Start();
+                        f.Write("Time\t");
+                        foreach (var x in logInfo)
+                        {
+                            f.Write(x.Label + "\t");
+                        }
+                        f.Write("\n");
+
+                        for (int i = 0; i < numberOfLogs; i++)
+                        {
+                            f.Write($"{log[0].Times[i]}\t");
+
+                            for (int j = 0; j < logInfo.Length; j++)
+                            {
+                                try
+                                {
+                                    f.Write("{0}\t", log[j].Values[i]);
+                                }
+                                catch (Exception)
+                                {
+                                    f.Write("\t");
+                                }
+                            }
+                            f.Write("\n");
+                            P.Update();
+                        }
+                        P.Done();
+                    }
+                }
+            }
+            return 0;
         }
 
         static int DoStuff(ArgumentParser.ExampleMods opts)
@@ -79,7 +190,81 @@ namespace RawTools
             return 0;
         }
 
-        static int DoStuff(ArgumentParser.TestOptions opts) { return 0; }
+        static int DoStuff(ArgumentParser.TestOptions opts)
+        {
+            var rawFile = RawFileReaderFactory.ReadFile(opts.InputFiles.First());
+            rawFile.SelectInstrument(Device.MS, 1);
+
+            var created = rawFile.CreationDate;
+            var modified = rawFile.FileHeader.ModifiedDate;
+            var diff = modified - created;
+            var estTime = rawFile.RunHeader.ExpectedRuntime;
+
+            var timesModified = rawFile.FileHeader.NumberOfTimesModified;
+
+            Console.WriteLine("=============================================");
+            Console.WriteLine($"Creation date/time: {created}");
+            Console.WriteLine($"Last modified date/time: {modified}");
+            Console.WriteLine($"Number of times modified: {timesModified}");
+            Console.WriteLine($"Total time: {diff}");
+            Console.WriteLine($"Expected run time: {estTime}");
+            Console.WriteLine();
+
+            Console.WriteLine($"Estimated dead time: {diff.TotalMinutes - estTime}");
+            Console.WriteLine("=============================================");
+            /*
+            var numberOfLogs = rawFile.GetStatusLogEntriesCount();
+            var logInfo = rawFile.GetStatusLogHeaderInformation();
+
+            string logName = opts.InputFiles.First() + ".INST_LOG.txt";
+
+            Dictionary<int, ISingleValueStatusLog> log = new Dictionary<int, ISingleValueStatusLog>();
+
+            for (int i = 0; i < logInfo.Count(); i++)
+            {
+                log.Add(i, rawFile.GetStatusLogAtPosition(i));
+            }
+
+            using (StreamWriter f = new StreamWriter(logName))
+            {
+                ProgressIndicator P = new ProgressIndicator(numberOfLogs, "Writing instrument log");
+                P.Start();
+                f.Write("Time\t");
+                foreach (var x in logInfo)
+                {
+                    f.Write(x.Label + "\t");
+                }
+                f.Write("\n");
+
+                for (int i = 0; i < numberOfLogs; i++)
+                {
+                    f.Write($"{log[0].Times[i]}\t");
+
+                    for (int j = 0; j < logInfo.Length; j++)
+                    {
+                        try
+                        {
+                            f.Write("{0}\t",log[j].Values[i]);
+                        }
+                        catch (Exception)
+                        {
+                            f.Write("\t");
+                        }
+                    }
+                    f.Write("\n");
+                    P.Update();
+                }
+                P.Done();
+            }
+
+            Console.WriteLine(rawFile.GetInstrumentMethod(0));
+            Console.WriteLine(rawFile.CreationDate);
+            Console.WriteLine(rawFile.FileHeader.ModifiedDate);
+            Console.WriteLine(rawFile.RunHeader.StartTime);
+            Console.WriteLine(rawFile.RunHeader.EndTime);
+            */
+            return 0;
+        }
 
         static int DoStuff(ArgumentParser.QcOptions opts)
         {
