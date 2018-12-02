@@ -274,11 +274,9 @@ namespace RawTools.Data.IO
 
                 foreach (int i in scans)
                 {
-                    f.WriteLine("\nBEGIN IONS");
-                    f.WriteLine("RAWFILE={0}", rawData.rawFileName);
+                    f.WriteLine("BEGIN IONS");
+
                     f.WriteLine("TITLE=Spectrum_{0}", i);
-                    f.WriteLine("SCAN={0}", i);
-                    f.WriteLine("RTINSECONDS={0}", rawData.retentionTimes[i]);
 
                     if (rawData.precursorMasses[i].MonoisotopicMZ != 0)
                     {
@@ -289,7 +287,13 @@ namespace RawTools.Data.IO
                         f.WriteLine("PEPMASS={0}", rawData.precursorMasses[i].ParentMZ);
                     }
 
+                    f.WriteLine("SCANS={0}", i);
+
                     f.WriteLine("CHARGE={0}", rawData.trailerExtras[i].ChargeState);
+
+                    f.WriteLine("RTINSECONDS={0}", rawData.retentionTimes[i]);
+
+                    f.WriteLine("RAWFILE={0}", rawData.rawFileName);
                     
                     if (ms2MassAnalyzer == MassAnalyzerType.MassAnalyzerFTMS)
                     {
@@ -335,7 +339,7 @@ namespace RawTools.Data.IO
                         }
                     }
 
-                    f.WriteLine("END IONS");
+                    f.WriteLine("END IONS\n");
 
                     progress.Update();
                 }
