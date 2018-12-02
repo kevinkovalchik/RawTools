@@ -6,13 +6,17 @@ The RawTools manuscript was just accepted for the Journal of Proteome Research s
 
 <br>
 
-### RawTools releases
+### RawTools releases and installation
 
 To obtain the latest compiled release of RawTools or to obtain an older version, please visit the [Releases page](https://github.com/kevinkovalchik/RawTools/releases). 
+
+If you need help installing and using RawTools, please visit the wiki page appropriate for your system and follow the instructions outlined [here](https://github.com/kevinkovalchik/RawTools/wiki).
 
 <br>
 
 ### Notable news
+
+* The R Shiny application now has greater support for plot customisation. We have also added the ability to highlight points on QC plots. Lastly, we have added a new 'multi-plot' page where multiple scan matrix files can be input at once and plots for all files will be generated alongside one another in the same space. The latest version is live on the web and available here.  [2018-11-29]
 
 * We are sorting out some issues with the image file downloads not working. This issue is proving more difficult than initially anticipated, but we are still working on it. Note - if you [download](https://github.com/kevinkovalchik/RawTools/tree/master/documentation/manuscript/RawTools_RShiny_Application) the Shiny application and run it locally, the file downloads will work.  [2018-11-21]
 
@@ -24,17 +28,17 @@ To obtain the latest compiled release of RawTools or to obtain an older version,
 
 <br>
 
+### RawTools R Shiny page
+
+If you are just here looking for the web application page for visualizing your quality control results: [RawTools R Shiny web application](https://rawtoolsqcdv.bcgsc.ca/). You can also download the application [from here](https://github.com/kevinkovalchik/RawTools/tree/master/documentation/manuscript/RawTools_RShiny_Application) for local use on your own machine.
+
+<br>
+
 ### Getting help
 
 If you need help getting started with RawTools or with understanding the output, please visit the [RawTools Wiki](https://github.com/kevinkovalchik/RawTools/wiki).
 
 If you have noticed an error in RawTools or have an idea for a new feature, please make a post on the [Issues page](https://github.com/kevinkovalchik/RawTools/issues).
-
-<br>
-
-### RawTools R Shiny page
-
-If you are just here looking for the web application page for visualizing your quality control results: [RawTools R Shiny web application](https://rawtoolsqcdv.bcgsc.ca/). You can also download the application [from here](https://github.com/kevinkovalchik/RawTools/tree/master/documentation/manuscript/RawTools_RShiny_Application) for local use on your own machine.
 
 <br>
 
