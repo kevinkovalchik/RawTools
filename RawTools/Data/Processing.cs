@@ -370,7 +370,7 @@ namespace RawTools.Data.Processing
             metricsData.TotalAnalysisTime = rawData.retentionTimes[rawData.scanIndex.ScanEnumerators[MSOrderType.Any].Last()] -
                 rawData.retentionTimes[rawData.scanIndex.ScanEnumerators[MSOrderType.Any].First()];
 
-            metricsData.TotalScans = rawData.scanIndex.allScans.Count();
+            metricsData.TotalScans = rawFile.RunHeaderEx.SpectraCount;
             metricsData.MS1Scans = rawData.scanIndex.ScanEnumerators[MSOrderType.Ms].Length;
             metricsData.MS2Scans = rawData.scanIndex.ScanEnumerators[MSOrderType.Ms2].Length;
 
