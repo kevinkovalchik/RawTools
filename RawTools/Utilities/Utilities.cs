@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Linq;
 using System.Diagnostics;
 using System.Text;
@@ -762,6 +763,21 @@ namespace RawTools.Utilities
                 Console.WriteLine("{0} is not a valid raw file, continuing to next file.", fileName);
                 return false;
             }
+        }
+    }
+
+    public static class Conversion
+    {
+        public static Dictionary<TKey, TValue> ConvertToDictionary<TKey, TValue>(this ConcurrentDictionary<TKey, TValue> input)
+        {
+            Dictionary<TKey, TValue> output = new Dictionary<TKey, TValue>();
+
+            foreach (var item in input)
+            {
+                output.Add(item.Key, item.Value);
+            }
+
+            return output;
         }
     }
 }

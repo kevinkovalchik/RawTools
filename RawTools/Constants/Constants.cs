@@ -27,7 +27,7 @@ namespace RawTools.Constants
 
             if (processorCount > 8) processorCount = 8;
 
-            return TotalSize / Environment.ProcessorCount / 4 + 1;
+            return TotalSize / Environment.ProcessorCount / 20 + 1;
         }
 
         public static ParallelOptions Options()

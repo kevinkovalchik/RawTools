@@ -88,7 +88,7 @@ namespace RawTools.Algorithms.Analyze
 
             metricsData.NumberOfEsiFlags = MetricsCalculations.NumberOfEsiFlags(metaData, index);
 
-            metricsData.TotalScans = index.allScans.Count();
+            metricsData.TotalScans = index.TotalScans;
             metricsData.MS1Scans = index.ScanEnumerators[MSOrderType.Ms].Length;
             metricsData.MS2Scans = index.ScanEnumerators[MSOrderType.Ms2].Length;
             

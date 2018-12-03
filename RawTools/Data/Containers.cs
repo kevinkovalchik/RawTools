@@ -33,11 +33,20 @@ using RawTools.Data.Collections;
 
 namespace RawTools.Data.Containers
 {
+    class ScanData
+    {
+        public MSOrderType MSOrder;
+        public MassAnalyzerType MassAnalyzer;
+        public bool HasPrecursors;
+        public bool HasDependents;
+    }
+
     class ScanIndex
     {
-        public Dictionary<int, (MSOrderType MSOrder, MassAnalyzerType MassAnalyzer)> allScans;
+        public Dictionary<int, ScanData> allScans;
         public MSOrderType AnalysisOrder;
         public Dictionary<MSOrderType, int[]> ScanEnumerators;
+        public int TotalScans;
 
         public ScanIndex()
         {
@@ -250,14 +259,14 @@ namespace RawTools.Data.Containers
 
     class DistributionMultiple
     {
-        public List<double> P10, P25, P50, P75;
+        public ConcurrentBag<double> P10, P25, P50, P75;
 
         public DistributionMultiple()
         {
-            P10 = new List<double>();
-            P25 = new List<double>();
-            P50 = new List<double>();
-            P75 = new List<double>();
+            P10 = new ConcurrentBag<double>();
+            P25 = new ConcurrentBag<double>();
+            P50 = new ConcurrentBag<double>();
+            P75 = new ConcurrentBag<double>();
         }
 
         public void Add(Distribution newEntry)
@@ -272,20 +281,10 @@ namespace RawTools.Data.Containers
         {
             Distribution distOut = new Distribution();
 
-            P10.Sort();
-            P25.Sort();
-            P50.Sort();
-            P75.Sort();
-
-            double[] p10out = P10.ToArray();
-            double[] p25out = P25.ToArray();
-            double[] p50out = P50.ToArray();
-            double[] p75out = P75.ToArray();
-
-            distOut.P10 = p10out.Percentile(50);
-            distOut.P25 = p25out.Percentile(50);
-            distOut.P50 = p50out.Percentile(50);
-            distOut.P75 = p75out.Percentile(50);
+            distOut.P10 = P10.ToList().Percentile(50);
+            distOut.P25 = P25.ToList().Percentile(50);
+            distOut.P50 = P50.ToList().Percentile(50);
+            distOut.P75 = P75.ToList().Percentile(50);
 
             return distOut;
         }
@@ -306,15 +305,17 @@ namespace RawTools.Data.Containers
             }
             else
             {
+                /*
                 int end = Values.Length - 1;
                 double endAsDouble = Convert.ToDouble(end);
                 double[] sortedValues = (double[])Values.Clone();
                 Array.Sort(sortedValues);
+                */
 
-                P10 = sortedValues.Percentile(16);
-                P25 = sortedValues.Percentile(25);
-                P50 = sortedValues.Percentile(50);
-                P75 = sortedValues.Percentile(75);
+                P10 = Values.Percentile(16);
+                P25 = Values.Percentile(25);
+                P50 = Values.Percentile(50);
+                P75 = Values.Percentile(75);
             }
         }
     }

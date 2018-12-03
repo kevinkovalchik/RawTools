@@ -80,7 +80,7 @@ namespace RawTools.QC
 
             foreach (string fileName in fileList)
             {
-                Console.WriteLine("Processing {0}", fileName);
+                Console.WriteLine("\nProcessing {0}", fileName);
 
                 if (!RawFileInfo.CheckIfValid(fileName))
                 {
@@ -99,6 +99,17 @@ namespace RawTools.QC
                     continue;
                 }
 
+                IRawFileThreadManager rawFileThreadManager = RawFileReaderFactory.CreateThreadManager(fileName);
+
+                if (parameters.ExpType == ExperimentType.DDA)
+                {
+                    WorkFlowsDDA.QcDDA(rawFileThreadManager, parameters);
+                }
+                //else if (parameters.ExpType == ExperimentType.DIA)
+                //{
+                //    WorkFlowsDIA.QcDIA(rawFileThreadManager, parameters);
+                //}
+                /*
                 using (IRawDataPlus rawFile = RawFileReaderFactory.ReadFile(fileName))
                 {
                     rawFile.SelectInstrument(Device.MS, 1);
@@ -111,7 +122,7 @@ namespace RawTools.QC
                     {
                         WorkFlowsDIA.QcDIA(rawFile, parameters);
                     }
-                }
+                }*/
 
                 Log.Information("QC finished: {File}", fileName);
             }

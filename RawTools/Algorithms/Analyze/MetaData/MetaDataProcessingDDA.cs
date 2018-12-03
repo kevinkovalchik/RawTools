@@ -98,10 +98,10 @@ namespace RawTools.Algorithms.Analyze
 
             metricsData.TotalAnalysisTime = retentionTimes[index.ScanEnumerators[MSOrderType.Any].Last()] -
                 retentionTimes[index.ScanEnumerators[MSOrderType.Any].First()];
-
+            
             metricsData.NumberOfEsiFlags = MetricsCalculations.NumberOfEsiFlags(metaData, index);
 
-            metricsData.TotalScans = index.allScans.Count();
+            metricsData.TotalScans = index.TotalScans;
             metricsData.MS1Scans = index.ScanEnumerators[MSOrderType.Ms].Length;
             metricsData.MS2Scans = index.ScanEnumerators[MSOrderType.Ms2].Length;
 
@@ -118,10 +118,7 @@ namespace RawTools.Algorithms.Analyze
 
             var pickedMs1 = new HashSet<int>((from x in index.ScanEnumerators[methodData.AnalysisOrder]
                                               select precursorScans[x].MasterScan)).ToList();
-
-            Console.WriteLine(metricsData.MS1Scans);
-            Console.WriteLine(pickedMs1.Count());
-
+            
             metricsData.MSOrder = methodData.AnalysisOrder;
 
             metricsData.MedianSummedMS1Intensity = MetricsCalculations.GetMedianSummedMSIntensity(metaData.SummedIntensity, index, MSOrderType.Ms);
@@ -140,9 +137,7 @@ namespace RawTools.Algorithms.Analyze
             metricsData.MeanTopN = MetricsCalculations.GetMeanMs2ScansPerCycle(metaData.MS2ScansPerCycle);
 
             metricsData.MeanDutyCycle = MetricsCalculations.GetMedianDutyCycle(metaData.DutyCycle, index);
-
-            Console.WriteLine(metricsData.MeanDutyCycle);
-
+            
             metricsData.MedianMs2FractionConsumingTop80PercentTotalIntensity =
                 MetricsCalculations.GetMedianMs2FractionConsumingTop80PercentTotalIntensity(
                     metaData.FractionConsumingTop80PercentTotalIntensity, index);

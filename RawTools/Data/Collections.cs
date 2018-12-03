@@ -39,13 +39,53 @@ namespace RawTools.Data.Collections
 
     class TrailerExtraCollection : Dictionary<int, TrailerExtraData> { }
 
-    class PrecursorScanCollection : Dictionary<int, PrecursorScanData> { }
+    class PrecursorScanCollection : Dictionary<int, PrecursorScanData>
+    {
+        public PrecursorScanCollection()
+        { }
+
+        public PrecursorScanCollection(Dictionary<int, PrecursorScanData> dict)
+        {
+            foreach (var item in dict)
+            {
+                this.Add(item.Key, item.Value);
+            }
+        }
+
+        public PrecursorScanCollection(ConcurrentDictionary<int, PrecursorScanData> dict)
+        {
+            foreach (var item in dict)
+            {
+                this.Add(item.Key, item.Value);
+            }
+        }
+    }
 
     class PrecursorMassCollection : Dictionary<int, PrecursorMassData> { }
 
     class RetentionTimeCollection : Dictionary<int, double> { }
 
-    class ScanDependentsCollections : Dictionary<int, IScanDependents> { }
+    class ScanDependentsCollections : Dictionary<int, IScanDependents>
+    {
+        public ScanDependentsCollections()
+        { }
+
+        public ScanDependentsCollections(Dictionary<int, IScanDependents> dict)
+        {
+            foreach (var item in dict)
+            {
+                this.Add(item.Key, item.Value);
+            }
+        }
+
+        public ScanDependentsCollections(ConcurrentDictionary<int, IScanDependents> dict)
+        {
+            foreach (var item in dict)
+            {
+                this.Add(item.Key, item.Value);
+            }
+        }
+    }
 
     class PrecursorPeakCollection : Dictionary<int, PrecursorPeakData>
     {
