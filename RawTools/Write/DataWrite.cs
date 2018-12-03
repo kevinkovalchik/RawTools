@@ -547,12 +547,12 @@ namespace RawTools.Data.IO
                 foreach (int i in scans)
                 {
                     f.WriteLine("\nBEGIN IONS");
-                    f.WriteLine("RAWFILE={0}", rawFileName);
                     f.WriteLine("TITLE=Spectrum_{0}", i);
-                    f.WriteLine("SCAN={0}", i);
-                    f.WriteLine("RTINSECONDS={0}", retentionTimes[i]);
                     f.WriteLine("PEPMASS={0}", precursorMasses[i].MonoisotopicMZ);
                     f.WriteLine("CHARGE={0}", trailerExtras[i].ChargeState);
+                    f.WriteLine("RTINSECONDS={0}", retentionTimes[i]);
+                    f.WriteLine("SCANS={0}", i);
+                    f.WriteLine("RAWFILE={0}", rawFileName);
 
                     if (ms2MassAnalyzer == MassAnalyzerType.MassAnalyzerFTMS)
                     {
