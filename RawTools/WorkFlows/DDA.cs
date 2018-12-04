@@ -71,12 +71,17 @@ namespace RawTools.WorkFlows
                 retentionTimes = Extract.RetentionTimes(rawFile, Index);
             }
 
-            if (parameters.ParseParams.Parse | parameters.ParseParams.Metrics)
+            if (parameters.ParseParams.Parse | parameters.ParseParams.Metrics | parameters.RefineMassCharge)
             {
                 metaData = MetaDataProcessingDDA.AggregateMetaDataDDA(centroidStreams, segmentScans, methodData, precursorScans,
                 trailerExtras, precursorMasses, retentionTimes, scanDependents, Index);
 
                 peakData = AnalyzePeaks.AnalyzeAllPeaks(centroidStreams, retentionTimes, precursorMasses, precursorScans, Index);
+
+                if (parameters.RefineMassCharge)
+                {
+                    MonoIsoPredictor.RefineMonoIsoMassChargeValues(centroidStreams, precursorMasses, trailerExtras, peakData, precursorScans);
+                }
             }
             
             QuantDataCollection quantData = null;
@@ -148,6 +153,11 @@ namespace RawTools.WorkFlows
                 trailerExtras, precursorMasses, retentionTimes, scanDependents, Index);
 
             PrecursorPeakCollection peakData = AnalyzePeaks.AnalyzeAllPeaks(centroidStreams, retentionTimes, precursorMasses, precursorScans, Index);
+
+            if (parameters.RefineMassCharge)
+            {
+                MonoIsoPredictor.RefineMonoIsoMassChargeValues(centroidStreams, precursorMasses, trailerExtras, peakData, precursorScans);
+            }
 
             RawMetricsDataDDA rawMetrics = MetaDataProcessingDDA.GetMetricsDataDDA(metaData, methodData, staticRawFile.FileName, retentionTimes, Index, peakData, precursorScans);
 

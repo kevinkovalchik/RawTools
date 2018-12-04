@@ -39,7 +39,7 @@ namespace RawTools.Algorithms
 {
     static class AnalyzePeaks
     {
-        private static PrecursorPeakData OnePeak(CentroidStreamCollection centroids, RetentionTimeCollection retentionTimes,double monoIsoMass, int parentScan, int ddScan, ScanIndex index)
+        private static PrecursorPeakData OnePeak(CentroidStreamCollection centroids, RetentionTimeCollection retentionTimes, double targetMass, int parentScan, int ddScan, ScanIndex index)
         {
             PrecursorPeakData peak = new PrecursorPeakData();
 
@@ -82,12 +82,12 @@ namespace RawTools.Algorithms
 
             for (int i = 0; i < masses.Length; i++)
             {
-                massDiff[i] = Math.Abs(masses[i] - monoIsoMass);
+                massDiff[i] = Math.Abs(masses[i] - targetMass);
             }
 
             minMassDiff = massDiff.Min();
 
-            if (minMassDiff / monoIsoMass * 1e6 < 10)
+            if (minMassDiff / targetMass * 1e6 < 10)
             {
                 peak.PeakFound = true;
             }
@@ -110,12 +110,12 @@ namespace RawTools.Algorithms
 
                 for (int i = 0; i < masses.Length; i++)
                 {
-                    massDiff[i] = Math.Abs(masses[i] - monoIsoMass);
+                    massDiff[i] = Math.Abs(masses[i] - targetMass);
                 }
 
                 minMassDiff = massDiff.Min();
 
-                if (minMassDiff / monoIsoMass * 1e6 < 10)
+                if (minMassDiff / targetMass * 1e6 < 10)
                 {
                     scans.Add(currentScan);
                     scanIndex -= 1;
@@ -161,12 +161,12 @@ namespace RawTools.Algorithms
 
                 for (int i = 0; i < masses.Length; i++)
                 {
-                    massDiff[i] = Math.Abs(masses[i] - monoIsoMass);
+                    massDiff[i] = Math.Abs(masses[i] - targetMass);
                 }
 
                 minMassDiff = massDiff.Min();
 
-                if (minMassDiff / monoIsoMass * 1e6 < 10)
+                if (minMassDiff / targetMass * 1e6 < 10)
                 {
                     scans.Add(currentScan);
                     scanIndex += 1;
@@ -281,7 +281,8 @@ namespace RawTools.Algorithms
                 PrecursorPeakData peak;
                 foreach (int scan in batch)
                 {
-                    peak = OnePeak(centroids, retentionTimes, precursorMasses[scan].MonoisotopicMZ, precursorScans[scan].MasterScan, ddScan: scan, index: index);
+                    // [2018-12-04] changing to use picked mass and not monoisomass. The monoisomass might be low in intensity and would not represent the whole elution profile
+                    peak = OnePeak(centroids, retentionTimes, precursorMasses[scan].ParentMZ, precursorScans[scan].MasterScan, ddScan: scan, index: index);
 
                     if (peak.NScans < 5 | peak.PeakFound == false |
                         peak.ContainsFirstMS1Scan | peak.ContainsLastMS1Scan)
@@ -321,25 +322,6 @@ namespace RawTools.Algorithms
             }
 
             return peaksOut;
-        }
-
-        private static PrecursorPeakCollection CalcPeakRetTimesAndInts(CentroidStreamCollection centroids, IRawDataPlus rawFile, RetentionTimeCollection retentionTimes,
-            PrecursorMassCollection precursorMasses, PrecursorScanCollection precursorScans, ScanIndex index)
-        {
-            int[] scans = index.ScanEnumerators[MSOrderType.Ms2];
-
-            PrecursorPeakCollection peaks = new PrecursorPeakCollection();
-
-            ProgressIndicator P = new ProgressIndicator(total: scans.Length, message: "Analyzing precursor peaks");
-
-            foreach (int scan in scans)
-            {
-                peaks[scan] = OnePeak(centroids, retentionTimes, precursorMasses[scan].MonoisotopicMZ, precursorScans[scan].MasterScan, ddScan: scan, index: index);
-                P.Update();
-            }
-            P.Done();
-
-            return peaks;
         }
 
         private static double InterpolateLinear((double x, double y) point0, (double x, double y) point1, double y)
