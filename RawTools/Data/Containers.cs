@@ -221,26 +221,30 @@ namespace RawTools.Data.Containers
 
     class ReporterIon
     {
-        public double Mass, Intensity, Noise, Resolution, Baseline;
+        public double Mass, Intensity, Noise, Resolution, Baseline, SignalToNoise, ppmMassError;
 
         // for all centroid stream data
-        public ReporterIon(double mass, double intensity, double noise, double resolution, double baseline)
+        public ReporterIon(double mass, double intensity, double noise, double resolution, double baseline, double s2n, double ppmError)
         {
             Mass = mass;
             Intensity = intensity;
             Noise = noise;
             Resolution = resolution;
             Baseline = baseline;
+            SignalToNoise = s2n;
+            ppmMassError = ppmError;
         }
 
         // for just mass and intensity (useful for ITMS data)
-        public ReporterIon(double mass, double intensity)
+        public ReporterIon(double mass, double intensity, double ppmError)
         {
             Mass = mass;
             Intensity = intensity;
             Baseline = -1;
             Noise = -1;
             Resolution = -1;
+            SignalToNoise = -1;
+            ppmMassError = ppmError;
         }
     }
 

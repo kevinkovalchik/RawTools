@@ -580,6 +580,21 @@ namespace RawTools.Utilities
             return false;
         }
 
+        public static void CheckFileAccessibility(string fileName)
+        {
+            if (File.Exists(fileName))
+            {
+                while (IsFileLocked(fileName))
+                {
+                    Console.WriteLine();
+                    Console.WriteLine("ATTENTION:");
+                    Console.WriteLine("{0} is inaccessible. Please close the file and press any key to continue.", fileName);
+                    Console.ReadKey();
+                }
+                Console.WriteLine();
+            }
+        }
+
         public static void AwaitFileAccessibility(string fileName)
         {
             //Your File

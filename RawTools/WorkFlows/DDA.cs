@@ -97,9 +97,9 @@ namespace RawTools.WorkFlows
                 MetricsWriter.WriteMatrix(rawMetrics, null, staticRawFile.FileName, parameters.ParseParams.OutputDirectory);
             }
 
-            if (parameters.ParseParams.Parse)
+            if (parameters.ParseParams.Parse | parameters.ParseParams.Quant)
             {
-                string matrixFileName = ReadWrite.GetPathToFile(parameters.ParseParams.OutputDirectory, staticRawFile.FileName, "._parse.txt");
+                string matrixFileName = ReadWrite.GetPathToFile(parameters.ParseParams.OutputDirectory, staticRawFile.FileName, "_Matrix.txt");
 
                 ParseWriter writerDDA = new ParseWriter(matrixFileName, centroidStreams, segmentScans, metaData, retentionTimes,
                 precursorMasses, precursorScans, peakData, trailerExtras, Index, quantData);

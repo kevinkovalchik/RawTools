@@ -366,6 +366,8 @@ namespace RawTools.Data.IO
 
         private static void WriteMatrix(List<string> Data)
         {
+            ReadWrite.CheckFileAccessibility(fileName);
+
             using (StreamWriter f = new StreamWriter(fileName)) //Open a new file
             {
                 var scans = index.ScanEnumerators[index.AnalysisOrder];
@@ -397,10 +399,19 @@ namespace RawTools.Data.IO
                     {
                         f.Write(label + "Baseline\t");
                     }
+                    foreach (string label in new LabelingReagents().Reagents[reagents].Labels)
+                    {
+                        f.Write(label + "SignalToNoise\t");
+                    }
+                    foreach (string label in new LabelingReagents().Reagents[reagents].Labels)
+                    {
+                        f.Write(label + "ppmMassError\t");
+                    }
                 }
                 f.Write("\n");
 
                 ProgressIndicator P = new ProgressIndicator(scans.Count(), "Writing output table");
+                LabelingReagents labelingReagents = new LabelingReagents();
                 P.Start();
 
                 foreach (int scan in scans)
@@ -434,6 +445,14 @@ namespace RawTools.Data.IO
                         {
                             f.Write(quantData[scan][label].Baseline + "\t");
                         }
+                        foreach (string label in quantData[scan].Keys)
+                        {
+                            f.Write(quantData[scan][label].SignalToNoise + "\t");
+                        }
+                        foreach (string label in quantData[scan].Keys)
+                        {
+                            f.Write(quantData[scan][label].ppmMassError + "\t");
+                        }
                     }
                     f.Write("\n");
                     P.Update();
@@ -444,6 +463,8 @@ namespace RawTools.Data.IO
 
         public void WriteMatrixDDA(MSOrderType order)
         {
+            ReadWrite.CheckFileAccessibility(fileName);
+
             List<string> data = new List<string>();
 
             if (order == MSOrderType.Ms3)
@@ -478,6 +499,8 @@ namespace RawTools.Data.IO
 
         public void WriteMatrixDIA()
         {
+            ReadWrite.CheckFileAccessibility(fileName);
+
             List<string> Data = new List<string>();
 
             Data = new List<string>
@@ -529,6 +552,8 @@ namespace RawTools.Data.IO
             {
                 fileName = outputFile;
             }
+
+            ReadWrite.CheckFileAccessibility(fileName);
 
             MassAnalyzerType ms2MassAnalyzer = methodData.MassAnalyzers[MSOrderType.Ms2];
             
@@ -612,6 +637,15 @@ namespace RawTools.Data.IO
         public static void WriteMatrix(RawMetricsDataDDA metrics, SearchMetricsContainer searchMetrics, string rawFileName, string outputDirectory = null)
         {
             string fileName = ReadWrite.GetPathToFile(outputDirectory, rawFileName, "_Metrics.txt");
+
+            if (File.Exists(fileName))
+            {
+                while (Utilities.ReadWrite.IsFileLocked(fileName))
+                {
+                    Console.WriteLine("{0} is in use. Please close the file and press any key to continue.", fileName);
+                    Console.ReadKey();
+                }
+            }
 
             using (StreamWriter f = new StreamWriter(fileName)) //Open a new file
             {
@@ -710,17 +744,12 @@ namespace RawTools.Data.IO
     {
         public static void WriteQcToTable(this QcDataCollection qcData)
         {
-            if (File.Exists(Path.Combine(qcData.QcDirectory, "QcDataTable.csv")))
-            {
-                while (Utilities.ReadWrite.IsFileLocked(Path.Combine(qcData.QcDirectory, "QcDataTable.csv")))
-                {
-                    Console.WriteLine("{0} is in use. Please close the file and press any key to continue.", Path.Combine(qcData.QcDirectory, "QcDataTable.csv"));
-                    Console.ReadKey();
-                }
-            }
+            string fileName = Path.Combine(qcData.QcDirectory, "QcDataTable.csv");
+            ReadWrite.CheckFileAccessibility(fileName);
+
             if (qcData.DataType == ExperimentType.DDA)
             {
-                using (StreamWriter f = new StreamWriter(Path.Combine(qcData.QcDirectory, "QcDataTable.csv"), append: false))
+                using (StreamWriter f = new StreamWriter(fileName, append: false))
                 {
                     f.WriteLine("DateAcquired,FileName,Instrument,ExperimentMsOrder,Ms1Analyzer,Ms2Analyzer,Ms3Analyzer,TotalAnalysisTime,TotalScans,NumMs1Scans,NumMs2Scans," +
                         "NumMs3Scans,Ms1ScanRate(/s),Ms2ScanRate(/s),Ms3ScanRate(/s),MeanDutyCycle(s),MeanMs2TriggerRate(/Ms1Scan),Ms1MedianSummedIntensity,Ms2MedianSummedIntensity," +
@@ -884,6 +913,8 @@ namespace RawTools.Data.IO
                 progress.Start();
                 string fileName = ReadWrite.GetPathToFile(parameters.ParseParams.OutputDirectory, rawFileName, "_" + order + "_TIC_chromatogram.txt");
 
+                ReadWrite.CheckFileAccessibility(fileName);
+
                 using (StreamWriter f = new StreamWriter(fileName))
                 {
                     f.WriteLine("RetentionTime\tIntensity");
@@ -927,6 +958,8 @@ namespace RawTools.Data.IO
                 progress.Start();
 
                 string fileName = ReadWrite.GetPathToFile(parameters.ParseParams.OutputDirectory, rawFileName, "_" + order + "_BP_chromatogram.txt");
+
+                ReadWrite.CheckFileAccessibility(fileName);
 
                 using (StreamWriter f = new StreamWriter(fileName))
                 {
@@ -980,6 +1013,8 @@ namespace RawTools.Data.IO
             double intCutoff = 0;
             
             fileName = outputFile;
+
+            ReadWrite.CheckFileAccessibility(fileName);
 
             parameters.MgfMassCutoff = 0;
             parameters.MgfIntensityCutoff = 0;
@@ -1088,6 +1123,8 @@ namespace RawTools.Data.IO
             double intCutoff = 0;
 
             fileName = outputFile;
+
+            ReadWrite.CheckFileAccessibility(fileName);
 
             parameters.MgfMassCutoff = 0;
             parameters.MgfIntensityCutoff = 0;
