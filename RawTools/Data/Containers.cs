@@ -73,6 +73,15 @@ namespace RawTools.Data.Containers
                     SignalToNoise[i] = Intensities[i] / Noises[i];
                 }
             }
+            else
+            {
+                Masses = new double[0];
+                Intensities = new double[0];
+                Resolutions = new double[0];
+                Noises = new double[0];
+                Baselines = new double[0];
+                SignalToNoise = new double[0];
+            }
         }
 
         public SimpleCentroid ToSimpleCentroid()
