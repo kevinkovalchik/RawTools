@@ -60,15 +60,18 @@ namespace RawTools.Data.Containers
 
         public CentroidStreamData(CentroidStream centroidStream)
         {
-            Masses = centroidStream.Masses;
-            Intensities = centroidStream.Intensities;
-            Resolutions = centroidStream.Resolutions;
-            Noises = centroidStream.Noises;
-            Baselines = centroidStream.Baselines;
-            SignalToNoise = new double[Intensities.Length];
-            for (int i = 0; i < SignalToNoise.Length; i++)
+            if (centroidStream.Length > 0)
             {
-                SignalToNoise[i] = Intensities[i] / Noises[i];
+                Masses = centroidStream.Masses;
+                Intensities = centroidStream.Intensities;
+                Resolutions = centroidStream.Resolutions;
+                Noises = centroidStream.Noises;
+                Baselines = centroidStream.Baselines;
+                SignalToNoise = new double[Intensities.Length];
+                for (int i = 0; i < SignalToNoise.Length; i++)
+                {
+                    SignalToNoise[i] = Intensities[i] / Noises[i];
+                }
             }
         }
 
