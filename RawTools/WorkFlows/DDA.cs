@@ -101,15 +101,21 @@ namespace RawTools.WorkFlows
             {
                 string matrixFileName = ReadWrite.GetPathToFile(parameters.ParseParams.OutputDirectory, staticRawFile.FileName, "_Matrix.txt");
 
+                /*
                 ParseWriter writerDDA = new ParseWriter(matrixFileName, centroidStreams, segmentScans, metaData, retentionTimes,
                 precursorMasses, precursorScans, peakData, trailerExtras, Index, quantData);
                 writerDDA.WriteMatrixDDA(methodData.AnalysisOrder);
+                */
+                MatrixWriter.ParseQuantDDA(matrixFileName, centroidStreams, segmentScans, metaData, retentionTimes,
+                    precursorMasses, precursorScans, peakData, trailerExtras, Index, quantData);
             }
 
             if (parameters.ParseParams.WriteMgf)
             {
-                ParseWriter writerMGF = new ParseWriter(centroidStreams, segmentScans, parameters, retentionTimes, precursorMasses, precursorScans, trailerExtras, methodData, Index);
-                writerMGF.WriteMGF(staticRawFile.FileName);
+                //ParseWriter writerMGF = new ParseWriter(centroidStreams, segmentScans, parameters, retentionTimes, precursorMasses, precursorScans, trailerExtras, methodData, Index);
+                //writerMGF.WriteMGF(staticRawFile.FileName);
+
+                MgfWriter.WriteMGF(staticRawFile.FileName, centroidStreams, segmentScans, parameters, retentionTimes, precursorMasses, precursorScans, trailerExtras, methodData, Index);
             }
 
             if (parameters.ParseParams.Chromatogram != null)

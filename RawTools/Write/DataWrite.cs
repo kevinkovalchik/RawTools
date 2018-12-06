@@ -38,6 +38,386 @@ using Serilog;
 
 namespace RawTools.Data.IO
 {
+    static class MatrixWriter
+    {
+        public static void ParseQuantDDA(string fileName, CentroidStreamCollection centroids, SegmentScanCollection segments,
+            ScanMetaDataCollectionDDA metaData, RetentionTimeCollection retentionTimes, PrecursorMassCollection precursorMasses,
+            PrecursorScanCollection precursorScans, PrecursorPeakCollection precursorPeaks, TrailerExtraCollection trailerExtras,
+            ScanIndex Index, QuantDataCollection quantData = null)
+        {
+            ReadWrite.CheckFileAccessibility(fileName);
+
+            using (StreamWriter f = new StreamWriter(fileName))
+            {
+                var scans = Index.ScanEnumerators[Index.AnalysisOrder];
+                int masterScan, ms2scan, ms3scan;
+
+                // first we write all the columns headers
+
+                if (Index.AnalysisOrder == MSOrderType.Ms3) f.Write("MS3ScanNumber\t");
+
+                f.Write("MS2ScanNumber\tMS1ScanNumber\t");
+
+                if (Index.AnalysisOrder == MSOrderType.Ms3) f.Write("MS3RetTime\t");
+
+                f.Write("MS2RetTime\tMS1RetTime\tDutyCycle\t" +
+                "MS2ScansPerCycle\tParentIonMass\tMonoisotopicMass\tPrecursorCharge\tMS1IsolationInterference\t" +
+                "ParentPeakFound\tParentPeakArea\tPeakFirstScan\tPeakMaxScan\tPeakLastScan\tBaseLinePeakWidth(s)\t" +
+                "PeakParentScanIntensity\tPeakMaxIntensity\t");
+
+                if (Index.AnalysisOrder == MSOrderType.Ms3) f.Write("MS3IonInjectionTime\t");
+
+                f.Write("MS1IonInjectionTime\tMS2IonInjectionTime\tHCDEnergy\tMS2MedianIntensity\tMS1MedianIntensity\t");
+
+                if (quantData != null)
+                {
+                    string reagents = quantData.LabelingReagents;
+
+                    foreach (string label in new LabelingReagents().Reagents[reagents].Labels)
+                    {
+                        f.Write(label + "Intensity\t");
+                    }
+                    foreach (string label in new LabelingReagents().Reagents[reagents].Labels)
+                    {
+                        f.Write(label + "Mass\t");
+                    }
+                    foreach (string label in new LabelingReagents().Reagents[reagents].Labels)
+                    {
+                        f.Write(label + "Noise\t");
+                    }
+                    foreach (string label in new LabelingReagents().Reagents[reagents].Labels)
+                    {
+                        f.Write(label + "Resolution\t");
+                    }
+                    foreach (string label in new LabelingReagents().Reagents[reagents].Labels)
+                    {
+                        f.Write(label + "Baseline\t");
+                    }
+                    foreach (string label in new LabelingReagents().Reagents[reagents].Labels)
+                    {
+                        f.Write(label + "SignalToNoise\t");
+                    }
+                    foreach (string label in new LabelingReagents().Reagents[reagents].Labels)
+                    {
+                        f.Write(label + "ppmMassError\t");
+                    }
+                }
+                f.Write("\n");
+
+                // now write all the data
+
+                foreach (int scan in scans)
+                {
+                    masterScan = precursorScans[scan].MasterScan;
+                    ms2scan = precursorScans[scan].MS2Scan;
+                    ms3scan = precursorScans[scan].MS3Scan;
+
+                    if (Index.AnalysisOrder == MSOrderType.Ms3) f.Write($"{ms3scan}\t");
+
+                    f.Write($"{ms2scan}\t{masterScan}\t");
+
+                    if (Index.AnalysisOrder == MSOrderType.Ms3) f.Write($"{retentionTimes[ms3scan]}\t");
+
+                    f.Write($"{retentionTimes[ms2scan]}\t{retentionTimes[masterScan]}\t{metaData.DutyCycle[masterScan]}\t" +
+                    $"{metaData.MS2ScansPerCycle[masterScan]}\t{precursorMasses[ms2scan].ParentMZ}\t{precursorMasses[ms2scan].MonoisotopicMZ}\t" +
+                    $"{trailerExtras[ms2scan].ChargeState}\t{metaData.Ms1IsolationInterference[scan]}\t" +
+                    $"{precursorPeaks[ms2scan].PeakFound}\t{precursorPeaks[ms2scan].Area}\t{precursorPeaks[ms2scan].FirstScan}\t" +
+                    $"{precursorPeaks[ms2scan].MaxScan}\t{precursorPeaks[ms2scan].LastScan}\t{precursorPeaks[ms2scan].BaselineWidth}\t" +
+                    $"{precursorPeaks[ms2scan].ParentIntensity}\t{precursorPeaks[ms2scan].MaximumIntensity}\t");
+
+                    if (Index.AnalysisOrder == MSOrderType.Ms3) f.Write($"{metaData.FillTime[ms3scan]}\t");
+
+                    f.Write($"{metaData.FillTime[ms2scan]}\t{metaData.FillTime[masterScan]}\t");
+
+                    if (Index.AnalysisOrder == MSOrderType.Ms3) f.Write("MS3IonInjectionTime\t");
+
+                    f.Write($"{trailerExtras[scan].HCDEnergy}\t{metaData.IntensityDistribution[ms2scan].P50}\t{metaData.IntensityDistribution[masterScan].P50}\t");
+
+                    if (quantData != null)
+                    {
+                        foreach (string label in quantData[scan].Keys)
+                        {
+                            f.Write(quantData[scan][label].Intensity + "\t");
+                        }
+                        foreach (string label in quantData[scan].Keys)
+                        {
+                            f.Write(quantData[scan][label].Mass + "\t");
+                        }
+                        foreach (string label in quantData[scan].Keys)
+                        {
+                            f.Write(quantData[scan][label].Noise + "\t");
+                        }
+                        foreach (string label in quantData[scan].Keys)
+                        {
+                            f.Write(quantData[scan][label].Resolution + "\t");
+                        }
+                        foreach (string label in quantData[scan].Keys)
+                        {
+                            f.Write(quantData[scan][label].Baseline + "\t");
+                        }
+                        foreach (string label in quantData[scan].Keys)
+                        {
+                            f.Write(quantData[scan][label].SignalToNoise + "\t");
+                        }
+                        foreach (string label in quantData[scan].Keys)
+                        {
+                            f.Write(quantData[scan][label].ppmMassError + "\t");
+                        }
+                    }
+                    f.Write("\n");
+                }
+            }
+
+            var data = new List<string>
+                {
+                "MS3ScanNumber\tMS2ScanNumber\tMS1ScanNumber\tQuantScanRetTime\tParentScanRetTime\tDutyCycle\t",
+                "MS2ScansPerCycle\tParentIonMass\tMonoisotopicMass\tPrecursorCharge\tMS1IsolationInterference\t",
+                "ParentPeakFound\tParentPeakArea\tPeakFirstScan\tPeakMaxScan\tPeakLastScan\tBaseLinePeakWidth(s)\t",
+                "PeakParentScanIntensity\tPeakMaxIntensity\tMS1IonInjectionTime\tMS2IonInjectionTime\t",
+                "MS3IonInjectionTime\tHCDEnergy\tMS1MedianIntensity\tMS2MedianIntensity\t"
+                };
+        }
+
+        public static void ParseQuantDIA(string fileName, CentroidStreamCollection centroids, SegmentScanCollection segments,
+            ScanMetaDataCollectionDDA metaData, RetentionTimeCollection retentionTimes, PrecursorMassCollection precursorMasses,
+            PrecursorScanCollection precursorScans, PrecursorPeakCollection precursorPeaks, TrailerExtraCollection trailerExtras,
+            ScanIndex Index, QuantDataCollection quantData = null)
+        {
+            ReadWrite.CheckFileAccessibility(fileName);
+
+            // NOTE: This is a placeholder. Once we know what needs to go into the DIA files, it can be modified
+
+            using (StreamWriter f = new StreamWriter(fileName))
+            {
+                var scans = Index.ScanEnumerators[Index.AnalysisOrder];
+                int masterScan, ms2scan, ms3scan;
+
+                // first we write all the columns headers
+
+                if (Index.AnalysisOrder == MSOrderType.Ms3) f.Write("MS3ScanNumber\t");
+
+                f.Write("MS2ScanNumber\tMS1ScanNumber\t");
+
+                if (Index.AnalysisOrder == MSOrderType.Ms3) f.Write("MS3RetTime\t");
+
+                f.Write("MS2RetTime\tMS1RetTime\tDutyCycle\t" +
+                "MS2ScansPerCycle\tParentIonMass\tMonoisotopicMass\tPrecursorCharge\tMS1IsolationInterference\t" +
+                "ParentPeakFound\tParentPeakArea\tPeakFirstScan\tPeakMaxScan\tPeakLastScan\tBaseLinePeakWidth(s)\t" +
+                "PeakParentScanIntensity\tPeakMaxIntensity\t");
+
+                if (Index.AnalysisOrder == MSOrderType.Ms3) f.Write("MS3IonInjectionTime\t");
+
+                f.Write("MS1IonInjectionTime\tMS2IonInjectionTime\tHCDEnergy\tMS2MedianIntensity\tMS1MedianIntensity\t");
+
+                if (quantData != null)
+                {
+                    string reagents = quantData.LabelingReagents;
+
+                    foreach (string label in new LabelingReagents().Reagents[reagents].Labels)
+                    {
+                        f.Write(label + "Intensity\t");
+                    }
+                    foreach (string label in new LabelingReagents().Reagents[reagents].Labels)
+                    {
+                        f.Write(label + "Mass\t");
+                    }
+                    foreach (string label in new LabelingReagents().Reagents[reagents].Labels)
+                    {
+                        f.Write(label + "Noise\t");
+                    }
+                    foreach (string label in new LabelingReagents().Reagents[reagents].Labels)
+                    {
+                        f.Write(label + "Resolution\t");
+                    }
+                    foreach (string label in new LabelingReagents().Reagents[reagents].Labels)
+                    {
+                        f.Write(label + "Baseline\t");
+                    }
+                    foreach (string label in new LabelingReagents().Reagents[reagents].Labels)
+                    {
+                        f.Write(label + "SignalToNoise\t");
+                    }
+                    foreach (string label in new LabelingReagents().Reagents[reagents].Labels)
+                    {
+                        f.Write(label + "ppmMassError\t");
+                    }
+                }
+                f.Write("\n");
+
+                // now write all the data
+
+                foreach (int scan in scans)
+                {
+                    masterScan = precursorScans[scan].MasterScan;
+                    ms2scan = precursorScans[scan].MS2Scan;
+                    ms3scan = precursorScans[scan].MS3Scan;
+
+                    if (Index.AnalysisOrder == MSOrderType.Ms3) f.Write($"{ms3scan}\t");
+
+                    f.Write($"{ms2scan}\t{masterScan}\t");
+
+                    if (Index.AnalysisOrder == MSOrderType.Ms3) f.Write($"{retentionTimes[ms3scan]}\t");
+
+                    f.Write($"{retentionTimes[ms2scan]}\t{retentionTimes[masterScan]}\t{metaData.DutyCycle[masterScan]}\t" +
+                    $"{metaData.MS2ScansPerCycle[masterScan]}\t{precursorMasses[ms2scan].ParentMZ}\t{precursorMasses[ms2scan].MonoisotopicMZ}\t" +
+                    $"{trailerExtras[ms2scan].ChargeState}\t{metaData.Ms1IsolationInterference[scan]}\t" +
+                    $"{precursorPeaks[ms2scan].PeakFound}\t{precursorPeaks[ms2scan].Area}\t{precursorPeaks[ms2scan].FirstScan}\t" +
+                    $"{precursorPeaks[ms2scan].MaxScan}\t{precursorPeaks[ms2scan].LastScan}\t{precursorPeaks[ms2scan].BaselineWidth}\t" +
+                    $"{precursorPeaks[ms2scan].ParentIntensity}\t{precursorPeaks[ms2scan].MaximumIntensity}\t");
+
+                    if (Index.AnalysisOrder == MSOrderType.Ms3) f.Write($"{metaData.FillTime[ms3scan]}\t");
+
+                    f.Write($"{metaData.FillTime[ms2scan]}\t{metaData.FillTime[masterScan]}\t");
+
+                    if (Index.AnalysisOrder == MSOrderType.Ms3) f.Write("MS3IonInjectionTime\t");
+
+                    f.Write($"{trailerExtras[scan].HCDEnergy}\t{metaData.IntensityDistribution[ms2scan].P50}\t{metaData.IntensityDistribution[masterScan].P50}\t");
+
+                    if (quantData != null)
+                    {
+                        foreach (string label in quantData[scan].Keys)
+                        {
+                            f.Write(quantData[scan][label].Intensity + "\t");
+                        }
+                        foreach (string label in quantData[scan].Keys)
+                        {
+                            f.Write(quantData[scan][label].Mass + "\t");
+                        }
+                        foreach (string label in quantData[scan].Keys)
+                        {
+                            f.Write(quantData[scan][label].Noise + "\t");
+                        }
+                        foreach (string label in quantData[scan].Keys)
+                        {
+                            f.Write(quantData[scan][label].Resolution + "\t");
+                        }
+                        foreach (string label in quantData[scan].Keys)
+                        {
+                            f.Write(quantData[scan][label].Baseline + "\t");
+                        }
+                        foreach (string label in quantData[scan].Keys)
+                        {
+                            f.Write(quantData[scan][label].SignalToNoise + "\t");
+                        }
+                        foreach (string label in quantData[scan].Keys)
+                        {
+                            f.Write(quantData[scan][label].ppmMassError + "\t");
+                        }
+                    }
+                    f.Write("\n");
+                }
+            }
+
+            var data = new List<string>
+                {
+                "MS3ScanNumber\tMS2ScanNumber\tMS1ScanNumber\tQuantScanRetTime\tParentScanRetTime\tDutyCycle\t",
+                "MS2ScansPerCycle\tParentIonMass\tMonoisotopicMass\tPrecursorCharge\tMS1IsolationInterference\t",
+                "ParentPeakFound\tParentPeakArea\tPeakFirstScan\tPeakMaxScan\tPeakLastScan\tBaseLinePeakWidth(s)\t",
+                "PeakParentScanIntensity\tPeakMaxIntensity\tMS1IonInjectionTime\tMS2IonInjectionTime\t",
+                "MS3IonInjectionTime\tHCDEnergy\tMS1MedianIntensity\tMS2MedianIntensity\t"
+                };
+        }
+    }
+
+    static class MgfWriter
+    {
+        public static void WriteMGF(string rawFileName, CentroidStreamCollection centroidStreams, SegmentScanCollection segmentScans, WorkflowParameters parameters, RetentionTimeCollection retentionTimes,
+            PrecursorMassCollection precursorMasses, PrecursorScanCollection precursorScans, TrailerExtraCollection trailerExtras, MethodDataContainer methodData,
+            ScanIndex Index, int[] scans = null, string outputFile = null)
+        {
+            string fileName;
+
+            double intCutoff = 0;
+            if (outputFile == null)
+            {
+                fileName = ReadWrite.GetPathToFile(parameters.ParseParams.OutputDirectory, rawFileName, ".mgf");
+            }
+            else
+            {
+                fileName = outputFile;
+            }
+
+            ReadWrite.CheckFileAccessibility(fileName);
+
+            MassAnalyzerType ms2MassAnalyzer = methodData.MassAnalyzers[MSOrderType.Ms2];
+
+            const int BufferSize = 65536;  // 64 Kilobytes
+
+            using (StreamWriter f = new StreamWriter(fileName, false, Encoding.UTF8, BufferSize)) //Open a new file, the MGF file
+            {
+                // if the scans argument is null, use all scans
+                if (scans == null)
+                {
+                    scans = Index.ScanEnumerators[MSOrderType.Ms2];
+                }
+
+                ProgressIndicator progress = new ProgressIndicator(scans.Count(), String.Format("Writing MGF file"));
+
+                foreach (int i in scans)
+                {
+                    f.WriteLine("BEGIN IONS");
+                    f.WriteLine("TITLE=Spectrum_{0}", i);
+                    f.WriteLine("PEPMASS={0}", precursorMasses[i].MonoisotopicMZ);
+                    f.WriteLine("CHARGE={0}", trailerExtras[i].ChargeState);
+                    f.WriteLine("RTINSECONDS={0}", retentionTimes[i]);
+                    f.WriteLine("SCANS={0}", i);
+                    f.WriteLine("RAWFILE={0}", rawFileName);
+
+                    if (ms2MassAnalyzer == MassAnalyzerType.MassAnalyzerFTMS)
+                    {
+                        CentroidStreamData centroid = centroidStreams[i];
+
+                        if (centroid.Intensities.Length > 0)
+                        {
+                            intCutoff = centroid.Intensities.Max() * parameters.MgfIntensityCutoff;
+                        }
+                        else
+                        {
+                            intCutoff = 0;
+                        }
+
+                        for (int j = 0; j < centroid.Masses.Length; j++)
+                        {
+                            //f.WriteLine(Math.Round(centroid.Masses[j], 4).ToString() + " " + Math.Round(centroid.Intensities[j], 4).ToString());
+                            if (centroid.Masses[j] > parameters.MgfMassCutoff & centroid.Intensities[j] > intCutoff)
+                            {
+                                f.WriteLine("{0} {1}", Math.Round(centroid.Masses[j], 5), Math.Round(centroid.Intensities[j], 4));
+                            }
+                        }
+                    }
+                    else
+                    {
+                        SegmentedScanData segments = segmentScans[i];
+
+                        if (segments.Intensities.Length > 0)
+                        {
+                            intCutoff = segments.Intensities.Max() * parameters.MgfIntensityCutoff;
+                        }
+                        else
+                        {
+                            intCutoff = 0;
+                        }
+
+                        for (int j = 0; j < segments.Positions.Length; j++)
+                        {
+                            if (segments.Positions[j] > parameters.MgfMassCutoff & segments.Intensities[j] > intCutoff)
+                            {
+                                f.WriteLine("{0} {1}", Math.Round(segments.Positions[j], 5), Math.Round(segments.Intensities[j], 4));
+                            }
+                        }
+                    }
+
+                    f.WriteLine("END IONS\n");
+
+                    progress.Update();
+                }
+                progress.Done();
+            }
+        }
+    }
+
+    // in the block comment below lies the old parse writer class. It was way too complicated.
+    /*
     class ParseWriter
     {
         //private List<string> data;
@@ -631,6 +1011,7 @@ namespace RawTools.Data.IO
             }
         }
     }
+    */
 
     static class MetricsWriter
     {
@@ -1146,11 +1527,11 @@ namespace RawTools.Data.IO
 
                     foreach (int file in new int[] { 0, 1 })
                     {
-                        f.WriteLine("\nBEGIN IONS");
+                        f.WriteLine("BEGIN IONS");
                         f.WriteLine("RAWFILE={0}", rawFileNames[file]);
                         f.WriteLine("TITLE=Spectrum_{0}_File{1}", scan[file], file + 1);
                         f.WriteLine("MATCH_ID={0}", MatchID);
-                        f.WriteLine("SCAN={0}", scan[file]);
+                        f.WriteLine("SCANS={0}", scan[file]);
                         f.WriteLine("RTINSECONDS={0}", retentionTimes[file][scan[file]]);
                         f.WriteLine("PEPMASS={0}", precursorMasses[file][scan[file]].MonoisotopicMZ);
                         f.WriteLine("CHARGE={0}", trailerExtras[file][scan[file]].ChargeState);
@@ -1212,7 +1593,7 @@ namespace RawTools.Data.IO
                                 }
                             }
                         }
-                        f.WriteLine("END IONS");
+                        f.WriteLine("END IONS\n");
                     }
                     progress.Update();
                 }

@@ -73,9 +73,11 @@ namespace RawTools.WorkFlows
             {
                 string matrixFileName = ReadWrite.GetPathToFile(parameters.ParseParams.OutputDirectory, staticRawFile.FileName, "._parse.txt");
 
-                ParseWriter writerDIA = new ParseWriter(matrixFileName, centroidStreams, segmentScans, metaData,
-                    retentionTimes, trailerExtras, precursorScans, Index);
-                writerDIA.WriteMatrixDIA();
+                //MatrixWriter.ParseQuantDIA()
+
+                //ParseWriter writerDIA = new ParseWriter(matrixFileName, centroidStreams, segmentScans, metaData,
+                //    retentionTimes, trailerExtras, precursorScans, Index);
+                //writerDIA.WriteMatrixDIA();
             }
 
             // I'm not sure what goes into a DIA mgf file, so we aren't making one yet
