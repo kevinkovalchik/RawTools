@@ -205,7 +205,7 @@ namespace RawTools.Algorithms.Analyze
         }
 
         public static Dictionary<int, double> Ms1Interference(CentroidStreamCollection centroidStreams, PrecursorMassCollection precursorMasses,
-            TrailerExtraCollection trailerExtras, PrecursorScanCollection precursorScans, ScanIndex index, double isoWindow)
+            TrailerExtraCollection trailerExtras, PrecursorScanCollection precursorScans, ScanEventReactionCollection reactions, ScanIndex index)
         {
             ConcurrentDictionary<int, double> interference = new ConcurrentDictionary<int, double>();
 
@@ -218,8 +218,8 @@ namespace RawTools.Algorithms.Analyze
                 foreach (int scan in batch)
                 {
                     int preScan = precursorScans[scan].MasterScan;
-                    interference.AddOrUpdate(scan, Algorithms.Ms1Interference.CalculateForOneScan(centroidStreams[preScan],
-                                precursorMasses[scan].MonoisotopicMZ, isoWindow, trailerExtras[scan].ChargeState), (a, b) => b);
+                    interference.AddOrUpdate(scan, Algorithms.Ms1Interference.CalculateForOneScan(centroidStreams[preScan], reactions[scan],
+                                precursorMasses[scan].MonoisotopicMZ, trailerExtras[scan].ChargeState), (a, b) => b);
                 }
             });
 

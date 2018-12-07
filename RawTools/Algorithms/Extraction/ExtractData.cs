@@ -732,6 +732,25 @@ namespace RawTools.Algorithms.ExtractData
             return retentionTimes;
         }
 
+        public static ScanEventReactionCollection ScanEvents(IRawDataPlus rawFile, ScanIndex index)
+        {
+            rawFile.SelectMsData();
+
+            ScanEventReactionCollection events = new ScanEventReactionCollection();
+
+            Log.Information("Extracting scan events");
+            ProgressIndicator P = new ProgressIndicator(index.ScanEnumerators[MSOrderType.Any].Length, "Extracting reaction events");
+            P.Start();
+
+            foreach (int scan in index.ScanEnumerators[index.AnalysisOrder])
+            {
+                events.Add(scan, rawFile.GetScanEventForScanNumber(scan).GetReaction(0));
+                P.Update();
+            }
+            P.Done();
+
+            return events;
+        }
 
         public static MethodDataContainer MethodData(IRawDataPlus rawFile, ScanIndex index)
         {

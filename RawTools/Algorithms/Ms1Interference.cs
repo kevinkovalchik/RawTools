@@ -70,7 +70,7 @@ namespace RawTools.Algorithms
             return ppm.Min() < ppmTolerance;
         }
 
-        public static double CalculateForOneScan(CentroidStreamData Ms1Scan, double monoIsoMass, double isoWindow, int charge, double ppm = 4)
+        public static double CalculateForOneScan(CentroidStreamData Ms1Scan, IReaction reaction, double monoIsoMass, int charge, double ppm = 4)
         {
             double[] masses;
             double[] intensities;
@@ -78,8 +78,11 @@ namespace RawTools.Algorithms
             double currentIsotope;
             List<double> isotopes = new List<double>();
 
+            double isoWindow = reaction.IsolationWidth;
+            double center = reaction.PrecursorMass;
+
             // subset the ms1 scan to be the isolation window
-            (masses, intensities) = SubsetCentroidScan(Ms1Scan, monoIsoMass, isoWindow);
+            (masses, intensities) = SubsetCentroidScan(Ms1Scan, center, isoWindow);
 
             // make a copy of the intensities array to represent the interference intensities
             interferences = (double[])intensities.Clone();

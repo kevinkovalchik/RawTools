@@ -47,19 +47,22 @@ namespace RawTools.WorkFlows
             TrailerExtraCollection trailerExtras;
             PrecursorMassCollection precursorMasses;
             RetentionTimeCollection retentionTimes;
+            ScanEventReactionCollection reactions;
             ScanMetaDataCollectionDDA metaData = null;
             PrecursorPeakCollection peakData = null;
 
             var staticRawFile = rawFileThreadManager.CreateThreadAccessor();
             staticRawFile.SelectInstrument(Device.MS, 1);
 
-            staticRawFile.CheckIfBoxcar();
+            //staticRawFile.CheckIfBoxcar();
 
             (ScanIndex Index, PrecursorScanCollection precursorScans, ScanDependentsCollections scanDependents) =
                 Extract.ScanIndicesPrecursorsDependents(rawFileThreadManager);
-
+            
             using (var rawFile = rawFileThreadManager.CreateThreadAccessor())
             {
+                reactions = Extract.ScanEvents(rawFile, Index);
+
                 methodData = Extract.MethodData(rawFile, Index);
 
                 (centroidStreams, segmentScans) = Extract.MsData(rawFile: rawFile, index: Index);
@@ -73,15 +76,15 @@ namespace RawTools.WorkFlows
 
             if (parameters.ParseParams.Parse | parameters.ParseParams.Metrics | parameters.RefineMassCharge)
             {
-                metaData = MetaDataProcessingDDA.AggregateMetaDataDDA(centroidStreams, segmentScans, methodData, precursorScans,
-                trailerExtras, precursorMasses, retentionTimes, scanDependents, Index);
-
                 peakData = AnalyzePeaks.AnalyzeAllPeaks(centroidStreams, retentionTimes, precursorMasses, precursorScans, Index);
 
                 if (parameters.RefineMassCharge)
                 {
                     MonoIsoPredictor.RefineMonoIsoMassChargeValues(centroidStreams, precursorMasses, trailerExtras, peakData, precursorScans);
                 }
+
+                metaData = MetaDataProcessingDDA.AggregateMetaDataDDA(centroidStreams, segmentScans, methodData, precursorScans,
+                    trailerExtras, precursorMasses, retentionTimes, scanDependents, reactions, Index);
             }
             
             QuantDataCollection quantData = null;
@@ -133,6 +136,7 @@ namespace RawTools.WorkFlows
             TrailerExtraCollection trailerExtras;
             PrecursorMassCollection precursorMasses;
             RetentionTimeCollection retentionTimes;
+            ScanEventReactionCollection reactions;
 
             var staticRawFile = rawFileThreadManager.CreateThreadAccessor();
             staticRawFile.SelectInstrument(Device.MS, 1);
@@ -146,6 +150,8 @@ namespace RawTools.WorkFlows
             {
                 methodData = Extract.MethodData(rawFile, Index);
 
+                reactions = Extract.ScanEvents(rawFile, Index);
+
                 (centroidStreams, segmentScans) = Extract.MsData(rawFile: rawFile, index: Index);
 
                 trailerExtras = Extract.TrailerExtras(rawFile, Index);
@@ -155,15 +161,15 @@ namespace RawTools.WorkFlows
                 retentionTimes = Extract.RetentionTimes(rawFile, Index);
             }
 
-            ScanMetaDataCollectionDDA metaData = MetaDataProcessingDDA.AggregateMetaDataDDA(centroidStreams, segmentScans, methodData, precursorScans,
-                trailerExtras, precursorMasses, retentionTimes, scanDependents, Index);
-
             PrecursorPeakCollection peakData = AnalyzePeaks.AnalyzeAllPeaks(centroidStreams, retentionTimes, precursorMasses, precursorScans, Index);
 
             if (parameters.RefineMassCharge)
             {
                 MonoIsoPredictor.RefineMonoIsoMassChargeValues(centroidStreams, precursorMasses, trailerExtras, peakData, precursorScans);
             }
+
+            ScanMetaDataCollectionDDA metaData = MetaDataProcessingDDA.AggregateMetaDataDDA(centroidStreams, segmentScans, methodData, precursorScans,
+                trailerExtras, precursorMasses, retentionTimes, scanDependents, reactions, Index);
 
             RawMetricsDataDDA rawMetrics = MetaDataProcessingDDA.GetMetricsDataDDA(metaData, methodData, staticRawFile.FileName, retentionTimes, Index, peakData, precursorScans);
 

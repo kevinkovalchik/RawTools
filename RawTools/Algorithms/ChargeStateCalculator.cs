@@ -16,7 +16,7 @@ namespace RawTools.Algorithms
         {
             double[] masses;
             double[] intensities;
-            int[] allowedCharges = new int[] {  2, 3, 4 };
+            int[] allowedCharges = new int[] {  2, 3, 4, 5 };
             List<int> possibleChargeStates = new List<int>();
             int parentIndex;
             double massDiff = 1.003356;

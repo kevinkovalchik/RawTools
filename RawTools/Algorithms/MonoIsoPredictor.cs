@@ -85,7 +85,7 @@ namespace RawTools.Algorithms
             {
                 // populate a list of possible monoisotopic masses
                 possibleMonoIsoMasses = new List<double>() { parentMZ };
-                for (int i = 1; i < 3; i++)
+                for (int i = 1; i < 4; i++)
                 {
                     double isotope = parentMZ - i * Masses.C13MinusC12 / charge;
                     if (masses.withinTolerance(isotope, 10))

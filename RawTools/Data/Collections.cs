@@ -124,6 +124,8 @@ namespace RawTools.Data.Collections
         }
     }
 
+    class ScanEventReactionCollection: Dictionary<int, IReaction> { }
+
     [XmlRoot("dictionary")]
     public class SerializableDictionary<TKey, TValue>
         : Dictionary<TKey, TValue>, IXmlSerializable

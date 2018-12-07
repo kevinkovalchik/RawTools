@@ -43,7 +43,7 @@ namespace RawTools.Algorithms.Analyze
     {
         public static ScanMetaDataCollectionDDA AggregateMetaDataDDA(CentroidStreamCollection centroidStreams, SegmentScanCollection segmentScans, MethodDataContainer methodData,
             PrecursorScanCollection precursorScans, TrailerExtraCollection trailerExtras, PrecursorMassCollection precursorMasses,
-            RetentionTimeCollection retentionTimes, ScanDependentsCollections scanDependents, ScanIndex index)
+            RetentionTimeCollection retentionTimes, ScanDependentsCollections scanDependents, ScanEventReactionCollection reactions, ScanIndex index)
         {
             //ProgressIndicator progress = new ProgressIndicator(index.ScanEnumerators[MSOrderType.Any].Count(),
              //   "Formatting scan meta data");
@@ -58,7 +58,7 @@ namespace RawTools.Algorithms.Analyze
 
             Console.WriteLine("  MS1 isolation interference");
             metaData.Ms1IsolationInterference = MetaDataCalculations.Ms1Interference(centroidStreams, precursorMasses, trailerExtras,
-                precursorScans, index, isoWindow);
+                precursorScans, reactions, index);
 
             Console.WriteLine("  MS2 scan cycle density");
             metaData.MS2ScansPerCycle = MetaDataCalculations.MS2ScansPerCycle(scanDependents, index);

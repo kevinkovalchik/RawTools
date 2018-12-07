@@ -101,7 +101,7 @@ namespace RawTools.ArgumentParser
         public string Chromatogram { get; set; }
 
         [Option('R', "refinemasscharge", HelpText = "Optional. Refine precursor charge and monoisotopic mass assignments. Highly recommended if " +
-            "monoisotopic precursor selection was turned off in the instrument method.")]
+            "monoisotopic precursor selection was turned off in the instrument method (or peptide match on a QE instrument).")]
         public bool RefineMassCharge { get; set; }
     }
 
