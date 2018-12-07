@@ -20,11 +20,7 @@ If you need help installing and using RawTools, please visit the wiki page appro
 
 * The R Shiny application now has greater support for plot customisation. We have also added the ability to highlight points on QC plots. Lastly, we have added a new 'multi-plot' page where multiple scan matrix files can be input at once and plots for all files will be generated alongside one another in the same space. The latest version is live on the web and available here.  [2018-11-29]
 
-* We are sorting out some issues with the image file downloads not working. This issue is proving more difficult than initially anticipated, but we are still working on it. Note - if you [download](https://github.com/kevinkovalchik/RawTools/tree/master/documentation/manuscript/RawTools_RShiny_Application) the Shiny application and run it locally, the file downloads will work.  [2018-11-21]
-
 * The Shiny application has been updated to allow downloading of pdf versions of the created plots. These images can be imported to programs like Adobe Illustrator and will be treated as vector images. We have also added the ability to mouseover data points to see values, as well as corrected some bugs. We have also added the ability to add mean and median lines to the QC plots. The latest Shiny web interface is available [here](https://rawtoolsqcdv.bcgsc.ca/). [2018-11-07] 
-
-* The RawTools Shiny application has been revamped to use a new interface and to provide functionality for plotting of 'Matrix' and 'chromatogram' outputs. Matrix files are generated using the RawTools parse functionality and can be useful for visualizing data temporally across the acquisition. Chromatogram files are also generated using the parse functionality, with the `--chro` flag. The new application is currently available on GitHub [from here](https://github.com/kevinkovalchik/RawTools/tree/master/documentation/manuscript/RawTools_RShiny_Application). The web page can be accessed from [this link](https://rawtoolsqcdv.bcgsc.ca/). [2018-09-26]
 
 * RawTools now offers support for X! Tandem in as a search engine to facilitate calculation of identification-related metrics. IdentiPy remains available and the user may decide which search engine they wish to use. We are working on updating the help documentation to reflect this addition. [2018-09-24]
 
