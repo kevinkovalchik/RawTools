@@ -54,11 +54,16 @@ namespace RawTools.WorkFlows
             ParseParams.LabelingReagents = String.Empty;
             ParseParams.LabelingReagents = parseOptions.LabelingReagents;
             ParseParams.Metrics = parseOptions.Metrics;
-            ParseParams.OutputDirectory = parseOptions.OutputDirectory;
             ParseParams.Parse = parseOptions.ParseData;
             ParseParams.Quant = parseOptions.Quant;
             ParseParams.UnlabeledQuant = parseOptions.UnlabeledQuant;
             ParseParams.WriteMgf = parseOptions.WriteMGF;
+
+            if (!Path.IsPathRooted(parseOptions.OutputDirectory))
+            {
+                parseOptions.OutputDirectory = Path.Combine(Directory.GetCurrentDirectory(), parseOptions.OutputDirectory);
+            }
+            ParseParams.OutputDirectory = parseOptions.OutputDirectory;
         }
 
         public WorkflowParameters(ArgumentParser.QcOptions qcOptions)
