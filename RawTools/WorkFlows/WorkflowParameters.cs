@@ -59,10 +59,14 @@ namespace RawTools.WorkFlows
             ParseParams.UnlabeledQuant = parseOptions.UnlabeledQuant;
             ParseParams.WriteMgf = parseOptions.WriteMGF;
 
-            if (!Path.IsPathRooted(parseOptions.OutputDirectory))
+            if (parseOptions.OutputDirectory != null)
             {
-                parseOptions.OutputDirectory = Path.Combine(Directory.GetCurrentDirectory(), parseOptions.OutputDirectory);
+                if (!Path.IsPathRooted(parseOptions.OutputDirectory))
+                {
+                    parseOptions.OutputDirectory = Path.Combine(Directory.GetCurrentDirectory(), parseOptions.OutputDirectory);
+                }
             }
+            
             ParseParams.OutputDirectory = parseOptions.OutputDirectory;
         }
 
