@@ -613,6 +613,21 @@ namespace RawTools.Utilities
                 Directory.CreateDirectory(directory);
             }
         }
+
+        public static void EnsureAbsolutePaths(this List<string> files)
+        {
+            string wd = Directory.GetCurrentDirectory();
+
+            for (int i = 0; i < files.Count(); i++)
+            {
+                string fileName = files[i];
+
+                if (!Path.IsPathRooted(fileName))
+                {
+                    files[i] = Path.Combine(wd, fileName);
+                }
+            }
+        }
     }
 
     /// <summary>

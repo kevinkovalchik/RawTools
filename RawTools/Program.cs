@@ -386,6 +386,9 @@ namespace RawTools
                     return 1;
                 }
 
+                // if the file location(s) are relative, we need to get the absolute path to them
+                files.EnsureAbsolutePaths();
+
                 Log.Information("Files to be processed, provided as list: {0}", String.Join(" ", files));
             }
 
@@ -402,6 +405,9 @@ namespace RawTools
                     Log.Error("Invalid directory provided: {0}", opts.InputDirectory);
                     return 1;
                 }
+
+                // if the file location(s) are relative, we need to get the absolute path to them
+                files.EnsureAbsolutePaths();
 
                 Log.Information("Files to be processed, provided as directory: {0}", String.Join(" ", files));
 

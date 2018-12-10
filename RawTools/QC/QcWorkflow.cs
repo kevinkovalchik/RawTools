@@ -207,6 +207,9 @@ namespace RawTools.QC
             var fileList = Directory.GetFiles(dataDirectory, "*.*", SearchOption.TopDirectoryOnly)
                     .Where(s => s.EndsWith(".raw", StringComparison.OrdinalIgnoreCase)).ToList();
 
+            // make sure we've got absolute paths to the files
+            fileList.EnsureAbsolutePaths();
+
             if (fileList.Count() == 0)
             {
                 Log.Error("No raw files found in {Directory}", dataDirectory);
