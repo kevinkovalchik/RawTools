@@ -48,7 +48,7 @@ namespace RawTools.QC
             string mgfFile = ReadWrite.GetPathToFile(parameters.QcParams.QcSearchDataDirectory, rawFileName, ".mgf");
 
             MgfWriter.WriteMGF(rawFileName, centroids, segments, parameters, retentionTimes, precursorMasses, precursorScans,
-                trailerExtras, methodData, index, outputFile: mgfFile);
+                trailerExtras, methodData, index, outputFile: mgfFile, scans: scans);
         }
 
         public static void RunSearch(WorkflowParameters parameters, MethodDataContainer methodData, string rawFileName)
