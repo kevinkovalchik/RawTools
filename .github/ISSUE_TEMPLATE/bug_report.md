@@ -1,6 +1,9 @@
 ---
 name: Bug report
 about: Create a report to help us improve
+title: ''
+labels: ''
+assignees: ''
 
 ---
 
@@ -19,10 +22,9 @@ Please paste the entire output from the command line, if applicable (i.e. everyt
 **Screenshots**
 If applicable, add screenshots to help explain your problem.
 
-**Desktop (please complete the following information):**
+**Desktop & RawTools information:**
  - OS: [e.g. iOS]
- - Browser [e.g. chrome, safari]
- - Version [e.g. 22]
+- RawTools version: [e.g. 1.3.3]
 
 **Additional context**
 Add any other context about the problem here.
