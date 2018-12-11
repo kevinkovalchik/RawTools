@@ -98,6 +98,30 @@ namespace RawTools.WorkFlows
             {
                 QcParams.PerformSearch = true;
             }
+
+            if (QcParams.FastaDatabase != null)
+            {
+                if (!Path.IsPathRooted(QcParams.FastaDatabase))
+                {
+                    QcParams.FastaDatabase = Path.Combine(Directory.GetCurrentDirectory(), QcParams.FastaDatabase);
+                }
+            }
+
+            if (QcParams.QcDirectory != null)
+            {
+                if (!Path.IsPathRooted(QcParams.QcDirectory))
+                {
+                    QcParams.QcDirectory = Path.Combine(Directory.GetCurrentDirectory(), QcParams.QcDirectory);
+                }
+            }
+
+            if (QcParams.XTandemDirectory != null)
+            {
+                if (!Path.IsPathRooted(QcParams.XTandemDirectory))
+                {
+                    QcParams.XTandemDirectory = Path.Combine(Directory.GetCurrentDirectory(), QcParams.XTandemDirectory);
+                }
+            }
         }
         
     }
