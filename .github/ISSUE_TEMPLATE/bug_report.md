@@ -18,6 +18,9 @@ If this is something that happened while running RawTools, enter the exact argum
 
 **Command line output**
 Please paste the entire output from the command line, if applicable (i.e. everything that appeared after you hit enter until things stopped working).
+```
+[Paste output here, between the triple quotes]
+```
 
 **Screenshots**
 If applicable, add screenshots to help explain your problem.
