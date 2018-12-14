@@ -62,6 +62,17 @@ namespace RawToolsGUI
             }
         }
 
+        private void buttonQcDataDirectory_Click(object sender, EventArgs e)
+        {
+            VistaFolderBrowserDialog dlg = new VistaFolderBrowserDialog();
+            dlg.ShowNewFolderButton = true;
+
+            if (dlg.ShowDialog() == DialogResult.OK)
+            {
+                textBoxQcDataDirectory.Text = dlg.SelectedPath;
+            }
+        }
+
         private void buttonXTandemDir_Click(object sender, EventArgs e)
         {
             VistaFolderBrowserDialog dlg = new VistaFolderBrowserDialog();
@@ -220,6 +231,8 @@ namespace RawToolsGUI
                 radioButtonSelectFiles.Enabled = false;
                 buttonSelectFiles.Enabled = false;
                 textBoxRawFiles.Enabled = false;
+
+                groupBoxQcOptions.Enabled = true;
             }
             else if (!checkBoxModeQC.Checked)
             {
@@ -232,6 +245,8 @@ namespace RawToolsGUI
                 radioButtonSelectFiles.Enabled = true;
                 buttonSelectFiles.Enabled = false;
                 textBoxRawFiles.Enabled = false;
+
+                groupBoxQcOptions.Enabled = false;
             }
         }
 
@@ -303,7 +318,7 @@ namespace RawToolsGUI
 
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
         {
-            if (checkBox1.Checked)
+            if (checkBoxDataOutputDirectory.Checked)
             {
                 buttonDataOutputDir.Enabled = true;
                 textBoxDataOutputDir.Enabled = true;
@@ -331,7 +346,7 @@ namespace RawToolsGUI
         {
             if (ckbxOutputMGF.Checked)
             {
-                checkBoxReporterFilterMGF.Enabled = true;
+                checkBoxReporterFilterMGF.Enabled = checkBoxReporterIonFiltering.Checked;
                 groupBoxMgfOpts.Enabled = true;
             }
             else
@@ -450,8 +465,8 @@ namespace RawToolsGUI
             else if (checkBoxModeQC.Checked)
             {
                 arguments.Append(" qc");
-                MessageBox.Show("Sorry, I haven't finished the part of this that makes QC go yet.");
-                return;
+                //MessageBox.Show("Sorry, I haven't finished the part of this that makes QC go yet.");
+                //return;
             }
             else
             {
@@ -466,55 +481,128 @@ namespace RawToolsGUI
                 return;
             }
 
-            if (radioButtonSelectDirectory.Checked)
+            if (checkBoxModeParse.Checked)
             {
-                if (textBoxRawFileDirectory.Text == "" | textBoxRawFileDirectory.Text == String.Empty)
+                if (radioButtonSelectDirectory.Checked)
                 {
-                    MessageBox.Show("Please select one or more raw files or a raw file directory.", "Error");
+                    if (textBoxRawFileDirectory.Text == "" | textBoxRawFileDirectory.Text == String.Empty)
+                    {
+                        MessageBox.Show("Please select one or more raw files or a raw file directory.", "Error");
+                        return;
+                    }
+                    arguments.Append($" -d \"{textBoxRawFileDirectory.Text}\"");
+                }
+                else if (radioButtonSelectFiles.Checked)
+                {
+                    if (textBoxRawFiles.Text == "" | textBoxRawFiles.Text == String.Empty)
+                    {
+                        MessageBox.Show("Please select one or more raw files or a raw file directory.", "Error");
+                        return;
+                    }
+                    arguments.Append($" -f {textBoxRawFiles.Text}");
+                }
+                else
+                {
+                    MessageBox.Show("Something went wrong... please select a raw file directory or one or more raw files.", "Error");
                     return;
                 }
-                arguments.Append($" -d {textBoxRawFileDirectory.Text}");
-            }
-            else if (radioButtonSelectFiles.Checked)
-            {
-                if (textBoxRawFiles.Text == "" | textBoxRawFiles.Text == String.Empty)
+
+                if (!ckbxOutputMGF.Checked & !ckbxOutputMetrics.Checked & !ckbxOutputChromatograms.Checked &
+                    !ckbxOutputParse.Checked & !ckbxOutputQuant.Checked & !checkBoxModeQC.Checked)
                 {
-                    MessageBox.Show("Please select one or more raw files or a raw file directory.", "Error");
+                    MessageBox.Show("You haven't selected any data output. Please choose something.");
                     return;
                 }
-                arguments.Append($" -f {textBoxRawFiles.Text}");
-            }
-            else
-            {
-                MessageBox.Show("Something went wrong... please select a raw file directory or one or more raw files.", "Error");
-                return;
+
+                arguments.Append(" -");
+
+                if (ckbxOutputMGF.Checked)
+                {
+                    arguments.Append("m");
+                }
+                if (ckbxOutputParse.Checked)
+                {
+                    arguments.Append("p");
+                }
+                if (ckbxOutputMetrics.Checked)
+                {
+                    arguments.Append("x");
+                }
+                if (checkBoxRefinePrecursor.Checked)
+                {
+                    arguments.Append("R");
+                }
+
+                if (checkBoxDataOutputDirectory.Checked)
+                {
+                    arguments.Append($" -o \"{textBoxDataOutputDir.Text}\"");
+                }
+
+                if (ckbxOutputQuant.Checked & ckbxOutputQuant.Enabled)
+                {
+                    if (comboBoxLabelingReagents.SelectedIndex == 0)
+                    {
+                        MessageBox.Show("In order to quantify reporter ions you need to select the appropriate labeling reagents.", "Error");
+                        return;
+                    }
+                    arguments.Append($" -q r {comboBoxLabelingReagents.Text}");
+                }
+
+                if (checkBoxMgfLowMass.Checked & checkBoxMgfLowMass.Enabled)
+                {
+                    arguments.Append($" -c {textBoxMgfLowMass}");
+                }
+
+                if (checkBoxMgfIntensityFiltering.Checked & radioButtonMgfFilterRelativeIntensity.Checked)
+                {
+                    arguments.Append($" -y {textBoxMgfFilterRelativeIntensity}");
+                }
             }
 
-            if (!ckbxOutputMGF.Checked & !ckbxOutputMetrics.Checked & !ckbxOutputChromatograms.Checked &
-                !ckbxOutputParse.Checked & !ckbxOutputQuant.Checked & !checkBoxModeQC.Checked)
+            if (checkBoxModeQC.Checked)
             {
-                MessageBox.Show("You haven't selected any data output. Please choose something.");
-                return;
+                arguments.Append($" -d \"{textBoxRawFileDirectory.Text}\"");
+                arguments.Append($" -q \"{textBoxQcDataDirectory.Text}\"");
+
+                if (!radioButtonSearchNone.Checked)
+                {
+                    if (radioButtonSearchXTandem.Checked)
+                    {
+                        if (textBoxXTandemDir.Text == "" | textBoxXTandemDir.Text == String.Empty)
+                        {
+                            MessageBox.Show("Please select the X! Tandem directory.", "Error");
+                            return;
+                        }
+                        arguments.Append($" -s xtandem -X \"{textBoxXTandemDir.Text}\"");
+                    }
+                    else
+                    {
+                        arguments.Append($" -s identipy");
+
+                        if (!checkBoxAutoSearchIdentipy.Checked)
+                        {
+                            if (textBoxPythonExe.Text == "" | textBoxPythonExe.Text == String.Empty
+                                | textBoxIdentipyScript.Text == "" | textBoxIdentipyScript.Text == String.Empty)
+                            {
+                                MessageBox.Show("Please select both the Python executable file and the Identipy script file.", "Error");
+                                return;
+                            }
+                            arguments.Append($" -P \"{textBoxPythonExe.Text}\" -I \"{textBoxIdentipyScript.Text}\"");
+                        }
+                    }
+
+                    if (textBoxFastaFile.Text == "" | textBoxFastaFile.Text == String.Empty)
+                    {
+                        MessageBox.Show("Please select a FASTA file for the database search.", "Error");
+                        return;
+                    }
+                    arguments.Append($" --db \"{textBoxFastaFile.Text}\"");
+
+                    arguments.Append($" -N {textBoxNumSpectra.Text}");
+                }
             }
 
-            arguments.Append(" -");
-
-            if (ckbxOutputMGF.Checked)
-            {
-                arguments.Append("m");
-            }
-            if (ckbxOutputParse.Checked)
-            {
-                arguments.Append("p");
-            }
-            if (ckbxOutputMetrics.Checked)
-            {
-                arguments.Append("x");
-            }
-            if (checkBoxRefinePrecursor.Checked)
-            {
-                arguments.Append("R");
-            }
+            
 
             utils.VoidBash(command, arguments.ToString());
         }
@@ -548,11 +636,16 @@ namespace RawToolsGUI
         {
             if (ckbxOutputQuant.Checked)
             {
-                foreach (var control in ckbxOutputQuant.Parent.Controls.OfType<Control>())
-                {
-                    control.Enabled = true;
-                }
-                checkBoxReporterFilterMGF.Enabled = ckbxOutputMGF.Checked;
+                comboBoxLabelingReagents.Enabled = true;
+                checkBoxReporterIonFiltering.Enabled = true;
+
+                labelReporterIonIntensityFilter.Enabled = checkBoxReporterIonFiltering.Checked;
+                textBoxReporterIntensityFilter.Enabled = checkBoxReporterIonFiltering.Checked;
+                labelReporterIonMissingFilter.Enabled = checkBoxReporterIonFiltering.Checked;
+                textBoxReporterNumberMissingFilter.Enabled = checkBoxReporterIonFiltering.Checked;
+                checkBoxReporterFilterMatrix.Enabled = checkBoxReporterIonFiltering.Checked;
+                checkBoxReporterFilterMGF.Enabled = checkBoxReporterIonFiltering.Checked & ckbxOutputMGF.Checked;
+                labelReporterIonFilteringApplyTo.Enabled = checkBoxReporterIonFiltering.Checked;
             }
             else
             {
@@ -596,6 +689,32 @@ namespace RawToolsGUI
                 textBoxMgfFilterRelativeIntensity.Enabled = false;
             }
         }
+
+        private void checkBoxReporterIonFiltering_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkBoxReporterIonFiltering.Checked)
+            {
+                labelReporterIonIntensityFilter.Enabled = true;
+                labelReporterIonMissingFilter.Enabled = true;
+                textBoxReporterIntensityFilter.Enabled = true;
+                textBoxReporterNumberMissingFilter.Enabled = true;
+                labelReporterIonFilteringApplyTo.Enabled = true;
+                checkBoxReporterFilterMatrix.Enabled = true;
+                checkBoxReporterFilterMGF.Enabled = ckbxOutputMGF.Checked;
+            }
+            else
+            {
+                labelReporterIonIntensityFilter.Enabled = false;
+                labelReporterIonMissingFilter.Enabled = false;
+                textBoxReporterIntensityFilter.Enabled = false;
+                textBoxReporterNumberMissingFilter.Enabled = false;
+                labelReporterIonFilteringApplyTo.Enabled = false;
+                checkBoxReporterFilterMatrix.Enabled = false;
+                checkBoxReporterFilterMGF.Enabled = false;
+            }
+        }
+
+        
     }
 
     static class utils
