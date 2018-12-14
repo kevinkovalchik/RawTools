@@ -46,9 +46,9 @@
             this.buttonDataOutputDir = new System.Windows.Forms.Button();
             this.ckbxOutputChromatograms = new System.Windows.Forms.CheckBox();
             this.ckbxOutputMetrics = new System.Windows.Forms.CheckBox();
-            this.ckbxOutputQuant = new System.Windows.Forms.CheckBox();
             this.ckbxOutputParse = new System.Windows.Forms.CheckBox();
             this.ckbxOutputMGF = new System.Windows.Forms.CheckBox();
+            this.ckbxOutputQuant = new System.Windows.Forms.CheckBox();
             this.groupBoxCommonOptions = new System.Windows.Forms.GroupBox();
             this.comboBoxMinCharge = new System.Windows.Forms.ComboBox();
             this.labelMinCharge = new System.Windows.Forms.Label();
@@ -83,14 +83,20 @@
             this.checkBox2 = new System.Windows.Forms.CheckBox();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
+            this.groupBoxQuantOpt = new System.Windows.Forms.GroupBox();
+            this.checkBoxReporterFilterMGF = new System.Windows.Forms.CheckBox();
+            this.checkBoxReporterFilterMatrix = new System.Windows.Forms.CheckBox();
+            this.comboBoxLabelingReagents = new System.Windows.Forms.ComboBox();
+            this.label4 = new System.Windows.Forms.Label();
+            this.groupBoxMgfOpts = new System.Windows.Forms.GroupBox();
+            this.textBoxMgfFilterRelativeIntensity = new System.Windows.Forms.TextBox();
+            this.radioButtonMgfIntensityFilterNoiseModel = new System.Windows.Forms.RadioButton();
+            this.textBoxMgfLowMass = new System.Windows.Forms.TextBox();
+            this.checkBoxMgfIntensityFiltering = new System.Windows.Forms.CheckBox();
+            this.checkBoxMgfLowMass = new System.Windows.Forms.CheckBox();
+            this.radioButtonMgfFilterRelativeIntensity = new System.Windows.Forms.RadioButton();
             this.panel1 = new System.Windows.Forms.Panel();
             this.button1 = new System.Windows.Forms.Button();
-            this.label4 = new System.Windows.Forms.Label();
-            this.checkBoxReporterFilterMatrix = new System.Windows.Forms.CheckBox();
-            this.checkBoxReporterFilterMGF = new System.Windows.Forms.CheckBox();
-            this.groupBoxQuantOpt = new System.Windows.Forms.GroupBox();
-            this.comboBoxLabelingReagents = new System.Windows.Forms.ComboBox();
-            this.groupBoxMgfOpts = new System.Windows.Forms.GroupBox();
             this.groupBoxMode.SuspendLayout();
             this.groupBoxRawFiles.SuspendLayout();
             this.groupBoxDataOutput.SuspendLayout();
@@ -98,8 +104,9 @@
             this.groupBoxQcOptions.SuspendLayout();
             this.groupBoxChromatograms.SuspendLayout();
             this.flowLayoutPanel1.SuspendLayout();
-            this.panel1.SuspendLayout();
             this.groupBoxQuantOpt.SuspendLayout();
+            this.groupBoxMgfOpts.SuspendLayout();
+            this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // groupBoxMode
@@ -282,17 +289,6 @@
             this.ckbxOutputMetrics.Text = "Metrics";
             this.ckbxOutputMetrics.UseVisualStyleBackColor = true;
             // 
-            // ckbxOutputQuant
-            // 
-            this.ckbxOutputQuant.AutoSize = true;
-            this.ckbxOutputQuant.Location = new System.Drawing.Point(6, 21);
-            this.ckbxOutputQuant.Name = "ckbxOutputQuant";
-            this.ckbxOutputQuant.Size = new System.Drawing.Size(173, 21);
-            this.ckbxOutputQuant.TabIndex = 2;
-            this.ckbxOutputQuant.Text = "Quantify Reporter Ions";
-            this.ckbxOutputQuant.UseVisualStyleBackColor = true;
-            this.ckbxOutputQuant.CheckedChanged += new System.EventHandler(this.ckbxOutputQuant_CheckedChanged);
-            // 
             // ckbxOutputParse
             // 
             this.ckbxOutputParse.AutoSize = true;
@@ -314,6 +310,17 @@
             this.ckbxOutputMGF.Text = "MGF";
             this.ckbxOutputMGF.UseVisualStyleBackColor = true;
             this.ckbxOutputMGF.CheckedChanged += new System.EventHandler(this.ckbxOutputMGF_CheckedChanged);
+            // 
+            // ckbxOutputQuant
+            // 
+            this.ckbxOutputQuant.AutoSize = true;
+            this.ckbxOutputQuant.Location = new System.Drawing.Point(6, 21);
+            this.ckbxOutputQuant.Name = "ckbxOutputQuant";
+            this.ckbxOutputQuant.Size = new System.Drawing.Size(173, 21);
+            this.ckbxOutputQuant.TabIndex = 2;
+            this.ckbxOutputQuant.Text = "Quantify Reporter Ions";
+            this.ckbxOutputQuant.UseVisualStyleBackColor = true;
+            this.ckbxOutputQuant.CheckedChanged += new System.EventHandler(this.ckbxOutputQuant_CheckedChanged);
             // 
             // groupBoxCommonOptions
             // 
@@ -583,7 +590,7 @@
             this.textBoxReporterNumberMissingFilter.Name = "textBoxReporterNumberMissingFilter";
             this.textBoxReporterNumberMissingFilter.Size = new System.Drawing.Size(72, 22);
             this.textBoxReporterNumberMissingFilter.TabIndex = 12;
-            this.textBoxReporterNumberMissingFilter.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox2_KeyPress);
+            this.textBoxReporterNumberMissingFilter.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBoxReporterNumberMissingFilter_KeyPress);
             // 
             // textBoxReporterIntensityFilter
             // 
@@ -592,7 +599,7 @@
             this.textBoxReporterIntensityFilter.Name = "textBoxReporterIntensityFilter";
             this.textBoxReporterIntensityFilter.Size = new System.Drawing.Size(72, 22);
             this.textBoxReporterIntensityFilter.TabIndex = 11;
-            this.textBoxReporterIntensityFilter.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox1_KeyPress);
+            this.textBoxReporterIntensityFilter.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBoxReporterIntensityFilter_KeyPress);
             // 
             // label1
             // 
@@ -695,56 +702,6 @@
             this.flowLayoutPanel1.Size = new System.Drawing.Size(773, 704);
             this.flowLayoutPanel1.TabIndex = 8;
             // 
-            // panel1
-            // 
-            this.panel1.Controls.Add(this.button1);
-            this.panel1.Location = new System.Drawing.Point(192, 606);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(561, 80);
-            this.panel1.TabIndex = 8;
-            // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(3, 9);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(555, 68);
-            this.button1.TabIndex = 0;
-            this.button1.Text = "Go!";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Enabled = false;
-            this.label4.Location = new System.Drawing.Point(212, 101);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(63, 17);
-            this.label4.TabIndex = 13;
-            this.label4.Text = "Apply to:";
-            // 
-            // checkBoxReporterFilterMatrix
-            // 
-            this.checkBoxReporterFilterMatrix.AutoSize = true;
-            this.checkBoxReporterFilterMatrix.Enabled = false;
-            this.checkBoxReporterFilterMatrix.Location = new System.Drawing.Point(281, 101);
-            this.checkBoxReporterFilterMatrix.Name = "checkBoxReporterFilterMatrix";
-            this.checkBoxReporterFilterMatrix.Size = new System.Drawing.Size(67, 21);
-            this.checkBoxReporterFilterMatrix.TabIndex = 14;
-            this.checkBoxReporterFilterMatrix.Text = "Matrix";
-            this.checkBoxReporterFilterMatrix.UseVisualStyleBackColor = true;
-            // 
-            // checkBoxReporterFilterMGF
-            // 
-            this.checkBoxReporterFilterMGF.AutoSize = true;
-            this.checkBoxReporterFilterMGF.Enabled = false;
-            this.checkBoxReporterFilterMGF.Location = new System.Drawing.Point(354, 101);
-            this.checkBoxReporterFilterMGF.Name = "checkBoxReporterFilterMGF";
-            this.checkBoxReporterFilterMGF.Size = new System.Drawing.Size(60, 21);
-            this.checkBoxReporterFilterMGF.TabIndex = 15;
-            this.checkBoxReporterFilterMGF.Text = "MGF";
-            this.checkBoxReporterFilterMGF.UseVisualStyleBackColor = true;
-            // 
             // groupBoxQuantOpt
             // 
             this.groupBoxQuantOpt.Controls.Add(this.checkBoxReporterFilterMGF);
@@ -764,6 +721,28 @@
             this.groupBoxQuantOpt.TabIndex = 16;
             this.groupBoxQuantOpt.TabStop = false;
             this.groupBoxQuantOpt.Text = "Quantification Options";
+            // 
+            // checkBoxReporterFilterMGF
+            // 
+            this.checkBoxReporterFilterMGF.AutoSize = true;
+            this.checkBoxReporterFilterMGF.Enabled = false;
+            this.checkBoxReporterFilterMGF.Location = new System.Drawing.Point(354, 101);
+            this.checkBoxReporterFilterMGF.Name = "checkBoxReporterFilterMGF";
+            this.checkBoxReporterFilterMGF.Size = new System.Drawing.Size(60, 21);
+            this.checkBoxReporterFilterMGF.TabIndex = 15;
+            this.checkBoxReporterFilterMGF.Text = "MGF";
+            this.checkBoxReporterFilterMGF.UseVisualStyleBackColor = true;
+            // 
+            // checkBoxReporterFilterMatrix
+            // 
+            this.checkBoxReporterFilterMatrix.AutoSize = true;
+            this.checkBoxReporterFilterMatrix.Enabled = false;
+            this.checkBoxReporterFilterMatrix.Location = new System.Drawing.Point(281, 101);
+            this.checkBoxReporterFilterMatrix.Name = "checkBoxReporterFilterMatrix";
+            this.checkBoxReporterFilterMatrix.Size = new System.Drawing.Size(67, 21);
+            this.checkBoxReporterFilterMatrix.TabIndex = 14;
+            this.checkBoxReporterFilterMatrix.Text = "Matrix";
+            this.checkBoxReporterFilterMatrix.UseVisualStyleBackColor = true;
             // 
             // comboBoxLabelingReagents
             // 
@@ -786,14 +765,114 @@
             this.comboBoxLabelingReagents.SelectedIndexChanged += new System.EventHandler(this.comboBoxLabelingReagents_SelectedIndexChanged);
             this.comboBoxLabelingReagents.Enter += new System.EventHandler(this.comboBoxLabelingReagents_Enter);
             // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Enabled = false;
+            this.label4.Location = new System.Drawing.Point(212, 101);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(63, 17);
+            this.label4.TabIndex = 13;
+            this.label4.Text = "Apply to:";
+            // 
             // groupBoxMgfOpts
             // 
+            this.groupBoxMgfOpts.Controls.Add(this.textBoxMgfFilterRelativeIntensity);
+            this.groupBoxMgfOpts.Controls.Add(this.radioButtonMgfIntensityFilterNoiseModel);
+            this.groupBoxMgfOpts.Controls.Add(this.textBoxMgfLowMass);
+            this.groupBoxMgfOpts.Controls.Add(this.checkBoxMgfIntensityFiltering);
+            this.groupBoxMgfOpts.Controls.Add(this.checkBoxMgfLowMass);
+            this.groupBoxMgfOpts.Controls.Add(this.radioButtonMgfFilterRelativeIntensity);
+            this.groupBoxMgfOpts.Enabled = false;
             this.groupBoxMgfOpts.Location = new System.Drawing.Point(435, 458);
             this.groupBoxMgfOpts.Name = "groupBoxMgfOpts";
             this.groupBoxMgfOpts.Size = new System.Drawing.Size(318, 142);
             this.groupBoxMgfOpts.TabIndex = 17;
             this.groupBoxMgfOpts.TabStop = false;
             this.groupBoxMgfOpts.Text = "MGF Options";
+            // 
+            // textBoxMgfFilterRelativeIntensity
+            // 
+            this.textBoxMgfFilterRelativeIntensity.Enabled = false;
+            this.textBoxMgfFilterRelativeIntensity.Location = new System.Drawing.Point(198, 73);
+            this.textBoxMgfFilterRelativeIntensity.Name = "textBoxMgfFilterRelativeIntensity";
+            this.textBoxMgfFilterRelativeIntensity.Size = new System.Drawing.Size(100, 22);
+            this.textBoxMgfFilterRelativeIntensity.TabIndex = 20;
+            this.textBoxMgfFilterRelativeIntensity.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBoxMgfFilterRelativeIntensity_KeyPress);
+            // 
+            // radioButtonMgfIntensityFilterNoiseModel
+            // 
+            this.radioButtonMgfIntensityFilterNoiseModel.AutoSize = true;
+            this.radioButtonMgfIntensityFilterNoiseModel.Enabled = false;
+            this.radioButtonMgfIntensityFilterNoiseModel.Location = new System.Drawing.Point(32, 101);
+            this.radioButtonMgfIntensityFilterNoiseModel.Name = "radioButtonMgfIntensityFilterNoiseModel";
+            this.radioButtonMgfIntensityFilterNoiseModel.Size = new System.Drawing.Size(127, 21);
+            this.radioButtonMgfIntensityFilterNoiseModel.TabIndex = 19;
+            this.radioButtonMgfIntensityFilterNoiseModel.TabStop = true;
+            this.radioButtonMgfIntensityFilterNoiseModel.Text = "By Noise Model";
+            this.radioButtonMgfIntensityFilterNoiseModel.UseVisualStyleBackColor = true;
+            // 
+            // textBoxMgfLowMass
+            // 
+            this.textBoxMgfLowMass.Enabled = false;
+            this.textBoxMgfLowMass.Location = new System.Drawing.Point(149, 19);
+            this.textBoxMgfLowMass.Name = "textBoxMgfLowMass";
+            this.textBoxMgfLowMass.Size = new System.Drawing.Size(100, 22);
+            this.textBoxMgfLowMass.TabIndex = 2;
+            this.textBoxMgfLowMass.TextChanged += new System.EventHandler(this.textBoxMgfLowMass_TextChanged);
+            this.textBoxMgfLowMass.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBoxMgfLowMass_KeyPress);
+            // 
+            // checkBoxMgfIntensityFiltering
+            // 
+            this.checkBoxMgfIntensityFiltering.AutoSize = true;
+            this.checkBoxMgfIntensityFiltering.Location = new System.Drawing.Point(6, 50);
+            this.checkBoxMgfIntensityFiltering.Name = "checkBoxMgfIntensityFiltering";
+            this.checkBoxMgfIntensityFiltering.Size = new System.Drawing.Size(136, 21);
+            this.checkBoxMgfIntensityFiltering.TabIndex = 1;
+            this.checkBoxMgfIntensityFiltering.Text = "Intensity Filtering";
+            this.checkBoxMgfIntensityFiltering.UseVisualStyleBackColor = true;
+            this.checkBoxMgfIntensityFiltering.CheckedChanged += new System.EventHandler(this.checkBoxMgfIntensityFiltering_CheckedChanged);
+            // 
+            // checkBoxMgfLowMass
+            // 
+            this.checkBoxMgfLowMass.AutoSize = true;
+            this.checkBoxMgfLowMass.Location = new System.Drawing.Point(6, 21);
+            this.checkBoxMgfLowMass.Name = "checkBoxMgfLowMass";
+            this.checkBoxMgfLowMass.Size = new System.Drawing.Size(137, 21);
+            this.checkBoxMgfLowMass.TabIndex = 0;
+            this.checkBoxMgfLowMass.Text = "Low Mass Cutoff:";
+            this.checkBoxMgfLowMass.UseVisualStyleBackColor = true;
+            this.checkBoxMgfLowMass.CheckedChanged += new System.EventHandler(this.checkBoxMgfLowMass_CheckedChanged);
+            // 
+            // radioButtonMgfFilterRelativeIntensity
+            // 
+            this.radioButtonMgfFilterRelativeIntensity.AutoSize = true;
+            this.radioButtonMgfFilterRelativeIntensity.Enabled = false;
+            this.radioButtonMgfFilterRelativeIntensity.Location = new System.Drawing.Point(32, 74);
+            this.radioButtonMgfFilterRelativeIntensity.Name = "radioButtonMgfFilterRelativeIntensity";
+            this.radioButtonMgfFilterRelativeIntensity.Size = new System.Drawing.Size(160, 21);
+            this.radioButtonMgfFilterRelativeIntensity.TabIndex = 18;
+            this.radioButtonMgfFilterRelativeIntensity.TabStop = true;
+            this.radioButtonMgfFilterRelativeIntensity.Text = "By Relative Intensity:";
+            this.radioButtonMgfFilterRelativeIntensity.UseVisualStyleBackColor = true;
+            // 
+            // panel1
+            // 
+            this.panel1.Controls.Add(this.button1);
+            this.panel1.Location = new System.Drawing.Point(192, 606);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(561, 80);
+            this.panel1.TabIndex = 8;
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(3, 9);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(555, 68);
+            this.button1.TabIndex = 0;
+            this.button1.Text = "Go!";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // RawToolsGUI
             // 
@@ -816,9 +895,11 @@
             this.groupBoxChromatograms.ResumeLayout(false);
             this.groupBoxChromatograms.PerformLayout();
             this.flowLayoutPanel1.ResumeLayout(false);
-            this.panel1.ResumeLayout(false);
             this.groupBoxQuantOpt.ResumeLayout(false);
             this.groupBoxQuantOpt.PerformLayout();
+            this.groupBoxMgfOpts.ResumeLayout(false);
+            this.groupBoxMgfOpts.PerformLayout();
+            this.panel1.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -887,6 +968,12 @@
         private System.Windows.Forms.GroupBox groupBoxQuantOpt;
         private System.Windows.Forms.ComboBox comboBoxLabelingReagents;
         private System.Windows.Forms.GroupBox groupBoxMgfOpts;
+        private System.Windows.Forms.TextBox textBoxMgfLowMass;
+        private System.Windows.Forms.CheckBox checkBoxMgfIntensityFiltering;
+        private System.Windows.Forms.CheckBox checkBoxMgfLowMass;
+        private System.Windows.Forms.TextBox textBoxMgfFilterRelativeIntensity;
+        private System.Windows.Forms.RadioButton radioButtonMgfIntensityFilterNoiseModel;
+        private System.Windows.Forms.RadioButton radioButtonMgfFilterRelativeIntensity;
     }
 }
 

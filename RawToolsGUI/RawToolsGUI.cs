@@ -332,14 +332,31 @@ namespace RawToolsGUI
             if (ckbxOutputMGF.Checked)
             {
                 checkBoxReporterFilterMGF.Enabled = true;
+                groupBoxMgfOpts.Enabled = true;
             }
             else
             {
                 checkBoxReporterFilterMGF.Enabled = false;
+                groupBoxMgfOpts.Enabled = false;
             }
         }
 
-        private void textBox1_KeyPress(object sender, KeyPressEventArgs e)
+        private void textBoxReporterIntensityFilter_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            // can only be numerical values
+            if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar) && (e.KeyChar != '.') && (e.KeyChar != 'e'))
+            {
+                e.Handled = true;
+            }
+
+            // only allow one decimal point and one e
+            if (((e.KeyChar == '.') && ((sender as TextBox).Text.IndexOf('.') > -1)) | ((e.KeyChar == 'e') && ((sender as TextBox).Text.IndexOf('e') > -1)))
+            {
+                e.Handled = true;
+            }
+        }
+
+        private void textBoxReporterNumberMissingFilter_KeyPress(object sender, KeyPressEventArgs e)
         {
             // can only be numerical values
             if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar) && (e.KeyChar != '.'))
@@ -354,7 +371,22 @@ namespace RawToolsGUI
             }
         }
 
-        private void textBox2_KeyPress(object sender, KeyPressEventArgs e)
+        private void textBoxMgfLowMass_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            // can only be numerical values
+            if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar) && (e.KeyChar != '.'))
+            {
+                e.Handled = true;
+            }
+
+            // only allow one decimal point
+            if ((e.KeyChar == '.') && ((sender as TextBox).Text.IndexOf('.') > -1))
+            {
+                e.Handled = true;
+            }
+        }
+
+        private void textBoxMgfFilterRelativeIntensity_KeyPress(object sender, KeyPressEventArgs e)
         {
             // can only be numerical values
             if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar) && (e.KeyChar != '.'))
@@ -520,6 +552,7 @@ namespace RawToolsGUI
                 {
                     control.Enabled = true;
                 }
+                checkBoxReporterFilterMGF.Enabled = ckbxOutputMGF.Checked;
             }
             else
             {
@@ -528,6 +561,39 @@ namespace RawToolsGUI
                     control.Enabled = false;
                 }
                 ckbxOutputQuant.Enabled = true;
+            }
+        }
+
+        private void textBoxMgfLowMass_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void checkBoxMgfLowMass_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkBoxMgfLowMass.Checked)
+            {
+                textBoxMgfLowMass.Enabled = true;
+            }
+            else
+            {
+                textBoxMgfLowMass.Enabled = false;
+            }
+        }
+
+        private void checkBoxMgfIntensityFiltering_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkBoxMgfIntensityFiltering.Checked)
+            {
+                radioButtonMgfFilterRelativeIntensity.Enabled = true;
+                radioButtonMgfIntensityFilterNoiseModel.Enabled = true;
+                textBoxMgfFilterRelativeIntensity.Enabled = true;
+            }
+            else
+            {
+                radioButtonMgfFilterRelativeIntensity.Enabled = false;
+                radioButtonMgfIntensityFilterNoiseModel.Enabled = false;
+                textBoxMgfFilterRelativeIntensity.Enabled = false;
             }
         }
     }
