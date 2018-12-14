@@ -295,6 +295,8 @@ namespace RawTools
                 // the search algorithm is not null but it also it not identipy or xtandem
                 Log.Error("Invalid search algorithm argument: {Argument}", opts.SearchAlgorithm);
                 Console.WriteLine("ERROR: Search algorithm must be one of {identipy, xtandem}");
+                Console.Write("Press any key to exit...");
+                Console.ReadKey();
                 return 1;
             }
 
@@ -313,6 +315,8 @@ namespace RawTools
                     Log.Error("No fasta database provided for Identipy search");
                     Console.WriteLine("ERROR: A fasta protein database is required for a database search. Please use the --db parameter to " +
                         "provide the path to a database.");
+                    Console.Write("Press any key to exit...");
+                    Console.ReadKey();
                     Environment.Exit(1);
                 }
                 
@@ -322,6 +326,8 @@ namespace RawTools
                     {
                         Log.Error("If providing location of python or identipy, must specify both of them.");
                         Console.WriteLine("ERROR: When invoking the -p or -I options, you must supply both of them.");
+                        Console.Write("Press any key to exit...");
+                        Console.ReadKey();
                         Environment.Exit(1);
                     }
 
@@ -335,6 +341,8 @@ namespace RawTools
                     {
                         Log.Error("Path to XTandem directory was not provided");
                         Console.WriteLine("ERROR: You must specify the X! Tandem directory using the -X argument to perform a search using X! Tandem.");
+                        Console.Write("Press any key to exit...");
+                        Console.ReadKey();
                         return 1;
                     }
                 }
@@ -348,6 +356,7 @@ namespace RawTools
         static int HandleParseError(string[] args)
         {
             Log.Error("Error occured during command line parsing. Arguments given: {0}", String.Join(" ", args));
+
             return 1;
         }
 
@@ -374,7 +383,8 @@ namespace RawTools
                 {
                     Console.WriteLine("\nERROR: {0} does not appear to be a .raw file. Invoke '>RawTools --help' if you need help.", problems.ElementAt(0));
                     Log.Error("Invalid file provided: {0}", problems.ElementAt(0));
-
+                    Console.Write("Press any key to exit...");
+                    Console.ReadKey();
                     return 1;
                 }
 
@@ -383,6 +393,8 @@ namespace RawTools
                     Console.WriteLine("\nERROR: The following {0} files do not appear to be .raw files. Invoke '>RawTools --help' if you need help." +
                         "\n\n{1}", problems.Count(), String.Join("\n", problems));
                     Log.Error("Invalid files provided: {0}", String.Join(" ", problems));
+                    Console.Write("Press any key to exit...");
+                    Console.ReadKey();
                     return 1;
                 }
 
@@ -403,6 +415,8 @@ namespace RawTools
                 {
                     Console.WriteLine("ERROR: The provided directory does not appear to be valid.");
                     Log.Error("Invalid directory provided: {0}", opts.InputDirectory);
+                    Console.Write("Press any key to exit...");
+                    Console.ReadKey();
                     return 1;
                 }
 
@@ -420,19 +434,28 @@ namespace RawTools
                 {
                     Console.WriteLine("ERROR: For quantification, the labeling reagent must be one of {TMT0, TMT2, TMT6, TMT10, TMT11, iTRAQ4, iTRAQ8}");
                     Log.Error("Invalid labeling reagent provided: {0}", opts.LabelingReagents);
+                    Console.Write("Press any key to exit...");
+                    Console.ReadKey();
                     return 1;
                 }
             }
 
             if (opts.Chromatogram != null)
             {
-                List<string> possible = new List<string>() { "1T", "2T", "3T", "1B", "2B", "3B", "1TB", "2TB", "3TB", "1TB", "2TB", "3TB"};
-                if (!possible.Contains(opts.Chromatogram))
+                List<string> possible = new List<string>() { "1", "2", "3", "T", "B"};
+                Console.WriteLine(opts.Chromatogram);
+                foreach (var x in opts.Chromatogram)
                 {
-                    Console.WriteLine("ERROR: Incorrect format for --chro. See help.");
-                    Log.Error("Invalid chromatogram argument provided: {Chro}", opts.Chromatogram);
-                    return 1;
+                    if (!possible.Contains(x.ToString()))
+                    {
+                        Console.WriteLine("ERROR: Incorrect format for --chro. See help.");
+                        Log.Error("Invalid chromatogram argument provided: {Chro}", opts.Chromatogram);
+                        Console.Write("Press any key to exit...");
+                        Console.ReadKey();
+                        return 1;
+                    }
                 }
+                
             }
             /*
             // is the experiment type valid?

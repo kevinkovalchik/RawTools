@@ -443,7 +443,7 @@ namespace RawToolsGUI
             }
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void buttonGo_Click(object sender, EventArgs e)
         {
             string command = String.Empty;
             StringBuilder arguments = new StringBuilder();
@@ -545,7 +545,7 @@ namespace RawToolsGUI
                         MessageBox.Show("In order to quantify reporter ions you need to select the appropriate labeling reagents.", "Error");
                         return;
                     }
-                    arguments.Append($" -q r {comboBoxLabelingReagents.Text}");
+                    arguments.Append($" -q -r {comboBoxLabelingReagents.Text}");
                 }
 
                 if (checkBoxMgfLowMass.Checked & checkBoxMgfLowMass.Enabled)
@@ -556,6 +556,19 @@ namespace RawToolsGUI
                 if (checkBoxMgfIntensityFiltering.Checked & radioButtonMgfFilterRelativeIntensity.Checked)
                 {
                     arguments.Append($" -y {textBoxMgfFilterRelativeIntensity}");
+                }
+
+                if (ckbxOutputChromatograms.Checked)
+                {
+                    if (checkBoxChroMs1.Checked | checkBoxChroMs2.Checked | checkBoxChroTIC.Checked | checkBoxChroBP.Checked)
+                    {
+                        arguments.Append(" --chro ");
+                    }
+
+                    if (checkBoxChroMs1.Checked) arguments.Append("1");
+                    if (checkBoxChroMs2.Checked) arguments.Append("2");
+                    if (checkBoxChroTIC.Checked) arguments.Append("T");
+                    if (checkBoxChroBP.Checked) arguments.Append("B");
                 }
             }
 

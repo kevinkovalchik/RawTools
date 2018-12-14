@@ -1271,114 +1271,122 @@ namespace RawTools.Data.IO
         {
             string chro = parameters.ParseParams.Chromatogram;
 
-            MSOrderType order = (MSOrderType)Convert.ToInt32((chro.ElementAt(0).ToString()));
-
-            MassAnalyzerType analyzer = methodData.MassAnalyzers[order];
-
-            if ((int)order > (int)methodData.AnalysisOrder)
+            foreach (char msorder in chro)
             {
-                Log.Error("Specified MS order ({Order}) for chromatogram is higher than experiment order ({ExpOrder})",
-                    order, methodData.AnalysisOrder);
-                Console.WriteLine("Specified MS order ({0}) for chromatogram is higher than experiment order ({1}). Chromatogram(s) won't be written.",
-                    order, methodData.AnalysisOrder);
-            }
-
-            bool TIC = chro.Contains("T");
-            bool BP = chro.Contains("B");
-
-            int[] scans = index.ScanEnumerators[order];
-
-            if (TIC)
-            {
-                ProgressIndicator progress = new ProgressIndicator(scans.Length, String.Format("Writing {0} TIC chromatogram", order));
-                progress.Start();
-                string fileName = ReadWrite.GetPathToFile(parameters.ParseParams.OutputDirectory, rawFileName, "_" + order + "_TIC_chromatogram.txt");
-
-                ReadWrite.CheckFileAccessibility(fileName);
-
-                using (StreamWriter f = new StreamWriter(fileName))
+                if (msorder == '1' | msorder == '2' | msorder == '3')
                 {
-                    f.WriteLine("RetentionTime\tIntensity");
+                    MSOrderType order = (MSOrderType)Convert.ToInt32((chro.ElementAt(0).ToString()));
 
-                    if (analyzer == MassAnalyzerType.MassAnalyzerFTMS)
+                    MassAnalyzerType analyzer = methodData.MassAnalyzers[order];
+
+                    if ((int)order > (int)methodData.AnalysisOrder)
                     {
-                        foreach (int scan in scans)
-                        {
-                            if (centroids[scan].Intensities.Length > 0)
-                            {
-                                f.WriteLine("{0}\t{1}", retentionTimes[scan], centroids[scan].Intensities.Sum());
-                            }
-                            else
-                            {
-                                f.WriteLine("{0}\t{1}", retentionTimes[scan], 0);
-                            }
-                            progress.Update();
-                        }
+                        Log.Error("Specified MS order ({Order}) for chromatogram is higher than experiment order ({ExpOrder})",
+                            order, methodData.AnalysisOrder);
+                        Console.WriteLine("Specified MS order ({0}) for chromatogram is higher than experiment order ({1}). Chromatogram(s) won't be written.",
+                            order, methodData.AnalysisOrder);
                     }
-                    else
+
+                    bool TIC = chro.Contains("T");
+                    bool BP = chro.Contains("B");
+
+                    int[] scans = index.ScanEnumerators[order];
+
+                    if (TIC)
                     {
-                        foreach (int scan in scans)
+                        ProgressIndicator progress = new ProgressIndicator(scans.Length, String.Format("Writing {0} TIC chromatogram", order));
+                        progress.Start();
+                        string fileName = ReadWrite.GetPathToFile(parameters.ParseParams.OutputDirectory, rawFileName, "_" + order + "_TIC_chromatogram.txt");
+
+                        ReadWrite.CheckFileAccessibility(fileName);
+
+                        using (StreamWriter f = new StreamWriter(fileName))
                         {
-                            if (segments[scan].Intensities.Length > 0)
+                            f.WriteLine("RetentionTime\tIntensity");
+
+                            if (analyzer == MassAnalyzerType.MassAnalyzerFTMS)
                             {
-                                f.WriteLine("{0}\t{1}", retentionTimes[scan], segments[scan].Intensities.Sum());
+                                foreach (int scan in scans)
+                                {
+                                    if (centroids[scan].Intensities.Length > 0)
+                                    {
+                                        f.WriteLine("{0}\t{1}", retentionTimes[scan], centroids[scan].Intensities.Sum());
+                                    }
+                                    else
+                                    {
+                                        f.WriteLine("{0}\t{1}", retentionTimes[scan], 0);
+                                    }
+                                    progress.Update();
+                                }
                             }
                             else
                             {
-                                f.WriteLine("{0}\t{1}", retentionTimes[scan], 0);
+                                foreach (int scan in scans)
+                                {
+                                    if (segments[scan].Intensities.Length > 0)
+                                    {
+                                        f.WriteLine("{0}\t{1}", retentionTimes[scan], segments[scan].Intensities.Sum());
+                                    }
+                                    else
+                                    {
+                                        f.WriteLine("{0}\t{1}", retentionTimes[scan], 0);
+                                    }
+                                    progress.Update();
+                                }
                             }
-                            progress.Update();
                         }
+                        progress.Done();
+                    }
+                    if (BP)
+                    {
+                        ProgressIndicator progress = new ProgressIndicator(scans.Length, String.Format("Writing {0} base peak chromatogram", order));
+                        progress.Start();
+
+                        string fileName = ReadWrite.GetPathToFile(parameters.ParseParams.OutputDirectory, rawFileName, "_" + order + "_BP_chromatogram.txt");
+
+                        ReadWrite.CheckFileAccessibility(fileName);
+
+                        using (StreamWriter f = new StreamWriter(fileName))
+                        {
+                            f.WriteLine("RetentionTime\tIntensity");
+
+                            if (analyzer == MassAnalyzerType.MassAnalyzerFTMS)
+                            {
+                                foreach (int scan in scans)
+                                {
+                                    if (centroids[scan].Intensities.Length > 0)
+                                    {
+                                        f.WriteLine("{0}\t{1}", retentionTimes[scan], centroids[scan].Intensities.Max());
+                                    }
+                                    else
+                                    {
+                                        f.WriteLine("{0}\t{1}", retentionTimes[scan], 0);
+                                    }
+                                    progress.Update();
+                                }
+                            }
+                            else
+                            {
+                                foreach (int scan in scans)
+                                {
+                                    if (segments[scan].Intensities.Length > 0)
+                                    {
+                                        f.WriteLine("{0}\t{1}", retentionTimes[scan], segments[scan].Intensities.Max());
+                                    }
+                                    else
+                                    {
+                                        f.WriteLine("{0}\t{1}", retentionTimes[scan], 0);
+                                    }
+                                    progress.Update();
+                                }
+                            }
+                        }
+                        progress.Done();
                     }
                 }
-                progress.Done();
             }
-            if (BP)
-            {
-                ProgressIndicator progress = new ProgressIndicator(scans.Length, String.Format("Writing {0} base peak chromatogram", order));
-                progress.Start();
 
-                string fileName = ReadWrite.GetPathToFile(parameters.ParseParams.OutputDirectory, rawFileName, "_" + order + "_BP_chromatogram.txt");
-
-                ReadWrite.CheckFileAccessibility(fileName);
-
-                using (StreamWriter f = new StreamWriter(fileName))
-                {
-                    f.WriteLine("RetentionTime\tIntensity");
-
-                    if (analyzer == MassAnalyzerType.MassAnalyzerFTMS)
-                    {
-                        foreach (int scan in scans)
-                        {
-                            if (centroids[scan].Intensities.Length > 0)
-                            {
-                                f.WriteLine("{0}\t{1}", retentionTimes[scan], centroids[scan].Intensities.Max());
-                            }
-                            else
-                            {
-                                f.WriteLine("{0}\t{1}", retentionTimes[scan], 0);
-                            }
-                            progress.Update();
-                        }
-                    }
-                    else
-                    {
-                        foreach (int scan in scans)
-                        {
-                            if (segments[scan].Intensities.Length > 0)
-                            {
-                                f.WriteLine("{0}\t{1}", retentionTimes[scan], segments[scan].Intensities.Max());
-                            }
-                            else
-                            {
-                                f.WriteLine("{0}\t{1}", retentionTimes[scan], 0);
-                            }
-                            progress.Update();
-                        }
-                    }
-                }
-                progress.Done();
-            }
+            
         }
     }
 

@@ -56,6 +56,8 @@
             this.comboBoxMaxCharge = new System.Windows.Forms.ComboBox();
             this.checkBoxRefinePrecursor = new System.Windows.Forms.CheckBox();
             this.groupBoxQcOptions = new System.Windows.Forms.GroupBox();
+            this.textBoxQcDataDirectory = new System.Windows.Forms.TextBox();
+            this.buttonQcDataDirectory = new System.Windows.Forms.Button();
             this.textBoxNumSpectra = new System.Windows.Forms.TextBox();
             this.labelNumSpectra = new System.Windows.Forms.Label();
             this.checkBoxAutoSearchIdentipy = new System.Windows.Forms.CheckBox();
@@ -77,10 +79,10 @@
             this.labelReporterIonMissingFilter = new System.Windows.Forms.Label();
             this.checkBoxReporterIonFiltering = new System.Windows.Forms.CheckBox();
             this.groupBoxChromatograms = new System.Windows.Forms.GroupBox();
-            this.checkBox5 = new System.Windows.Forms.CheckBox();
-            this.checkBox4 = new System.Windows.Forms.CheckBox();
-            this.checkBox3 = new System.Windows.Forms.CheckBox();
-            this.checkBox2 = new System.Windows.Forms.CheckBox();
+            this.checkBoxChroBP = new System.Windows.Forms.CheckBox();
+            this.checkBoxChroTIC = new System.Windows.Forms.CheckBox();
+            this.checkBoxChroMs2 = new System.Windows.Forms.CheckBox();
+            this.checkBoxChroMs1 = new System.Windows.Forms.CheckBox();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             this.groupBoxQuantOpt = new System.Windows.Forms.GroupBox();
@@ -97,8 +99,6 @@
             this.radioButtonMgfFilterRelativeIntensity = new System.Windows.Forms.RadioButton();
             this.panel1 = new System.Windows.Forms.Panel();
             this.button1 = new System.Windows.Forms.Button();
-            this.buttonQcDataDirectory = new System.Windows.Forms.Button();
-            this.textBoxQcDataDirectory = new System.Windows.Forms.TextBox();
             this.groupBoxMode.SuspendLayout();
             this.groupBoxRawFiles.SuspendLayout();
             this.groupBoxDataOutput.SuspendLayout();
@@ -432,6 +432,23 @@
             this.groupBoxQcOptions.TabStop = false;
             this.groupBoxQcOptions.Text = "QC Options";
             // 
+            // textBoxQcDataDirectory
+            // 
+            this.textBoxQcDataDirectory.Location = new System.Drawing.Point(163, 21);
+            this.textBoxQcDataDirectory.Name = "textBoxQcDataDirectory";
+            this.textBoxQcDataDirectory.Size = new System.Drawing.Size(567, 22);
+            this.textBoxQcDataDirectory.TabIndex = 22;
+            // 
+            // buttonQcDataDirectory
+            // 
+            this.buttonQcDataDirectory.Location = new System.Drawing.Point(6, 21);
+            this.buttonQcDataDirectory.Name = "buttonQcDataDirectory";
+            this.buttonQcDataDirectory.Size = new System.Drawing.Size(151, 23);
+            this.buttonQcDataDirectory.TabIndex = 21;
+            this.buttonQcDataDirectory.Text = "QC Data Directory";
+            this.buttonQcDataDirectory.UseVisualStyleBackColor = true;
+            this.buttonQcDataDirectory.Click += new System.EventHandler(this.buttonQcDataDirectory_Click);
+            // 
             // textBoxNumSpectra
             // 
             this.textBoxNumSpectra.Enabled = false;
@@ -643,10 +660,10 @@
             // 
             // groupBoxChromatograms
             // 
-            this.groupBoxChromatograms.Controls.Add(this.checkBox5);
-            this.groupBoxChromatograms.Controls.Add(this.checkBox4);
-            this.groupBoxChromatograms.Controls.Add(this.checkBox3);
-            this.groupBoxChromatograms.Controls.Add(this.checkBox2);
+            this.groupBoxChromatograms.Controls.Add(this.checkBoxChroBP);
+            this.groupBoxChromatograms.Controls.Add(this.checkBoxChroTIC);
+            this.groupBoxChromatograms.Controls.Add(this.checkBoxChroMs2);
+            this.groupBoxChromatograms.Controls.Add(this.checkBoxChroMs1);
             this.groupBoxChromatograms.Enabled = false;
             this.groupBoxChromatograms.Location = new System.Drawing.Point(3, 636);
             this.groupBoxChromatograms.Name = "groupBoxChromatograms";
@@ -655,45 +672,45 @@
             this.groupBoxChromatograms.TabStop = false;
             this.groupBoxChromatograms.Text = "Chromatogram Options";
             // 
-            // checkBox5
+            // checkBoxChroBP
             // 
-            this.checkBox5.AutoSize = true;
-            this.checkBox5.Location = new System.Drawing.Point(70, 48);
-            this.checkBox5.Name = "checkBox5";
-            this.checkBox5.Size = new System.Drawing.Size(48, 21);
-            this.checkBox5.TabIndex = 3;
-            this.checkBox5.Text = "BP";
-            this.checkBox5.UseVisualStyleBackColor = true;
+            this.checkBoxChroBP.AutoSize = true;
+            this.checkBoxChroBP.Location = new System.Drawing.Point(70, 48);
+            this.checkBoxChroBP.Name = "checkBoxChroBP";
+            this.checkBoxChroBP.Size = new System.Drawing.Size(48, 21);
+            this.checkBoxChroBP.TabIndex = 3;
+            this.checkBoxChroBP.Text = "BP";
+            this.checkBoxChroBP.UseVisualStyleBackColor = true;
             // 
-            // checkBox4
+            // checkBoxChroTIC
             // 
-            this.checkBox4.AutoSize = true;
-            this.checkBox4.Location = new System.Drawing.Point(70, 21);
-            this.checkBox4.Name = "checkBox4";
-            this.checkBox4.Size = new System.Drawing.Size(51, 21);
-            this.checkBox4.TabIndex = 2;
-            this.checkBox4.Text = "TIC";
-            this.checkBox4.UseVisualStyleBackColor = true;
+            this.checkBoxChroTIC.AutoSize = true;
+            this.checkBoxChroTIC.Location = new System.Drawing.Point(70, 21);
+            this.checkBoxChroTIC.Name = "checkBoxChroTIC";
+            this.checkBoxChroTIC.Size = new System.Drawing.Size(51, 21);
+            this.checkBoxChroTIC.TabIndex = 2;
+            this.checkBoxChroTIC.Text = "TIC";
+            this.checkBoxChroTIC.UseVisualStyleBackColor = true;
             // 
-            // checkBox3
+            // checkBoxChroMs2
             // 
-            this.checkBox3.AutoSize = true;
-            this.checkBox3.Location = new System.Drawing.Point(6, 48);
-            this.checkBox3.Name = "checkBox3";
-            this.checkBox3.Size = new System.Drawing.Size(58, 21);
-            this.checkBox3.TabIndex = 1;
-            this.checkBox3.Text = "MS2";
-            this.checkBox3.UseVisualStyleBackColor = true;
+            this.checkBoxChroMs2.AutoSize = true;
+            this.checkBoxChroMs2.Location = new System.Drawing.Point(6, 48);
+            this.checkBoxChroMs2.Name = "checkBoxChroMs2";
+            this.checkBoxChroMs2.Size = new System.Drawing.Size(58, 21);
+            this.checkBoxChroMs2.TabIndex = 1;
+            this.checkBoxChroMs2.Text = "MS2";
+            this.checkBoxChroMs2.UseVisualStyleBackColor = true;
             // 
-            // checkBox2
+            // checkBoxChroMs1
             // 
-            this.checkBox2.AutoSize = true;
-            this.checkBox2.Location = new System.Drawing.Point(6, 21);
-            this.checkBox2.Name = "checkBox2";
-            this.checkBox2.Size = new System.Drawing.Size(58, 21);
-            this.checkBox2.TabIndex = 0;
-            this.checkBox2.Text = "MS1";
-            this.checkBox2.UseVisualStyleBackColor = true;
+            this.checkBoxChroMs1.AutoSize = true;
+            this.checkBoxChroMs1.Location = new System.Drawing.Point(6, 21);
+            this.checkBoxChroMs1.Name = "checkBoxChroMs1";
+            this.checkBoxChroMs1.Size = new System.Drawing.Size(58, 21);
+            this.checkBoxChroMs1.TabIndex = 0;
+            this.checkBoxChroMs1.Text = "MS1";
+            this.checkBoxChroMs1.UseVisualStyleBackColor = true;
             // 
             // flowLayoutPanel1
             // 
@@ -883,24 +900,7 @@
             this.button1.TabIndex = 0;
             this.button1.Text = "Go!";
             this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
-            // 
-            // buttonQcDataDirectory
-            // 
-            this.buttonQcDataDirectory.Location = new System.Drawing.Point(6, 21);
-            this.buttonQcDataDirectory.Name = "buttonQcDataDirectory";
-            this.buttonQcDataDirectory.Size = new System.Drawing.Size(151, 23);
-            this.buttonQcDataDirectory.TabIndex = 21;
-            this.buttonQcDataDirectory.Text = "QC Data Directory";
-            this.buttonQcDataDirectory.UseVisualStyleBackColor = true;
-            this.buttonQcDataDirectory.Click += new System.EventHandler(this.buttonQcDataDirectory_Click);
-            // 
-            // textBoxQcDataDirectory
-            // 
-            this.textBoxQcDataDirectory.Location = new System.Drawing.Point(163, 21);
-            this.textBoxQcDataDirectory.Name = "textBoxQcDataDirectory";
-            this.textBoxQcDataDirectory.Size = new System.Drawing.Size(567, 22);
-            this.textBoxQcDataDirectory.TabIndex = 22;
+            this.button1.Click += new System.EventHandler(this.buttonGo_Click);
             // 
             // RawToolsGUI
             // 
@@ -979,10 +979,10 @@
         private System.Windows.Forms.TextBox textBoxDataOutputDir;
         private System.Windows.Forms.Button buttonDataOutputDir;
         private System.Windows.Forms.CheckBox checkBoxDataOutputDirectory;
-        private System.Windows.Forms.CheckBox checkBox5;
-        private System.Windows.Forms.CheckBox checkBox4;
-        private System.Windows.Forms.CheckBox checkBox3;
-        private System.Windows.Forms.CheckBox checkBox2;
+        private System.Windows.Forms.CheckBox checkBoxChroBP;
+        private System.Windows.Forms.CheckBox checkBoxChroTIC;
+        private System.Windows.Forms.CheckBox checkBoxChroMs2;
+        private System.Windows.Forms.CheckBox checkBoxChroMs1;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.TextBox textBoxReporterNumberMissingFilter;
