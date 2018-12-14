@@ -37,7 +37,7 @@ using Serilog;
 
 namespace RawTools.Utilities
 {
-    static class ConsoleUtils
+    public static class ConsoleUtils
     {
         public static void ClearLastLine()
         {

@@ -481,6 +481,9 @@ namespace RawTools
             totalTime.Stop();
             Console.WriteLine("\nTime to process all {0} files: {1}", files.Count(), totalTime.Elapsed);
 
+            Console.Write("Press any key to exit...");
+            Console.ReadKey();
+
             return 0;
         }
     }
