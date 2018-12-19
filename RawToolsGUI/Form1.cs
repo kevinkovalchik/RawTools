@@ -84,5 +84,48 @@ namespace RawToolsGUI
         {
 
         }
+
+        private void dataGridViewModifications_CellValidating(object sender, DataGridViewCellValidatingEventArgs e)
+        {
+            if (e.ColumnIndex == 1) // 1 should be your column index
+            {
+                double i;
+
+                if (!double.TryParse(Convert.ToString(e.FormattedValue), out i))
+                {
+                    if (dataGridViewModifications.EditingControl != null)
+                    {
+                        dataGridViewModifications.EditingControl.Text = "";
+                    }
+                    
+                    e.Cancel = false;
+                }
+                else
+                {
+                    e.Cancel = false;
+                }
+            }
+
+            if (e.ColumnIndex == 2 & e.RowIndex != 0 & e.RowIndex != 1) // 1 should be your column index
+            {
+                string value = Convert.ToString(e.FormattedValue);
+
+                if (value.Length > 1)
+                {
+                    value = value.First().ToString();
+                }
+
+                if (Char.IsLetter(value.First()))
+                {
+                    dataGridViewModifications.EditingControl.Text = value.ToUpper();
+                    e.Cancel = false;
+                }
+                else
+                {
+                    dataGridViewModifications.EditingControl.Text = "";
+                    e.Cancel = false;
+                }
+            }
+        }
     }
 }

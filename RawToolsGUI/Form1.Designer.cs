@@ -113,10 +113,12 @@
             this.ModAA,
             this.UseMod});
             this.dataGridViewModifications.Location = new System.Drawing.Point(12, 12);
+            this.dataGridViewModifications.MultiSelect = false;
             this.dataGridViewModifications.Name = "dataGridViewModifications";
             this.dataGridViewModifications.RowTemplate.Height = 24;
             this.dataGridViewModifications.Size = new System.Drawing.Size(512, 325);
             this.dataGridViewModifications.TabIndex = 3;
+            this.dataGridViewModifications.CellValidating += new System.Windows.Forms.DataGridViewCellValidatingEventHandler(this.dataGridViewModifications_CellValidating);
             // 
             // PeptideModificationForm
             // 
