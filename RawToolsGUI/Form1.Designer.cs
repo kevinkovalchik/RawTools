@@ -1,6 +1,6 @@
 ﻿namespace RawToolsGUI
 {
-    partial class Form1
+    partial class PeptideModificationForm
     {
         /// <summary>
         /// Required designer variable.
@@ -28,64 +28,122 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.dataGridView1 = new System.Windows.Forms.DataGridView();
-            this.LabelName = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.LabelMass = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
-            this.flowLayoutPanel1.SuspendLayout();
+            this.buttonAddFixedMod = new System.Windows.Forms.Button();
+            this.buttonRemoveFixedMod = new System.Windows.Forms.Button();
+            this.buttonEditModsOK = new System.Windows.Forms.Button();
+            this.buttonEditModsCancel = new System.Windows.Forms.Button();
+            this.UseMod = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.ModAA = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ModMass = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ModType = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridViewModifications = new System.Windows.Forms.DataGridView();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewModifications)).BeginInit();
             this.SuspendLayout();
             // 
-            // dataGridView1
+            // buttonAddFixedMod
             // 
-            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.LabelName,
-            this.LabelMass});
-            this.dataGridView1.Location = new System.Drawing.Point(3, 3);
-            this.dataGridView1.Name = "dataGridView1";
-            this.dataGridView1.RowTemplate.Height = 24;
-            this.dataGridView1.Size = new System.Drawing.Size(454, 327);
-            this.dataGridView1.TabIndex = 0;
+            this.buttonAddFixedMod.Location = new System.Drawing.Point(12, 343);
+            this.buttonAddFixedMod.Name = "buttonAddFixedMod";
+            this.buttonAddFixedMod.Size = new System.Drawing.Size(256, 23);
+            this.buttonAddFixedMod.TabIndex = 4;
+            this.buttonAddFixedMod.Text = "Add Fixed Modification";
+            this.buttonAddFixedMod.UseVisualStyleBackColor = true;
+            this.buttonAddFixedMod.Click += new System.EventHandler(this.buttonAddFixedMod_Click);
             // 
-            // LabelName
+            // buttonRemoveFixedMod
             // 
-            this.LabelName.HeaderText = "LabelName";
-            this.LabelName.Name = "LabelName";
+            this.buttonRemoveFixedMod.Location = new System.Drawing.Point(274, 343);
+            this.buttonRemoveFixedMod.Name = "buttonRemoveFixedMod";
+            this.buttonRemoveFixedMod.Size = new System.Drawing.Size(250, 23);
+            this.buttonRemoveFixedMod.TabIndex = 5;
+            this.buttonRemoveFixedMod.Text = "Remove Selected Fixed Mod";
+            this.buttonRemoveFixedMod.UseVisualStyleBackColor = true;
+            this.buttonRemoveFixedMod.Click += new System.EventHandler(this.buttonRemoveFixedMod_Click);
             // 
-            // LabelMass
+            // buttonEditModsOK
             // 
-            this.LabelMass.HeaderText = "LabelMass";
-            this.LabelMass.Name = "LabelMass";
+            this.buttonEditModsOK.DialogResult = System.Windows.Forms.DialogResult.OK;
+            this.buttonEditModsOK.Location = new System.Drawing.Point(292, 416);
+            this.buttonEditModsOK.Name = "buttonEditModsOK";
+            this.buttonEditModsOK.Size = new System.Drawing.Size(101, 45);
+            this.buttonEditModsOK.TabIndex = 6;
+            this.buttonEditModsOK.Text = "OK";
+            this.buttonEditModsOK.UseVisualStyleBackColor = true;
             // 
-            // flowLayoutPanel1
+            // buttonEditModsCancel
             // 
-            this.flowLayoutPanel1.Controls.Add(this.dataGridView1);
-            this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.flowLayoutPanel1.Location = new System.Drawing.Point(0, 0);
-            this.flowLayoutPanel1.Name = "flowLayoutPanel1";
-            this.flowLayoutPanel1.Size = new System.Drawing.Size(469, 467);
-            this.flowLayoutPanel1.TabIndex = 1;
+            this.buttonEditModsCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            this.buttonEditModsCancel.Location = new System.Drawing.Point(399, 416);
+            this.buttonEditModsCancel.Name = "buttonEditModsCancel";
+            this.buttonEditModsCancel.Size = new System.Drawing.Size(101, 45);
+            this.buttonEditModsCancel.TabIndex = 7;
+            this.buttonEditModsCancel.Text = "Cancel";
+            this.buttonEditModsCancel.UseVisualStyleBackColor = true;
             // 
-            // Form1
+            // UseMod
+            // 
+            this.UseMod.HeaderText = "Use";
+            this.UseMod.Name = "UseMod";
+            // 
+            // ModAA
+            // 
+            this.ModAA.HeaderText = "Amino Acid";
+            this.ModAA.Name = "ModAA";
+            // 
+            // ModMass
+            // 
+            this.ModMass.HeaderText = "Modification Mass";
+            this.ModMass.Name = "ModMass";
+            // 
+            // ModType
+            // 
+            this.ModType.HeaderText = "Type";
+            this.ModType.Name = "ModType";
+            this.ModType.ReadOnly = true;
+            // 
+            // dataGridViewModifications
+            // 
+            this.dataGridViewModifications.AllowUserToAddRows = false;
+            this.dataGridViewModifications.AllowUserToDeleteRows = false;
+            this.dataGridViewModifications.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.dataGridViewModifications.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridViewModifications.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.ModType,
+            this.ModMass,
+            this.ModAA,
+            this.UseMod});
+            this.dataGridViewModifications.Location = new System.Drawing.Point(12, 12);
+            this.dataGridViewModifications.Name = "dataGridViewModifications";
+            this.dataGridViewModifications.RowTemplate.Height = 24;
+            this.dataGridViewModifications.Size = new System.Drawing.Size(512, 325);
+            this.dataGridViewModifications.TabIndex = 3;
+            // 
+            // PeptideModificationForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(469, 467);
-            this.Controls.Add(this.flowLayoutPanel1);
-            this.Name = "Form1";
-            this.Text = "Custom Reporter Ions";
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
-            this.flowLayoutPanel1.ResumeLayout(false);
+            this.ClientSize = new System.Drawing.Size(540, 484);
+            this.Controls.Add(this.buttonEditModsCancel);
+            this.Controls.Add(this.buttonEditModsOK);
+            this.Controls.Add(this.buttonRemoveFixedMod);
+            this.Controls.Add(this.dataGridViewModifications);
+            this.Controls.Add(this.buttonAddFixedMod);
+            this.Name = "PeptideModificationForm";
+            this.Text = "Add/Review Peptide Modifications";
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewModifications)).EndInit();
             this.ResumeLayout(false);
 
         }
 
         #endregion
-
-        private System.Windows.Forms.DataGridView dataGridView1;
-        private System.Windows.Forms.DataGridViewTextBoxColumn LabelName;
-        private System.Windows.Forms.DataGridViewTextBoxColumn LabelMass;
-        private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
+        private System.Windows.Forms.Button buttonAddFixedMod;
+        private System.Windows.Forms.Button buttonRemoveFixedMod;
+        private System.Windows.Forms.Button buttonEditModsOK;
+        private System.Windows.Forms.Button buttonEditModsCancel;
+        private System.Windows.Forms.DataGridViewCheckBoxColumn UseMod;
+        private System.Windows.Forms.DataGridViewTextBoxColumn ModAA;
+        private System.Windows.Forms.DataGridViewTextBoxColumn ModMass;
+        private System.Windows.Forms.DataGridViewTextBoxColumn ModType;
+        public System.Windows.Forms.DataGridView dataGridViewModifications;
     }
 }

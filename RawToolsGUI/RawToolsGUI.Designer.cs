@@ -99,6 +99,8 @@
             this.radioButtonMgfFilterRelativeIntensity = new System.Windows.Forms.RadioButton();
             this.panel1 = new System.Windows.Forms.Panel();
             this.button1 = new System.Windows.Forms.Button();
+            this.buttonPeptideMods = new System.Windows.Forms.Button();
+            this.label1 = new System.Windows.Forms.Label();
             this.groupBoxMode.SuspendLayout();
             this.groupBoxRawFiles.SuspendLayout();
             this.groupBoxDataOutput.SuspendLayout();
@@ -407,6 +409,8 @@
             // 
             // groupBoxQcOptions
             // 
+            this.groupBoxQcOptions.Controls.Add(this.label1);
+            this.groupBoxQcOptions.Controls.Add(this.buttonPeptideMods);
             this.groupBoxQcOptions.Controls.Add(this.textBoxQcDataDirectory);
             this.groupBoxQcOptions.Controls.Add(this.buttonQcDataDirectory);
             this.groupBoxQcOptions.Controls.Add(this.textBoxNumSpectra);
@@ -452,7 +456,7 @@
             // textBoxNumSpectra
             // 
             this.textBoxNumSpectra.Enabled = false;
-            this.textBoxNumSpectra.Location = new System.Drawing.Point(362, 197);
+            this.textBoxNumSpectra.Location = new System.Drawing.Point(211, 200);
             this.textBoxNumSpectra.Name = "textBoxNumSpectra";
             this.textBoxNumSpectra.Size = new System.Drawing.Size(100, 22);
             this.textBoxNumSpectra.TabIndex = 20;
@@ -463,7 +467,7 @@
             // 
             this.labelNumSpectra.AutoSize = true;
             this.labelNumSpectra.Enabled = false;
-            this.labelNumSpectra.Location = new System.Drawing.Point(160, 200);
+            this.labelNumSpectra.Location = new System.Drawing.Point(9, 203);
             this.labelNumSpectra.Name = "labelNumSpectra";
             this.labelNumSpectra.Size = new System.Drawing.Size(196, 17);
             this.labelNumSpectra.TabIndex = 19;
@@ -902,6 +906,25 @@
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.buttonGo_Click);
             // 
+            // buttonPeptideMods
+            // 
+            this.buttonPeptideMods.Location = new System.Drawing.Point(483, 200);
+            this.buttonPeptideMods.Name = "buttonPeptideMods";
+            this.buttonPeptideMods.Size = new System.Drawing.Size(247, 23);
+            this.buttonPeptideMods.TabIndex = 9;
+            this.buttonPeptideMods.Text = "Add/Review Peptide Modifications";
+            this.buttonPeptideMods.UseVisualStyleBackColor = true;
+            this.buttonPeptideMods.Click += new System.EventHandler(this.buttonPeptideMods_Click);
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(331, 203);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(146, 17);
+            this.label1.TabIndex = 23;
+            this.label1.Text = "Peptide Modifications:";
+            // 
             // RawToolsGUI
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -1005,6 +1028,10 @@
         private System.Windows.Forms.RadioButton radioButtonMgfFilterRelativeIntensity;
         private System.Windows.Forms.TextBox textBoxQcDataDirectory;
         private System.Windows.Forms.Button buttonQcDataDirectory;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Button buttonPeptideMods;
+
+        private PeptideModifications peptideModifications;
     }
 }
 

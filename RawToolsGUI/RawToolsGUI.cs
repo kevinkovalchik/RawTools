@@ -22,7 +22,8 @@ namespace RawToolsGUI
         {
             InitializeComponent();
 
-            
+            peptideModifications = new PeptideModifications();
+            //testDialog = new PeptideModificationForm();
 
             //comboBoxMinCharge.SelectedIndexChanged -= new System.EventHandler(comboBoxMinCharge_SelectedIndexChanged);
             //comboBoxMaxCharge.SelectedIndexChanged -= new System.EventHandler(comboBoxMaxCharge_SelectedIndexChanged);
@@ -727,7 +728,18 @@ namespace RawToolsGUI
             }
         }
 
-        
+        private void buttonPeptideMods_Click(object sender, EventArgs e)
+        {
+            //PeptideModifications backupMods = peptideModifications.Copy();
+
+            PeptideModificationForm form = new PeptideModificationForm();
+            form.PopulateTable(peptideModifications);
+
+            if (form.ShowDialog() == DialogResult.OK)
+            {
+                peptideModifications.UpdateModifications(form.dataGridViewModifications);
+            }
+        }
     }
 
     static class utils
