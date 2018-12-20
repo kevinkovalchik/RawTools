@@ -53,11 +53,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Form1.cs">
+    <Compile Include="PeptideModificationWindow.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <Compile Include="PeptideModificationWindow.Designer.cs">
+      <DependentUpon>PeptideModificationWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="ModificationTable.cs" />
     <Compile Include="RawToolsGUI.cs">
@@ -68,8 +68,8 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="Form1.resx">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <EmbeddedResource Include="PeptideModificationWindow.resx">
+      <DependentUpon>PeptideModificationWindow.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="RawToolsGUI.resx">
       <DependentUpon>RawToolsGUI.cs</DependentUpon>

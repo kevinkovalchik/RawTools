@@ -87,16 +87,13 @@ namespace RawToolsGUI
 
         private void dataGridViewModifications_CellValidating(object sender, DataGridViewCellValidatingEventArgs e)
         {
-            if (e.ColumnIndex == 1) // 1 should be your column index
+            if (e.ColumnIndex == 1 & dataGridViewModifications.EditingControl != null) // 1 should be your column index
             {
                 double i;
 
                 if (!double.TryParse(Convert.ToString(e.FormattedValue), out i))
                 {
-                    if (dataGridViewModifications.EditingControl != null)
-                    {
-                        dataGridViewModifications.EditingControl.Text = "";
-                    }
+                    dataGridViewModifications.EditingControl.Text = "";
                     
                     e.Cancel = false;
                 }
@@ -106,19 +103,25 @@ namespace RawToolsGUI
                 }
             }
 
-            if (e.ColumnIndex == 2 & e.RowIndex != 0 & e.RowIndex != 1) // 1 should be your column index
+            if (e.ColumnIndex == 2 & e.RowIndex != 0 & e.RowIndex != 1
+                & dataGridViewModifications.EditingControl != null) // 1 should be your column index
             {
                 string value = Convert.ToString(e.FormattedValue);
 
-                if (value.Length > 1)
+                if (value.Length > 0 & value != null)
                 {
                     value = value.First().ToString();
-                }
 
-                if (Char.IsLetter(value.First()))
-                {
-                    dataGridViewModifications.EditingControl.Text = value.ToUpper();
-                    e.Cancel = false;
+                    if (Char.IsLetter(value.First()))
+                    {
+                        dataGridViewModifications.EditingControl.Text = value.ToUpper();
+                        e.Cancel = false;
+                    }
+                    else
+                    {
+                        dataGridViewModifications.EditingControl.Text = "";
+                        e.Cancel = false;
+                    }
                 }
                 else
                 {

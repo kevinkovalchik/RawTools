@@ -26,7 +26,7 @@ namespace RawToolsGUI
 
         public string NModString { get { return GetModString(NMod); } }
 
-        public string XModString { get { return GetModString(NMod); } }
+        public string XModString { get { return GetModString(XMod); } }
 
         public string FModsString
         {
@@ -36,7 +36,7 @@ namespace RawToolsGUI
 
                 foreach (var mod in FMods)
                 {
-                    mods.Add(GetModString(mod));
+                    if (mod.Use) mods.Add(GetModString(mod));
                 }
 
                 return String.Join(",", mods);

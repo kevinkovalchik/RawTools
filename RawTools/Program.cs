@@ -349,7 +349,10 @@ namespace RawTools
             }
 
             QC.QcWorkflow.DoQc(parameters);
-            
+
+            Console.Write("Press any key to exit...");
+            Console.ReadKey();
+
             return 0;
         }
 
