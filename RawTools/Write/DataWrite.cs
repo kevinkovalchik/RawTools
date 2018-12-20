@@ -358,7 +358,7 @@ namespace RawTools.Data.IO
                     f.WriteLine("BEGIN IONS");
                     f.WriteLine("TITLE=Spectrum_{0}", i);
                     f.WriteLine("PEPMASS={0}", precursorMasses[i].MonoisotopicMZ);
-                    f.WriteLine("CHARGE={0}", trailerExtras[i].ChargeState);
+                    f.WriteLine("CHARGE={0}+", trailerExtras[i].ChargeState);
                     f.WriteLine("RTINSECONDS={0}", retentionTimes[i]);
                     f.WriteLine("SCANS={0}", i);
                     f.WriteLine("RAWFILE={0}", rawFileName);
