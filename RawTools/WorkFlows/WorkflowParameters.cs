@@ -31,6 +31,8 @@ namespace RawTools.WorkFlows
         public bool RefineMassCharge;
         public IEnumerable<string> InputFiles;
 
+        public (int Min, int Max) ConsideredChargeStates;
+
         public ParseWorkflowParameters ParseParams;
         public QcWorkflowParameters QcParams;
 
@@ -58,6 +60,8 @@ namespace RawTools.WorkFlows
             ParseParams.Quant = parseOptions.Quant;
             ParseParams.UnlabeledQuant = parseOptions.UnlabeledQuant;
             ParseParams.WriteMgf = parseOptions.WriteMGF;
+            ConsideredChargeStates.Min = parseOptions.MinCharge;
+            ConsideredChargeStates.Max = parseOptions.MaxCharge;
 
             if (parseOptions.OutputDirectory != null)
             {
@@ -93,6 +97,8 @@ namespace RawTools.WorkFlows
             QcParams.PythonExecutable = qcOptions.PythonExecutable;
             QcParams.QcDirectory = qcOptions.QcDirectory;
             QcParams.XTandemDirectory = qcOptions.XTandemDirectory;
+            ConsideredChargeStates.Min = qcOptions.MinCharge;
+            ConsideredChargeStates.Max = qcOptions.MaxCharge;
 
             if (QcParams.SearchAlgorithm != SearchAlgorithm.None)
             {

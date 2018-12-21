@@ -14,7 +14,7 @@ namespace RawTools.Algorithms
 {
     static class MonoIsoPredictor
     {
-        public static void RefineMonoIsoMassChargeValues(CentroidStreamCollection centroids, PrecursorMassCollection precursorMasses, TrailerExtraCollection trailerExtras, PrecursorPeakCollection precursorPeaks, PrecursorScanCollection precursorScans)
+        public static void RefineMonoIsoMassChargeValues(WorkFlows.WorkflowParameters parameters, CentroidStreamCollection centroids, PrecursorMassCollection precursorMasses, TrailerExtraCollection trailerExtras, PrecursorPeakCollection precursorPeaks, PrecursorScanCollection precursorScans)
         {
             int ms2Scan, ms1Scan, refinedCharge;
             double refinedMass;
@@ -35,7 +35,8 @@ namespace RawTools.Algorithms
                     ms1Scan = precursorScans[ms2Scan].MasterScan;
                 }
 
-                (refinedCharge, refinedMass) = GetMonoIsotopicMassCharge(centroids[ms1Scan], precursorMasses[ms2Scan].ParentMZ, trailerExtras[ms2Scan].ChargeState);
+                (refinedCharge, refinedMass) = GetMonoIsotopicMassCharge(centroids[ms1Scan], precursorMasses[ms2Scan].ParentMZ,
+                    trailerExtras[ms2Scan].ChargeState, parameters.ConsideredChargeStates.Min, parameters.ConsideredChargeStates.Max);
 
                 precursorMasses[ms2Scan].MonoisotopicMZ = refinedMass;
                 trailerExtras[ms2Scan].MonoisotopicMZ = refinedMass;
@@ -53,9 +54,9 @@ namespace RawTools.Algorithms
         /// <param name="parentMZ">Parent ion m/z</param>
         /// <param name="assignedCharge">Charge state assigned in the raw file</param>
         /// <returns></returns>
-        static (int charge, double mass) GetMonoIsotopicMassCharge(CentroidStreamData centroidData, double parentMZ, int assignedCharge)
+        static (int charge, double mass) GetMonoIsotopicMassCharge(CentroidStreamData centroidData, double parentMZ, int assignedCharge, int minCharge, int maxCharge)
         {
-            List<int> possibleChargeStates = ChargeStateCalculator.GetChargeState(centroidData, parentMZ, assignedCharge);
+            List<int> possibleChargeStates = ChargeStateCalculator.GetChargeState(centroidData, parentMZ, assignedCharge, minCharge, maxCharge);
             return GetMonoIsotopicMassCharge(centroidData, parentMZ, possibleChargeStates, assignedCharge);
         }
 

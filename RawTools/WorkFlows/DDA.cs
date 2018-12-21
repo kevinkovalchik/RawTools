@@ -80,7 +80,7 @@ namespace RawTools.WorkFlows
 
                 if (parameters.RefineMassCharge)
                 {
-                    MonoIsoPredictor.RefineMonoIsoMassChargeValues(centroidStreams, precursorMasses, trailerExtras, peakData, precursorScans);
+                    MonoIsoPredictor.RefineMonoIsoMassChargeValues(parameters, centroidStreams, precursorMasses, trailerExtras, peakData, precursorScans);
                 }
 
                 metaData = MetaDataProcessingDDA.AggregateMetaDataDDA(centroidStreams, segmentScans, methodData, precursorScans,
@@ -165,7 +165,7 @@ namespace RawTools.WorkFlows
 
             if (parameters.RefineMassCharge)
             {
-                MonoIsoPredictor.RefineMonoIsoMassChargeValues(centroidStreams, precursorMasses, trailerExtras, peakData, precursorScans);
+                MonoIsoPredictor.RefineMonoIsoMassChargeValues(parameters, centroidStreams, precursorMasses, trailerExtras, peakData, precursorScans);
             }
 
             ScanMetaDataCollectionDDA metaData = MetaDataProcessingDDA.AggregateMetaDataDDA(centroidStreams, segmentScans, methodData, precursorScans,

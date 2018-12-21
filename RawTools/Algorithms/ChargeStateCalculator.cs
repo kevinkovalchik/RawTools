@@ -12,11 +12,10 @@ namespace RawTools.Algorithms
 {
     static class ChargeStateCalculator
     {
-        public static List<int> GetChargeState(CentroidStreamData centroidData, double parentMass, int assignedCharge)
+        public static List<int> GetChargeState(CentroidStreamData centroidData, double parentMass, int assignedCharge, int minCharge, int maxCharge)
         {
             double[] masses;
             double[] intensities;
-            int[] allowedCharges = new int[] {  2, 3, 4, 5 };
             List<int> possibleChargeStates = new List<int>();
             int parentIndex;
             double massDiff = 1.003356;
@@ -43,7 +42,7 @@ namespace RawTools.Algorithms
 
 
             // needs more work. can try matching multiple isotopes, then if charge state is ambiguous take the one with more matches
-            foreach (int charge in allowedCharges)
+            for (int charge = minCharge; charge <= maxCharge; charge++)
             {
                 currentIndex = parentIndex + 1;
                 double isotopeMass = parentMass + massDiff / charge;

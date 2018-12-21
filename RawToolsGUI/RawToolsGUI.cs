@@ -532,6 +532,9 @@ namespace RawToolsGUI
                 if (checkBoxRefinePrecursor.Checked)
                 {
                     arguments.Append("R");
+
+                    arguments.Append($" --mincharge {comboBoxMinCharge.Text}");
+                    arguments.Append($" --maxcharge {comboBoxMaxCharge.Text}");
                 }
 
                 if (checkBoxDataOutputDirectory.Checked)
@@ -633,6 +636,14 @@ namespace RawToolsGUI
                     }
 
                     arguments.Append($" -N {textBoxNumSpectra.Text}");
+                }
+
+                if (checkBoxRefinePrecursor.Checked)
+                {
+                    arguments.Append("R");
+
+                    arguments.Append($" --mincharge {comboBoxMinCharge.SelectedText}");
+                    arguments.Append($" --maxcharge {comboBoxMaxCharge.SelectedText}");
                 }
             }
 

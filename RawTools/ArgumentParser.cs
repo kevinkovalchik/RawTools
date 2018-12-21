@@ -103,6 +103,12 @@ namespace RawTools.ArgumentParser
         [Option('R', "refinemasscharge", HelpText = "Optional. Refine precursor charge and monoisotopic mass assignments. Highly recommended if " +
             "monoisotopic precursor selection was turned off in the instrument method (or peptide match on a QE instrument).")]
         public bool RefineMassCharge { get; set; }
+
+        [Option("mincharge", Default = 2, HelpText = "Minimum charge state to consider when refining precursor mass and charge.")]
+        public int MinCharge { get; set; }
+
+        [Option("maxcharge", Default = 4, HelpText = "Maximum charge state to consider when refining precursor mass and charge.")]
+        public int MaxCharge { get; set; }
     }
 
     [Verb("qc", HelpText = "Perform QC operations. Two arguments are required: -d, the directory containing one or more raw files to QC; -q, a " +
@@ -179,5 +185,11 @@ namespace RawTools.ArgumentParser
         [Option('R', "refinemasscharge", HelpText = "Optional. Refine precursor charge and monoisotopic mass assignments. Highly recommended if " +
             "monoisotopic precursor selection was turned off in the instrument method.")]
         public bool RefineMassCharge { get; set; }
+
+        [Option("mincharge", Default = 2, HelpText = "Minimum charge state to consider when refining precursor mass and charge.")]
+        public int MinCharge { get; set; }
+
+        [Option("maxcharge", Default = 4, HelpText = "Maximum charge state to consider when refining precursor mass and charge.")]
+        public int MaxCharge { get; set; }
     }
 }
