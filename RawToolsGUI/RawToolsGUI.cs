@@ -645,9 +645,12 @@ namespace RawToolsGUI
                     arguments.Append($" --mincharge {comboBoxMinCharge.SelectedText}");
                     arguments.Append($" --maxcharge {comboBoxMaxCharge.SelectedText}");
                 }
-            }
 
-            
+                if (radioButtonMgfIntensityFilterNoiseModel.Checked & checkBoxMgfIntensityFiltering.Checked)
+                {
+                    arguments.Append(" --ms2noisemodel");
+                }
+            }
 
             utils.VoidBash(command, arguments.ToString());
         }

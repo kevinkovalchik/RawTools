@@ -367,9 +367,17 @@ namespace RawTools.Data.IO
                     {
                         CentroidStreamData centroid = centroidStreams[i];
 
+                        
                         if (centroid.Intensities.Length > 0)
                         {
-                            intCutoff = centroid.Intensities.Max() * parameters.MgfIntensityCutoff;
+                            if (parameters.noiseModelFilter)
+                            {
+                                intCutoff = Algorithms.Ms2NoiseModel.CutOff(centroid.Intensities);
+                            }
+                            else
+                            {
+                                intCutoff = centroid.Intensities.Max() * parameters.MgfIntensityCutoff;
+                            }
                         }
                         else
                         {
@@ -400,6 +408,24 @@ namespace RawTools.Data.IO
 
                         for (int j = 0; j < segments.Positions.Length; j++)
                         {
+                            if (parameters.noiseModelFilter)
+                            {
+                                (int min, int max) intensityRange;
+                                intensityRange = (j - 20, j + 20);
+
+                                if (intensityRange.min <= 0) intensityRange.min = 0;
+                                if (intensityRange.max > segments.Intensities.Length) intensityRange.max = segments.Intensities.Length;
+
+                                List<double> intensities = new List<double>();
+
+                                for (int x = intensityRange.min; x < intensityRange.max; x++)
+                                {
+                                    intensities.Add(segments.Intensities[x]);
+                                }
+
+                                intCutoff = Algorithms.Ms2NoiseModel.CutOff(intensities.ToArray());
+                            }
+
                             if (segments.Positions[j] > parameters.MgfMassCutoff & segments.Intensities[j] > intCutoff)
                             {
                                 f.WriteLine("{0} {1}", Math.Round(segments.Positions[j], 5), Math.Round(segments.Intensities[j], 4));

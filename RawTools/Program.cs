@@ -204,74 +204,49 @@ namespace RawTools
             var rawFile = RawFileReaderFactory.ReadFile(opts.InputFiles.First());
             rawFile.SelectInstrument(Device.MS, 1);
 
-            var created = rawFile.CreationDate;
-            var modified = rawFile.FileHeader.ModifiedDate;
-            var diff = modified - created;
-            var estTime = rawFile.RunHeader.ExpectedRuntime;
+            var scan = rawFile.GetScans(1520, 1560).First();
+            Console.WriteLine(rawFile.GetScanEventStringForScanNumber(1520));
+            
+            Console.WriteLine(scan.SegmentedScan.Positions.Length);
 
-            var timesModified = rawFile.FileHeader.NumberOfTimesModified;
-
-            Console.WriteLine("=============================================");
-            Console.WriteLine($"Creation date/time: {created}");
-            Console.WriteLine($"Last modified date/time: {modified}");
-            Console.WriteLine($"Number of times modified: {timesModified}");
-            Console.WriteLine($"Total time: {diff}");
-            Console.WriteLine($"Expected run time: {estTime}");
-            Console.WriteLine();
-
-            Console.WriteLine($"Estimated dead time: {diff.TotalMinutes - estTime}");
-            Console.WriteLine("=============================================");
-            /*
-            var numberOfLogs = rawFile.GetStatusLogEntriesCount();
-            var logInfo = rawFile.GetStatusLogHeaderInformation();
-
-            string logName = opts.InputFiles.First() + ".INST_LOG.txt";
-
-            Dictionary<int, ISingleValueStatusLog> log = new Dictionary<int, ISingleValueStatusLog>();
-
-            for (int i = 0; i < logInfo.Count(); i++)
+            using (StreamWriter f = new StreamWriter("C:\\Users\\Kevin\\Desktop\\RawFiles\\ProfileIT\\ThermoCentroid.txt"))
             {
-                log.Add(i, rawFile.GetStatusLogAtPosition(i));
+                for (int i = 0; i < scan.CentroidScan.Length; i++)
+                {
+                    f.WriteLine($"{scan.CentroidScan.Masses[i]}\t{scan.CentroidScan.Intensities[i]}");
+                }
             }
 
-            using (StreamWriter f = new StreamWriter(logName))
+            scan.CentroidScan = null;
+
+            Console.WriteLine($"Has centroid? {scan.HasCentroidStream}");
+
+            var centroided = Scan.ToCentroid(scan);
+
+            Console.WriteLine($"Now has centroid? {centroided.HasCentroidStream}");
+
+            //Console.WriteLine(centroided.CentroidScan.Masses.Length);
+            Console.WriteLine(centroided.SegmentedScan.Positions.Length);
+
+            using (StreamWriter f = new StreamWriter("C:\\Users\\Kevin\\Desktop\\RawFiles\\ProfileIT\\ThermoProfile.txt"))
             {
-                ProgressIndicator P = new ProgressIndicator(numberOfLogs, "Writing instrument log");
-                P.Start();
-                f.Write("Time\t");
-                foreach (var x in logInfo)
+                for (int i = 0; i < scan.SegmentedScan.PositionCount; i++)
                 {
-                    f.Write(x.Label + "\t");
+                    f.WriteLine($"{scan.SegmentedScan.Positions[i]}\t{scan.SegmentedScan.Intensities[i]}");
                 }
-                f.Write("\n");
-
-                for (int i = 0; i < numberOfLogs; i++)
-                {
-                    f.Write($"{log[0].Times[i]}\t");
-
-                    for (int j = 0; j < logInfo.Length; j++)
-                    {
-                        try
-                        {
-                            f.Write("{0}\t",log[j].Values[i]);
-                        }
-                        catch (Exception)
-                        {
-                            f.Write("\t");
-                        }
-                    }
-                    f.Write("\n");
-                    P.Update();
-                }
-                P.Done();
             }
 
-            Console.WriteLine(rawFile.GetInstrumentMethod(0));
-            Console.WriteLine(rawFile.CreationDate);
-            Console.WriteLine(rawFile.FileHeader.ModifiedDate);
-            Console.WriteLine(rawFile.RunHeader.StartTime);
-            Console.WriteLine(rawFile.RunHeader.EndTime);
-            */
+            using (StreamWriter f = new StreamWriter("C:\\Users\\Kevin\\Desktop\\RawFiles\\ProfileIT\\OurCentroid.txt"))
+            {
+                for (int i = 0; i < centroided.SegmentedScan.PositionCount; i++)
+                {
+                    f.WriteLine($"{centroided.SegmentedScan.Positions[i]}\t{centroided.SegmentedScan.Intensities[i]}");
+                }
+            }
+
+            Console.Write("Press any key to exit...");
+            Console.ReadKey();
+
             return 0;
         }
 

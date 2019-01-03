@@ -191,5 +191,8 @@ namespace RawTools.ArgumentParser
 
         [Option("maxcharge", Default = 4, HelpText = "Maximum charge state to consider when refining precursor mass and charge.")]
         public int MaxCharge { get; set; }
+
+        [Option("ms2noisemodel", HelpText = "Filter MS2 noise using the inner product-derived noise level.")]
+        public bool NoiseModelFilter { get; set; }
     }
 }

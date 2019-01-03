@@ -29,6 +29,7 @@ namespace RawTools.WorkFlows
         public double MgfIntensityCutoff, MgfMassCutoff;
         public string RawFileDirectory;
         public bool RefineMassCharge;
+        public bool noiseModelFilter;
         public IEnumerable<string> InputFiles;
 
         public (int Min, int Max) ConsideredChargeStates;
@@ -85,6 +86,7 @@ namespace RawTools.WorkFlows
             MgfMassCutoff = qcOptions.MassCutOff;
             RawFileDirectory = qcOptions.DirectoryToQc;
             RefineMassCharge = qcOptions.RefineMassCharge;
+            noiseModelFilter = qcOptions.NoiseModelFilter;
 
             QcParams.FastaDatabase = qcOptions.FastaDatabase;
             QcParams.FixedMods = qcOptions.FixedMods;

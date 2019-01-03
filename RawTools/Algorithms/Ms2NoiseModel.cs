@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace RawTools.Algorithms
 {
-    class Ms2NoiseModel
+    static class Ms2NoiseModel
     {
-        public double CutOff(double[] intensities)
+        public static double CutOff(double[] intensities)
         {
             double sum = intensities.Sum();
             double len = intensities.Length;
