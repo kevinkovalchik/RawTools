@@ -269,8 +269,6 @@ namespace RawTools.Data.IO
 
                     f.Write($"{metaData.FillTime[ms2scan]}\t{metaData.FillTime[masterScan]}\t");
 
-                    if (Index.AnalysisOrder == MSOrderType.Ms3) f.Write("MS3IonInjectionTime\t");
-
                     f.Write($"{trailerExtras[scan].HCDEnergy}\t{metaData.IntensityDistribution[ms2scan].P50}\t{metaData.IntensityDistribution[masterScan].P50}\t");
 
                     if (quantData != null)
