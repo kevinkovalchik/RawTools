@@ -16,6 +16,8 @@ If you need help installing and using RawTools, please visit the wiki page appro
 
 ### Notable news
 
+* A RawTools GUI is in the works and should be released soon! Initially this will simply allow you to set up RawTools parameters and run the program using a graphical interface instead of the command line. In the future we plan to add some basic features to visualy explore raw files. If you have any features you would like to see in this regard, let us know by creating a [feature request](https://github.com/kevinkovalchik/RawTools/issues/new?assignees=&labels=&template=feature_request.md&title=)! [2019-01-07]
+
 * Thanks to a lot of behind the scenes work, the file downloads of plots from the Shiny app are now working! [2018-12-06]  
 
 * The R Shiny application now has greater support for plot customisation. We have also added the ability to highlight points on QC plots. Lastly, we have added a new 'multi-plot' page where multiple scan matrix files can be input at once and plots for all files will be generated alongside one another in the same space. The latest version is live on the web and available here.  [2018-11-29]
