@@ -177,6 +177,8 @@ namespace RawTools.WorkFlows
             ScanEventReactionCollection reactions;
             ScanMetaDataCollectionDDA metaData = null;
             PrecursorPeakCollection peakData = null;
+            RawMetricsDataDDA rawMetrics = null;
+            QuantDataCollection quantData = null;
 
             var staticRawFile = rawFileThreadManager.CreateThreadAccessor();
             staticRawFile.SelectInstrument(Device.MS, 1);
@@ -201,7 +203,7 @@ namespace RawTools.WorkFlows
                 retentionTimes = Extract.RetentionTimes(rawFile, Index);
             }
 
-            if (parameters.ParseParams.Parse | parameters.ParseParams.Metrics | parameters.RefineMassCharge)
+            if (parameters.ParseParams.Parse | parameters.ParseParams.Quant | parameters.ParseParams.Metrics | parameters.RefineMassCharge)
             {
                 peakData = AnalyzePeaks.AnalyzeAllPeaks(centroidStreams, retentionTimes, precursorMasses, precursorScans, Index);
 
@@ -214,13 +216,11 @@ namespace RawTools.WorkFlows
                     trailerExtras, precursorMasses, retentionTimes, scanDependents, reactions, Index);
             }
             
-            QuantDataCollection quantData = null;
             if (parameters.ParseParams.Quant)
             {
                 quantData = Quantification.Quantify(centroidStreams, segmentScans, parameters, methodData, Index);
             }
-
-            RawMetricsDataDDA rawMetrics = null;
+            
             if (parameters.ParseParams.Metrics)
             {
                 rawMetrics = MetaDataProcessingDDA.GetMetricsDataDDA(metaData, methodData, staticRawFile.FileName, retentionTimes, Index, peakData, precursorScans, quantData);
