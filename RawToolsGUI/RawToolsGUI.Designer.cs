@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(RawToolsGUI));
             this.groupBoxMode = new System.Windows.Forms.GroupBox();
             this.checkBoxModeQC = new System.Windows.Forms.CheckBox();
             this.checkBoxModeParse = new System.Windows.Forms.CheckBox();
@@ -983,25 +984,25 @@
             // toolStripMenuItemNewParameters
             // 
             this.toolStripMenuItemNewParameters.Name = "toolStripMenuItemNewParameters";
-            this.toolStripMenuItemNewParameters.Size = new System.Drawing.Size(216, 26);
+            this.toolStripMenuItemNewParameters.Size = new System.Drawing.Size(197, 26);
             this.toolStripMenuItemNewParameters.Text = "New Parameters";
             // 
             // toolStripMenuItemOpenParameters
             // 
             this.toolStripMenuItemOpenParameters.Name = "toolStripMenuItemOpenParameters";
-            this.toolStripMenuItemOpenParameters.Size = new System.Drawing.Size(216, 26);
+            this.toolStripMenuItemOpenParameters.Size = new System.Drawing.Size(197, 26);
             this.toolStripMenuItemOpenParameters.Text = "Open Parameters";
             // 
             // toolStripMenuItemSaveParameters
             // 
             this.toolStripMenuItemSaveParameters.Name = "toolStripMenuItemSaveParameters";
-            this.toolStripMenuItemSaveParameters.Size = new System.Drawing.Size(216, 26);
+            this.toolStripMenuItemSaveParameters.Size = new System.Drawing.Size(197, 26);
             this.toolStripMenuItemSaveParameters.Text = "Save Parameters";
             // 
             // exitToolStripMenuItemExit
             // 
             this.exitToolStripMenuItemExit.Name = "exitToolStripMenuItemExit";
-            this.exitToolStripMenuItemExit.Size = new System.Drawing.Size(216, 26);
+            this.exitToolStripMenuItemExit.Size = new System.Drawing.Size(197, 26);
             this.exitToolStripMenuItemExit.Text = "Exit";
             // 
             // helpToolStripMenuItem
@@ -1015,7 +1016,7 @@
             // aboutToolStripMenuItem
             // 
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(216, 26);
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(192, 26);
             this.aboutToolStripMenuItem.Text = "About RawTools";
             // 
             // RawToolsGUI
@@ -1026,6 +1027,7 @@
             this.ClientSize = new System.Drawing.Size(801, 774);
             this.Controls.Add(this.flowLayoutPanel1);
             this.Controls.Add(this.menuStrip1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "RawToolsGUI";
             this.Padding = new System.Windows.Forms.Padding(10, 0, 10, 15);
