@@ -63,9 +63,10 @@ namespace RawTools
             Log.Information("Program started with arguments: {0}", String.Join(" ", args));
 
 
-            Parser.Default.ParseArguments<ArgumentParser.ParseOptions, ArgumentParser.QcOptions, ArgumentParser.TestOptions, ArgumentParser.ExampleMods, ArgumentParser.LogDumpOptions>(args)
+            Parser.Default.ParseArguments<ArgumentParser.ParseOptions, ArgumentParser.QcOptions, ArgumentParser.UniversalOptions, ArgumentParser.TestOptions, ArgumentParser.ExampleMods, ArgumentParser.LogDumpOptions>(args)
                 .WithParsed<ArgumentParser.ParseOptions>(opts => DoStuff(opts))
                 .WithParsed<ArgumentParser.QcOptions>(opts => DoStuff(opts))
+                .WithParsed<ArgumentParser.UniversalOptions>(opts => DoStuff(opts))
                 .WithParsed<ArgumentParser.TestOptions>(opts => DoStuff(opts))
                 .WithParsed<ArgumentParser.ExampleMods>(opts => DoStuff(opts))
                 .WithParsed<ArgumentParser.LogDumpOptions>(opts => DoStuff(opts))
@@ -334,7 +335,8 @@ namespace RawTools
         static int HandleParseError(string[] args)
         {
             Log.Error("Error occured during command line parsing. Arguments given: {0}", String.Join(" ", args));
-
+            Console.Write("Press any key to exit...");
+            Console.ReadKey();
             return 1;
         }
 
@@ -421,7 +423,7 @@ namespace RawTools
             if (opts.Chromatogram != null)
             {
                 List<string> possible = new List<string>() { "1", "2", "3", "T", "B"};
-                Console.WriteLine(opts.Chromatogram);
+
                 foreach (var x in opts.Chromatogram)
                 {
                     if (!possible.Contains(x.ToString()))
@@ -477,6 +479,158 @@ namespace RawTools
 
                 singleFileTime.Stop();
                 Console.WriteLine("\nElapsed time: {0} s", Math.Round(Convert.ToDouble(singleFileTime.ElapsedMilliseconds)/1000.0,2));
+                singleFileTime.Reset();
+            }
+            totalTime.Stop();
+            Console.WriteLine("\nTime to process all {0} files: {1}", files.Count(), totalTime.Elapsed);
+
+            Console.Write("Press any key to exit...");
+            Console.ReadKey();
+
+            return 0;
+        }
+
+        static int DoStuff(ArgumentParser.UniversalOptions opts)
+        {
+            List<string> files = new List<string>();
+            QcDataCollection qcDataCollection = new QcDataCollection();
+
+            WorkflowParameters parameters = new WorkflowParameters(opts);
+
+            if (opts.InputFiles.Count() > 0) // did the user give us a list of files?
+            {
+                List<string> problems = new List<string>();
+                files = opts.InputFiles.ToList();
+
+                // check if the list provided contains only .raw files
+                foreach (string file in files)
+                {
+
+                    if (!file.EndsWith(".raw", StringComparison.OrdinalIgnoreCase))
+                    {
+                        problems.Add(file);
+                    }
+                }
+
+                if (problems.Count() == 1)
+                {
+                    Console.WriteLine("\nERROR: {0} does not appear to be a .raw file. Invoke '>RawTools --help' if you need help.", problems.ElementAt(0));
+                    Log.Error("Invalid file provided: {0}", problems.ElementAt(0));
+                    Console.Write("Press any key to exit...");
+                    Console.ReadKey();
+                    return 1;
+                }
+
+                if (problems.Count() > 1)
+                {
+                    Console.WriteLine("\nERROR: The following {0} files do not appear to be .raw files. Invoke '>RawTools --help' if you need help." +
+                        "\n\n{1}", problems.Count(), String.Join("\n", problems));
+                    Log.Error("Invalid files provided: {0}", String.Join(" ", problems));
+                    Console.Write("Press any key to exit...");
+                    Console.ReadKey();
+                    return 1;
+                }
+
+                // if the file location(s) are relative, we need to get the absolute path to them
+                files.EnsureAbsolutePaths();
+
+                Log.Information("Files to be processed, provided as list: {0}", String.Join(" ", files));
+            }
+
+            else // did the user give us a directory?
+            {
+                // if QC is being done, use the QC method snf get the qc data collection at the same time
+                if (opts.QcDirectory != null)
+                {
+                    (files, qcDataCollection) = QcWorkflow.GetFileListAndQcFile(parameters);
+                }
+
+                // if not, the parse method
+                else if (Directory.Exists(opts.InputDirectory))
+                {
+                    files = Directory.GetFiles(opts.InputDirectory, "*.*", SearchOption.TopDirectoryOnly)
+                    .Where(s => s.EndsWith(".raw", StringComparison.OrdinalIgnoreCase)).ToList();
+                }
+                else
+                {
+                    Console.WriteLine("ERROR: The provided directory does not appear to be valid.");
+                    Log.Error("Invalid directory provided: {0}", opts.InputDirectory);
+                    Console.Write("Press any key to exit...");
+                    Console.ReadKey();
+                    return 1;
+                }
+
+                // if the file location(s) are relative, we need to get the absolute path to them
+                files.EnsureAbsolutePaths();
+
+                Log.Information("Files to be processed, provided as directory: {0}", String.Join(" ", files));
+
+            }
+
+            if (opts.Quant)
+            {
+                List<string> possible = new List<string>() { "TMT0", "TMT2", "TMT6", "TMT10", "TMT11", "iTRAQ4", "iTRAQ8" };
+                if (!possible.Contains(opts.LabelingReagents))
+                {
+                    Console.WriteLine("ERROR: For quantification, the labeling reagent must be one of {TMT0, TMT2, TMT6, TMT10, TMT11, iTRAQ4, iTRAQ8}");
+                    Log.Error("Invalid labeling reagent provided: {0}", opts.LabelingReagents);
+                    Console.Write("Press any key to exit...");
+                    Console.ReadKey();
+                    return 1;
+                }
+            }
+
+            if (opts.Chromatogram != null)
+            {
+                List<string> possible = new List<string>() { "1", "2", "3", "T", "B" };
+                foreach (var x in opts.Chromatogram)
+                {
+                    if (!possible.Contains(x.ToString()))
+                    {
+                        Console.WriteLine("ERROR: Incorrect format for --chro. See help.");
+                        Log.Error("Invalid chromatogram argument provided: {Chro}", opts.Chromatogram);
+                        Console.Write("Press any key to exit...");
+                        Console.ReadKey();
+                        return 1;
+                    }
+                }
+
+            }
+            /*
+            // is the experiment type valid?
+            if (! new List<string>() { "DDA", "DIA", "PRM" }.Contains(opts.ExperimentType))
+            {
+                Log.Error("Experiment type of {ExpType} was passed", opts.ExperimentType);
+                Console.WriteLine("Experiment type must be one of ['DDA', 'DIA', 'PRM'], not {0}", opts.ExperimentType);
+                Environment.Exit(1);
+            }*/
+
+
+            System.Diagnostics.Stopwatch singleFileTime = new System.Diagnostics.Stopwatch();
+            System.Diagnostics.Stopwatch totalTime = new System.Diagnostics.Stopwatch();
+            totalTime.Start();
+
+            
+
+            foreach (string file in files)
+            {
+                singleFileTime.Start();
+
+                Console.WriteLine("\nProcessing: {0}\n", file);
+
+                //using (IRawDataPlus rawFile = RawFileReaderFactory.ReadFile(fileName:file))
+                using (IRawFileThreadManager rawFile = RawFileReaderFactory.CreateThreadManager(file))
+                {
+                    if (parameters.ParseParams.OutputDirectory == null)
+                    {
+                        parameters.ParseParams.OutputDirectory = Path.GetDirectoryName(file);
+                    }
+
+                    WorkFlowsDDA.UniversalDDA(rawFile, parameters, qcDataCollection);
+                }
+
+                singleFileTime.Stop();
+                Console.WriteLine("\nElapsed time: {0} s", Math.Round(Convert.ToDouble(singleFileTime.ElapsedMilliseconds) / 1000.0, 2));
                 singleFileTime.Reset();
             }
             totalTime.Stop();

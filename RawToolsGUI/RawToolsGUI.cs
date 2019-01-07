@@ -417,6 +417,21 @@ namespace RawToolsGUI
             }
         }
 
+        private void textBoxMgfFilterWindowSize_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            // can only be numerical values
+            if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar) && (e.KeyChar != '.'))
+            {
+                e.Handled = true;
+            }
+
+            // only allow one decimal point
+            if ((e.KeyChar == '.') && ((sender as TextBox).Text.IndexOf('.') > -1))
+            {
+                e.Handled = true;
+            }
+        }
+
         private void textBoxNumSpectra_KeyPress(object sender, KeyPressEventArgs e)
         {
             // can only be integer values
@@ -459,54 +474,40 @@ namespace RawToolsGUI
                 command = "RawTools.exe";
             }
 
-            if (checkBoxModeParse.Checked)
+            arguments.Append(" all");
+            
+            if (!checkBoxModeParse.Checked & !checkBoxModeQC.Checked)
             {
-                arguments.Append(" parse");
+                MessageBox.Show("You need to select a Mode for RawTools. Please pick QC, Parse, or both.", "Info");
+                return;
             }
-            else if (checkBoxModeQC.Checked)
+
+            if (radioButtonSelectDirectory.Checked)
             {
-                arguments.Append(" qc");
-                //MessageBox.Show("Sorry, I haven't finished the part of this that makes QC go yet.");
-                //return;
+                if (textBoxRawFileDirectory.Text == "" | textBoxRawFileDirectory.Text == String.Empty)
+                {
+                    MessageBox.Show("Please select one or more raw files or a raw file directory.", "Error");
+                    return;
+                }
+                arguments.Append($" -d \"{textBoxRawFileDirectory.Text}\"");
+            }
+            else if (radioButtonSelectFiles.Checked)
+            {
+                if (textBoxRawFiles.Text == "" | textBoxRawFiles.Text == String.Empty)
+                {
+                    MessageBox.Show("Please select one or more raw files or a raw file directory.", "Error");
+                    return;
+                }
+                arguments.Append($" -f {textBoxRawFiles.Text}");
             }
             else
             {
-                MessageBox.Show("You need to select a Mode for RawTools. Please pick QC or Parse.", "Info");
-                return;
-            }
-
-            if (checkBoxModeParse.Checked & checkBoxModeQC.Checked)
-            {
-                MessageBox.Show("Sorry, I know this is lame... but you can't do QC and Parse at the same time yet... " +
-                    "Just pick one or the other for now.", "Info");
+                MessageBox.Show("Something went wrong... please select a raw file directory or one or more raw files.", "Error");
                 return;
             }
 
             if (checkBoxModeParse.Checked)
             {
-                if (radioButtonSelectDirectory.Checked)
-                {
-                    if (textBoxRawFileDirectory.Text == "" | textBoxRawFileDirectory.Text == String.Empty)
-                    {
-                        MessageBox.Show("Please select one or more raw files or a raw file directory.", "Error");
-                        return;
-                    }
-                    arguments.Append($" -d \"{textBoxRawFileDirectory.Text}\"");
-                }
-                else if (radioButtonSelectFiles.Checked)
-                {
-                    if (textBoxRawFiles.Text == "" | textBoxRawFiles.Text == String.Empty)
-                    {
-                        MessageBox.Show("Please select one or more raw files or a raw file directory.", "Error");
-                        return;
-                    }
-                    arguments.Append($" -f {textBoxRawFiles.Text}");
-                }
-                else
-                {
-                    MessageBox.Show("Something went wrong... please select a raw file directory or one or more raw files.", "Error");
-                    return;
-                }
 
                 if (!ckbxOutputMGF.Checked & !ckbxOutputMetrics.Checked & !ckbxOutputChromatograms.Checked &
                     !ckbxOutputParse.Checked & !ckbxOutputQuant.Checked & !checkBoxModeQC.Checked)
@@ -529,13 +530,6 @@ namespace RawToolsGUI
                 {
                     arguments.Append("x");
                 }
-                if (checkBoxRefinePrecursor.Checked)
-                {
-                    arguments.Append("R");
-
-                    arguments.Append($" --mincharge {comboBoxMinCharge.Text}");
-                    arguments.Append($" --maxcharge {comboBoxMaxCharge.Text}");
-                }
 
                 if (checkBoxDataOutputDirectory.Checked)
                 {
@@ -554,12 +548,12 @@ namespace RawToolsGUI
 
                 if (checkBoxMgfLowMass.Checked & checkBoxMgfLowMass.Enabled)
                 {
-                    arguments.Append($" -c {textBoxMgfLowMass}");
+                    arguments.Append($" -c {textBoxMgfLowMass.Text}");
                 }
 
-                if (checkBoxMgfIntensityFiltering.Checked & radioButtonMgfFilterRelativeIntensity.Checked)
+                if (checkBoxMgfIntensityFiltering.Checked)
                 {
-                    arguments.Append($" -y {textBoxMgfFilterRelativeIntensity}");
+                    //arguments.Append($" -y {textBoxMgfFilterRelativeIntensity}");
                 }
 
                 if (ckbxOutputChromatograms.Checked)
@@ -578,8 +572,7 @@ namespace RawToolsGUI
 
             if (checkBoxModeQC.Checked)
             {
-                arguments.Append($" -d \"{textBoxRawFileDirectory.Text}\"");
-                arguments.Append($" -q \"{textBoxQcDataDirectory.Text}\"");
+                arguments.Append($" -Q \"{textBoxQcDataDirectory.Text}\"");
 
                 if (!radioButtonSearchNone.Checked)
                 {
@@ -637,18 +630,20 @@ namespace RawToolsGUI
 
                     arguments.Append($" -N {textBoxNumSpectra.Text}");
                 }
+            }
 
-                if (checkBoxRefinePrecursor.Checked)
+            if (checkBoxRefinePrecursor.Checked)
+            {
+                arguments.Append(" -R");
+
+                if (comboBoxMinCharge.Text != "" & comboBoxMinCharge.Text != string.Empty)
                 {
-                    arguments.Append("R");
-
-                    arguments.Append($" --mincharge {comboBoxMinCharge.SelectedText}");
-                    arguments.Append($" --maxcharge {comboBoxMaxCharge.SelectedText}");
+                    arguments.Append($" --mincharge {comboBoxMinCharge.Text}");
                 }
 
-                if (radioButtonMgfIntensityFilterNoiseModel.Checked & checkBoxMgfIntensityFiltering.Checked)
+                if (comboBoxMaxCharge.Text != "" & comboBoxMaxCharge.Text != string.Empty)
                 {
-                    arguments.Append(" --ms2noisemodel");
+                    arguments.Append($" --maxcharge {comboBoxMaxCharge.Text}");
                 }
             }
 
@@ -726,15 +721,17 @@ namespace RawToolsGUI
         {
             if (checkBoxMgfIntensityFiltering.Checked)
             {
-                radioButtonMgfFilterRelativeIntensity.Enabled = true;
-                radioButtonMgfIntensityFilterNoiseModel.Enabled = true;
                 textBoxMgfFilterRelativeIntensity.Enabled = true;
+                textBoxMgfFilterWindowSize.Enabled = true;
+                labelMgfFilterRelativeIntensity.Enabled = true;
+                labelMgfIntensityFilterWindow.Enabled = true;
             }
             else
             {
-                radioButtonMgfFilterRelativeIntensity.Enabled = false;
-                radioButtonMgfIntensityFilterNoiseModel.Enabled = false;
                 textBoxMgfFilterRelativeIntensity.Enabled = false;
+                textBoxMgfFilterWindowSize.Enabled = false;
+                labelMgfFilterRelativeIntensity.Enabled = false;
+                labelMgfIntensityFilterWindow.Enabled = false;
             }
         }
 
@@ -774,6 +771,8 @@ namespace RawToolsGUI
                 peptideModifications.UpdateModifications(form.dataGridViewModifications);
             }
         }
+
+        
     }
 
     static class utils

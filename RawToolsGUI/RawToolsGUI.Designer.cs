@@ -56,6 +56,8 @@
             this.comboBoxMaxCharge = new System.Windows.Forms.ComboBox();
             this.checkBoxRefinePrecursor = new System.Windows.Forms.CheckBox();
             this.groupBoxQcOptions = new System.Windows.Forms.GroupBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.buttonPeptideMods = new System.Windows.Forms.Button();
             this.textBoxQcDataDirectory = new System.Windows.Forms.TextBox();
             this.buttonQcDataDirectory = new System.Windows.Forms.Button();
             this.textBoxNumSpectra = new System.Windows.Forms.TextBox();
@@ -91,16 +93,23 @@
             this.comboBoxLabelingReagents = new System.Windows.Forms.ComboBox();
             this.labelReporterIonFilteringApplyTo = new System.Windows.Forms.Label();
             this.groupBoxMgfOpts = new System.Windows.Forms.GroupBox();
+            this.textBoxMgfFilterWindowSize = new System.Windows.Forms.TextBox();
+            this.labelMgfIntensityFilterWindow = new System.Windows.Forms.Label();
+            this.labelMgfFilterRelativeIntensity = new System.Windows.Forms.Label();
             this.textBoxMgfFilterRelativeIntensity = new System.Windows.Forms.TextBox();
-            this.radioButtonMgfIntensityFilterNoiseModel = new System.Windows.Forms.RadioButton();
             this.textBoxMgfLowMass = new System.Windows.Forms.TextBox();
             this.checkBoxMgfIntensityFiltering = new System.Windows.Forms.CheckBox();
             this.checkBoxMgfLowMass = new System.Windows.Forms.CheckBox();
-            this.radioButtonMgfFilterRelativeIntensity = new System.Windows.Forms.RadioButton();
             this.panel1 = new System.Windows.Forms.Panel();
             this.button1 = new System.Windows.Forms.Button();
-            this.buttonPeptideMods = new System.Windows.Forms.Button();
-            this.label1 = new System.Windows.Forms.Label();
+            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
+            this.fileStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItemNewParameters = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItemOpenParameters = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItemSaveParameters = new System.Windows.Forms.ToolStripMenuItem();
+            this.exitToolStripMenuItemExit = new System.Windows.Forms.ToolStripMenuItem();
+            this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBoxMode.SuspendLayout();
             this.groupBoxRawFiles.SuspendLayout();
             this.groupBoxDataOutput.SuspendLayout();
@@ -111,6 +120,7 @@
             this.groupBoxQuantOpt.SuspendLayout();
             this.groupBoxMgfOpts.SuspendLayout();
             this.panel1.SuspendLayout();
+            this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // groupBoxMode
@@ -195,7 +205,7 @@
             // 
             // textBoxRawFileDirectory
             // 
-            this.textBoxRawFileDirectory.Location = new System.Drawing.Point(163, 23);
+            this.textBoxRawFileDirectory.Location = new System.Drawing.Point(163, 22);
             this.textBoxRawFileDirectory.Name = "textBoxRawFileDirectory";
             this.textBoxRawFileDirectory.Size = new System.Drawing.Size(475, 22);
             this.textBoxRawFileDirectory.TabIndex = 3;
@@ -436,6 +446,25 @@
             this.groupBoxQcOptions.TabStop = false;
             this.groupBoxQcOptions.Text = "QC Options";
             // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(331, 203);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(146, 17);
+            this.label1.TabIndex = 23;
+            this.label1.Text = "Peptide Modifications:";
+            // 
+            // buttonPeptideMods
+            // 
+            this.buttonPeptideMods.Location = new System.Drawing.Point(483, 200);
+            this.buttonPeptideMods.Name = "buttonPeptideMods";
+            this.buttonPeptideMods.Size = new System.Drawing.Size(247, 23);
+            this.buttonPeptideMods.TabIndex = 9;
+            this.buttonPeptideMods.Text = "Add/Review Peptide Modifications";
+            this.buttonPeptideMods.UseVisualStyleBackColor = true;
+            this.buttonPeptideMods.Click += new System.EventHandler(this.buttonPeptideMods_Click);
+            // 
             // textBoxQcDataDirectory
             // 
             this.textBoxQcDataDirectory.Location = new System.Drawing.Point(163, 21);
@@ -618,6 +647,7 @@
             this.textBoxReporterNumberMissingFilter.Size = new System.Drawing.Size(72, 22);
             this.textBoxReporterNumberMissingFilter.TabIndex = 12;
             this.textBoxReporterNumberMissingFilter.Text = "0";
+            this.textBoxReporterNumberMissingFilter.Visible = false;
             this.textBoxReporterNumberMissingFilter.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBoxReporterNumberMissingFilter_KeyPress);
             // 
             // textBoxReporterIntensityFilter
@@ -628,6 +658,7 @@
             this.textBoxReporterIntensityFilter.Size = new System.Drawing.Size(72, 22);
             this.textBoxReporterIntensityFilter.TabIndex = 11;
             this.textBoxReporterIntensityFilter.Text = "0";
+            this.textBoxReporterIntensityFilter.Visible = false;
             this.textBoxReporterIntensityFilter.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBoxReporterIntensityFilter_KeyPress);
             // 
             // labelReporterIonIntensityFilter
@@ -639,6 +670,7 @@
             this.labelReporterIonIntensityFilter.Size = new System.Drawing.Size(114, 17);
             this.labelReporterIonIntensityFilter.TabIndex = 9;
             this.labelReporterIonIntensityFilter.Text = "Median Intensity:";
+            this.labelReporterIonIntensityFilter.Visible = false;
             // 
             // labelReporterIonMissingFilter
             // 
@@ -649,6 +681,7 @@
             this.labelReporterIonMissingFilter.Size = new System.Drawing.Size(126, 17);
             this.labelReporterIonMissingFilter.TabIndex = 10;
             this.labelReporterIonMissingFilter.Text = "Missing Reporters:";
+            this.labelReporterIonMissingFilter.Visible = false;
             // 
             // checkBoxReporterIonFiltering
             // 
@@ -660,6 +693,7 @@
             this.checkBoxReporterIonFiltering.TabIndex = 0;
             this.checkBoxReporterIonFiltering.Text = "Reporter Ion-Based Filtering";
             this.checkBoxReporterIonFiltering.UseVisualStyleBackColor = true;
+            this.checkBoxReporterIonFiltering.Visible = false;
             this.checkBoxReporterIonFiltering.CheckedChanged += new System.EventHandler(this.checkBoxReporterIonFiltering_CheckedChanged);
             // 
             // groupBoxChromatograms
@@ -718,6 +752,7 @@
             // 
             // flowLayoutPanel1
             // 
+            this.flowLayoutPanel1.AutoScroll = true;
             this.flowLayoutPanel1.Controls.Add(this.groupBoxMode);
             this.flowLayoutPanel1.Controls.Add(this.groupBoxRawFiles);
             this.flowLayoutPanel1.Controls.Add(this.groupBoxDataOutput);
@@ -727,9 +762,10 @@
             this.flowLayoutPanel1.Controls.Add(this.groupBoxMgfOpts);
             this.flowLayoutPanel1.Controls.Add(this.groupBoxChromatograms);
             this.flowLayoutPanel1.Controls.Add(this.panel1);
-            this.flowLayoutPanel1.Location = new System.Drawing.Point(12, 12);
+            this.flowLayoutPanel1.Location = new System.Drawing.Point(10, 36);
+            this.flowLayoutPanel1.MaximumSize = new System.Drawing.Size(781, 720);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
-            this.flowLayoutPanel1.Size = new System.Drawing.Size(773, 719);
+            this.flowLayoutPanel1.Size = new System.Drawing.Size(781, 720);
             this.flowLayoutPanel1.TabIndex = 8;
             // 
             // groupBoxQuantOpt
@@ -762,6 +798,7 @@
             this.checkBoxReporterFilterMGF.TabIndex = 15;
             this.checkBoxReporterFilterMGF.Text = "MGF";
             this.checkBoxReporterFilterMGF.UseVisualStyleBackColor = true;
+            this.checkBoxReporterFilterMGF.Visible = false;
             // 
             // checkBoxReporterFilterMatrix
             // 
@@ -773,6 +810,7 @@
             this.checkBoxReporterFilterMatrix.TabIndex = 14;
             this.checkBoxReporterFilterMatrix.Text = "Matrix";
             this.checkBoxReporterFilterMatrix.UseVisualStyleBackColor = true;
+            this.checkBoxReporterFilterMatrix.Visible = false;
             // 
             // comboBoxLabelingReagents
             // 
@@ -804,15 +842,17 @@
             this.labelReporterIonFilteringApplyTo.Size = new System.Drawing.Size(63, 17);
             this.labelReporterIonFilteringApplyTo.TabIndex = 13;
             this.labelReporterIonFilteringApplyTo.Text = "Apply to:";
+            this.labelReporterIonFilteringApplyTo.Visible = false;
             // 
             // groupBoxMgfOpts
             // 
+            this.groupBoxMgfOpts.Controls.Add(this.textBoxMgfFilterWindowSize);
+            this.groupBoxMgfOpts.Controls.Add(this.labelMgfIntensityFilterWindow);
+            this.groupBoxMgfOpts.Controls.Add(this.labelMgfFilterRelativeIntensity);
             this.groupBoxMgfOpts.Controls.Add(this.textBoxMgfFilterRelativeIntensity);
-            this.groupBoxMgfOpts.Controls.Add(this.radioButtonMgfIntensityFilterNoiseModel);
             this.groupBoxMgfOpts.Controls.Add(this.textBoxMgfLowMass);
             this.groupBoxMgfOpts.Controls.Add(this.checkBoxMgfIntensityFiltering);
             this.groupBoxMgfOpts.Controls.Add(this.checkBoxMgfLowMass);
-            this.groupBoxMgfOpts.Controls.Add(this.radioButtonMgfFilterRelativeIntensity);
             this.groupBoxMgfOpts.Enabled = false;
             this.groupBoxMgfOpts.Location = new System.Drawing.Point(435, 488);
             this.groupBoxMgfOpts.Name = "groupBoxMgfOpts";
@@ -820,6 +860,39 @@
             this.groupBoxMgfOpts.TabIndex = 17;
             this.groupBoxMgfOpts.TabStop = false;
             this.groupBoxMgfOpts.Text = "MGF Options";
+            // 
+            // textBoxMgfFilterWindowSize
+            // 
+            this.textBoxMgfFilterWindowSize.Enabled = false;
+            this.textBoxMgfFilterWindowSize.Location = new System.Drawing.Point(198, 98);
+            this.textBoxMgfFilterWindowSize.Name = "textBoxMgfFilterWindowSize";
+            this.textBoxMgfFilterWindowSize.Size = new System.Drawing.Size(100, 22);
+            this.textBoxMgfFilterWindowSize.TabIndex = 23;
+            this.textBoxMgfFilterWindowSize.Text = "0";
+            this.textBoxMgfFilterWindowSize.Visible = false;
+            this.textBoxMgfFilterWindowSize.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBoxMgfFilterWindowSize_KeyPress);
+            // 
+            // labelMgfIntensityFilterWindow
+            // 
+            this.labelMgfIntensityFilterWindow.AutoSize = true;
+            this.labelMgfIntensityFilterWindow.Enabled = false;
+            this.labelMgfIntensityFilterWindow.Location = new System.Drawing.Point(35, 102);
+            this.labelMgfIntensityFilterWindow.Name = "labelMgfIntensityFilterWindow";
+            this.labelMgfIntensityFilterWindow.Size = new System.Drawing.Size(157, 17);
+            this.labelMgfIntensityFilterWindow.TabIndex = 22;
+            this.labelMgfIntensityFilterWindow.Text = "Filter window size (m/z):";
+            this.labelMgfIntensityFilterWindow.Visible = false;
+            // 
+            // labelMgfFilterRelativeIntensity
+            // 
+            this.labelMgfFilterRelativeIntensity.AutoSize = true;
+            this.labelMgfFilterRelativeIntensity.Enabled = false;
+            this.labelMgfFilterRelativeIntensity.Location = new System.Drawing.Point(35, 76);
+            this.labelMgfFilterRelativeIntensity.Name = "labelMgfFilterRelativeIntensity";
+            this.labelMgfFilterRelativeIntensity.Size = new System.Drawing.Size(119, 17);
+            this.labelMgfFilterRelativeIntensity.TabIndex = 21;
+            this.labelMgfFilterRelativeIntensity.Text = "Relative intensity:";
+            this.labelMgfFilterRelativeIntensity.Visible = false;
             // 
             // textBoxMgfFilterRelativeIntensity
             // 
@@ -829,23 +902,13 @@
             this.textBoxMgfFilterRelativeIntensity.Size = new System.Drawing.Size(100, 22);
             this.textBoxMgfFilterRelativeIntensity.TabIndex = 20;
             this.textBoxMgfFilterRelativeIntensity.Text = "0";
+            this.textBoxMgfFilterRelativeIntensity.Visible = false;
             this.textBoxMgfFilterRelativeIntensity.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBoxMgfFilterRelativeIntensity_KeyPress);
-            // 
-            // radioButtonMgfIntensityFilterNoiseModel
-            // 
-            this.radioButtonMgfIntensityFilterNoiseModel.AutoSize = true;
-            this.radioButtonMgfIntensityFilterNoiseModel.Enabled = false;
-            this.radioButtonMgfIntensityFilterNoiseModel.Location = new System.Drawing.Point(32, 101);
-            this.radioButtonMgfIntensityFilterNoiseModel.Name = "radioButtonMgfIntensityFilterNoiseModel";
-            this.radioButtonMgfIntensityFilterNoiseModel.Size = new System.Drawing.Size(127, 21);
-            this.radioButtonMgfIntensityFilterNoiseModel.TabIndex = 19;
-            this.radioButtonMgfIntensityFilterNoiseModel.Text = "By Noise Model";
-            this.radioButtonMgfIntensityFilterNoiseModel.UseVisualStyleBackColor = true;
             // 
             // textBoxMgfLowMass
             // 
             this.textBoxMgfLowMass.Enabled = false;
-            this.textBoxMgfLowMass.Location = new System.Drawing.Point(149, 19);
+            this.textBoxMgfLowMass.Location = new System.Drawing.Point(185, 19);
             this.textBoxMgfLowMass.Name = "textBoxMgfLowMass";
             this.textBoxMgfLowMass.Size = new System.Drawing.Size(100, 22);
             this.textBoxMgfLowMass.TabIndex = 2;
@@ -862,6 +925,7 @@
             this.checkBoxMgfIntensityFiltering.TabIndex = 1;
             this.checkBoxMgfIntensityFiltering.Text = "Intensity Filtering";
             this.checkBoxMgfIntensityFiltering.UseVisualStyleBackColor = true;
+            this.checkBoxMgfIntensityFiltering.Visible = false;
             this.checkBoxMgfIntensityFiltering.CheckedChanged += new System.EventHandler(this.checkBoxMgfIntensityFiltering_CheckedChanged);
             // 
             // checkBoxMgfLowMass
@@ -869,24 +933,11 @@
             this.checkBoxMgfLowMass.AutoSize = true;
             this.checkBoxMgfLowMass.Location = new System.Drawing.Point(6, 21);
             this.checkBoxMgfLowMass.Name = "checkBoxMgfLowMass";
-            this.checkBoxMgfLowMass.Size = new System.Drawing.Size(137, 21);
+            this.checkBoxMgfLowMass.Size = new System.Drawing.Size(173, 21);
             this.checkBoxMgfLowMass.TabIndex = 0;
-            this.checkBoxMgfLowMass.Text = "Low Mass Cutoff:";
+            this.checkBoxMgfLowMass.Text = "Low Mass Cutoff (m/z):";
             this.checkBoxMgfLowMass.UseVisualStyleBackColor = true;
             this.checkBoxMgfLowMass.CheckedChanged += new System.EventHandler(this.checkBoxMgfLowMass_CheckedChanged);
-            // 
-            // radioButtonMgfFilterRelativeIntensity
-            // 
-            this.radioButtonMgfFilterRelativeIntensity.AutoSize = true;
-            this.radioButtonMgfFilterRelativeIntensity.Checked = true;
-            this.radioButtonMgfFilterRelativeIntensity.Enabled = false;
-            this.radioButtonMgfFilterRelativeIntensity.Location = new System.Drawing.Point(32, 74);
-            this.radioButtonMgfFilterRelativeIntensity.Name = "radioButtonMgfFilterRelativeIntensity";
-            this.radioButtonMgfFilterRelativeIntensity.Size = new System.Drawing.Size(160, 21);
-            this.radioButtonMgfFilterRelativeIntensity.TabIndex = 18;
-            this.radioButtonMgfFilterRelativeIntensity.TabStop = true;
-            this.radioButtonMgfFilterRelativeIntensity.Text = "By Relative Intensity:";
-            this.radioButtonMgfFilterRelativeIntensity.UseVisualStyleBackColor = true;
             // 
             // panel1
             // 
@@ -906,33 +957,78 @@
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.buttonGo_Click);
             // 
-            // buttonPeptideMods
+            // menuStrip1
             // 
-            this.buttonPeptideMods.Location = new System.Drawing.Point(483, 200);
-            this.buttonPeptideMods.Name = "buttonPeptideMods";
-            this.buttonPeptideMods.Size = new System.Drawing.Size(247, 23);
-            this.buttonPeptideMods.TabIndex = 9;
-            this.buttonPeptideMods.Text = "Add/Review Peptide Modifications";
-            this.buttonPeptideMods.UseVisualStyleBackColor = true;
-            this.buttonPeptideMods.Click += new System.EventHandler(this.buttonPeptideMods_Click);
+            this.menuStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
+            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.fileStripMenuItem,
+            this.helpToolStripMenuItem});
+            this.menuStrip1.Location = new System.Drawing.Point(10, 0);
+            this.menuStrip1.Name = "menuStrip1";
+            this.menuStrip1.Size = new System.Drawing.Size(781, 28);
+            this.menuStrip1.TabIndex = 9;
+            this.menuStrip1.Text = "menuStrip1";
             // 
-            // label1
+            // fileStripMenuItem
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(331, 203);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(146, 17);
-            this.label1.TabIndex = 23;
-            this.label1.Text = "Peptide Modifications:";
+            this.fileStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripMenuItemNewParameters,
+            this.toolStripMenuItemOpenParameters,
+            this.toolStripMenuItemSaveParameters,
+            this.exitToolStripMenuItemExit});
+            this.fileStripMenuItem.Name = "fileStripMenuItem";
+            this.fileStripMenuItem.Size = new System.Drawing.Size(44, 24);
+            this.fileStripMenuItem.Text = "File";
+            // 
+            // toolStripMenuItemNewParameters
+            // 
+            this.toolStripMenuItemNewParameters.Name = "toolStripMenuItemNewParameters";
+            this.toolStripMenuItemNewParameters.Size = new System.Drawing.Size(216, 26);
+            this.toolStripMenuItemNewParameters.Text = "New Parameters";
+            // 
+            // toolStripMenuItemOpenParameters
+            // 
+            this.toolStripMenuItemOpenParameters.Name = "toolStripMenuItemOpenParameters";
+            this.toolStripMenuItemOpenParameters.Size = new System.Drawing.Size(216, 26);
+            this.toolStripMenuItemOpenParameters.Text = "Open Parameters";
+            // 
+            // toolStripMenuItemSaveParameters
+            // 
+            this.toolStripMenuItemSaveParameters.Name = "toolStripMenuItemSaveParameters";
+            this.toolStripMenuItemSaveParameters.Size = new System.Drawing.Size(216, 26);
+            this.toolStripMenuItemSaveParameters.Text = "Save Parameters";
+            // 
+            // exitToolStripMenuItemExit
+            // 
+            this.exitToolStripMenuItemExit.Name = "exitToolStripMenuItemExit";
+            this.exitToolStripMenuItemExit.Size = new System.Drawing.Size(216, 26);
+            this.exitToolStripMenuItemExit.Text = "Exit";
+            // 
+            // helpToolStripMenuItem
+            // 
+            this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.aboutToolStripMenuItem});
+            this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
+            this.helpToolStripMenuItem.Size = new System.Drawing.Size(53, 24);
+            this.helpToolStripMenuItem.Text = "Help";
+            // 
+            // aboutToolStripMenuItem
+            // 
+            this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(216, 26);
+            this.aboutToolStripMenuItem.Text = "About RawTools";
             // 
             // RawToolsGUI
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoScroll = true;
-            this.ClientSize = new System.Drawing.Size(801, 733);
+            this.ClientSize = new System.Drawing.Size(801, 774);
             this.Controls.Add(this.flowLayoutPanel1);
+            this.Controls.Add(this.menuStrip1);
+            this.MainMenuStrip = this.menuStrip1;
             this.Name = "RawToolsGUI";
+            this.Padding = new System.Windows.Forms.Padding(10, 0, 10, 15);
             this.Text = "RawToolsGUI";
             this.groupBoxMode.ResumeLayout(false);
             this.groupBoxMode.PerformLayout();
@@ -952,7 +1048,10 @@
             this.groupBoxMgfOpts.ResumeLayout(false);
             this.groupBoxMgfOpts.PerformLayout();
             this.panel1.ResumeLayout(false);
+            this.menuStrip1.ResumeLayout(false);
+            this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -1024,14 +1123,23 @@
         private System.Windows.Forms.CheckBox checkBoxMgfIntensityFiltering;
         private System.Windows.Forms.CheckBox checkBoxMgfLowMass;
         private System.Windows.Forms.TextBox textBoxMgfFilterRelativeIntensity;
-        private System.Windows.Forms.RadioButton radioButtonMgfIntensityFilterNoiseModel;
-        private System.Windows.Forms.RadioButton radioButtonMgfFilterRelativeIntensity;
         private System.Windows.Forms.TextBox textBoxQcDataDirectory;
         private System.Windows.Forms.Button buttonQcDataDirectory;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button buttonPeptideMods;
 
         private PeptideModifications peptideModifications;
+        private System.Windows.Forms.Label labelMgfFilterRelativeIntensity;
+        private System.Windows.Forms.Label labelMgfIntensityFilterWindow;
+        private System.Windows.Forms.TextBox textBoxMgfFilterWindowSize;
+        private System.Windows.Forms.MenuStrip menuStrip1;
+        private System.Windows.Forms.ToolStripMenuItem fileStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemNewParameters;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemOpenParameters;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemSaveParameters;
+        private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItemExit;
+        private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
     }
 }
 

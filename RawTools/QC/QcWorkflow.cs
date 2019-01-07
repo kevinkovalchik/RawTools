@@ -68,13 +68,8 @@ namespace RawTools.QC
         public static void DoQc(WorkflowParameters parameters)
         {
             //QcDataCollectionDDA qcDataCollection;
-            dynamic qcDataCollection;
-            string dataDirectory = parameters.RawFileDirectory;
-            string qcDirectory = parameters.QcParams.QcDirectory;
-            string qcSearchDataDirecotry = parameters.QcParams.QcSearchDataDirectory;
+            QcDataCollection qcDataCollection;
             List<string> fileList = new List<string>();
-
-            string qcFile = Path.Combine(qcDirectory, "QC.xml");
 
             (fileList, qcDataCollection) = GetFileListAndQcFile(parameters);
 
@@ -105,24 +100,6 @@ namespace RawTools.QC
                 {
                     WorkFlowsDDA.QcDDA(rawFileThreadManager, parameters);
                 }
-                //else if (parameters.ExpType == ExperimentType.DIA)
-                //{
-                //    WorkFlowsDIA.QcDIA(rawFileThreadManager, parameters);
-                //}
-                /*
-                using (IRawDataPlus rawFile = RawFileReaderFactory.ReadFile(fileName))
-                {
-                    rawFile.SelectInstrument(Device.MS, 1);
-
-                    if (parameters.ExpType == ExperimentType.DDA)
-                    {
-                        WorkFlowsDDA.QcDDA(rawFile, parameters);
-                    }
-                    else if (parameters.ExpType == ExperimentType.DIA)
-                    {
-                        WorkFlowsDIA.QcDIA(rawFile, parameters);
-                    }
-                }*/
 
                 Log.Information("QC finished: {File}", fileName);
             }
@@ -165,7 +142,7 @@ namespace RawTools.QC
             return qcDataCollection;
         }
         
-        private static (List<string> fileList, QcDataCollection qcDataCollection) GetFileListAndQcFile(WorkflowParameters parameters)
+        public static (List<string> fileList, QcDataCollection qcDataCollection) GetFileListAndQcFile(WorkflowParameters parameters)
         {
             QcDataCollection qcDataCollection;
             string dataDirectory = parameters.RawFileDirectory;
@@ -233,7 +210,7 @@ namespace RawTools.QC
             return (fileList, qcDataCollection);
         }
 
-        private static bool CheckIfFilePresentInQcCollection(string fileName, QcDataCollection qcDataCollection)
+        public static bool CheckIfFilePresentInQcCollection(string fileName, QcDataCollection qcDataCollection)
         {
             IFileHeader rawHeader = FileHeaderReaderFactory.ReadFile(fileName);
 
