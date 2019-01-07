@@ -16,7 +16,7 @@ If you need help installing and using RawTools, please visit the wiki page appro
 
 ### Notable news
 
-* A RawTools GUI is in the works and should be released soon! Initially this will simply allow you to set up RawTools parameters and run the program using a graphical interface instead of the command line. In the future we plan to add some basic features to visualy explore raw files. If you have any features you would like to see in this regard, let us know by creating a [feature request](https://github.com/kevinkovalchik/RawTools/issues/new?assignees=&labels=&template=feature_request.md&title=)! [2019-01-07]
+* A RawTools GUI is in the works and should be released soon! Initially this will simply allow you to set up RawTools parameters and run the program using a graphical interface instead of the command line. In the future we plan to add some basic features to visualy explore raw files, as well as to visualize some of the parse and QC data similar to our R Shiny app. If you have any features you would like to see in this regard, let us know by creating a [feature request](https://github.com/kevinkovalchik/RawTools/issues/new?assignees=&labels=&template=feature_request.md&title=)! [2019-01-07]
 
 * Thanks to a lot of behind the scenes work, the file downloads of plots from the Shiny app are now working! [2018-12-06]  
 
