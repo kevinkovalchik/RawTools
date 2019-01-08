@@ -149,8 +149,6 @@
             // checkBoxModeParse
             // 
             this.checkBoxModeParse.AutoSize = true;
-            this.checkBoxModeParse.Checked = true;
-            this.checkBoxModeParse.CheckState = System.Windows.Forms.CheckState.Checked;
             this.checkBoxModeParse.Location = new System.Drawing.Point(6, 21);
             this.checkBoxModeParse.Name = "checkBoxModeParse";
             this.checkBoxModeParse.Size = new System.Drawing.Size(67, 21);
@@ -986,6 +984,7 @@
             this.toolStripMenuItemNewParameters.Name = "toolStripMenuItemNewParameters";
             this.toolStripMenuItemNewParameters.Size = new System.Drawing.Size(197, 26);
             this.toolStripMenuItemNewParameters.Text = "New Parameters";
+            this.toolStripMenuItemNewParameters.Click += new System.EventHandler(this.toolStripMenuItemNewParameters_Click);
             // 
             // toolStripMenuItemOpenParameters
             // 

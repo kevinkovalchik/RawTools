@@ -772,7 +772,54 @@ namespace RawToolsGUI
             }
         }
 
-        
+        private void toolStripMenuItemNewParameters_Click(object sender, EventArgs e)
+        {
+            reset();
+        }
+
+        public void reset()
+        {
+            checkBoxAutoSearchIdentipy.Checked = true;
+
+            foreach (Control x in groupBoxChromatograms.Controls) if (x is CheckBox) ((CheckBox)x).Checked = false;
+
+            foreach (Control x in groupBoxRawFiles.Controls) if (x is TextBox) ((TextBox)x).Clear();
+
+            radioButtonSelectDirectory.Checked = true;
+
+            textBoxDataOutputDir.Clear();
+
+            checkBoxMgfIntensityFiltering.Checked = false;
+            checkBoxMgfLowMass.Checked = false;
+
+            foreach (Control x in groupBoxMode.Controls) if (x is CheckBox) ((CheckBox)x).Checked = false;
+
+            checkBoxRefinePrecursor.Checked = true;
+
+            comboBoxMinCharge.Text = "0";
+            comboBoxMaxCharge.Text = "4";
+            comboBoxMinCharge.Text = "2";
+
+            foreach (Control x in groupBoxDataOutput.Controls) if (x is CheckBox) ((CheckBox)x).Checked = false;
+
+            radioButtonSearchNone.Checked = true;
+
+            foreach (Control x in groupBoxQcOptions.Controls) if (x is TextBox) ((TextBox)x).Clear();
+
+            textBoxNumSpectra.Text = "10000";
+
+            peptideModifications = new PeptideModifications();
+
+            foreach (Control x in groupBoxQuantOpt.Controls) if (x is CheckBox) ((CheckBox)x).Checked = false;
+
+            foreach (Control x in groupBoxQuantOpt.Controls) if (x is TextBox) ((TextBox)x).Text = "0";
+
+            comboBoxLabelingReagents.Text = "- select -";
+
+            foreach (Control x in groupBoxMgfOpts.Controls) if (x is CheckBox) ((CheckBox)x).Checked = false;
+
+            foreach (Control x in groupBoxMgfOpts.Controls) if (x is TextBox) ((TextBox)x).Text = "0";
+        }
     }
 
     static class utils
