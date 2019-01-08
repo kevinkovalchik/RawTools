@@ -8,6 +8,7 @@ using System.Windows.Forms;
 
 namespace RawToolsGUI
 {
+    [Serializable]
     public class PeptideModifications
     {
         public (string Mass, string AA, bool Use) KMod;
