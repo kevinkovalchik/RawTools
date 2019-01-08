@@ -68,7 +68,7 @@ namespace RawTools.Data.IO
 
                 if (Index.AnalysisOrder == MSOrderType.Ms3) f.Write("MS3IonInjectionTime\t");
 
-                f.Write("MS1IonInjectionTime\tMS2IonInjectionTime\tHCDEnergy\tMS2MedianIntensity\tMS1MedianIntensity\t");
+                f.Write("MS2IonInjectionTime\tMS1IonInjectionTime\tHCDEnergy\tMS2MedianIntensity\tMS1MedianIntensity\t");
 
                 if (quantData != null)
                 {
@@ -129,8 +129,6 @@ namespace RawTools.Data.IO
                     if (Index.AnalysisOrder == MSOrderType.Ms3) f.Write($"{metaData.FillTime[ms3scan]}\t");
 
                     f.Write($"{metaData.FillTime[ms2scan]}\t{metaData.FillTime[masterScan]}\t");
-
-                    if (Index.AnalysisOrder == MSOrderType.Ms3) f.Write("MS3IonInjectionTime\t");
 
                     f.Write($"{trailerExtras[scan].HCDEnergy}\t{metaData.IntensityDistribution[ms2scan].P50}\t{metaData.IntensityDistribution[masterScan].P50}\t");
 
