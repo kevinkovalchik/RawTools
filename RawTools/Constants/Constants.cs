@@ -18,4 +18,48 @@ namespace RawTools.Constants
         /// </summary>
         public const double Proton = 1.00727649;
     }
+
+    static class MultiThreading
+    {
+        public static int ChunkSize(int TotalSize)
+        {
+            int processorCount = Environment.ProcessorCount;
+
+            if (processorCount > 8) processorCount = 8;
+
+            return TotalSize / Environment.ProcessorCount / 20 + 1;
+        }
+
+        public static ParallelOptions Options()
+        {
+            ParallelOptions options = new ParallelOptions();
+
+            if (Environment.ProcessorCount > 12)
+            {
+                options.MaxDegreeOfParallelism = 12;
+            }
+            else
+            {
+                options.MaxDegreeOfParallelism = Environment.ProcessorCount;
+            }
+
+            return options;
+        }
+
+        public static ParallelOptions Options(int MaxThreads)
+        {
+            ParallelOptions options = new ParallelOptions();
+
+            if (MaxThreads > Environment.ProcessorCount)
+            {
+                options.MaxDegreeOfParallelism = Environment.ProcessorCount;
+            }
+            else
+            {
+                options.MaxDegreeOfParallelism = MaxThreads;
+            }
+
+            return options;
+        }
+    }
 }

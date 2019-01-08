@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Linq;
 using System.Diagnostics;
 using System.Text;
@@ -26,10 +27,12 @@ using System.Threading.Tasks;
 using RawTools.Data.Collections;
 using RawTools.Data.Containers;
 using RawTools.Data.Extraction;
-using RawTools.Data.Processing;
+using RawTools.Algorithms;
 using ThermoFisher.CommonCore.Data.Interfaces;
 using ThermoFisher.CommonCore.Data.FilterEnums;
+using ThermoFisher.CommonCore.Data.Business;
 using System.Xml.Serialization;
+using Serilog;
 
 
 namespace RawTools.Utilities
@@ -176,7 +179,7 @@ namespace RawTools.Utilities
             Console.WriteLine("{0}: 100%", message);
         }
     }
-
+     /*
     static class CheckIfDone
     {
         public static void Check(this RawDataCollection rawData, IRawDataPlus rawFile, List<Operations> operations)
@@ -311,7 +314,7 @@ namespace RawTools.Utilities
         }
         
     }
-
+    */
     static class AdditionalMath
     {
         public static double Percentile(this double[] Values, int percentile)
@@ -329,6 +332,48 @@ namespace RawTools.Utilities
             {
                 return (sortedValues[end * percentile / 100] + sortedValues[end * percentile / 100 + 1]) / 2;
             }
+        }
+
+        public static double Percentile(this List<double> Values, int percentile)
+        {
+            int end = Values.Count() - 1;
+            double endAsDouble = Convert.ToDouble(end);
+            List<double> sortedValues = new List<double>();
+            foreach (var value in Values) sortedValues.Add(value);
+
+            sortedValues.Sort();
+
+            if ((endAsDouble * percentile / 100) % 1 == 0)
+            {
+                return sortedValues[end * percentile / 100];
+            }
+            else
+            {
+                return (sortedValues[end * percentile / 100] + sortedValues[end * percentile / 100 + 1]) / 2;
+            }
+        }
+
+        /// <summary>
+        /// Return the nth percentile from a dictionary.
+        /// </summary>
+        /// <param name="dict"></param>
+        /// <param name="percentile"></param>
+        /// <returns></returns>
+        public static double PercentileFromDict(this Dictionary<int, double> dict, int percentile)
+        {
+            return dict.Values.ToArray().Percentile(percentile);
+        }
+
+        public static double MeanFromDict(this Dictionary<int, int> dict)
+        {
+            double[] values = Array.ConvertAll(dict.Values.ToArray(), Convert.ToDouble);
+
+            return values.Mean();
+        }
+
+        public static double MeanFromDict(this Dictionary<int, double> dict)
+        {
+            return dict.Values.ToArray().Mean();
         }
 
         public static int[] SelectRandomScans(int[] scans, int num, bool fixedScans = false)
@@ -470,6 +515,16 @@ namespace RawTools.Utilities
 
             return valueOut;
         }
+
+        public static IEnumerable<IEnumerable<T>> Chunk<T>(this IEnumerable<T> source, int chunksize)
+        {
+            var pos = 0;
+            while (source.Skip(pos).Any())
+            {
+                yield return source.Skip(pos).Take(chunksize);
+                pos += chunksize;
+            }
+        }
     }
 
     static class ReadWrite
@@ -525,6 +580,21 @@ namespace RawTools.Utilities
             return false;
         }
 
+        public static void CheckFileAccessibility(string fileName)
+        {
+            if (File.Exists(fileName))
+            {
+                while (IsFileLocked(fileName))
+                {
+                    Console.WriteLine();
+                    Console.WriteLine("ATTENTION:");
+                    Console.WriteLine("{0} is inaccessible. Please close the file and press any key to continue.", fileName);
+                    Console.ReadKey();
+                }
+                Console.WriteLine();
+            }
+        }
+
         public static void AwaitFileAccessibility(string fileName)
         {
             //Your File
@@ -541,6 +611,21 @@ namespace RawTools.Utilities
             if (!Directory.Exists(directory))
             {
                 Directory.CreateDirectory(directory);
+            }
+        }
+
+        public static void EnsureAbsolutePaths(this List<string> files)
+        {
+            string wd = Directory.GetCurrentDirectory();
+
+            for (int i = 0; i < files.Count(); i++)
+            {
+                string fileName = files[i];
+
+                if (!Path.IsPathRooted(fileName))
+                {
+                    files[i] = Path.Combine(wd, fileName);
+                }
             }
         }
     }
@@ -657,5 +742,72 @@ namespace RawTools.Utilities
                 return Path.GetDirectoryName(path);
             }
         }
-    }    
+    }
+
+    public static class RawFileInfo
+    {
+        public static void CheckIfBoxcar(this IRawDataPlus rawFile)
+        {
+            rawFile.SelectInstrument(Device.MS, 1);
+            bool isBoxCar = rawFile.GetScanEventForScanNumber(1).MassRangeCount > 1;
+
+            if (isBoxCar)
+            {
+                Log.Error("Boxcar experiments not currently supported");
+                Console.WriteLine("This looks like a boxcar or similar raw file. Sorry, boxcar is not currently supported.");
+                Environment.Exit(0);
+            }
+            else
+            {
+                return;
+            }
+        }
+
+        public static bool CheckIfValid(string fileName)
+        {
+            IFileHeader rawHeader = null;
+
+            // try to open the raw file header
+            try
+            {
+                rawHeader = FileHeaderReaderFactory.ReadFile(fileName);
+            }
+            catch (Exception)
+            {
+                Log.Information("{File} is not a valid raw file", fileName);
+                Console.WriteLine("{0} is not a valid raw file.", fileName);
+                return false;
+            }
+
+            // is it a real raw file?
+            if (rawHeader.FileType == FileType.RawFile)
+            {
+                Log.Information("{File} is a valid raw file", fileName);
+                Log.Information("Creation date: {Date}", rawHeader.CreationDate);
+                Log.Information("File description: {Description}", rawHeader.FileDescription);
+                return true;
+            }
+            else
+            {
+                Log.Information("{File} is not a valid raw file", fileName);
+                Console.WriteLine("{0} is not a valid raw file, continuing to next file.", fileName);
+                return false;
+            }
+        }
+    }
+
+    public static class Conversion
+    {
+        public static Dictionary<TKey, TValue> ConvertToDictionary<TKey, TValue>(this ConcurrentDictionary<TKey, TValue> input)
+        {
+            Dictionary<TKey, TValue> output = new Dictionary<TKey, TValue>();
+
+            foreach (var item in input)
+            {
+                output.Add(item.Key, item.Value);
+            }
+
+            return output;
+        }
+    }
 }

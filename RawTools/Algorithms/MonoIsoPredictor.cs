@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using RawTools.Data.Containers;
+using RawTools.Data.Collections;
 using RawTools.Utilities;
 using RawTools.Utilities.MathStats;
 using RawTools.Constants;
@@ -11,8 +12,40 @@ using RawTools.Algorithms;
 
 namespace RawTools.Algorithms
 {
-    public static class MonoIsoPredictor
+    static class MonoIsoPredictor
     {
+        public static void RefineMonoIsoMassChargeValues(CentroidStreamCollection centroids, PrecursorMassCollection precursorMasses, TrailerExtraCollection trailerExtras, PrecursorPeakCollection precursorPeaks, PrecursorScanCollection precursorScans)
+        {
+            int ms2Scan, ms1Scan, refinedCharge;
+            double refinedMass;
+
+            ProgressIndicator P = new ProgressIndicator(precursorPeaks.Count(), "Refining precursor charge and monoisotopic mass");
+            P.Start();
+
+            foreach (var peak in precursorPeaks)
+            {
+                ms2Scan = peak.Value.Ms2Scan;
+
+                if (peak.Value.PeakFound)
+                {
+                    ms1Scan = peak.Value.MaxScan;
+                }
+                else
+                {
+                    ms1Scan = precursorScans[ms2Scan].MasterScan;
+                }
+
+                (refinedCharge, refinedMass) = GetMonoIsotopicMassCharge(centroids[ms1Scan], precursorMasses[ms2Scan].ParentMZ, trailerExtras[ms2Scan].ChargeState);
+
+                precursorMasses[ms2Scan].MonoisotopicMZ = refinedMass;
+                trailerExtras[ms2Scan].MonoisotopicMZ = refinedMass;
+                trailerExtras[ms2Scan].ChargeState = refinedCharge;
+
+                P.Update();
+            }
+            P.Done();
+        }
+
         /// <summary>
         /// Predict precursor monoisotopic mass
         /// </summary>
@@ -20,7 +53,7 @@ namespace RawTools.Algorithms
         /// <param name="parentMZ">Parent ion m/z</param>
         /// <param name="assignedCharge">Charge state assigned in the raw file</param>
         /// <returns></returns>
-        public static (int charge, double mass) GetMonoIsotopicMassCharge(CentroidStreamData centroidData, double parentMZ, int assignedCharge)
+        static (int charge, double mass) GetMonoIsotopicMassCharge(CentroidStreamData centroidData, double parentMZ, int assignedCharge)
         {
             List<int> possibleChargeStates = ChargeStateCalculator.GetChargeState(centroidData, parentMZ, assignedCharge);
             return GetMonoIsotopicMassCharge(centroidData, parentMZ, possibleChargeStates, assignedCharge);
@@ -34,7 +67,7 @@ namespace RawTools.Algorithms
         /// <param name="possibleChargeStates"></param>
         /// <param name="assignedChargeState"></param>
         /// <returns></returns>
-        public static (int charge, double mass) GetMonoIsotopicMassCharge(CentroidStreamData centroidData, double parentMZ, List<int> possibleChargeStates, int assignedChargeState)
+        static (int charge, double mass) GetMonoIsotopicMassCharge(CentroidStreamData centroidData, double parentMZ, List<int> possibleChargeStates, int assignedChargeState)
         {
             Dictionary<(int charge, double monoIsoMass), (double distance, double correlation)> scores =
                 new Dictionary<(int charge, double monoIsoMass), (double distance, double correlation)>(); ;
@@ -52,7 +85,7 @@ namespace RawTools.Algorithms
             {
                 // populate a list of possible monoisotopic masses
                 possibleMonoIsoMasses = new List<double>() { parentMZ };
-                for (int i = 1; i < 3; i++)
+                for (int i = 1; i < 4; i++)
                 {
                     double isotope = parentMZ - i * Masses.C13MinusC12 / charge;
                     if (masses.withinTolerance(isotope, 10))

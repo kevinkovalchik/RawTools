@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -32,45 +33,63 @@ using System.Xml.Serialization;
 
 namespace RawTools.Data.Collections
 {
-    //class MasterDataCollection:
+    class CentroidStreamCollection : Dictionary<int, CentroidStreamData> { }
 
-    class RawDataCollection
+    class SegmentScanCollection : Dictionary<int, SegmentedScanData> { }
+
+    class TrailerExtraCollection : Dictionary<int, TrailerExtraData> { }
+
+    class PrecursorScanCollection : Dictionary<int, PrecursorScanData>
     {
-        public string rawFileName, instrument;
-        public ScanIndex scanIndex;
-        public Dictionary<int, CentroidStreamData> centroidStreams;
-        public Dictionary<int, SegmentedScanData> segmentedScans;
-        public Dictionary<int, TrailerExtraData> trailerExtras;
-        public Dictionary<int, PrecursorScanData> precursorScans;
-        public Dictionary<int, PrecursorMassData> precursorMasses;
-        public Dictionary<int, double> retentionTimes;
-        public QuantDataCollection quantData;
-        public ScanMetaDataCollection metaData;
-        public PrecursorPeakDataCollection peakData;
-        public HashSet<Operations> Performed = new HashSet<Operations>();
-        public Containers.MethodData methodData;
-        public bool isExactive, isBoxCar;
+        public PrecursorScanCollection()
+        { }
 
-        public RawDataCollection(IRawDataPlus rawFile)
+        public PrecursorScanCollection(Dictionary<int, PrecursorScanData> dict)
         {
-            rawFileName = rawFile.FileName;
-            instrument = rawFile.GetInstrumentData().Name;
-            isExactive = instrument.ToLower().Contains("exactive");
-            isBoxCar = rawFile.GetScanEventForScanNumber(1).MassRangeCount > 1;
-            centroidStreams = new Dictionary<int, CentroidStreamData>();
-            segmentedScans = new Dictionary<int, SegmentedScanData>();
-            trailerExtras = new Dictionary<int, TrailerExtraData>();
-            precursorScans = new Dictionary<int, PrecursorScanData>();
-            precursorMasses = new Dictionary<int, PrecursorMassData>();
-            retentionTimes = new Dictionary<int, double>();
-            methodData = new Containers.MethodData();
-            quantData = new QuantDataCollection();
-            metaData = new ScanMetaDataCollection();
-            peakData = new PrecursorPeakDataCollection();
-
-            this.ExtractScanIndex(rawFile);
-            this.ExtractMethodData(rawFile);
+            foreach (var item in dict)
+            {
+                this.Add(item.Key, item.Value);
+            }
         }
+
+        public PrecursorScanCollection(ConcurrentDictionary<int, PrecursorScanData> dict)
+        {
+            foreach (var item in dict)
+            {
+                this.Add(item.Key, item.Value);
+            }
+        }
+    }
+
+    class PrecursorMassCollection : Dictionary<int, PrecursorMassData> { }
+
+    class RetentionTimeCollection : Dictionary<int, double> { }
+
+    class ScanDependentsCollections : Dictionary<int, IScanDependents>
+    {
+        public ScanDependentsCollections()
+        { }
+
+        public ScanDependentsCollections(Dictionary<int, IScanDependents> dict)
+        {
+            foreach (var item in dict)
+            {
+                this.Add(item.Key, item.Value);
+            }
+        }
+
+        public ScanDependentsCollections(ConcurrentDictionary<int, IScanDependents> dict)
+        {
+            foreach (var item in dict)
+            {
+                this.Add(item.Key, item.Value);
+            }
+        }
+    }
+
+    class PrecursorPeakCollection : Dictionary<int, PrecursorPeakData>
+    {
+        public Containers.PeakShape PeakShapeMedians;
     }
 
     class QuantDataCollection : Dictionary<int, QuantData>
@@ -78,13 +97,34 @@ namespace RawTools.Data.Collections
         public string LabelingReagents;
     }
 
-    class ScanMetaDataCollection : Dictionary<int, ScanMetaData>
-    { }
-
-    class PrecursorPeakDataCollection : Dictionary<int, PrecursorPeakData>
+    class ScanMetaDataCollectionDDA
     {
-        public Containers.PeakShape PeakShapeMedians;
+        public Dictionary<int, double> DutyCycle, FillTime, SummedIntensity, Ms1IsolationInterference, FractionConsumingTop80PercentTotalIntensity;
+        public Dictionary<int, Distribution> IntensityDistribution;
+        public Dictionary<int, int> MS2ScansPerCycle;
+
+        public ScanMetaDataCollectionDDA()
+        {
+            DutyCycle = FillTime = Ms1IsolationInterference = SummedIntensity =
+                FractionConsumingTop80PercentTotalIntensity = new Dictionary<int, double>();
+            IntensityDistribution = new Dictionary<int, Distribution>();
+            MS2ScansPerCycle = new Dictionary<int, int>();
+        }
     }
+
+    class ScanMetaDataCollectionDIA
+    {
+        public Dictionary<int, double> DutyCycle, SummedIntensity, FillTime, FractionConsumingTop80PercentTotalIntensity;
+        public Dictionary<int, Distribution> IntensityDistribution;
+
+        public ScanMetaDataCollectionDIA()
+        {
+            SummedIntensity = DutyCycle = FillTime = FractionConsumingTop80PercentTotalIntensity = new Dictionary<int, double>();
+            IntensityDistribution = new Dictionary<int, Distribution>();
+        }
+    }
+
+    class ScanEventReactionCollection: Dictionary<int, IReaction> { }
 
     [XmlRoot("dictionary")]
     public class SerializableDictionary<TKey, TValue>
@@ -154,6 +194,60 @@ namespace RawTools.Data.Collections
     }
 
     class PsmDataCollection: Dictionary<int, PsmData>
+    {
+        public string FileName;
+    }
+
+    class MultiRunFeatureCollection: Dictionary<int, MultiRunFeature>
     { }
 
+    class MultiRunFeature: Dictionary<string, PsmData>
+    {
+        public bool IdIn1;
+        public bool IdIn2;
+        public bool FoundIn1;
+        public bool FoundIn2;
+        public bool ConfirmSeqMatch;
+        public double RT1, RT2;
+        public double Mass1, Mass2;
+        public int Ms2Scan1, Ms2Scan2;
+        public double XCorr;
+        public Dictionary<(int scan1, int scan2), double> AllScores;
+        public Dictionary<(int scan1, int scan2), double> LowScores;
+
+        public MultiRunFeature()
+        {
+            IdIn1 = false;
+            IdIn2 = false;
+            FoundIn1 = false;
+            FoundIn2 = false;
+            ConfirmSeqMatch = false;
+            AllScores = new Dictionary<(int scan1, int scan2), double>();
+            LowScores = new Dictionary<(int scan1, int scan2), double>();
+        }
+    }
+    
+    class Ms1FeatureCollection: Dictionary<int, Ms1Feature>
+    { }
+
+    class FeaturePreMatchDataCollection: Dictionary<int, FeaturePreMatchData>
+    { }
+
+    class FeatureMatchDataCollection : Dictionary<int, MultiRunFeatureMatchData>
+    {
+        Dictionary<int, string> RunNameKeys;
+
+        public FeatureMatchDataCollection()
+        {
+            RunNameKeys = new Dictionary<int, string>();
+        }
+
+        public void AddFeature(Ms1Feature feature)
+        {
+            
+        }
+    }
+
+    class GroupedFeatureCollection: Dictionary<Guid, GroupedMs1Feature>
+    { }
 }

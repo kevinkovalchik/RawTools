@@ -28,13 +28,16 @@ using ThermoFisher.CommonCore.Data.Interfaces;
 using ThermoFisher.CommonCore.Data.FilterEnums;
 using ThermoFisher.CommonCore.Data;
 using RawTools.Data.IO;
-using RawTools.Data.Processing;
 using RawTools.Data.Collections;
 using RawTools.Data.Extraction;
 using RawTools.Data.Containers;
 using RawTools.Utilities;
 using RawTools.Algorithms;
 using RawTools.QC;
+using RawTools.WorkFlows;
+using RawTools.Algorithms.Analyze;
+using RawTools.Algorithms.ExtractData;
+using RawTools.Utilities.MathStats;
 using System.Xml.Linq;
 using Serilog;
 //using Serilog.Sinks.File;
@@ -47,104 +50,247 @@ namespace RawTools
     {
         static void Main(string[] args)
         {
-            if(Environment.OSVersion.Platform == PlatformID.Unix | Environment.OSVersion.Platform == PlatformID.MacOSX)
+            if (Environment.OSVersion.Platform == PlatformID.Unix | Environment.OSVersion.Platform == PlatformID.MacOSX)
             {
                 Console.Out.NewLine = "\n\n";
             }
-            
+
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Debug()
                 .WriteTo.File("rawtools_log.txt", rollOnFileSizeLimit: true, retainedFileCountLimit: 3, fileSizeLimitBytes: 2097152)
                 .CreateLogger();
 
             Log.Information("Program started with arguments: {0}", String.Join(" ", args));
-            
 
-            Parser.Default.ParseArguments<ArgumentParser.ParseOptions, ArgumentParser.QcOptions, ArgumentParser.ExampleOptions, ArgumentParser.TestOptions>(args)
+
+            Parser.Default.ParseArguments<ArgumentParser.ParseOptions, ArgumentParser.QcOptions, ArgumentParser.TestOptions, ArgumentParser.ExampleMods, ArgumentParser.LogDumpOptions>(args)
                 .WithParsed<ArgumentParser.ParseOptions>(opts => DoStuff(opts))
                 .WithParsed<ArgumentParser.QcOptions>(opts => DoStuff(opts))
-                .WithParsed<ArgumentParser.ExampleOptions>(opts => DoStuff(opts))
                 .WithParsed<ArgumentParser.TestOptions>(opts => DoStuff(opts))
+                .WithParsed<ArgumentParser.ExampleMods>(opts => DoStuff(opts))
+                .WithParsed<ArgumentParser.LogDumpOptions>(opts => DoStuff(opts))
                 .WithNotParsed((errs) => HandleParseError(args));
 
             Log.CloseAndFlush();
         }
 
-        static int DoStuff(ArgumentParser.ExampleOptions opts)
+        static int DoStuff(ArgumentParser.LogDumpOptions opts)
         {
-            if (opts.DisplayModifications)
+            List<string> files = new List<string>();
+
+            if (opts.InputFiles.Count() > 0) // did the user give us a list of files?
             {
-                Examples.ExampleMods();
+                List<string> problems = new List<string>();
+                files = opts.InputFiles.ToList();
+
+                // check if the list provided contains only .raw files
+                foreach (string file in files)
+                {
+
+                    if (!file.EndsWith(".raw", StringComparison.OrdinalIgnoreCase))
+                    {
+                        problems.Add(file);
+                    }
+                }
+
+                if (problems.Count() == 1)
+                {
+                    Console.WriteLine("\nERROR: {0} does not appear to be a .raw file. Invoke '>RawTools --help' if you need help.", problems.ElementAt(0));
+                    Log.Error("Invalid file provided: {0}", problems.ElementAt(0));
+
+                    return 1;
+                }
+
+                if (problems.Count() > 1)
+                {
+                    Console.WriteLine("\nERROR: The following {0} files do not appear to be .raw files. Invoke '>RawTools --help' if you need help." +
+                        "\n\n{1}", problems.Count(), String.Join("\n", problems));
+                    Log.Error("Invalid files provided: {0}", String.Join(" ", problems));
+                    return 1;
+                }
+
+                Log.Information("Files to be processed, provided as list: {0}", String.Join(" ", files));
             }
-            if (opts.InterfaceExamples)
+
+            else // did the user give us a directory?
             {
-                Examples.CommandLineUsage();
+                if (Directory.Exists(opts.InputDirectory))
+                {
+                    files = Directory.GetFiles(opts.InputDirectory, "*.*", SearchOption.TopDirectoryOnly)
+                    .Where(s => s.EndsWith(".raw", StringComparison.OrdinalIgnoreCase)).ToList();
+                }
+                else
+                {
+                    Console.WriteLine("ERROR: The provided directory does not appear to be valid.");
+                    Log.Error("Invalid directory provided: {0}", opts.InputDirectory);
+                    return 1;
+                }
+
+                Log.Information("Files to be processed, provided as directory: {0}", String.Join(" ", files));
+
             }
-            if (!opts.DisplayModifications & !opts.InterfaceExamples)
+
+            Console.WriteLine();
+
+            foreach (var file in files)
             {
-                Console.WriteLine("Please indicate either --interface or --modifications. See " +
-                    "\">RawTools examples --help\" for more information.");
+                Console.WriteLine(Path.GetFileName(file));
+                Console.WriteLine("----------------------------------------");
+                using (IRawDataPlus rawFile = RawFileReaderFactory.ReadFile(file))
+                {
+                    rawFile.SelectMsData();
+
+                    var numberOfLogs = rawFile.GetStatusLogEntriesCount();
+                    var logInfo = rawFile.GetStatusLogHeaderInformation();
+
+                    string logName = file + ".INST_LOG.txt";
+
+                    Dictionary<int, ISingleValueStatusLog> log = new Dictionary<int, ISingleValueStatusLog>();
+
+                    ProgressIndicator P = new ProgressIndicator(logInfo.Count(), "Preparing log data");
+                    P.Start();
+                    for (int i = 0; i < logInfo.Count(); i++)
+                    {
+                        log.Add(i, rawFile.GetStatusLogAtPosition(i));
+                        P.Update();
+                    }
+                    P.Done();
+
+                    using (StreamWriter f = new StreamWriter(logName))
+                    {
+                        P = new ProgressIndicator(numberOfLogs, $"Writing log");
+                        P.Start();
+                        f.Write("Time\t");
+                        foreach (var x in logInfo)
+                        {
+                            f.Write(x.Label + "\t");
+                        }
+                        f.Write("\n");
+
+                        for (int i = 0; i < numberOfLogs; i++)
+                        {
+                            f.Write($"{log[0].Times[i]}\t");
+
+                            for (int j = 0; j < logInfo.Length; j++)
+                            {
+                                try
+                                {
+                                    f.Write("{0}\t", log[j].Values[i]);
+                                }
+                                catch (Exception)
+                                {
+                                    f.Write("\t");
+                                }
+                            }
+                            f.Write("\n");
+                            P.Update();
+                        }
+                        P.Done();
+                    }
+                }
+                Console.WriteLine("\n");
             }
-            
+            return 0;
+        }
+
+        static int DoStuff(ArgumentParser.ExampleMods opts)
+        {
+            SearchQC.ExampleMods();
             return 0;
         }
 
         static int DoStuff(ArgumentParser.TestOptions opts)
         {
-            using (IRawDataPlus rawFile = RawFileReaderFactory.ReadFile(fileName: opts.File))
+            var rawFile = RawFileReaderFactory.ReadFile(opts.InputFiles.First());
+            rawFile.SelectInstrument(Device.MS, 1);
+
+            var created = rawFile.CreationDate;
+            var modified = rawFile.FileHeader.ModifiedDate;
+            var diff = modified - created;
+            var estTime = rawFile.RunHeader.ExpectedRuntime;
+
+            var timesModified = rawFile.FileHeader.NumberOfTimesModified;
+
+            Console.WriteLine("=============================================");
+            Console.WriteLine($"Creation date/time: {created}");
+            Console.WriteLine($"Last modified date/time: {modified}");
+            Console.WriteLine($"Number of times modified: {timesModified}");
+            Console.WriteLine($"Total time: {diff}");
+            Console.WriteLine($"Expected run time: {estTime}");
+            Console.WriteLine();
+
+            Console.WriteLine($"Estimated dead time: {diff.TotalMinutes - estTime}");
+            Console.WriteLine("=============================================");
+            /*
+            var numberOfLogs = rawFile.GetStatusLogEntriesCount();
+            var logInfo = rawFile.GetStatusLogHeaderInformation();
+
+            string logName = opts.InputFiles.First() + ".INST_LOG.txt";
+
+            Dictionary<int, ISingleValueStatusLog> log = new Dictionary<int, ISingleValueStatusLog>();
+
+            for (int i = 0; i < logInfo.Count(); i++)
             {
-                rawFile.SelectInstrument(Device.MS, 1);
-                
-                RawDataCollection rawData = new RawDataCollection(rawFile: rawFile);
+                log.Add(i, rawFile.GetStatusLogAtPosition(i));
+            }
 
-                rawData.ExtractAll(rawFile);
-                //rawData.ExtractSegmentScans(rawFile, MSOrderType.Ms);
-
-                int[] scans = rawData.scanIndex.ScanEnumerators[MSOrderType.Ms2];
-
-                ProgressIndicator P = new ProgressIndicator(scans.Length, "Calculating charge states");
+            using (StreamWriter f = new StreamWriter(logName))
+            {
+                ProgressIndicator P = new ProgressIndicator(numberOfLogs, "Writing instrument log");
                 P.Start();
-
-                foreach (int scan in scans)
+                f.Write("Time\t");
+                foreach (var x in logInfo)
                 {
-                    int masterScan = rawData.precursorScans[scan].MasterScan;
-                    double parentMZ = rawData.precursorMasses[scan].ParentMZ;
-                    double monoisoMass;
-                    int charge;
-                    
-                    List<int> otherCS = ChargeStateCalculator.GetChargeState(rawData.centroidStreams[masterScan], parentMZ, rawData.trailerExtras[scan].ChargeState);
-                    (charge,monoisoMass) = MonoIsoPredictor.GetMonoIsotopicMassCharge(rawData.centroidStreams[masterScan], parentMZ, otherCS, rawData.trailerExtras[scan].ChargeState);
-                    P.Update();
-                    /*Console.Write("Thermo: {0}, Us: ", rawData.trailerExtras[scan].ChargeState);
-                    foreach (var c in otherCS)
+                    f.Write(x.Label + "\t");
+                }
+                f.Write("\n");
+
+                for (int i = 0; i < numberOfLogs; i++)
+                {
+                    f.Write($"{log[0].Times[i]}\t");
+
+                    for (int j = 0; j < logInfo.Length; j++)
                     {
-                        Console.Write("{0}, ", c);
+                        try
+                        {
+                            f.Write("{0}\t",log[j].Values[i]);
+                        }
+                        catch (Exception)
+                        {
+                            f.Write("\t");
+                        }
                     }
-                    Console.Write("RefinedCharge: {0},", charge);
-                    Console.Write("ParentMZ: {0}, ThermoMass: {1}, OurMass: {2}", parentMZ, rawData.precursorMasses[scan].MonoisotopicMZ, monoisoMass);
-                    Console.Write("\n");
-                    */
+                    f.Write("\n");
+                    P.Update();
                 }
                 P.Done();
             }
 
-                return 0;
+            Console.WriteLine(rawFile.GetInstrumentMethod(0));
+            Console.WriteLine(rawFile.CreationDate);
+            Console.WriteLine(rawFile.FileHeader.ModifiedDate);
+            Console.WriteLine(rawFile.RunHeader.StartTime);
+            Console.WriteLine(rawFile.RunHeader.EndTime);
+            */
+            return 0;
         }
 
         static int DoStuff(ArgumentParser.QcOptions opts)
         {
             Log.Information("Starting QC. Identipy: {Identipy}", opts.Identipy);
             //Console.WriteLine("\n");
-            SearchParameters searchParameters;
-
-            QcParameters qcParameters = new QcParameters();
-            qcParameters.RawFileDirectory = opts.DirectoryToQc;
-            qcParameters.QcDirectory = opts.QcDirectory;
-            qcParameters.QcFile = Path.Combine(opts.QcDirectory, "QC.xml");
-            qcParameters.RefineMassCharge = opts.RefineMassCharge;
             
+            /*
+            if (new List<string>() { "DDA", "DIA", "PRM" }.Contains(opts.ExperimentType))
+            { }
+            else
+            {
+                Log.Error("Experiment type of {ExpType} was passed", opts.ExperimentType);
+                Console.WriteLine("Experiment type must be one of ['DDA', 'DIA', 'PRM'], not {0}", opts.ExperimentType);
+                Environment.Exit(1);
+            }*/
 
-            if (opts.SearchAlgorithm != null & !(new List<string>() { "identipy", "xtandem" }.Contains(opts.SearchAlgorithm)))
+            if (opts.SearchAlgorithm != null & !(new List<string>() { "identipy", "xtandem", "None" }.Contains(opts.SearchAlgorithm)))
             {
                 // the search algorithm is not null but it also it not identipy or xtandem
                 Log.Error("Invalid search algorithm argument: {Argument}", opts.SearchAlgorithm);
@@ -157,32 +303,19 @@ namespace RawTools
                 opts.SearchAlgorithm = "identipy";
             }
 
-            if (opts.SearchAlgorithm != null)
+            WorkflowParameters parameters = new WorkflowParameters(opts);
+
+
+            if (opts.SearchAlgorithm != "None")
             {
                 if (opts.FastaDatabase == null)
                 {
                     Log.Error("No fasta database provided for Identipy search");
-                    Console.WriteLine("ERROR: A fasta protein database is required for an Identipy search. Please use the --db parameter to " +
+                    Console.WriteLine("ERROR: A fasta protein database is required for a database search. Please use the --db parameter to " +
                         "provide the path to a database.");
                     Environment.Exit(1);
                 }
-
-                searchParameters = new SearchParameters
-                {
-                    PythonExecutable = opts.PythonExecutable,
-                    IdentipyScript = opts.IdentipyScript,
-                    XTandemDirectory = opts.XTandemDirectory,
-                    FastaDatabase = opts.FastaDatabase,
-                    FixedMods = opts.FixedMods,
-                    NMod = opts.VariableNMod,
-                    KMod = opts.VariableKMod,
-                    XMod = opts.VariableXMod,
-                    NumSpectra = opts.NumberSpectra,
-                    MgfIntensityCutoff = opts.IntensityCutoff,
-                    MgfMassCutoff = opts.MassCutOff,
-                    FixedScans = opts.FixedScans
-                };
-
+                
                 if (opts.SearchAlgorithm == "identipy")
                 {
                     if ((opts.IdentipyScript == null & opts.PythonExecutable != null) | (opts.IdentipyScript != null & opts.PythonExecutable == null))
@@ -192,9 +325,8 @@ namespace RawTools
                         Environment.Exit(1);
                     }
 
-                    Identipy.CheckIdentipyDependencies(searchParameters);
-
-                    searchParameters.SearchAlgorithm = SearchAlgorithm.IdentiPy;
+                    Identipy.CheckIdentipyDependencies(parameters);
+                    
                 }
 
                 if (opts.SearchAlgorithm == "xtandem")
@@ -205,16 +337,10 @@ namespace RawTools
                         Console.WriteLine("ERROR: You must specify the X! Tandem directory using the -X argument to perform a search using X! Tandem.");
                         return 1;
                     }
-                    searchParameters.SearchAlgorithm = SearchAlgorithm.XTandem;
                 }
             }
-            else
-            {
-                searchParameters = null;
-            }
-            qcParameters.searchParameters = searchParameters;
 
-            QC.QC.DoQc(qcParameters);
+            QC.QcWorkflow.DoQc(parameters);
             
             return 0;
         }
@@ -275,6 +401,9 @@ namespace RawTools
                     return 1;
                 }
 
+                // if the file location(s) are relative, we need to get the absolute path to them
+                files.EnsureAbsolutePaths();
+
                 Log.Information("Files to be processed, provided as list: {0}", String.Join(" ", files));
             }
 
@@ -291,6 +420,9 @@ namespace RawTools
                     Log.Error("Invalid directory provided: {0}", opts.InputDirectory);
                     return 1;
                 }
+
+                // if the file location(s) are relative, we need to get the absolute path to them
+                files.EnsureAbsolutePaths();
 
                 Log.Information("Files to be processed, provided as directory: {0}", String.Join(" ", files));
 
@@ -317,10 +449,21 @@ namespace RawTools
                     return 1;
                 }
             }
+            /*
+            // is the experiment type valid?
+            if (! new List<string>() { "DDA", "DIA", "PRM" }.Contains(opts.ExperimentType))
+            {
+                Log.Error("Experiment type of {ExpType} was passed", opts.ExperimentType);
+                Console.WriteLine("Experiment type must be one of ['DDA', 'DIA', 'PRM'], not {0}", opts.ExperimentType);
+                Environment.Exit(1);
+            }*/
+
 
             System.Diagnostics.Stopwatch singleFileTime = new System.Diagnostics.Stopwatch();
             System.Diagnostics.Stopwatch totalTime = new System.Diagnostics.Stopwatch();
             totalTime.Start();
+
+            WorkflowParameters parameters = new WorkflowParameters(opts);
 
             foreach (string file in files)
             {
@@ -328,104 +471,21 @@ namespace RawTools
 
                 Console.WriteLine("\nProcessing: {0}\n", file);
 
-                if (!File.Exists(file))
+                //using (IRawDataPlus rawFile = RawFileReaderFactory.ReadFile(fileName:file))
+                using (IRawFileThreadManager rawFile = RawFileReaderFactory.CreateThreadManager(file))
                 {
-                    Console.WriteLine("NOTICE: {0} file does not appear to exist. Please check the file name and location.", file);
-                    Log.Error("File not found: {File}", file);
-                    continue;
-                }
-
-                using (IRawDataPlus rawFile = RawFileReaderFactory.ReadFile(fileName:file))
-                {
-                    rawFile.SelectInstrument(Device.MS, 1);
-
-                    Log.Information("Now processing: {File} --- Instrument: {Instrument}", Path.GetFileName(file), rawFile.GetInstrumentData().Name);
-
-                    RawDataCollection rawData = new RawDataCollection(rawFile:rawFile);
-                    QuantDataCollection quantData = new QuantDataCollection();
-
-                    bool isBoxCar = rawData.isBoxCar;
-
-                    if (rawData.isBoxCar)
+                    if (parameters.ParseParams.OutputDirectory == null)
                     {
-                        Console.WriteLine("\nRaw file appears to be a boxcar-type experiment. Precursor peak analysis won't be performed!\n");
+                        parameters.ParseParams.OutputDirectory = Path.GetDirectoryName(file);
                     }
 
-                    if (opts.ParseData | opts.Metrics | opts.Quant)
+                    if (parameters.ExpType == ExperimentType.DDA)
                     {
-                        rawData.ExtractAll(rawFile, opts.RefineMassCharge);
-
-                        if (!isBoxCar)
-                        {
-                            rawData.CalcPeakRetTimesAndInts(rawFile: rawFile);
-                        }
+                        WorkFlowsDDA.ParseDDA(rawFile, parameters);
                     }
-
-                    if (opts.Quant)
+                    else if (parameters.ExpType == ExperimentType.DIA)
                     {
-                        rawData.quantData.Quantify(rawData:rawData, rawFile:rawFile, labelingReagent:opts.LabelingReagents);
-                    }
-
-                    if (opts.UnlabeledQuant & !isBoxCar)
-                    {
-                        rawData.QuantifyPrecursorPeaks(rawFile);
-                    }                    
-
-                    if (opts.Metrics)
-                    {
-                        rawData.metaData.AggregateMetaData(rawData, rawFile);
-                    }
-
-                    if (opts.ParseData | opts.Quant)
-                    {
-                        if (opts.Quant)
-                        {
-                            Parse.WriteMatrix(rawData: rawData, rawFile: rawFile, metaData: rawData.metaData, quantData: rawData.quantData, outputDirectory: opts.OutputDirectory);
-                        }
-                        else
-                        {
-                            Parse.WriteMatrix(rawData: rawData, rawFile: rawFile, metaData: rawData.metaData, outputDirectory: opts.OutputDirectory);
-                        }
-                    }                    
-
-                    if (opts.WriteMGF)
-                    {
-                        MGF.WriteMGF(rawData: rawData, rawFile: rawFile, outputDirectory: opts.OutputDirectory, cutoff: opts.MassCutOff,
-                            intensityCutoff: opts.IntensityCutoff, refineMassCharge: opts.RefineMassCharge);
-                    }
-
-                    if (opts.Metrics)
-                    {
-                        MetricsData metricsData = new MetricsData();
-
-                        if (opts.Quant)
-                        {
-                            metricsData.GetMetricsData(metaData: rawData.metaData, rawData: rawData, rawFile: rawFile, quantData: rawData.quantData);
-                        }
-                        else
-                        {
-                            metricsData.GetMetricsData(metaData: rawData.metaData, rawData: rawData, rawFile: rawFile);
-                        }
-
-                        metricsData.GetMetricsData(metaData: rawData.metaData, rawData: rawData, rawFile: rawFile);
-                        Metrics.WriteMatrix(rawData, metricsData, opts.OutputDirectory);
-                    }
-
-                    if (opts.Chromatogram != null)
-                    {
-                        int order = Convert.ToInt32((opts.Chromatogram.ElementAt(0).ToString()));
-
-                        if (order > (int)rawData.methodData.AnalysisOrder)
-                        {
-                            Log.Error("Specified MS order ({Order}) for chromatogram is higher than experiment order ({ExpOrder})",
-                                (MSOrderType)order, rawData.methodData.AnalysisOrder);
-                            Console.WriteLine("Specified MS order ({0}) for chromatogram is higher than experiment order ({1}). Chromatogram(s) won't be written.",
-                                (MSOrderType)order, rawData.methodData.AnalysisOrder);
-                        }
-                        else
-                        {
-                        rawData.WriteChromatogram(rawFile, (MSOrderType)order, opts.Chromatogram.Contains("T"), opts.Chromatogram.Contains("B"), opts.OutputDirectory);
-                        }
+                        WorkFlowsDIA.ParseDIA(rawFile, parameters);
                     }
                 }
 

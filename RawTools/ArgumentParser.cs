@@ -26,11 +26,23 @@ using CommandLine.Text;
 
 namespace RawTools.ArgumentParser
 {
-    [Verb("testing", HelpText = "A place to contain testing routines during development. This is not for general usage.")]
+    [Verb("logdump", HelpText = "Dumps the instrument log for the specified file(s) into text format.")]
+    class LogDumpOptions
+    {
+        [Option('f', "files", SetName = "files", HelpText = "Indicates input file(s) to be processed, separated by a space if there are multiple files. " +
+            "Must be Thermo .raw files. You must use either -f or -d to indicate the file(s) to process.")]
+        public IEnumerable<string> InputFiles { get; set; }
+
+        [Option('d', "directory", SetName = "directory", HelpText = "Indicates directory to be processed. Files other than .raw files will be ignored. " +
+            "You must use either -d or -f to indicate the file(s) to process.")]
+        public string InputDirectory { get; set; }
+    }
+
+    [Verb("testing", HelpText = "A place to contain testing routines during development.")]
     class TestOptions
     {
-        [Option('f', HelpText = "file to make the test go")]
-        public string File { get; set; }
+        [Option('f', "file", SetName = "files", HelpText = "Indicates input file to be processed.")]
+        public IEnumerable<string> InputFiles { get; set; }
     }
 
     [Verb("examples", HelpText = "This function provides command line examples and explanations of how to use RawTools. " +
@@ -99,7 +111,7 @@ namespace RawTools.ArgumentParser
         public string Chromatogram { get; set; }
 
         [Option('R', "refinemasscharge", HelpText = "Optional. Refine precursor charge and monoisotopic mass assignments. Highly recommended if " +
-            "monoisotopic precursor selection was turned off in the instrument method.")]
+            "monoisotopic precursor selection was turned off in the instrument method (or peptide match on a QE instrument).")]
         public bool RefineMassCharge { get; set; }
     }
 
@@ -115,7 +127,7 @@ namespace RawTools.ArgumentParser
         [Option('q', "qcdirectory", Required = true, HelpText = "Path to the directory containing (or to contain) the QC data file (called QC.xml)")]
         public string QcDirectory { get; set; }
 
-        [Option('s', "search", Required = false, HelpText = "Specify the search engine to facilitate the calculation of identification related metrics. " +
+        [Option('s', "search", Required = false, Default = "None", HelpText = "Specify the search engine to facilitate the calculation of identification related metrics. " +
             "Must be one of the following: {identipy, xtandem}")]
         public string SearchAlgorithm { get; set; }
 
