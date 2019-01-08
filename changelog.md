@@ -4,7 +4,7 @@ All notable changes to RawTools will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.4.0] 2019-01-08
 ### Changed
 - We have streamlined the processing workflows to improve performance, and RawTools can now run on multiple processors. Hopefully this will speed up the processing of very large files. [[issue6]](https://github.com/kevinkovalchik/RawTools/issues/6)
 - Occasionally there are scans with corrupt headers or which are otherwise not linked to their precursor/dependent scan(s) (e.g. a MS2 scan which has no master scan associated with it in the file). This is pretty rare, but when it comes up RawTools now detects such "orphan scans" and prints out a report to the console letting you know which scans are affected. These scans are not included in the output tables, so you can check them manually if desired to make sure they are not critical to your analysis.
