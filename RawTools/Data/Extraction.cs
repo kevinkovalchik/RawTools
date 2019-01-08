@@ -31,7 +31,6 @@ using RawTools.Data.Containers;
 using RawTools.Data.Collections;
 using RawTools.Utilities;
 using RawTools.Utilities.ScanData;
-using RawTools.Data.Processing;
 using RawTools.Algorithms;
 using Serilog;
 

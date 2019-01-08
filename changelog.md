@@ -8,9 +8,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - We have streamlined the processing workflows to improve performance, and RawTools can now run on multiple processors. Hopefully this will speed up the processing of very large files. [[issue6]](https://github.com/kevinkovalchik/RawTools/issues/6)
 - Occasionally there are scans with corrupt headers or which are otherwise not linked to their precursor/dependent scan(s) (e.g. a MS2 scan which has no master scan associated with it in the file). This is pretty rare, but when it comes up RawTools now detects such "orphan scans" and prints out a report to the console letting you know which scans are affected. These scans are not included in the output tables, so you can check them manually if desired to make sure they are not critical to your analysis.
+- Relative paths are now supported for all arguments.
+- Precursor peaks are now extracted based on picked m/z rather than monoisotopic m/z.
+- The next release will add a new "logdump" function, which outputs the raw file instrument log to a text file. Use it like this:
+`RawTools logdump -f [path to raw file]`
+`RawTools logdump -d [directory in which to get log files from all raw files]`
+Pretty much everything about how the instrument was operating is in there, scan by scan, from capillary temperature to lens voltages to turbopump lifetimes, etc.
 
 ### Fixed
 - Previously the total number of scans reported in the metrics was incorrect. This has been fixed, though in the event of orphan scans (as described above) those scans will not be counted towards the total.
+- MGF files are now compatible with MS Amanda.
 
 ## [1.3.3] 2018-11-23
 ### Changed
