@@ -265,9 +265,10 @@ ui = shinyUI(
                   column(6,
                          tabBox(title = "1. Data Input", id = "chro_tabset1", width = NULL, side = 'right',  
                                 tabPanel('File Input',
-                                         fileInput('chro_file', label = NULL, accept=c('.txt')),
-                                         tags$p('Select a chromatogram file. This should be a file
-                                                ending in chromatogram.txt generated using the RawTools parse function with the --chro flag.')),
+                                         fileInput('chro_file', label = NULL, accept=c('.txt'), multiple = TRUE),
+                                         tags$p('Select chromatogram file(s). This should be files
+                                                ending in chromatogram.txt generated using the RawTools parse function with the --chro flag. If multiple files
+                                                are selected, the chromatograms will be overlaid on one another.')),
                                 tabPanel("Example Data",
                                          tags$p('No data set yet? Download the example data. This is a single injection
                                                   of a HeLa digest on an Orbitrap Velos system.'),
@@ -11241,8 +11242,10 @@ server = shinyServer(function(input, output) {
         minBorder = 0
         maxBorder = round(max(scan_data[,'ParentIonMass'], na.rm = TRUE) + (max(scan_data[,'ParentIonMass'], na.rm = TRUE)*0.1), 2) 
         intBorder = round((max(scan_data[,'ParentIonMass'], na.rm = TRUE) / 10), 2)
+        scan_data$density = densCols(scan_data$ParentScanRetTime, scan_data$ParentIonMass, colramp = colorRampPalette(rev(brewer.pal(9,'YlOrRd'))))
         output_plot = ggplot(scan_data, aes(ParentScanRetTime, ParentIonMass)) +
-          geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.2, stroke = 0.1) +
+          geom_point(colour = scan_data$density) +
+          scale_color_identity() +
           labs(x = "Retention Time (min)", y = 'Mass to Charge of Parent Ion', title = 'Parent Ion Mass') +
           theme(axis.text.x = element_text(size = 12), legend.position="none") +
           scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
@@ -11289,8 +11292,10 @@ server = shinyServer(function(input, output) {
         minBorder = 0
         maxBorder = round(max(scan_data[,'MS1IonInjectionTime'], na.rm = TRUE) + (max(scan_data[,'MS1IonInjectionTime'], na.rm = TRUE)*0.1), 2) 
         intBorder = round((max(scan_data[,'MS1IonInjectionTime'], na.rm = TRUE) / 10), 2)
+        scan_data$density = densCols(scan_data$ParentScanRetTime, scan_data$MS1IonInjectionTime, colramp = colorRampPalette(rev(brewer.pal(9,'YlOrRd'))))
         output_plot = ggplot(scan_data, aes(ParentScanRetTime, MS1IonInjectionTime)) +
-          geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.2, stroke = 0.1) +
+          geom_point(color = scan_data$density) +
+          scale_color_identity() +
           labs(x = "Retention Time (min)", y = 'Ion Injection Time (ms)', title = 'MS1 Scan Ion Injection Time') +
           theme(axis.text.x = element_text(size = 12), legend.position="none") +
           scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
@@ -11301,8 +11306,10 @@ server = shinyServer(function(input, output) {
         minBorder = 0
         maxBorder = round(max(scan_data[,'MS2IonInjectionTime'], na.rm = TRUE) + (max(scan_data[,'MS2IonInjectionTime'], na.rm = TRUE)*0.1), 2) 
         intBorder = round((max(scan_data[,'MS2IonInjectionTime'], na.rm = TRUE) / 10), 2)
+        scan_data$density = densCols(scan_data$ParentScanRetTime, scan_data$MS2IonInjectionTime, colramp = colorRampPalette(rev(brewer.pal(9,'YlOrRd'))))
         output_plot = ggplot(scan_data, aes(ParentScanRetTime, MS2IonInjectionTime)) +
-          geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.2, stroke = 0.1) +
+          geom_point(color = scan_data$density) +
+          scale_color_identity() +
           labs(x = "Retention Time (min)", y = 'Ion Injection Time (ms)', title = 'MS2 Scan Ion Injection Time') +
           theme(axis.text.x = element_text(size = 12), legend.position="none") +
           scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
@@ -11334,8 +11341,10 @@ server = shinyServer(function(input, output) {
         minBorder = 0
         maxBorder = round(max(scan_data[,'MS1IsolationInterference'], na.rm = TRUE) + (max(scan_data[,'MS1IsolationInterference'], na.rm = TRUE)*0.1), 2) 
         intBorder = round((max(scan_data[,'MS1IsolationInterference'], na.rm = TRUE) / 10), 2)
+        scan_data$density = densCols(scan_data$ParentScanRetTime, scan_data$MS1IsolationInterference, colramp = colorRampPalette(rev(brewer.pal(9,'YlOrRd'))))
         output_plot = ggplot(scan_data, aes(ParentScanRetTime, MS1IsolationInterference)) +
-          geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.2, stroke = 0.1) +
+          geom_point(color = scan_data$density) +
+          scale_color_identity() +
           labs(x = "Retention Time (min)", y = 'Isolation Interference (percent)', title = 'Parent Ion Purity') +
           theme(axis.text.x = element_text(size = 12), legend.position="none") +
           scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
@@ -11379,8 +11388,10 @@ server = shinyServer(function(input, output) {
         minBorder = 0
         maxBorder = round(max(scan_data[,'ParentIonMass'], na.rm = TRUE) + (max(scan_data[,'ParentIonMass'], na.rm = TRUE)*0.1), 2) 
         intBorder = round((max(scan_data[,'ParentIonMass'], na.rm = TRUE) / 10), 2)
+        scan_data$density = densCols(scan_data$ParentScanRetTime, scan_data$ParentIonMass, colramp = colorRampPalette(rev(brewer.pal(9,'YlOrRd'))))
         output_plot = ggplot(scan_data, aes(ParentScanRetTime, ParentIonMass)) +
-          geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.2, stroke = 0.1) +
+          geom_point(color = scan_data$density) +
+          scale_color_identity() +
           labs(x = "Retention Time (min)", y = 'Mass to Charge of Parent Ion', title = 'Parent Ion Mass') +
           theme(axis.text.x = element_text(size = 12), legend.position="none") +
           scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
@@ -11427,8 +11438,10 @@ server = shinyServer(function(input, output) {
         minBorder = 0
         maxBorder = round(max(scan_data[,'MS1IonInjectionTime'], na.rm = TRUE) + (max(scan_data[,'MS1IonInjectionTime'], na.rm = TRUE)*0.1), 2) 
         intBorder = round((max(scan_data[,'MS1IonInjectionTime'], na.rm = TRUE) / 10), 2)
+        scan_data$density = densCols(scan_data$ParentScanRetTime, scan_data$MS1IonInjectionTime, colramp = colorRampPalette(rev(brewer.pal(9,'YlOrRd'))))
         output_plot = ggplot(scan_data, aes(ParentScanRetTime, MS1IonInjectionTime)) +
-          geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.2, stroke = 0.1) +
+          geom_point(color = scan_data$density) +
+          scale_color_identity() +
           labs(x = "Retention Time (min)", y = 'Ion Injection Time (ms)', title = 'MS1 Scan Ion Injection Time') +
           theme(axis.text.x = element_text(size = 12), legend.position="none") +
           scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
@@ -11439,8 +11452,10 @@ server = shinyServer(function(input, output) {
         minBorder = 0
         maxBorder = round(max(scan_data[,'MS2IonInjectionTime'], na.rm = TRUE) + (max(scan_data[,'MS2IonInjectionTime'], na.rm = TRUE)*0.1), 2) 
         intBorder = round((max(scan_data[,'MS2IonInjectionTime'], na.rm = TRUE) / 10), 2)
+        scan_data$density = densCols(scan_data$ParentScanRetTime, scan_data$MS2IonInjectionTime, colramp = colorRampPalette(rev(brewer.pal(9,'YlOrRd'))))
         output_plot = ggplot(scan_data, aes(ParentScanRetTime, MS2IonInjectionTime)) +
-          geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.2, stroke = 0.1) +
+          geom_point(color = scan_data$density) +
+          scale_color_identity() +
           labs(x = "Retention Time (min)", y = 'Ion Injection Time (ms)', title = 'MS2 Scan Ion Injection Time') +
           theme(axis.text.x = element_text(size = 12), legend.position="none") +
           scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
@@ -11472,8 +11487,10 @@ server = shinyServer(function(input, output) {
         minBorder = 0
         maxBorder = round(max(scan_data[,'MS1IsolationInterference'], na.rm = TRUE) + (max(scan_data[,'MS1IsolationInterference'], na.rm = TRUE)*0.1), 2) 
         intBorder = round((max(scan_data[,'MS1IsolationInterference'], na.rm = TRUE) / 10), 2)
+        scan_data$density = densCols(scan_data$ParentScanRetTime, scan_data$MS1IsolationInterference, colramp = colorRampPalette(rev(brewer.pal(9,'YlOrRd'))))
         output_plot = ggplot(scan_data, aes(ParentScanRetTime, MS1IsolationInterference)) +
-          geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.2, stroke = 0.1) +
+          geom_point(color = scan_data$density) +
+          scale_color_identity() +
           labs(x = "Retention Time (min)", y = 'Isolation Interference (percent)', title = 'Parent Ion Purity') +
           theme(axis.text.x = element_text(size = 12), legend.position="none") +
           scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
@@ -11518,8 +11535,10 @@ server = shinyServer(function(input, output) {
           output_plot}
         
         else if (input$scan_plot_id == 4) {
+          scan_data$density = densCols(scan_data$ParentScanRetTime, scan_data$ParentIonMass, colramp = colorRampPalette(rev(brewer.pal(9,'YlOrRd'))))
           output_plot = ggplot(scan_data, aes(ParentScanRetTime, ParentIonMass)) +
-            geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.2, stroke = 0.1) +
+            geom_point(color = scan_data$density) +
+            scale_color_identity() +
             labs(x = "Retention Time (min)", y = 'Mass to Charge of Parent Ion', title = 'Parent Ion Mass') +
             theme(axis.text.x = element_text(size = 12), legend.position="none") +
             scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
@@ -11554,8 +11573,10 @@ server = shinyServer(function(input, output) {
           output_plot}
         
         else if (input$scan_plot_id == 8) {
+          scan_data$density = densCols(scan_data$ParentScanRetTime, scan_data$MS1IonInjectionTime, colramp = colorRampPalette(rev(brewer.pal(9,'YlOrRd'))))
           output_plot = ggplot(scan_data, aes(ParentScanRetTime, MS1IonInjectionTime)) +
-            geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.2, stroke = 0.1) +
+            geom_point(color = scan_data$density) +
+            scale_color_identity() +
             labs(x = "Retention Time (min)", y = 'Ion Injection Time (ms)', title = 'MS1 Scan Ion Injection Time') +
             theme(axis.text.x = element_text(size = 12), legend.position="none") +
             scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
@@ -11563,8 +11584,10 @@ server = shinyServer(function(input, output) {
           output_plot}
         
         else if (input$scan_plot_id == 9) {
+          scan_data$density = densCols(scan_data$ParentScanRetTime, scan_data$MS2IonInjectionTime, colramp = colorRampPalette(rev(brewer.pal(9,'YlOrRd'))))
           output_plot = ggplot(scan_data, aes(ParentScanRetTime, MS2IonInjectionTime)) +
-            geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.2, stroke = 0.1) +
+            geom_point(color = scan_data$density) +
+            scale_color_identity() +
             labs(x = "Retention Time (min)", y = 'Ion Injection Time (ms)', title = 'MS2 Scan Ion Injection Time') +
             theme(axis.text.x = element_text(size = 12), legend.position="none") +
             scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
@@ -11590,8 +11613,10 @@ server = shinyServer(function(input, output) {
           output_plot}
         
         else if (input$scan_plot_id == 11) {
+          scan_data$density = densCols(scan_data$ParentScanRetTime, scan_data$MS1IsolationInterference, colramp = colorRampPalette(rev(brewer.pal(9,'YlOrRd'))))
           output_plot = ggplot(scan_data, aes(ParentScanRetTime, MS1IsolationInterference)) +
-            geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.2, stroke = 0.1) +
+            geom_point(color = scan_data$density) +
+            scale_color_identity() +
             labs(x = "Retention Time (min)", y = 'Isolation Interference (percent)', title = 'Parent Ion Purity') +
             theme(axis.text.x = element_text(size = 12), legend.position="none") +
             scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
@@ -11630,8 +11655,10 @@ server = shinyServer(function(input, output) {
           output_plot}
         
         else if (input$scan_plot_id == 4) {
+          scan_data$density = densCols(scan_data$ParentScanRetTime, scan_data$ParentIonMass, colramp = colorRampPalette(rev(brewer.pal(9,'YlOrRd'))))
           output_plot = ggplot(scan_data, aes(ParentScanRetTime, ParentIonMass)) +
-            geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.2, stroke = 0.1) +
+            geom_point(color = scan_data$density) +
+            scale_color_identity() +
             labs(x = "Retention Time (min)", y = 'Mass to Charge of Parent Ion', title = 'Parent Ion Mass') +
             theme(axis.text.x = element_text(size = 12), legend.position="none") +
             scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
@@ -11666,8 +11693,10 @@ server = shinyServer(function(input, output) {
           output_plot}
         
         else if (input$scan_plot_id == 8) {
+          scan_data$density = densCols(scan_data$ParentScanRetTime, scan_data$MS1IonInjectionTime, colramp = colorRampPalette(rev(brewer.pal(9,'YlOrRd'))))
           output_plot = ggplot(scan_data, aes(ParentScanRetTime, MS1IonInjectionTime)) +
-            geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.2, stroke = 0.1) +
+            geom_point(color = scan_data$density) +
+            scale_color_identity() +
             labs(x = "Retention Time (min)", y = 'Ion Injection Time (ms)', title = 'MS1 Scan Ion Injection Time') +
             theme(axis.text.x = element_text(size = 12), legend.position="none") +
             scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
@@ -11675,8 +11704,10 @@ server = shinyServer(function(input, output) {
           output_plot}
         
         else if (input$scan_plot_id == 9) {
+          scan_data$density = densCols(scan_data$ParentScanRetTime, scan_data$MS2IonInjectionTime, colramp = colorRampPalette(rev(brewer.pal(9,'YlOrRd'))))
           output_plot = ggplot(scan_data, aes(ParentScanRetTime, MS2IonInjectionTime)) +
-            geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.2, stroke = 0.1) +
+            geom_point(color = scan_data$density) +
+            scale_color_identity() +
             labs(x = "Retention Time (min)", y = 'Ion Injection Time (ms)', title = 'MS2 Scan Ion Injection Time') +
             theme(axis.text.x = element_text(size = 12), legend.position="none") +
             scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
@@ -11702,8 +11733,10 @@ server = shinyServer(function(input, output) {
           output_plot}
         
         else if (input$scan_plot_id == 11) {
+          scan_data$density = densCols(scan_data$ParentScanRetTime, scan_data$MS1IsolationInterference, colramp = colorRampPalette(rev(brewer.pal(9,'YlOrRd'))))
           output_plot = ggplot(scan_data, aes(ParentScanRetTime, MS1IsolationInterference)) +
-            geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.2, stroke = 0.1) +
+            geom_point(color = scan_data$density) +
+            scale_color_identity() +
             labs(x = "Retention Time (min)", y = 'Isolation Interference (percent)', title = 'Parent Ion Purity') +
             theme(axis.text.x = element_text(size = 12), legend.position="none") +
             scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
@@ -11758,20 +11791,32 @@ server = shinyServer(function(input, output) {
   
   
  
+  multi_chro_input = reactive({
+    if (is.null(input$chro_file)) {
+      return(NULL)
+    } else {
+      chroPATH <- as.list(input$chro_file$datapath)
+      chroSET <- lapply(input$chro_file$datapath, read.table, header=TRUE, sep="\t")
+      names(chroSET) = as.character(input$chro_file$name)
+      chroDATAFRAME <- rbindlist(chroSET, use.names = TRUE, id = TRUE)
+      return(chroDATAFRAME)
+    }
+    
+    
+    
+  })
+  
   output$chro_plots = renderPlot({
+    
+    if (is.null(multi_chro_input())) {
+      return(NULL)
+    } else {
+    chro_data = multi_chro_input()
+    }
     
     
     if ((input$chro_yaxis_radio == 1)){
       
-      
-      chroFile = input$chro_file
-    
-      if (is.null(chroFile))
-        return(NULL)
-    
-      chro_data = read.table(chroFile$datapath, header = TRUE, sep = '\t')
-    
-    
       if (input$chro_xaxis_radio == 1){
       
       chro_xaxis_minborder = 0
@@ -11781,11 +11826,11 @@ server = shinyServer(function(input, output) {
         minBorder = 0
         maxBorder = round(max(chro_data[,'Intensity'], na.rm = TRUE) + (max(chro_data[,'Intensity'], na.rm = TRUE)*0.1), 2) 
         intBorder = round((max(chro_data[,'Intensity'], na.rm = TRUE) / 10), 2)
-        output_plot = ggplot(chro_data, aes(RetentionTime, Intensity)) +
-          geom_line(colour = brewer.pal(3,'PuBuGn')[3], size = 0.9, alpha = 0.75) +
+        output_plot = ggplot(chro_data, aes(RetentionTime, Intensity, group = .id, colour = .id)) +
+          geom_line(size = 0.9) +
           #geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.2, stroke = 0.1) +
           labs(x = "Retention Time (min)", y = 'Intensity', title = 'Selected Chromatogram') +
-          theme(axis.text.x = element_text(size = 9), legend.position="none", axis.text.y = element_text(size = 9)) +
+          theme(axis.text.x = element_text(size = 9), axis.text.y = element_text(size = 9), legend.title=element_blank()) +
           scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder), labels = scales::scientific) +
           scale_x_continuous(limits = c(chro_xaxis_minborder,chro_xaxis_maxborder), breaks = seq(chro_xaxis_minborder,chro_xaxis_maxborder,chro_xaxis_interval))
         output_plot}
@@ -11799,26 +11844,17 @@ server = shinyServer(function(input, output) {
       minBorder = 0
       maxBorder = round(max(chro_data[,'Intensity'], na.rm = TRUE) + (max(chro_data[,'Intensity'], na.rm = TRUE)*0.1), 2) 
       intBorder = round((max(chro_data[,'Intensity'], na.rm = TRUE) / 10), 2)
-      output_plot = ggplot(chro_data, aes(RetentionTime, Intensity)) +
-        geom_line(colour = brewer.pal(3,'PuBuGn')[3], size = 0.9, alpha = 0.75) +
+      output_plot = ggplot(chro_data, aes(RetentionTime, Intensity, group = .id, colour = .id)) +
+        geom_line(size = 0.9) +
         #geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.2, stroke = 0.1) +
         labs(x = "Retention Time (min)", y = 'Intensity', title = 'Selected Chromatogram') +
-        theme(axis.text.x = element_text(size = 9), legend.position="none", axis.text.y = element_text(size = 9)) +
+        theme(axis.text.x = element_text(size = 9), axis.text.y = element_text(size = 9), legend.title=element_blank()) +
         scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder), labels = scales::scientific) +
         scale_x_continuous(limits = c(chro_xaxis_minborder,chro_xaxis_maxborder), breaks = seq(chro_xaxis_minborder,chro_xaxis_maxborder,chro_xaxis_interval))
       output_plot}
       }
     
     else if ((input$chro_yaxis_radio == 2)){
-      
-      
-      chroFile = input$chro_file
-      
-      if (is.null(chroFile))
-        return(NULL)
-      
-      chro_data = read.table(chroFile$datapath, header = TRUE, sep = '\t')
-      
       
       if (input$chro_xaxis_radio == 1){
         
@@ -11829,11 +11865,11 @@ server = shinyServer(function(input, output) {
         minBorder = input$chro_yaxis_min
         maxBorder = input$chro_yaxis_max
         intBorder = input$chro_yaxis_int
-        output_plot = ggplot(chro_data, aes(RetentionTime, Intensity)) +
-          geom_line(colour = brewer.pal(3,'PuBuGn')[3], size = 0.9, alpha = 0.75) +
+        output_plot = ggplot(chro_data, aes(RetentionTime, Intensity, group = .id, colour = .id)) +
+          geom_line(size = 0.9) +
           #geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.2, stroke = 0.1) +
           labs(x = "Retention Time (min)", y = 'Intensity', title = 'Selected Chromatogram') +
-          theme(axis.text.x = element_text(size = 9), legend.position="none", axis.text.y = element_text(size = 9)) +
+          theme(axis.text.x = element_text(size = 9), axis.text.y = element_text(size = 9), legend.title=element_blank()) +
           scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder), labels = scales::scientific) +
           scale_x_continuous(limits = c(chro_xaxis_minborder,chro_xaxis_maxborder), breaks = seq(chro_xaxis_minborder,chro_xaxis_maxborder,chro_xaxis_interval))
         output_plot}
@@ -11847,11 +11883,11 @@ server = shinyServer(function(input, output) {
         minBorder = input$chro_yaxis_min
         maxBorder = input$chro_yaxis_max
         intBorder = input$chro_yaxis_int
-        output_plot = ggplot(chro_data, aes(RetentionTime, Intensity)) +
-          geom_line(colour = brewer.pal(3,'PuBuGn')[3], size = 0.9, alpha = 0.75) +
+        output_plot = ggplot(chro_data, aes(RetentionTime, Intensity, group = .id, colour = .id)) +
+          geom_line(size = 0.9) +
           #geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.2, stroke = 0.1) +
           labs(x = "Retention Time (min)", y = 'Intensity', title = 'Selected Chromatogram') +
-          theme(axis.text.x = element_text(size = 9), legend.position="none", axis.text.y = element_text(size = 9)) +
+          theme(axis.text.x = element_text(size = 9), axis.text.y = element_text(size = 9), legend.title=element_blank()) +
           scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder), labels = scales::scientific) +
           scale_x_continuous(limits = c(chro_xaxis_minborder,chro_xaxis_maxborder), breaks = seq(chro_xaxis_minborder,chro_xaxis_maxborder,chro_xaxis_interval))
         output_plot}
@@ -11928,8 +11964,10 @@ server = shinyServer(function(input, output) {
           minBorder = 0
           maxBorder = round(max(overFile[,'ParentIonMass'], na.rm = TRUE) + (max(overFile[,'ParentIonMass'], na.rm = TRUE)*0.1), 2) 
           intBorder = round((max(overFile[,'ParentIonMass'], na.rm = TRUE) / 10), 2)
+          overFile$density = densCols(overFile$ParentScanRetTime, overFile$ParentIonMass, colramp = colorRampPalette(rev(brewer.pal(9,'YlOrRd'))))
           output_plot = ggplot(overFile, aes(ParentScanRetTime, ParentIonMass)) +
-            geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.2, stroke = 0.1) +
+            geom_point(color = overFile$density) +
+            scale_color_identity() +
             labs(x = "Retention Time (min)", y = 'Mass to Charge of Parent Ion', title = 'Parent Ion Mass') +
             theme(axis.text.x = element_text(size = 12), legend.position="none") +
             scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
@@ -11980,8 +12018,10 @@ server = shinyServer(function(input, output) {
           minBorder = 0
           maxBorder = round(max(overFile[,'MS1IonInjectionTime'], na.rm = TRUE) + (max(overFile[,'MS1IonInjectionTime'], na.rm = TRUE)*0.1), 2) 
           intBorder = round((max(overFile[,'MS1IonInjectionTime'], na.rm = TRUE) / 10), 2)
+          overFile$density = densCols(overFile$ParentScanRetTime, overFile$MS1IonInjectionTime, colramp = colorRampPalette(rev(brewer.pal(9,'YlOrRd'))))
           output_plot = ggplot(overFile, aes(ParentScanRetTime, MS1IonInjectionTime)) +
-            geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.2, stroke = 0.1) +
+            geom_point(color = overFile$density) +
+            scale_color_identity() +
             labs(x = "Retention Time (min)", y = 'Ion Injection Time (ms)', title = 'MS1 Scan Ion Injection Time') +
             theme(axis.text.x = element_text(size = 12), legend.position="none") +
             scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
@@ -11993,8 +12033,10 @@ server = shinyServer(function(input, output) {
           minBorder = 0
           maxBorder = round(max(overFile[,'MS2IonInjectionTime'], na.rm = TRUE) + (max(overFile[,'MS2IonInjectionTime'], na.rm = TRUE)*0.1), 2) 
           intBorder = round((max(overFile[,'MS2IonInjectionTime'], na.rm = TRUE) / 10), 2)
+          overFile$density = densCols(overFile$ParentScanRetTime, overFile$MS2IonInjectionTime, colramp = colorRampPalette(rev(brewer.pal(9,'YlOrRd'))))
           output_plot = ggplot(overFile, aes(ParentScanRetTime, MS2IonInjectionTime)) +
-            geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.2, stroke = 0.1) +
+            geom_point(color = overFile$density) +
+            scale_color_identity() +
             labs(x = "Retention Time (min)", y = 'Ion Injection Time (ms)', title = 'MS2 Scan Ion Injection Time') +
             theme(axis.text.x = element_text(size = 12), legend.position="none") +
             scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
@@ -12028,8 +12070,10 @@ server = shinyServer(function(input, output) {
           minBorder = 0
           maxBorder = round(max(overFile[,'MS1IsolationInterference'], na.rm = TRUE) + (max(overFile[,'MS1IsolationInterference'], na.rm = TRUE)*0.1), 2) 
           intBorder = round((max(overFile[,'MS1IsolationInterference'], na.rm = TRUE) / 10), 2)
+          overFile$density = densCols(overFile$ParentScanRetTime, overFile$MS1IsolationInterference, colramp = colorRampPalette(rev(brewer.pal(9,'YlOrRd'))))
           output_plot = ggplot(overFile, aes(ParentScanRetTime, MS1IsolationInterference)) +
-            geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.2, stroke = 0.1) +
+            geom_point(color = overFile$density) +
+            scale_color_identity() +
             labs(x = "Retention Time (min)", y = 'Isolation Interference (percent)', title = 'Parent Ion Purity') +
             theme(axis.text.x = element_text(size = 12), legend.position="none") +
             scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
@@ -12076,8 +12120,10 @@ server = shinyServer(function(input, output) {
           minBorder = 0
           maxBorder = round(max(overFile[,'ParentIonMass'], na.rm = TRUE) + (max(overFile[,'ParentIonMass'], na.rm = TRUE)*0.1), 2) 
           intBorder = round((max(overFile[,'ParentIonMass'], na.rm = TRUE) / 10), 2)
+          overFile$density = densCols(overFile$ParentScanRetTime, overFile$ParentIonMass, colramp = colorRampPalette(rev(brewer.pal(9,'YlOrRd'))))
           output_plot = ggplot(overFile, aes(ParentScanRetTime, ParentIonMass)) +
-            geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.2, stroke = 0.1) +
+            geom_point(color = overFile$density) +
+            scale_color_identity() +
             labs(x = "Retention Time (min)", y = 'Mass to Charge of Parent Ion', title = 'Parent Ion Mass') +
             theme(axis.text.x = element_text(size = 12), legend.position="none") +
             scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
@@ -12128,8 +12174,10 @@ server = shinyServer(function(input, output) {
           minBorder = 0
           maxBorder = round(max(overFile[,'MS1IonInjectionTime'], na.rm = TRUE) + (max(overFile[,'MS1IonInjectionTime'], na.rm = TRUE)*0.1), 2) 
           intBorder = round((max(overFile[,'MS1IonInjectionTime'], na.rm = TRUE) / 10), 2)
+          overFile$density = densCols(overFile$ParentScanRetTime, overFile$MS1IonInjectionTime, colramp = colorRampPalette(rev(brewer.pal(9,'YlOrRd'))))
           output_plot = ggplot(overFile, aes(ParentScanRetTime, MS1IonInjectionTime)) +
-            geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.2, stroke = 0.1) +
+            geom_point(color = overFile$density) +
+            scale_color_identity() +
             labs(x = "Retention Time (min)", y = 'Ion Injection Time (ms)', title = 'MS1 Scan Ion Injection Time') +
             theme(axis.text.x = element_text(size = 12), legend.position="none") +
             scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
@@ -12141,8 +12189,10 @@ server = shinyServer(function(input, output) {
           minBorder = 0
           maxBorder = round(max(overFile[,'MS2IonInjectionTime'], na.rm = TRUE) + (max(overFile[,'MS2IonInjectionTime'], na.rm = TRUE)*0.1), 2) 
           intBorder = round((max(overFile[,'MS2IonInjectionTime'], na.rm = TRUE) / 10), 2)
+          overFile$density = densCols(overFile$ParentScanRetTime, overFile$MS2IonInjectionTime, colramp = colorRampPalette(rev(brewer.pal(9,'YlOrRd'))))
           output_plot = ggplot(overFile, aes(ParentScanRetTime, MS2IonInjectionTime)) +
-            geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.2, stroke = 0.1) +
+            geom_point(color = overFile$density) +
+            scale_color_identity() +
             labs(x = "Retention Time (min)", y = 'Ion Injection Time (ms)', title = 'MS2 Scan Ion Injection Time') +
             theme(axis.text.x = element_text(size = 12), legend.position="none") +
             scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
@@ -12176,8 +12226,10 @@ server = shinyServer(function(input, output) {
           minBorder = 0
           maxBorder = round(max(overFile[,'MS1IsolationInterference'], na.rm = TRUE) + (max(overFile[,'MS1IsolationInterference'], na.rm = TRUE)*0.1), 2) 
           intBorder = round((max(overFile[,'MS1IsolationInterference'], na.rm = TRUE) / 10), 2)
+          overFile$density = densCols(overFile$ParentScanRetTime, overFile$MS1IsolationInterference, colramp = colorRampPalette(rev(brewer.pal(9,'YlOrRd'))))
           output_plot = ggplot(overFile, aes(ParentScanRetTime, MS1IsolationInterference)) +
-            geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.2, stroke = 0.1) +
+            geom_point(color = overFile$density) +
+            scale_color_identity() +
             labs(x = "Retention Time (min)", y = 'Isolation Interference (percent)', title = 'Parent Ion Purity') +
             theme(axis.text.x = element_text(size = 12), legend.position="none") +
             scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
@@ -12225,8 +12277,10 @@ server = shinyServer(function(input, output) {
           output_plot}
         
         else if (input$overlay_plot_id == 4) {
+          overFile$density = densCols(overFile$ParentScanRetTime, overFile$ParentIonMass, colramp = colorRampPalette(rev(brewer.pal(9,'YlOrRd'))))
           output_plot = ggplot(overFile, aes(ParentScanRetTime, ParentIonMass)) +
-            geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.2, stroke = 0.1) +
+            geom_point(color = overFile$density) +
+            scale_color_identity() +
             labs(x = "Retention Time (min)", y = 'Mass to Charge of Parent Ion', title = 'Parent Ion Mass') +
             theme(axis.text.x = element_text(size = 12), legend.position="none") +
             scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
@@ -12265,8 +12319,10 @@ server = shinyServer(function(input, output) {
           output_plot}
         
         else if (input$overlay_plot_id == 8) {
+          overFile$density = densCols(overFile$ParentScanRetTime, overFile$MS1IonInjectionTime, colramp = colorRampPalette(rev(brewer.pal(9,'YlOrRd'))))
           output_plot = ggplot(overFile, aes(ParentScanRetTime, MS1IonInjectionTime)) +
-            geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.2, stroke = 0.1) +
+            geom_point(color = overFile$density) +
+            scale_color_identity() +
             labs(x = "Retention Time (min)", y = 'Ion Injection Time (ms)', title = 'MS1 Scan Ion Injection Time') +
             theme(axis.text.x = element_text(size = 12), legend.position="none") +
             scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
@@ -12275,8 +12331,10 @@ server = shinyServer(function(input, output) {
           output_plot}
         
         else if (input$overlay_plot_id == 9) {
+          overFile$density = densCols(overFile$ParentScanRetTime, overFile$MS2IonInjectionTime, colramp = colorRampPalette(rev(brewer.pal(9,'YlOrRd'))))
           output_plot = ggplot(overFile, aes(ParentScanRetTime, MS2IonInjectionTime)) +
-            geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.2, stroke = 0.1) +
+            geom_point(color = overFile$density) +
+            scale_color_identity() +
             labs(x = "Retention Time (min)", y = 'Ion Injection Time (ms)', title = 'MS2 Scan Ion Injection Time') +
             theme(axis.text.x = element_text(size = 12), legend.position="none") +
             scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
@@ -12304,8 +12362,10 @@ server = shinyServer(function(input, output) {
           output_plot}
         
         else if (input$overlay_plot_id == 11) {
+          overFile$density = densCols(overFile$ParentScanRetTime, overFile$MS1IsolationInterference, colramp = colorRampPalette(rev(brewer.pal(9,'YlOrRd'))))
           output_plot = ggplot(overFile, aes(ParentScanRetTime, MS1IsolationInterference)) +
-            geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.2, stroke = 0.1) +
+            geom_point(color = overFile$density) +
+            scale_color_identity() +
             labs(x = "Retention Time (min)", y = 'Isolation Interference (percent)', title = 'Parent Ion Purity') +
             theme(axis.text.x = element_text(size = 12), legend.position="none") +
             scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
@@ -12347,8 +12407,10 @@ server = shinyServer(function(input, output) {
           output_plot}
         
         else if (input$overlay_plot_id == 4) {
+          overFile$density = densCols(overFile$ParentScanRetTime, overFile$ParentIonMass, colramp = colorRampPalette(rev(brewer.pal(9,'YlOrRd'))))
           output_plot = ggplot(overFile, aes(ParentScanRetTime, ParentIonMass)) +
-            geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.2, stroke = 0.1) +
+            geom_point(color = overFile$density) +
+            scale_color_identity() +
             labs(x = "Retention Time (min)", y = 'Mass to Charge of Parent Ion', title = 'Parent Ion Mass') +
             theme(axis.text.x = element_text(size = 12), legend.position="none") +
             scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
@@ -12387,8 +12449,10 @@ server = shinyServer(function(input, output) {
           output_plot}
         
         else if (input$overlay_plot_id == 8) {
+          overFile$density = densCols(overFile$ParentScanRetTime, overFile$MS1IonInjectionTime, colramp = colorRampPalette(rev(brewer.pal(9,'YlOrRd'))))
           output_plot = ggplot(overFile, aes(ParentScanRetTime, MS1IonInjectionTime)) +
-            geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.2, stroke = 0.1) +
+            geom_point(color = overFile$density) +
+            scale_color_identity() +
             labs(x = "Retention Time (min)", y = 'Ion Injection Time (ms)', title = 'MS1 Scan Ion Injection Time') +
             theme(axis.text.x = element_text(size = 12), legend.position="none") +
             scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
@@ -12397,8 +12461,10 @@ server = shinyServer(function(input, output) {
           output_plot}
         
         else if (input$overlay_plot_id == 9) {
+          overFile$density = densCols(overFile$ParentScanRetTime, overFile$MS2IonInjectionTime, colramp = colorRampPalette(rev(brewer.pal(9,'YlOrRd'))))
           output_plot = ggplot(overFile, aes(ParentScanRetTime, MS2IonInjectionTime)) +
-            geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.2, stroke = 0.1) +
+            geom_point(color = overFile$density) +
+            scale_color_identity() +
             labs(x = "Retention Time (min)", y = 'Ion Injection Time (ms)', title = 'MS2 Scan Ion Injection Time') +
             theme(axis.text.x = element_text(size = 12), legend.position="none") +
             scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
@@ -12426,8 +12492,10 @@ server = shinyServer(function(input, output) {
           output_plot}
         
         else if (input$overlay_plot_id == 11) {
+          overFile$density = densCols(overFile$ParentScanRetTime, overFile$MS1IsolationInterference, colramp = colorRampPalette(rev(brewer.pal(9,'YlOrRd'))))
           output_plot = ggplot(overFile, aes(ParentScanRetTime, MS1IsolationInterference)) +
-            geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.2, stroke = 0.1) +
+            geom_point(color = overFile$density) +
+            scale_color_identity() +
             labs(x = "Retention Time (min)", y = 'Isolation Interference (percent)', title = 'Parent Ion Purity') +
             theme(axis.text.x = element_text(size = 12), legend.position="none") +
             scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
@@ -12440,6 +12508,13 @@ server = shinyServer(function(input, output) {
     
   })
   
+  output$overlay_locationX = renderText({
+    paste('x-value = ', round(as.numeric(as.character(input$plot_hover[1])), 2), sep = '')
+  })
+  
+  output$overlay_locationY = renderText({
+    paste('y-value = ', round(as.numeric(as.character(input$plot_hover[2])), 2), sep = '')
+  })
   
     
   
@@ -23112,8 +23187,10 @@ server = shinyServer(function(input, output) {
           minBorder = 0
           maxBorder = round(max(scan_data[,'ParentIonMass'], na.rm = TRUE) + (max(scan_data[,'ParentIonMass'], na.rm = TRUE)*0.1), 2) 
           intBorder = round((max(scan_data[,'ParentIonMass'], na.rm = TRUE) / 10), 2)
+          scan_data$density = densCols(scan_data$ParentScanRetTime, scan_data$ParentIonMass, colramp = colorRampPalette(rev(brewer.pal(9,'YlOrRd'))))
           output_plot = ggplot(scan_data, aes(ParentScanRetTime, ParentIonMass)) +
-            geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.2, stroke = 0.1) +
+            geom_point(colour = scan_data$density) +
+            scale_color_identity() +
             labs(x = "Retention Time (min)", y = 'Mass to Charge of Parent Ion', title = 'Parent Ion Mass') +
             theme(axis.text.x = element_text(size = 12), legend.position="none") +
             scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
@@ -23160,8 +23237,10 @@ server = shinyServer(function(input, output) {
           minBorder = 0
           maxBorder = round(max(scan_data[,'MS1IonInjectionTime'], na.rm = TRUE) + (max(scan_data[,'MS1IonInjectionTime'], na.rm = TRUE)*0.1), 2) 
           intBorder = round((max(scan_data[,'MS1IonInjectionTime'], na.rm = TRUE) / 10), 2)
+          scan_data$density = densCols(scan_data$ParentScanRetTime, scan_data$MS1IonInjectionTime, colramp = colorRampPalette(rev(brewer.pal(9,'YlOrRd'))))
           output_plot = ggplot(scan_data, aes(ParentScanRetTime, MS1IonInjectionTime)) +
-            geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.2, stroke = 0.1) +
+            geom_point(color = scan_data$density) +
+            scale_color_identity() +
             labs(x = "Retention Time (min)", y = 'Ion Injection Time (ms)', title = 'MS1 Scan Ion Injection Time') +
             theme(axis.text.x = element_text(size = 12), legend.position="none") +
             scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
@@ -23172,8 +23251,10 @@ server = shinyServer(function(input, output) {
           minBorder = 0
           maxBorder = round(max(scan_data[,'MS2IonInjectionTime'], na.rm = TRUE) + (max(scan_data[,'MS2IonInjectionTime'], na.rm = TRUE)*0.1), 2) 
           intBorder = round((max(scan_data[,'MS2IonInjectionTime'], na.rm = TRUE) / 10), 2)
+          scan_data$density = densCols(scan_data$ParentScanRetTime, scan_data$MS2IonInjectionTime, colramp = colorRampPalette(rev(brewer.pal(9,'YlOrRd'))))
           output_plot = ggplot(scan_data, aes(ParentScanRetTime, MS2IonInjectionTime)) +
-            geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.2, stroke = 0.1) +
+            geom_point(color = scan_data$density) +
+            scale_color_identity() +
             labs(x = "Retention Time (min)", y = 'Ion Injection Time (ms)', title = 'MS2 Scan Ion Injection Time') +
             theme(axis.text.x = element_text(size = 12), legend.position="none") +
             scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
@@ -23205,8 +23286,10 @@ server = shinyServer(function(input, output) {
           minBorder = 0
           maxBorder = round(max(scan_data[,'MS1IsolationInterference'], na.rm = TRUE) + (max(scan_data[,'MS1IsolationInterference'], na.rm = TRUE)*0.1), 2) 
           intBorder = round((max(scan_data[,'MS1IsolationInterference'], na.rm = TRUE) / 10), 2)
+          scan_data$density = densCols(scan_data$ParentScanRetTime, scan_data$MS1IsolationInterference, colramp = colorRampPalette(rev(brewer.pal(9,'YlOrRd'))))
           output_plot = ggplot(scan_data, aes(ParentScanRetTime, MS1IsolationInterference)) +
-            geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.2, stroke = 0.1) +
+            geom_point(color = scan_data$density) +
+            scale_color_identity() +
             labs(x = "Retention Time (min)", y = 'Isolation Interference (percent)', title = 'Parent Ion Purity') +
             theme(axis.text.x = element_text(size = 12), legend.position="none") +
             scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
@@ -23250,8 +23333,10 @@ server = shinyServer(function(input, output) {
           minBorder = 0
           maxBorder = round(max(scan_data[,'ParentIonMass'], na.rm = TRUE) + (max(scan_data[,'ParentIonMass'], na.rm = TRUE)*0.1), 2) 
           intBorder = round((max(scan_data[,'ParentIonMass'], na.rm = TRUE) / 10), 2)
+          scan_data$density = densCols(scan_data$ParentScanRetTime, scan_data$ParentIonMass, colramp = colorRampPalette(rev(brewer.pal(9,'YlOrRd'))))
           output_plot = ggplot(scan_data, aes(ParentScanRetTime, ParentIonMass)) +
-            geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.2, stroke = 0.1) +
+            geom_point(color = scan_data$density) +
+            scale_color_identity() +
             labs(x = "Retention Time (min)", y = 'Mass to Charge of Parent Ion', title = 'Parent Ion Mass') +
             theme(axis.text.x = element_text(size = 12), legend.position="none") +
             scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
@@ -23298,8 +23383,10 @@ server = shinyServer(function(input, output) {
           minBorder = 0
           maxBorder = round(max(scan_data[,'MS1IonInjectionTime'], na.rm = TRUE) + (max(scan_data[,'MS1IonInjectionTime'], na.rm = TRUE)*0.1), 2) 
           intBorder = round((max(scan_data[,'MS1IonInjectionTime'], na.rm = TRUE) / 10), 2)
+          scan_data$density = densCols(scan_data$ParentScanRetTime, scan_data$MS1IonInjectionTime, colramp = colorRampPalette(rev(brewer.pal(9,'YlOrRd'))))
           output_plot = ggplot(scan_data, aes(ParentScanRetTime, MS1IonInjectionTime)) +
-            geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.2, stroke = 0.1) +
+            geom_point(color = scan_data$density) +
+            scale_color_identity() +
             labs(x = "Retention Time (min)", y = 'Ion Injection Time (ms)', title = 'MS1 Scan Ion Injection Time') +
             theme(axis.text.x = element_text(size = 12), legend.position="none") +
             scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
@@ -23310,8 +23397,10 @@ server = shinyServer(function(input, output) {
           minBorder = 0
           maxBorder = round(max(scan_data[,'MS2IonInjectionTime'], na.rm = TRUE) + (max(scan_data[,'MS2IonInjectionTime'], na.rm = TRUE)*0.1), 2) 
           intBorder = round((max(scan_data[,'MS2IonInjectionTime'], na.rm = TRUE) / 10), 2)
+          scan_data$density = densCols(scan_data$ParentScanRetTime, scan_data$MS2IonInjectionTime, colramp = colorRampPalette(rev(brewer.pal(9,'YlOrRd'))))
           output_plot = ggplot(scan_data, aes(ParentScanRetTime, MS2IonInjectionTime)) +
-            geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.2, stroke = 0.1) +
+            geom_point(color = scan_data$density) +
+            scale_color_identity() +
             labs(x = "Retention Time (min)", y = 'Ion Injection Time (ms)', title = 'MS2 Scan Ion Injection Time') +
             theme(axis.text.x = element_text(size = 12), legend.position="none") +
             scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
@@ -23343,8 +23432,10 @@ server = shinyServer(function(input, output) {
           minBorder = 0
           maxBorder = round(max(scan_data[,'MS1IsolationInterference'], na.rm = TRUE) + (max(scan_data[,'MS1IsolationInterference'], na.rm = TRUE)*0.1), 2) 
           intBorder = round((max(scan_data[,'MS1IsolationInterference'], na.rm = TRUE) / 10), 2)
+          scan_data$density = densCols(scan_data$ParentScanRetTime, scan_data$MS1IsolationInterference, colramp = colorRampPalette(rev(brewer.pal(9,'YlOrRd'))))
           output_plot = ggplot(scan_data, aes(ParentScanRetTime, MS1IsolationInterference)) +
-            geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.2, stroke = 0.1) +
+            geom_point(color = scan_data$density) +
+            scale_color_identity() +
             labs(x = "Retention Time (min)", y = 'Isolation Interference (percent)', title = 'Parent Ion Purity') +
             theme(axis.text.x = element_text(size = 12), legend.position="none") +
             scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
@@ -23389,8 +23480,10 @@ server = shinyServer(function(input, output) {
           output_plot}
         
         else if (input$scan_plot_id == 4) {
+          scan_data$density = densCols(scan_data$ParentScanRetTime, scan_data$ParentIonMass, colramp = colorRampPalette(rev(brewer.pal(9,'YlOrRd'))))
           output_plot = ggplot(scan_data, aes(ParentScanRetTime, ParentIonMass)) +
-            geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.2, stroke = 0.1) +
+            geom_point(color = scan_data$density) +
+            scale_color_identity() +
             labs(x = "Retention Time (min)", y = 'Mass to Charge of Parent Ion', title = 'Parent Ion Mass') +
             theme(axis.text.x = element_text(size = 12), legend.position="none") +
             scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
@@ -23425,8 +23518,10 @@ server = shinyServer(function(input, output) {
           output_plot}
         
         else if (input$scan_plot_id == 8) {
+          scan_data$density = densCols(scan_data$ParentScanRetTime, scan_data$MS1IonInjectionTime, colramp = colorRampPalette(rev(brewer.pal(9,'YlOrRd'))))
           output_plot = ggplot(scan_data, aes(ParentScanRetTime, MS1IonInjectionTime)) +
-            geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.2, stroke = 0.1) +
+            geom_point(color = scan_data$density) +
+            scale_color_identity() +
             labs(x = "Retention Time (min)", y = 'Ion Injection Time (ms)', title = 'MS1 Scan Ion Injection Time') +
             theme(axis.text.x = element_text(size = 12), legend.position="none") +
             scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
@@ -23434,8 +23529,10 @@ server = shinyServer(function(input, output) {
           output_plot}
         
         else if (input$scan_plot_id == 9) {
+          scan_data$density = densCols(scan_data$ParentScanRetTime, scan_data$MS2IonInjectionTime, colramp = colorRampPalette(rev(brewer.pal(9,'YlOrRd'))))
           output_plot = ggplot(scan_data, aes(ParentScanRetTime, MS2IonInjectionTime)) +
-            geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.2, stroke = 0.1) +
+            geom_point(color = scan_data$density) +
+            scale_color_identity() +
             labs(x = "Retention Time (min)", y = 'Ion Injection Time (ms)', title = 'MS2 Scan Ion Injection Time') +
             theme(axis.text.x = element_text(size = 12), legend.position="none") +
             scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
@@ -23461,8 +23558,10 @@ server = shinyServer(function(input, output) {
           output_plot}
         
         else if (input$scan_plot_id == 11) {
+          scan_data$density = densCols(scan_data$ParentScanRetTime, scan_data$MS1IsolationInterference, colramp = colorRampPalette(rev(brewer.pal(9,'YlOrRd'))))
           output_plot = ggplot(scan_data, aes(ParentScanRetTime, MS1IsolationInterference)) +
-            geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.2, stroke = 0.1) +
+            geom_point(color = scan_data$density) +
+            scale_color_identity() +
             labs(x = "Retention Time (min)", y = 'Isolation Interference (percent)', title = 'Parent Ion Purity') +
             theme(axis.text.x = element_text(size = 12), legend.position="none") +
             scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
@@ -23501,8 +23600,10 @@ server = shinyServer(function(input, output) {
           output_plot}
         
         else if (input$scan_plot_id == 4) {
+          scan_data$density = densCols(scan_data$ParentScanRetTime, scan_data$ParentIonMass, colramp = colorRampPalette(rev(brewer.pal(9,'YlOrRd'))))
           output_plot = ggplot(scan_data, aes(ParentScanRetTime, ParentIonMass)) +
-            geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.2, stroke = 0.1) +
+            geom_point(color = scan_data$density) +
+            scale_color_identity() +
             labs(x = "Retention Time (min)", y = 'Mass to Charge of Parent Ion', title = 'Parent Ion Mass') +
             theme(axis.text.x = element_text(size = 12), legend.position="none") +
             scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
@@ -23537,8 +23638,10 @@ server = shinyServer(function(input, output) {
           output_plot}
         
         else if (input$scan_plot_id == 8) {
+          scan_data$density = densCols(scan_data$ParentScanRetTime, scan_data$MS1IonInjectionTime, colramp = colorRampPalette(rev(brewer.pal(9,'YlOrRd'))))
           output_plot = ggplot(scan_data, aes(ParentScanRetTime, MS1IonInjectionTime)) +
-            geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.2, stroke = 0.1) +
+            geom_point(color = scan_data$density) +
+            scale_color_identity() +
             labs(x = "Retention Time (min)", y = 'Ion Injection Time (ms)', title = 'MS1 Scan Ion Injection Time') +
             theme(axis.text.x = element_text(size = 12), legend.position="none") +
             scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
@@ -23546,8 +23649,10 @@ server = shinyServer(function(input, output) {
           output_plot}
         
         else if (input$scan_plot_id == 9) {
+          scan_data$density = densCols(scan_data$ParentScanRetTime, scan_data$MS2IonInjectionTime, colramp = colorRampPalette(rev(brewer.pal(9,'YlOrRd'))))
           output_plot = ggplot(scan_data, aes(ParentScanRetTime, MS2IonInjectionTime)) +
-            geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.2, stroke = 0.1) +
+            geom_point(color = scan_data$density) +
+            scale_color_identity() +
             labs(x = "Retention Time (min)", y = 'Ion Injection Time (ms)', title = 'MS2 Scan Ion Injection Time') +
             theme(axis.text.x = element_text(size = 12), legend.position="none") +
             scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
@@ -23573,8 +23678,10 @@ server = shinyServer(function(input, output) {
           output_plot}
         
         else if (input$scan_plot_id == 11) {
+          scan_data$density = densCols(scan_data$ParentScanRetTime, scan_data$MS1IsolationInterference, colramp = colorRampPalette(rev(brewer.pal(9,'YlOrRd'))))
           output_plot = ggplot(scan_data, aes(ParentScanRetTime, MS1IsolationInterference)) +
-            geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.2, stroke = 0.1) +
+            geom_point(color = scan_data$density) +
+            scale_color_identity() +
             labs(x = "Retention Time (min)", y = 'Isolation Interference (percent)', title = 'Parent Ion Purity') +
             theme(axis.text.x = element_text(size = 12), legend.position="none") +
             scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
@@ -23596,16 +23703,14 @@ server = shinyServer(function(input, output) {
   
   chroPlotInput = reactive({
     
+    if (is.null(multi_chro_input())) {
+      return(NULL)
+    } else {
+      chro_data = multi_chro_input()
+    }
+    
+    
     if ((input$chro_yaxis_radio == 1)){
-      
-      
-      chroFile = input$chro_file
-      
-      if (is.null(chroFile))
-        return(NULL)
-      
-      chro_data = read.table(chroFile$datapath, header = TRUE, sep = '\t')
-      
       
       if (input$chro_xaxis_radio == 1){
         
@@ -23616,11 +23721,11 @@ server = shinyServer(function(input, output) {
         minBorder = 0
         maxBorder = round(max(chro_data[,'Intensity'], na.rm = TRUE) + (max(chro_data[,'Intensity'], na.rm = TRUE)*0.1), 2) 
         intBorder = round((max(chro_data[,'Intensity'], na.rm = TRUE) / 10), 2)
-        output_plot = ggplot(chro_data, aes(RetentionTime, Intensity)) +
-          geom_line(colour = brewer.pal(3,'PuBuGn')[3], size = 0.9, alpha = 0.75) +
+        output_plot = ggplot(chro_data, aes(RetentionTime, Intensity, group = .id, colour = .id)) +
+          geom_line(size = 0.9) +
           #geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.2, stroke = 0.1) +
           labs(x = "Retention Time (min)", y = 'Intensity', title = 'Selected Chromatogram') +
-          theme(axis.text.x = element_text(size = 9), legend.position="none", axis.text.y = element_text(size = 9)) +
+          theme(axis.text.x = element_text(size = 9), axis.text.y = element_text(size = 9), legend.title=element_blank()) +
           scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder), labels = scales::scientific) +
           scale_x_continuous(limits = c(chro_xaxis_minborder,chro_xaxis_maxborder), breaks = seq(chro_xaxis_minborder,chro_xaxis_maxborder,chro_xaxis_interval))
         output_plot}
@@ -23634,11 +23739,11 @@ server = shinyServer(function(input, output) {
         minBorder = 0
         maxBorder = round(max(chro_data[,'Intensity'], na.rm = TRUE) + (max(chro_data[,'Intensity'], na.rm = TRUE)*0.1), 2) 
         intBorder = round((max(chro_data[,'Intensity'], na.rm = TRUE) / 10), 2)
-        output_plot = ggplot(chro_data, aes(RetentionTime, Intensity)) +
-          geom_line(colour = brewer.pal(3,'PuBuGn')[3], size = 0.9, alpha = 0.75) +
+        output_plot = ggplot(chro_data, aes(RetentionTime, Intensity, group = .id, colour = .id)) +
+          geom_line(size = 0.9) +
           #geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.2, stroke = 0.1) +
           labs(x = "Retention Time (min)", y = 'Intensity', title = 'Selected Chromatogram') +
-          theme(axis.text.x = element_text(size = 9), legend.position="none", axis.text.y = element_text(size = 9)) +
+          theme(axis.text.x = element_text(size = 9), axis.text.y = element_text(size = 9), legend.title=element_blank()) +
           scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder), labels = scales::scientific) +
           scale_x_continuous(limits = c(chro_xaxis_minborder,chro_xaxis_maxborder), breaks = seq(chro_xaxis_minborder,chro_xaxis_maxborder,chro_xaxis_interval))
         output_plot}
@@ -23646,15 +23751,6 @@ server = shinyServer(function(input, output) {
     
     else if ((input$chro_yaxis_radio == 2)){
       
-      
-      chroFile = input$chro_file
-      
-      if (is.null(chroFile))
-        return(NULL)
-      
-      chro_data = read.table(chroFile$datapath, header = TRUE, sep = '\t')
-      
-      
       if (input$chro_xaxis_radio == 1){
         
         chro_xaxis_minborder = 0
@@ -23664,11 +23760,11 @@ server = shinyServer(function(input, output) {
         minBorder = input$chro_yaxis_min
         maxBorder = input$chro_yaxis_max
         intBorder = input$chro_yaxis_int
-        output_plot = ggplot(chro_data, aes(RetentionTime, Intensity)) +
-          geom_line(colour = brewer.pal(3,'PuBuGn')[3], size = 0.9, alpha = 0.75) +
+        output_plot = ggplot(chro_data, aes(RetentionTime, Intensity, group = .id, colour = .id)) +
+          geom_line(size = 0.9) +
           #geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.2, stroke = 0.1) +
           labs(x = "Retention Time (min)", y = 'Intensity', title = 'Selected Chromatogram') +
-          theme(axis.text.x = element_text(size = 9), legend.position="none", axis.text.y = element_text(size = 9)) +
+          theme(axis.text.x = element_text(size = 9), axis.text.y = element_text(size = 9), legend.title=element_blank()) +
           scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder), labels = scales::scientific) +
           scale_x_continuous(limits = c(chro_xaxis_minborder,chro_xaxis_maxborder), breaks = seq(chro_xaxis_minborder,chro_xaxis_maxborder,chro_xaxis_interval))
         output_plot}
@@ -23682,11 +23778,11 @@ server = shinyServer(function(input, output) {
         minBorder = input$chro_yaxis_min
         maxBorder = input$chro_yaxis_max
         intBorder = input$chro_yaxis_int
-        output_plot = ggplot(chro_data, aes(RetentionTime, Intensity)) +
-          geom_line(colour = brewer.pal(3,'PuBuGn')[3], size = 0.9, alpha = 0.75) +
+        output_plot = ggplot(chro_data, aes(RetentionTime, Intensity, group = .id, colour = .id)) +
+          geom_line(size = 0.9) +
           #geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.2, stroke = 0.1) +
           labs(x = "Retention Time (min)", y = 'Intensity', title = 'Selected Chromatogram') +
-          theme(axis.text.x = element_text(size = 9), legend.position="none", axis.text.y = element_text(size = 9)) +
+          theme(axis.text.x = element_text(size = 9), axis.text.y = element_text(size = 9), legend.title=element_blank()) +
           scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder), labels = scales::scientific) +
           scale_x_continuous(limits = c(chro_xaxis_minborder,chro_xaxis_maxborder), breaks = seq(chro_xaxis_minborder,chro_xaxis_maxborder,chro_xaxis_interval))
         output_plot}
@@ -23748,8 +23844,10 @@ server = shinyServer(function(input, output) {
           minBorder = 0
           maxBorder = round(max(overFile[,'ParentIonMass'], na.rm = TRUE) + (max(overFile[,'ParentIonMass'], na.rm = TRUE)*0.1), 2) 
           intBorder = round((max(overFile[,'ParentIonMass'], na.rm = TRUE) / 10), 2)
+          overFile$density = densCols(overFile$ParentScanRetTime, overFile$ParentIonMass, colramp = colorRampPalette(rev(brewer.pal(9,'YlOrRd'))))
           output_plot = ggplot(overFile, aes(ParentScanRetTime, ParentIonMass)) +
-            geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.2, stroke = 0.1) +
+            geom_point(color = overFile$density) +
+            scale_color_identity() +
             labs(x = "Retention Time (min)", y = 'Mass to Charge of Parent Ion', title = 'Parent Ion Mass') +
             theme(axis.text.x = element_text(size = 12), legend.position="none") +
             scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
@@ -23800,8 +23898,10 @@ server = shinyServer(function(input, output) {
           minBorder = 0
           maxBorder = round(max(overFile[,'MS1IonInjectionTime'], na.rm = TRUE) + (max(overFile[,'MS1IonInjectionTime'], na.rm = TRUE)*0.1), 2) 
           intBorder = round((max(overFile[,'MS1IonInjectionTime'], na.rm = TRUE) / 10), 2)
+          overFile$density = densCols(overFile$ParentScanRetTime, overFile$MS1IonInjectionTime, colramp = colorRampPalette(rev(brewer.pal(9,'YlOrRd'))))
           output_plot = ggplot(overFile, aes(ParentScanRetTime, MS1IonInjectionTime)) +
-            geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.2, stroke = 0.1) +
+            geom_point(color = overFile$density) +
+            scale_color_identity() +
             labs(x = "Retention Time (min)", y = 'Ion Injection Time (ms)', title = 'MS1 Scan Ion Injection Time') +
             theme(axis.text.x = element_text(size = 12), legend.position="none") +
             scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
@@ -23813,8 +23913,10 @@ server = shinyServer(function(input, output) {
           minBorder = 0
           maxBorder = round(max(overFile[,'MS2IonInjectionTime'], na.rm = TRUE) + (max(overFile[,'MS2IonInjectionTime'], na.rm = TRUE)*0.1), 2) 
           intBorder = round((max(overFile[,'MS2IonInjectionTime'], na.rm = TRUE) / 10), 2)
+          overFile$density = densCols(overFile$ParentScanRetTime, overFile$MS2IonInjectionTime, colramp = colorRampPalette(rev(brewer.pal(9,'YlOrRd'))))
           output_plot = ggplot(overFile, aes(ParentScanRetTime, MS2IonInjectionTime)) +
-            geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.2, stroke = 0.1) +
+            geom_point(color = overFile$density) +
+            scale_color_identity() +
             labs(x = "Retention Time (min)", y = 'Ion Injection Time (ms)', title = 'MS2 Scan Ion Injection Time') +
             theme(axis.text.x = element_text(size = 12), legend.position="none") +
             scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
@@ -23848,8 +23950,10 @@ server = shinyServer(function(input, output) {
           minBorder = 0
           maxBorder = round(max(overFile[,'MS1IsolationInterference'], na.rm = TRUE) + (max(overFile[,'MS1IsolationInterference'], na.rm = TRUE)*0.1), 2) 
           intBorder = round((max(overFile[,'MS1IsolationInterference'], na.rm = TRUE) / 10), 2)
+          overFile$density = densCols(overFile$ParentScanRetTime, overFile$MS1IsolationInterference, colramp = colorRampPalette(rev(brewer.pal(9,'YlOrRd'))))
           output_plot = ggplot(overFile, aes(ParentScanRetTime, MS1IsolationInterference)) +
-            geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.2, stroke = 0.1) +
+            geom_point(color = overFile$density) +
+            scale_color_identity() +
             labs(x = "Retention Time (min)", y = 'Isolation Interference (percent)', title = 'Parent Ion Purity') +
             theme(axis.text.x = element_text(size = 12), legend.position="none") +
             scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
@@ -23896,8 +24000,10 @@ server = shinyServer(function(input, output) {
           minBorder = 0
           maxBorder = round(max(overFile[,'ParentIonMass'], na.rm = TRUE) + (max(overFile[,'ParentIonMass'], na.rm = TRUE)*0.1), 2) 
           intBorder = round((max(overFile[,'ParentIonMass'], na.rm = TRUE) / 10), 2)
+          overFile$density = densCols(overFile$ParentScanRetTime, overFile$ParentIonMass, colramp = colorRampPalette(rev(brewer.pal(9,'YlOrRd'))))
           output_plot = ggplot(overFile, aes(ParentScanRetTime, ParentIonMass)) +
-            geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.2, stroke = 0.1) +
+            geom_point(color = overFile$density) +
+            scale_color_identity() +
             labs(x = "Retention Time (min)", y = 'Mass to Charge of Parent Ion', title = 'Parent Ion Mass') +
             theme(axis.text.x = element_text(size = 12), legend.position="none") +
             scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
@@ -23948,8 +24054,10 @@ server = shinyServer(function(input, output) {
           minBorder = 0
           maxBorder = round(max(overFile[,'MS1IonInjectionTime'], na.rm = TRUE) + (max(overFile[,'MS1IonInjectionTime'], na.rm = TRUE)*0.1), 2) 
           intBorder = round((max(overFile[,'MS1IonInjectionTime'], na.rm = TRUE) / 10), 2)
+          overFile$density = densCols(overFile$ParentScanRetTime, overFile$MS1IonInjectionTime, colramp = colorRampPalette(rev(brewer.pal(9,'YlOrRd'))))
           output_plot = ggplot(overFile, aes(ParentScanRetTime, MS1IonInjectionTime)) +
-            geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.2, stroke = 0.1) +
+            geom_point(color = overFile$density) +
+            scale_color_identity() +
             labs(x = "Retention Time (min)", y = 'Ion Injection Time (ms)', title = 'MS1 Scan Ion Injection Time') +
             theme(axis.text.x = element_text(size = 12), legend.position="none") +
             scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
@@ -23961,8 +24069,10 @@ server = shinyServer(function(input, output) {
           minBorder = 0
           maxBorder = round(max(overFile[,'MS2IonInjectionTime'], na.rm = TRUE) + (max(overFile[,'MS2IonInjectionTime'], na.rm = TRUE)*0.1), 2) 
           intBorder = round((max(overFile[,'MS2IonInjectionTime'], na.rm = TRUE) / 10), 2)
+          overFile$density = densCols(overFile$ParentScanRetTime, overFile$MS2IonInjectionTime, colramp = colorRampPalette(rev(brewer.pal(9,'YlOrRd'))))
           output_plot = ggplot(overFile, aes(ParentScanRetTime, MS2IonInjectionTime)) +
-            geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.2, stroke = 0.1) +
+            geom_point(color = overFile$density) +
+            scale_color_identity() +
             labs(x = "Retention Time (min)", y = 'Ion Injection Time (ms)', title = 'MS2 Scan Ion Injection Time') +
             theme(axis.text.x = element_text(size = 12), legend.position="none") +
             scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
@@ -23996,8 +24106,10 @@ server = shinyServer(function(input, output) {
           minBorder = 0
           maxBorder = round(max(overFile[,'MS1IsolationInterference'], na.rm = TRUE) + (max(overFile[,'MS1IsolationInterference'], na.rm = TRUE)*0.1), 2) 
           intBorder = round((max(overFile[,'MS1IsolationInterference'], na.rm = TRUE) / 10), 2)
+          overFile$density = densCols(overFile$ParentScanRetTime, overFile$MS1IsolationInterference, colramp = colorRampPalette(rev(brewer.pal(9,'YlOrRd'))))
           output_plot = ggplot(overFile, aes(ParentScanRetTime, MS1IsolationInterference)) +
-            geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.2, stroke = 0.1) +
+            geom_point(color = overFile$density) +
+            scale_color_identity() +
             labs(x = "Retention Time (min)", y = 'Isolation Interference (percent)', title = 'Parent Ion Purity') +
             theme(axis.text.x = element_text(size = 12), legend.position="none") +
             scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
@@ -24045,8 +24157,10 @@ server = shinyServer(function(input, output) {
           output_plot}
         
         else if (input$overlay_plot_id == 4) {
+          overFile$density = densCols(overFile$ParentScanRetTime, overFile$ParentIonMass, colramp = colorRampPalette(rev(brewer.pal(9,'YlOrRd'))))
           output_plot = ggplot(overFile, aes(ParentScanRetTime, ParentIonMass)) +
-            geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.2, stroke = 0.1) +
+            geom_point(color = overFile$density) +
+            scale_color_identity() +
             labs(x = "Retention Time (min)", y = 'Mass to Charge of Parent Ion', title = 'Parent Ion Mass') +
             theme(axis.text.x = element_text(size = 12), legend.position="none") +
             scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
@@ -24085,8 +24199,10 @@ server = shinyServer(function(input, output) {
           output_plot}
         
         else if (input$overlay_plot_id == 8) {
+          overFile$density = densCols(overFile$ParentScanRetTime, overFile$MS1IonInjectionTime, colramp = colorRampPalette(rev(brewer.pal(9,'YlOrRd'))))
           output_plot = ggplot(overFile, aes(ParentScanRetTime, MS1IonInjectionTime)) +
-            geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.2, stroke = 0.1) +
+            geom_point(color = overFile$density) +
+            scale_color_identity() +
             labs(x = "Retention Time (min)", y = 'Ion Injection Time (ms)', title = 'MS1 Scan Ion Injection Time') +
             theme(axis.text.x = element_text(size = 12), legend.position="none") +
             scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
@@ -24095,8 +24211,10 @@ server = shinyServer(function(input, output) {
           output_plot}
         
         else if (input$overlay_plot_id == 9) {
+          overFile$density = densCols(overFile$ParentScanRetTime, overFile$MS2IonInjectionTime, colramp = colorRampPalette(rev(brewer.pal(9,'YlOrRd'))))
           output_plot = ggplot(overFile, aes(ParentScanRetTime, MS2IonInjectionTime)) +
-            geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.2, stroke = 0.1) +
+            geom_point(color = overFile$density) +
+            scale_color_identity() +
             labs(x = "Retention Time (min)", y = 'Ion Injection Time (ms)', title = 'MS2 Scan Ion Injection Time') +
             theme(axis.text.x = element_text(size = 12), legend.position="none") +
             scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
@@ -24124,8 +24242,10 @@ server = shinyServer(function(input, output) {
           output_plot}
         
         else if (input$overlay_plot_id == 11) {
+          overFile$density = densCols(overFile$ParentScanRetTime, overFile$MS1IsolationInterference, colramp = colorRampPalette(rev(brewer.pal(9,'YlOrRd'))))
           output_plot = ggplot(overFile, aes(ParentScanRetTime, MS1IsolationInterference)) +
-            geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.2, stroke = 0.1) +
+            geom_point(color = overFile$density) +
+            scale_color_identity() +
             labs(x = "Retention Time (min)", y = 'Isolation Interference (percent)', title = 'Parent Ion Purity') +
             theme(axis.text.x = element_text(size = 12), legend.position="none") +
             scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
@@ -24167,8 +24287,10 @@ server = shinyServer(function(input, output) {
           output_plot}
         
         else if (input$overlay_plot_id == 4) {
+          overFile$density = densCols(overFile$ParentScanRetTime, overFile$ParentIonMass, colramp = colorRampPalette(rev(brewer.pal(9,'YlOrRd'))))
           output_plot = ggplot(overFile, aes(ParentScanRetTime, ParentIonMass)) +
-            geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.2, stroke = 0.1) +
+            geom_point(color = overFile$density) +
+            scale_color_identity() +
             labs(x = "Retention Time (min)", y = 'Mass to Charge of Parent Ion', title = 'Parent Ion Mass') +
             theme(axis.text.x = element_text(size = 12), legend.position="none") +
             scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
@@ -24207,8 +24329,10 @@ server = shinyServer(function(input, output) {
           output_plot}
         
         else if (input$overlay_plot_id == 8) {
+          overFile$density = densCols(overFile$ParentScanRetTime, overFile$MS1IonInjectionTime, colramp = colorRampPalette(rev(brewer.pal(9,'YlOrRd'))))
           output_plot = ggplot(overFile, aes(ParentScanRetTime, MS1IonInjectionTime)) +
-            geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.2, stroke = 0.1) +
+            geom_point(color = overFile$density) +
+            scale_color_identity() +
             labs(x = "Retention Time (min)", y = 'Ion Injection Time (ms)', title = 'MS1 Scan Ion Injection Time') +
             theme(axis.text.x = element_text(size = 12), legend.position="none") +
             scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
@@ -24217,8 +24341,10 @@ server = shinyServer(function(input, output) {
           output_plot}
         
         else if (input$overlay_plot_id == 9) {
+          overFile$density = densCols(overFile$ParentScanRetTime, overFile$MS2IonInjectionTime, colramp = colorRampPalette(rev(brewer.pal(9,'YlOrRd'))))
           output_plot = ggplot(overFile, aes(ParentScanRetTime, MS2IonInjectionTime)) +
-            geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.2, stroke = 0.1) +
+            geom_point(color = overFile$density) +
+            scale_color_identity() +
             labs(x = "Retention Time (min)", y = 'Ion Injection Time (ms)', title = 'MS2 Scan Ion Injection Time') +
             theme(axis.text.x = element_text(size = 12), legend.position="none") +
             scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
@@ -24246,8 +24372,10 @@ server = shinyServer(function(input, output) {
           output_plot}
         
         else if (input$overlay_plot_id == 11) {
+          overFile$density = densCols(overFile$ParentScanRetTime, overFile$MS1IsolationInterference, colramp = colorRampPalette(rev(brewer.pal(9,'YlOrRd'))))
           output_plot = ggplot(overFile, aes(ParentScanRetTime, MS1IsolationInterference)) +
-            geom_point(fill = brewer.pal(3,'PuBuGn')[3], pch = 21, size = 3, colour = 'black', alpha = 0.2, stroke = 0.1) +
+            geom_point(color = overFile$density) +
+            scale_color_identity() +
             labs(x = "Retention Time (min)", y = 'Isolation Interference (percent)', title = 'Parent Ion Purity') +
             theme(axis.text.x = element_text(size = 12), legend.position="none") +
             scale_y_continuous(limits = c(minBorder,maxBorder), breaks = seq(minBorder,maxBorder,intBorder)) +
