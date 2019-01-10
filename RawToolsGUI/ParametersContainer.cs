@@ -7,40 +7,40 @@ using System.Threading.Tasks;
 namespace RawToolsGUI
 {
     [Serializable]
-    class ParametersContainer
+    public class ParametersContainer
     {
-        bool ParseMode, QcMode;
+        public bool ParseMode, QcMode;
 
-        string RawFileDirectory;
+        public string RawFileDirectory, RawFileList;
 
-        List<string> RawFileList;
+        public bool DataOutputMGF, DataOutputParseMatrix, DataOutputMetrics, DataOutputChromatograms, DataOutputDirectory;
 
-        bool DataOutputMGF, DataOutputParseMatrix, DataOutputMetrics, DataOutputChromatograms, DataOutputDirectory;
+        public string DataOutputDirectoryString;
 
-        string DataOutputDirectoryString;
+        public bool RefinePrecursorMassCharge;
 
-        bool RefinePrecursorMassCharge;
+        public string MinCharge, MaxCharge;
 
-        string MinCharge, MaxCharge;
+        public string QcDataDirectory;
 
-        string QcDataDirectory;
+        public bool SearchEngineNone, SearchEngineXTandem, SearchEngineIdentipy, SearchEngineIdentipyAutoFind;
 
-        bool SearchEngineNone, SearchEngineXTandem, SearchEngineIdentipy, SearchEngineIdentipyAutoFind;
+        public string XTandemDirectory, PythonExecutable, IdentipyScript, FastaFile;
 
-        string XTandemDirectory, PythonExecutable, IdentipyScript, FastaFile;
+        public string NumberSpectraToSearch;
 
-        string NumberSpectraToSearch;
+        public PeptideModifications PeptideModifications;
 
-        PeptideModifications PeptideModifications;
+        public bool QuantifyReporterIons;
 
-        bool QuantifyReporterIons;
+        public string Reagents;
 
-        string Reagents;
+        public bool MGFLowMassCutoff;
 
-        bool MGFLowMassCutoff;
+        public string MGFLowMassCutoffValue;
 
-        string MGFLowMassCutoffValue;
+        public bool ChromatogramMs1, ChromatogramMs2, ChromatogramTIC, ChromatogramBP;
 
-        bool ChromatogramMs1, ChromatogramMs2, ChromatogramTIC, ChromatogramBP;
+        public bool UseRawFileDirectory, UseRawFileList;
     }
 }

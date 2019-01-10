@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
+using System.Xml.Serialization;
 using System.Diagnostics;
 using Ookii.Dialogs.WinForms;
 
@@ -777,7 +778,7 @@ namespace RawToolsGUI
             reset();
         }
 
-        public void reset()
+        private void reset()
         {
             checkBoxAutoSearchIdentipy.Checked = true;
 
@@ -819,6 +820,189 @@ namespace RawToolsGUI
             foreach (Control x in groupBoxMgfOpts.Controls) if (x is CheckBox) ((CheckBox)x).Checked = false;
 
             foreach (Control x in groupBoxMgfOpts.Controls) if (x is TextBox) ((TextBox)x).Text = "0";
+        }
+
+        private void LoadParameters(ParametersContainer Pars)
+        {
+            checkBoxAutoSearchIdentipy.Checked = Pars.SearchEngineIdentipyAutoFind;
+
+            checkBoxChroBP.Checked = Pars.ChromatogramBP;
+            checkBoxChroMs1.Checked = Pars.ChromatogramMs1;
+            checkBoxChroMs2.Checked = Pars.ChromatogramMs2;
+            checkBoxChroTIC.Checked = Pars.ChromatogramTIC;
+
+            textBoxRawFileDirectory.Text = Pars.RawFileDirectory;
+            textBoxRawFiles.Text = Pars.RawFileList;
+
+            radioButtonSelectDirectory.Checked = Pars.UseRawFileDirectory;
+
+            textBoxDataOutputDir.Text = Pars.DataOutputDirectoryString;
+            
+            checkBoxMgfLowMass.Checked = Pars.MGFLowMassCutoff;
+
+            checkBoxModeParse.Checked = Pars.ParseMode;
+
+            checkBoxModeQC.Checked = Pars.QcMode;
+
+            checkBoxRefinePrecursor.Checked = Pars.RefinePrecursorMassCharge;
+
+            comboBoxMinCharge.Text = "0";
+            comboBoxMaxCharge.Text = "100";
+            comboBoxMinCharge.Text = Pars.MinCharge;
+            comboBoxMaxCharge.Text = Pars.MaxCharge;
+
+            ckbxOutputChromatograms.Checked = Pars.DataOutputChromatograms;
+            ckbxOutputMetrics.Checked = Pars.DataOutputMetrics;
+            ckbxOutputMGF.Checked = Pars.DataOutputMGF;
+            ckbxOutputParse.Checked = Pars.DataOutputParseMatrix;
+            checkBoxDataOutputDirectory.Checked = Pars.DataOutputDirectory;
+            
+            radioButtonSearchNone.Checked = Pars.SearchEngineNone;
+            radioButtonSearchIdentipy.Checked = Pars.SearchEngineIdentipy;
+            radioButtonSearchXTandem.Checked = Pars.SearchEngineXTandem;
+
+            textBoxQcDataDirectory.Text = Pars.QcDataDirectory;
+            textBoxXTandemDir.Text = Pars.XTandemDirectory;
+            textBoxPythonExe.Text = Pars.PythonExecutable;
+            textBoxIdentipyScript.Text = Pars.IdentipyScript;
+            textBoxFastaFile.Text = Pars.FastaFile;
+
+            textBoxNumSpectra.Text = Pars.NumberSpectraToSearch;
+
+            peptideModifications = Pars.PeptideModifications;
+
+            ckbxOutputQuant.Checked = Pars.QuantifyReporterIons;
+            comboBoxLabelingReagents.Text = Pars.Reagents;
+
+            checkBoxMgfLowMass.Checked = Pars.MGFLowMassCutoff;
+
+            textBoxMgfLowMass.Text = Pars.MGFLowMassCutoffValue;
+        }
+
+        private ParametersContainer GetOutParameters()
+        {
+            ParametersContainer Pars = new ParametersContainer();
+
+            Pars.SearchEngineIdentipyAutoFind = checkBoxAutoSearchIdentipy.Checked;
+
+            Pars.ChromatogramBP = checkBoxChroBP.Checked;
+            Pars.ChromatogramMs1 = checkBoxChroMs1.Checked;
+            Pars.ChromatogramMs2 = checkBoxChroMs2.Checked;
+            Pars.ChromatogramTIC = checkBoxChroTIC.Checked;
+
+            Pars.RawFileDirectory = textBoxRawFileDirectory.Text;
+            Pars.RawFileList = textBoxRawFiles.Text;
+
+            Pars.UseRawFileDirectory = radioButtonSelectDirectory.Checked;
+
+            Pars.DataOutputDirectoryString = textBoxDataOutputDir.Text;
+
+            Pars.MGFLowMassCutoff = checkBoxMgfLowMass.Checked;
+
+            Pars.ParseMode = checkBoxModeParse.Checked;
+
+            Pars.QcMode = checkBoxModeQC.Checked;
+
+            Pars.RefinePrecursorMassCharge = checkBoxRefinePrecursor.Checked;
+            
+            Pars.MinCharge = comboBoxMinCharge.Text;
+            Pars.MaxCharge = comboBoxMaxCharge.Text;
+
+            Pars.DataOutputChromatograms = ckbxOutputChromatograms.Checked;
+            Pars.DataOutputMetrics = ckbxOutputMetrics.Checked;
+            Pars.DataOutputMGF = ckbxOutputMGF.Checked;
+            Pars.DataOutputParseMatrix = ckbxOutputParse.Checked;
+            Pars.DataOutputDirectory = checkBoxDataOutputDirectory.Checked;
+
+            Pars.SearchEngineNone = radioButtonSearchNone.Checked;
+            Pars.SearchEngineIdentipy = radioButtonSearchIdentipy.Checked;
+            Pars.SearchEngineXTandem = radioButtonSearchXTandem.Checked;
+
+            Pars.QcDataDirectory = textBoxQcDataDirectory.Text;
+            Pars.XTandemDirectory = textBoxXTandemDir.Text;
+            Pars.PythonExecutable = textBoxPythonExe.Text;
+            Pars.IdentipyScript = textBoxIdentipyScript.Text;
+            Pars.FastaFile = textBoxFastaFile.Text;
+
+            Pars.NumberSpectraToSearch = textBoxNumSpectra.Text;
+
+            Pars.PeptideModifications = peptideModifications;
+
+            Pars.QuantifyReporterIons = ckbxOutputQuant.Checked;
+            Pars.Reagents = comboBoxLabelingReagents.Text;
+
+            Pars.MGFLowMassCutoff = checkBoxMgfLowMass.Checked;
+
+            Pars.MGFLowMassCutoffValue = textBoxMgfLowMass.Text;
+
+            return Pars;
+        }
+
+        private void toolStripMenuItemOpenParameters_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog openParameters = new OpenFileDialog();
+            openParameters.Filter = "RawTools Parameters|*.rtxml";
+            openParameters.Title = "Load RawTools Parameters";
+            openParameters.ShowDialog();
+
+            if (openParameters.FileName != "")
+            {
+                var serializer = new XmlSerializer(typeof(ParametersContainer));
+                using (StreamReader reader = new StreamReader(openParameters.FileName))
+                {
+                    ParametersContainer Pars = (ParametersContainer)serializer.Deserialize(reader);
+                    LoadParameters(Pars);
+                }
+            }
+        }
+
+        private void toolStripMenuItemSaveParameters_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog saveParameters = new SaveFileDialog();
+            ParametersContainer Pars = GetOutParameters();
+            saveParameters.Filter = "RawTools Parameters|*.rtxml";
+            saveParameters.Title = "Save RawTools Parameters";
+            saveParameters.ShowDialog();
+
+            // If the file name is not an empty string open it for saving.  
+            if (saveParameters.FileName != "")
+            {
+                var serializer = new XmlSerializer(typeof(ParametersContainer));
+                using (StreamWriter writer = new StreamWriter(saveParameters.FileName))
+                {
+                    serializer.Serialize(writer, Pars);
+                }
+            }
+        }
+
+        private void exitToolStripMenuItemExit_Click(object sender, EventArgs e)
+        {
+            if (ConfirmExit())
+            {
+                Environment.Exit(0);
+            }
+        }
+
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            if (ConfirmExit() == false)
+            {
+                e.Cancel = true;
+            };
+        }
+
+        private bool ConfirmExit()
+        {
+            const string message = "Are you sure you wish to exit?";
+            const string caption = "Exit";
+            var result = MessageBox.Show(message, caption,
+                                     MessageBoxButtons.YesNo,
+                                     MessageBoxIcon.Question);
+
+            if (result == DialogResult.Yes)
+                return true;
+            else
+                return false;
         }
     }
 
