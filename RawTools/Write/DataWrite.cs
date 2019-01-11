@@ -356,7 +356,7 @@ namespace RawTools.Data.IO
                     f.WriteLine("TITLE=Spectrum_{0}", i);
                     f.WriteLine("PEPMASS={0}", precursorMasses[i].MonoisotopicMZ);
                     f.WriteLine("CHARGE={0}+", trailerExtras[i].ChargeState);
-                    f.WriteLine("RTINSECONDS={0}", retentionTimes[i]);
+                    f.WriteLine("RTINSECONDS={0}", retentionTimes[i] * 60);
                     f.WriteLine("SCANS={0}", i);
                     f.WriteLine("RAWFILE={0}", rawFileName);
 
@@ -1420,7 +1420,7 @@ namespace RawTools.Data.IO
                         f.WriteLine("TITLE=Spectrum_{0}_File{1}", scan[file], file+1);
                         f.WriteLine("MATCH_ID={0}", MatchID);
                         f.WriteLine("SCAN={0}", scan[file]);
-                        f.WriteLine("RTINSECONDS={0}", retentionTimes[file][scan[file]]);
+                        f.WriteLine("RTINSECONDS={0}", retentionTimes[file][scan[file]] * 60);
                         f.WriteLine("PEPMASS={0}", precursorMasses[file][scan[file]].MonoisotopicMZ);
                         f.WriteLine("CHARGE={0}", trailerExtras[file][scan[file]].ChargeState);
 
