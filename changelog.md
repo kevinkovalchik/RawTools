@@ -4,6 +4,10 @@ All notable changes to RawTools will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.1] 2019-01-11
+### Fixed
+- Fixed a bug in which RTINSECONDS, as reported in the MGF file, was actually in minutes. It is now in seconds.
+
 ## [1.4.0] 2019-01-08
 ### Changed
 - We have streamlined the processing workflows to improve performance, and RawTools can now run on multiple processors. Hopefully this will speed up the processing of very large files. [[issue6]](https://github.com/kevinkovalchik/RawTools/issues/6)
