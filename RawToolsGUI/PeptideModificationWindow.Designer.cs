@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.buttonAddFixedMod = new System.Windows.Forms.Button();
             this.buttonRemoveFixedMod = new System.Windows.Forms.Button();
             this.buttonEditModsOK = new System.Windows.Forms.Button();
@@ -37,6 +38,7 @@
             this.ModMass = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ModType = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewModifications = new System.Windows.Forms.DataGridView();
+            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewModifications)).BeginInit();
             this.SuspendLayout();
             // 
@@ -48,6 +50,7 @@
             this.buttonAddFixedMod.Size = new System.Drawing.Size(164, 27);
             this.buttonAddFixedMod.TabIndex = 4;
             this.buttonAddFixedMod.Text = "Add Fixed Modification";
+            this.toolTip1.SetToolTip(this.buttonAddFixedMod, "Add an additional fixed modification to the table.");
             this.buttonAddFixedMod.UseVisualStyleBackColor = true;
             this.buttonAddFixedMod.Click += new System.EventHandler(this.buttonAddFixedMod_Click);
             // 
@@ -59,6 +62,7 @@
             this.buttonRemoveFixedMod.Size = new System.Drawing.Size(209, 27);
             this.buttonRemoveFixedMod.TabIndex = 5;
             this.buttonRemoveFixedMod.Text = "Remove Selected Fixed Mod";
+            this.toolTip1.SetToolTip(this.buttonRemoveFixedMod, "Remove the selected fixed modifiation from the table.");
             this.buttonRemoveFixedMod.UseVisualStyleBackColor = true;
             this.buttonRemoveFixedMod.Click += new System.EventHandler(this.buttonRemoveFixedMod_Click);
             // 
@@ -156,5 +160,6 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn ModMass;
         private System.Windows.Forms.DataGridViewTextBoxColumn ModType;
         public System.Windows.Forms.DataGridView dataGridViewModifications;
+        private System.Windows.Forms.ToolTip toolTip1;
     }
 }

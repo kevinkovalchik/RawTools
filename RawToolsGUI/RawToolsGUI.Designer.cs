@@ -143,6 +143,8 @@
             this.checkBoxModeQC.Size = new System.Drawing.Size(50, 21);
             this.checkBoxModeQC.TabIndex = 1;
             this.checkBoxModeQC.Text = "QC";
+            this.toolTip1.SetToolTip(this.checkBoxModeQC, "Enables quality control (QC) mode of RawTools.\r\nIf this is selected, you will onl" +
+        "y be able to choose\r\na raw file directory to parse, not individual files.");
             this.checkBoxModeQC.UseVisualStyleBackColor = true;
             this.checkBoxModeQC.CheckedChanged += new System.EventHandler(this.checkBoxModeQC_CheckedChanged);
             // 
@@ -154,6 +156,8 @@
             this.checkBoxModeParse.Size = new System.Drawing.Size(67, 21);
             this.checkBoxModeParse.TabIndex = 0;
             this.checkBoxModeParse.Text = "Parse";
+            this.toolTip1.SetToolTip(this.checkBoxModeParse, "Enables parsing of quant and meta data. Select this\r\nfor options under the \"Data " +
+        "Output\" section.");
             this.checkBoxModeParse.UseVisualStyleBackColor = true;
             this.checkBoxModeParse.CheckedChanged += new System.EventHandler(this.checkBoxModeParse_CheckedChanged);
             // 
@@ -179,6 +183,7 @@
             this.radioButtonSelectFiles.Name = "radioButtonSelectFiles";
             this.radioButtonSelectFiles.Size = new System.Drawing.Size(17, 16);
             this.radioButtonSelectFiles.TabIndex = 2;
+            this.toolTip1.SetToolTip(this.radioButtonSelectFiles, "Select one or more Thermo raw files to process.");
             this.radioButtonSelectFiles.UseVisualStyleBackColor = true;
             // 
             // radioButtonSelectDirectory
@@ -190,6 +195,7 @@
             this.radioButtonSelectDirectory.Size = new System.Drawing.Size(17, 16);
             this.radioButtonSelectDirectory.TabIndex = 2;
             this.radioButtonSelectDirectory.TabStop = true;
+            this.toolTip1.SetToolTip(this.radioButtonSelectDirectory, "Choose a directory in which to process all Thermo raw files.");
             this.radioButtonSelectDirectory.UseVisualStyleBackColor = true;
             this.radioButtonSelectDirectory.CheckedChanged += new System.EventHandler(this.radioButtonSelectDirectory_CheckedChanged);
             // 
@@ -201,6 +207,7 @@
             this.textBoxRawFiles.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.textBoxRawFiles.Size = new System.Drawing.Size(475, 22);
             this.textBoxRawFiles.TabIndex = 2;
+            this.toolTip1.SetToolTip(this.textBoxRawFiles, "Select one or more Thermo raw files to process.");
             // 
             // textBoxRawFileDirectory
             // 
@@ -208,6 +215,7 @@
             this.textBoxRawFileDirectory.Name = "textBoxRawFileDirectory";
             this.textBoxRawFileDirectory.Size = new System.Drawing.Size(475, 22);
             this.textBoxRawFileDirectory.TabIndex = 3;
+            this.toolTip1.SetToolTip(this.textBoxRawFileDirectory, "Choose a directory in which to process all Thermo raw files.");
             // 
             // buttonSelectFiles
             // 
@@ -217,6 +225,7 @@
             this.buttonSelectFiles.Size = new System.Drawing.Size(128, 23);
             this.buttonSelectFiles.TabIndex = 3;
             this.buttonSelectFiles.Text = "Select File(s)";
+            this.toolTip1.SetToolTip(this.buttonSelectFiles, "Select one or more Thermo raw files to process.");
             this.buttonSelectFiles.UseVisualStyleBackColor = true;
             this.buttonSelectFiles.Click += new System.EventHandler(this.buttonSelectFiles_Click);
             // 
@@ -227,6 +236,7 @@
             this.buttonSelectDirectory.Size = new System.Drawing.Size(128, 23);
             this.buttonSelectDirectory.TabIndex = 2;
             this.buttonSelectDirectory.Text = "Select Directory";
+            this.toolTip1.SetToolTip(this.buttonSelectDirectory, "Choose a directory in which to process all Thermo raw files.");
             this.buttonSelectDirectory.UseVisualStyleBackColor = true;
             this.buttonSelectDirectory.Click += new System.EventHandler(this.buttonSelectDirectory_Click);
             // 
@@ -259,6 +269,9 @@
             this.checkBoxDataOutputDirectory.Size = new System.Drawing.Size(204, 21);
             this.checkBoxDataOutputDirectory.TabIndex = 12;
             this.checkBoxDataOutputDirectory.Text = "Output to different directory";
+            this.toolTip1.SetToolTip(this.checkBoxDataOutputDirectory, "Select if you want the output files to go in a directory\r\ndifferent from the raw " +
+        "file location. You must then use\r\nthe \"Output Directory\" button or text box to s" +
+        "pecify the\r\ndirectory.");
             this.checkBoxDataOutputDirectory.UseVisualStyleBackColor = true;
             this.checkBoxDataOutputDirectory.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
             // 
@@ -269,6 +282,7 @@
             this.textBoxDataOutputDir.Name = "textBoxDataOutputDir";
             this.textBoxDataOutputDir.Size = new System.Drawing.Size(177, 22);
             this.textBoxDataOutputDir.TabIndex = 11;
+            this.toolTip1.SetToolTip(this.textBoxDataOutputDir, "Choose a directory in which to save all output files.");
             // 
             // buttonDataOutputDir
             // 
@@ -278,6 +292,9 @@
             this.buttonDataOutputDir.Size = new System.Drawing.Size(138, 23);
             this.buttonDataOutputDir.TabIndex = 10;
             this.buttonDataOutputDir.Text = "Output Directory";
+            this.toolTip1.SetToolTip(this.buttonDataOutputDir, "Choose a directory in which to save all output files.\r\nIf no directory is selecte" +
+        "d, the files will be written\r\nto the directory which contains the respective raw" +
+        "\r\nfile.");
             this.buttonDataOutputDir.UseVisualStyleBackColor = true;
             this.buttonDataOutputDir.Click += new System.EventHandler(this.buttonDataOutputDir_Click);
             // 
@@ -289,6 +306,8 @@
             this.ckbxOutputChromatograms.Size = new System.Drawing.Size(130, 21);
             this.ckbxOutputChromatograms.TabIndex = 4;
             this.ckbxOutputChromatograms.Text = "Chromatograms";
+            this.toolTip1.SetToolTip(this.ckbxOutputChromatograms, "Generate chromatograms. You must choose further\r\noptions under \"Chromatogram Opti" +
+        "ons\".");
             this.ckbxOutputChromatograms.UseVisualStyleBackColor = true;
             this.ckbxOutputChromatograms.CheckedChanged += new System.EventHandler(this.ckbxOutputChromatograms_CheckedChanged);
             // 
@@ -300,6 +319,8 @@
             this.ckbxOutputMetrics.Size = new System.Drawing.Size(75, 21);
             this.ckbxOutputMetrics.TabIndex = 3;
             this.ckbxOutputMetrics.Text = "Metrics";
+            this.toolTip1.SetToolTip(this.ckbxOutputMetrics, "Calculate descriptive metrics from the scan meta data\r\nand write them to a text f" +
+        "ile.");
             this.ckbxOutputMetrics.UseVisualStyleBackColor = true;
             // 
             // ckbxOutputParse
@@ -310,6 +331,8 @@
             this.ckbxOutputParse.Size = new System.Drawing.Size(108, 21);
             this.ckbxOutputParse.TabIndex = 1;
             this.ckbxOutputParse.Text = "Parse Matrix";
+            this.toolTip1.SetToolTip(this.ckbxOutputParse, "Create a matrix containing scan meta data and,\r\noptionally, quantification data f" +
+        "rom the\r\nraw file.");
             this.ckbxOutputParse.UseVisualStyleBackColor = true;
             this.ckbxOutputParse.CheckedChanged += new System.EventHandler(this.ckbxOutputParse_CheckedChanged);
             // 
@@ -321,6 +344,7 @@
             this.ckbxOutputMGF.Size = new System.Drawing.Size(60, 21);
             this.ckbxOutputMGF.TabIndex = 0;
             this.ckbxOutputMGF.Text = "MGF";
+            this.toolTip1.SetToolTip(this.ckbxOutputMGF, "Create an MGF file of all MS2 scans in the raw file.");
             this.ckbxOutputMGF.UseVisualStyleBackColor = true;
             this.ckbxOutputMGF.CheckedChanged += new System.EventHandler(this.ckbxOutputMGF_CheckedChanged);
             // 
@@ -332,6 +356,7 @@
             this.ckbxOutputQuant.Size = new System.Drawing.Size(173, 21);
             this.ckbxOutputQuant.TabIndex = 2;
             this.ckbxOutputQuant.Text = "Quantify Reporter Ions";
+            this.toolTip1.SetToolTip(this.ckbxOutputQuant, "Select to quantify reporter ions and include in the\r\nparse matrix output.");
             this.ckbxOutputQuant.UseVisualStyleBackColor = true;
             this.ckbxOutputQuant.CheckedChanged += new System.EventHandler(this.ckbxOutputQuant_CheckedChanged);
             // 
@@ -363,6 +388,7 @@
             this.comboBoxMinCharge.Name = "comboBoxMinCharge";
             this.comboBoxMinCharge.Size = new System.Drawing.Size(106, 24);
             this.comboBoxMinCharge.TabIndex = 9;
+            this.toolTip1.SetToolTip(this.comboBoxMinCharge, resources.GetString("comboBoxMinCharge.ToolTip"));
             this.comboBoxMinCharge.SelectedIndexChanged += new System.EventHandler(this.comboBoxMinCharge_SelectedIndexChanged);
             this.comboBoxMinCharge.Enter += new System.EventHandler(this.comboBoxMinCharge_Enter);
             this.comboBoxMinCharge.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.comboBoxMinCharge_KeyPress);
@@ -375,6 +401,7 @@
             this.labelMinCharge.Size = new System.Drawing.Size(117, 17);
             this.labelMinCharge.TabIndex = 3;
             this.labelMinCharge.Text = "Minimum Charge:";
+            this.toolTip1.SetToolTip(this.labelMinCharge, resources.GetString("labelMinCharge.ToolTip"));
             // 
             // labelMaxCharge
             // 
@@ -384,6 +411,7 @@
             this.labelMaxCharge.Size = new System.Drawing.Size(120, 17);
             this.labelMaxCharge.TabIndex = 2;
             this.labelMaxCharge.Text = "Maximum Charge:";
+            this.toolTip1.SetToolTip(this.labelMaxCharge, resources.GetString("labelMaxCharge.ToolTip"));
             // 
             // comboBoxMaxCharge
             // 
@@ -399,6 +427,7 @@
             this.comboBoxMaxCharge.Name = "comboBoxMaxCharge";
             this.comboBoxMaxCharge.Size = new System.Drawing.Size(106, 24);
             this.comboBoxMaxCharge.TabIndex = 1;
+            this.toolTip1.SetToolTip(this.comboBoxMaxCharge, resources.GetString("comboBoxMaxCharge.ToolTip"));
             this.comboBoxMaxCharge.SelectedIndexChanged += new System.EventHandler(this.comboBoxMaxCharge_SelectedIndexChanged);
             this.comboBoxMaxCharge.Enter += new System.EventHandler(this.comboBoxMaxCharge_Enter);
             this.comboBoxMaxCharge.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.comboBoxMaxCharge_KeyPress);
@@ -413,6 +442,7 @@
             this.checkBoxRefinePrecursor.Size = new System.Drawing.Size(252, 21);
             this.checkBoxRefinePrecursor.TabIndex = 0;
             this.checkBoxRefinePrecursor.Text = "Refine Precursor Mass and Charge";
+            this.toolTip1.SetToolTip(this.checkBoxRefinePrecursor, resources.GetString("checkBoxRefinePrecursor.ToolTip"));
             this.checkBoxRefinePrecursor.UseVisualStyleBackColor = true;
             this.checkBoxRefinePrecursor.CheckedChanged += new System.EventHandler(this.checkBoxRefinePrecursor_CheckedChanged);
             // 
@@ -461,6 +491,7 @@
             this.buttonPeptideMods.Size = new System.Drawing.Size(247, 23);
             this.buttonPeptideMods.TabIndex = 9;
             this.buttonPeptideMods.Text = "Add/Review Peptide Modifications";
+            this.toolTip1.SetToolTip(this.buttonPeptideMods, "Choose peptide modifications for the database search.");
             this.buttonPeptideMods.UseVisualStyleBackColor = true;
             this.buttonPeptideMods.Click += new System.EventHandler(this.buttonPeptideMods_Click);
             // 
@@ -470,6 +501,7 @@
             this.textBoxQcDataDirectory.Name = "textBoxQcDataDirectory";
             this.textBoxQcDataDirectory.Size = new System.Drawing.Size(567, 22);
             this.textBoxQcDataDirectory.TabIndex = 22;
+            this.toolTip1.SetToolTip(this.textBoxQcDataDirectory, "Select a directory in which to store the QC data.");
             // 
             // buttonQcDataDirectory
             // 
@@ -478,6 +510,7 @@
             this.buttonQcDataDirectory.Size = new System.Drawing.Size(151, 23);
             this.buttonQcDataDirectory.TabIndex = 21;
             this.buttonQcDataDirectory.Text = "QC Data Directory";
+            this.toolTip1.SetToolTip(this.buttonQcDataDirectory, "Select a directory in which to store the QC data.");
             this.buttonQcDataDirectory.UseVisualStyleBackColor = true;
             this.buttonQcDataDirectory.Click += new System.EventHandler(this.buttonQcDataDirectory_Click);
             // 
@@ -489,6 +522,9 @@
             this.textBoxNumSpectra.Size = new System.Drawing.Size(100, 22);
             this.textBoxNumSpectra.TabIndex = 20;
             this.textBoxNumSpectra.Text = "10000";
+            this.toolTip1.SetToolTip(this.textBoxNumSpectra, "Choose the number of spectra to use for the database\r\nsearch. These are chosen fr" +
+        "om all MS2 spectra in the\r\nraw file using a uniformly distributed random selecti" +
+        "on\r\nprocess.");
             this.textBoxNumSpectra.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBoxNumSpectra_KeyPress);
             // 
             // labelNumSpectra
@@ -522,6 +558,7 @@
             this.textBoxIdentipyScript.Name = "textBoxIdentipyScript";
             this.textBoxIdentipyScript.Size = new System.Drawing.Size(571, 22);
             this.textBoxIdentipyScript.TabIndex = 18;
+            this.toolTip1.SetToolTip(this.textBoxIdentipyScript, resources.GetString("textBoxIdentipyScript.ToolTip"));
             // 
             // textBoxPythonExe
             // 
@@ -530,6 +567,7 @@
             this.textBoxPythonExe.Name = "textBoxPythonExe";
             this.textBoxPythonExe.Size = new System.Drawing.Size(571, 22);
             this.textBoxPythonExe.TabIndex = 17;
+            this.toolTip1.SetToolTip(this.textBoxPythonExe, "Select the executable file for the Python distribution\r\nyou wish to use.");
             // 
             // textBoxXTandemDir
             // 
@@ -538,6 +576,7 @@
             this.textBoxXTandemDir.Name = "textBoxXTandemDir";
             this.textBoxXTandemDir.Size = new System.Drawing.Size(571, 22);
             this.textBoxXTandemDir.TabIndex = 16;
+            this.toolTip1.SetToolTip(this.textBoxXTandemDir, "Select the directory which contains the X! Tandem\r\nexecutable.");
             // 
             // buttonXTandemDir
             // 
@@ -547,7 +586,7 @@
             this.buttonXTandemDir.Size = new System.Drawing.Size(151, 23);
             this.buttonXTandemDir.TabIndex = 15;
             this.buttonXTandemDir.Text = "X! Tandem Directory";
-            this.toolTip1.SetToolTip(this.buttonXTandemDir, "Select the directory containing the X! Tandem executable (usually tandem.exe).");
+            this.toolTip1.SetToolTip(this.buttonXTandemDir, "Select the directory which contains the X! Tandem\r\nexecutable.");
             this.buttonXTandemDir.UseVisualStyleBackColor = true;
             this.buttonXTandemDir.Click += new System.EventHandler(this.buttonXTandemDir_Click);
             // 
@@ -558,6 +597,7 @@
             this.textBoxFastaFile.Name = "textBoxFastaFile";
             this.textBoxFastaFile.Size = new System.Drawing.Size(571, 22);
             this.textBoxFastaFile.TabIndex = 8;
+            this.toolTip1.SetToolTip(this.textBoxFastaFile, "Select the FASTA file you wish to use for the database\r\nsearch.");
             // 
             // buttonIdentipyScript
             // 
@@ -567,6 +607,7 @@
             this.buttonIdentipyScript.Size = new System.Drawing.Size(151, 23);
             this.buttonIdentipyScript.TabIndex = 14;
             this.buttonIdentipyScript.Text = "IdentiPy Script";
+            this.toolTip1.SetToolTip(this.buttonIdentipyScript, resources.GetString("buttonIdentipyScript.ToolTip"));
             this.buttonIdentipyScript.UseVisualStyleBackColor = true;
             this.buttonIdentipyScript.Click += new System.EventHandler(this.buttonIdentipyScript_Click);
             // 
@@ -578,8 +619,7 @@
             this.buttonPythonExe.Size = new System.Drawing.Size(151, 23);
             this.buttonPythonExe.TabIndex = 13;
             this.buttonPythonExe.Text = "Python Executable";
-            this.toolTip1.SetToolTip(this.buttonPythonExe, "Select the Python executable you wish to use (if you have multiple  Python\r\ninsta" +
-        "llations, ensure this is the one with IdentiPy installed).");
+            this.toolTip1.SetToolTip(this.buttonPythonExe, "Select the executable file for the Python distribution\r\nyou wish to use.");
             this.buttonPythonExe.UseVisualStyleBackColor = true;
             this.buttonPythonExe.Click += new System.EventHandler(this.buttonPythonExe_Click);
             // 
@@ -591,6 +631,7 @@
             this.buttonFastaFile.Size = new System.Drawing.Size(151, 23);
             this.buttonFastaFile.TabIndex = 12;
             this.buttonFastaFile.Text = "Select Fasta File";
+            this.toolTip1.SetToolTip(this.buttonFastaFile, "Select the FASTA file you wish to use for the database\r\nsearch.");
             this.buttonFastaFile.UseVisualStyleBackColor = true;
             this.buttonFastaFile.Click += new System.EventHandler(this.buttonFastaFile_Click);
             // 
@@ -717,6 +758,8 @@
             this.checkBoxChroBP.Size = new System.Drawing.Size(48, 21);
             this.checkBoxChroBP.TabIndex = 3;
             this.checkBoxChroBP.Text = "BP";
+            this.toolTip1.SetToolTip(this.checkBoxChroBP, "Write a base peak chromatogram to disk. You must also\r\none or more of MS1 and MS2" +
+        ".");
             this.checkBoxChroBP.UseVisualStyleBackColor = true;
             // 
             // checkBoxChroTIC
@@ -727,6 +770,8 @@
             this.checkBoxChroTIC.Size = new System.Drawing.Size(51, 21);
             this.checkBoxChroTIC.TabIndex = 2;
             this.checkBoxChroTIC.Text = "TIC";
+            this.toolTip1.SetToolTip(this.checkBoxChroTIC, "Write a total ion current chromatogram to disk. You must also\r\none or more of MS1" +
+        " and MS2.");
             this.checkBoxChroTIC.UseVisualStyleBackColor = true;
             // 
             // checkBoxChroMs2
@@ -737,6 +782,7 @@
             this.checkBoxChroMs2.Size = new System.Drawing.Size(58, 21);
             this.checkBoxChroMs2.TabIndex = 1;
             this.checkBoxChroMs2.Text = "MS2";
+            this.toolTip1.SetToolTip(this.checkBoxChroMs2, "Write a MS2 chromatogram to disk. You must also\r\none or more of TIC and BP.");
             this.checkBoxChroMs2.UseVisualStyleBackColor = true;
             // 
             // checkBoxChroMs1
@@ -747,6 +793,7 @@
             this.checkBoxChroMs1.Size = new System.Drawing.Size(58, 21);
             this.checkBoxChroMs1.TabIndex = 0;
             this.checkBoxChroMs1.Text = "MS1";
+            this.toolTip1.SetToolTip(this.checkBoxChroMs1, "Write a MS1 chromatogram to disk. You must also\r\none or more of TIC and BP.");
             this.checkBoxChroMs1.UseVisualStyleBackColor = true;
             // 
             // flowLayoutPanel1
@@ -829,6 +876,7 @@
             this.comboBoxLabelingReagents.Name = "comboBoxLabelingReagents";
             this.comboBoxLabelingReagents.Size = new System.Drawing.Size(121, 24);
             this.comboBoxLabelingReagents.TabIndex = 17;
+            this.toolTip1.SetToolTip(this.comboBoxLabelingReagents, "Select a labeling reagent from the drop down list.");
             this.comboBoxLabelingReagents.SelectedIndexChanged += new System.EventHandler(this.comboBoxLabelingReagents_SelectedIndexChanged);
             this.comboBoxLabelingReagents.Enter += new System.EventHandler(this.comboBoxLabelingReagents_Enter);
             // 
@@ -912,6 +960,7 @@
             this.textBoxMgfLowMass.Size = new System.Drawing.Size(100, 22);
             this.textBoxMgfLowMass.TabIndex = 2;
             this.textBoxMgfLowMass.Text = "0";
+            this.toolTip1.SetToolTip(this.textBoxMgfLowMass, resources.GetString("textBoxMgfLowMass.ToolTip"));
             this.textBoxMgfLowMass.TextChanged += new System.EventHandler(this.textBoxMgfLowMass_TextChanged);
             this.textBoxMgfLowMass.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBoxMgfLowMass_KeyPress);
             // 
@@ -935,6 +984,7 @@
             this.checkBoxMgfLowMass.Size = new System.Drawing.Size(173, 21);
             this.checkBoxMgfLowMass.TabIndex = 0;
             this.checkBoxMgfLowMass.Text = "Low Mass Cutoff (m/z):";
+            this.toolTip1.SetToolTip(this.checkBoxMgfLowMass, resources.GetString("checkBoxMgfLowMass.ToolTip"));
             this.checkBoxMgfLowMass.UseVisualStyleBackColor = true;
             this.checkBoxMgfLowMass.CheckedChanged += new System.EventHandler(this.checkBoxMgfLowMass_CheckedChanged);
             // 
@@ -953,6 +1003,7 @@
             this.button1.Size = new System.Drawing.Size(555, 68);
             this.button1.TabIndex = 0;
             this.button1.Text = "Go!";
+            this.toolTip1.SetToolTip(this.button1, "Start processing!");
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.buttonGo_Click);
             // 
@@ -982,28 +1033,28 @@
             // toolStripMenuItemNewParameters
             // 
             this.toolStripMenuItemNewParameters.Name = "toolStripMenuItemNewParameters";
-            this.toolStripMenuItemNewParameters.Size = new System.Drawing.Size(216, 26);
+            this.toolStripMenuItemNewParameters.Size = new System.Drawing.Size(197, 26);
             this.toolStripMenuItemNewParameters.Text = "New Parameters";
             this.toolStripMenuItemNewParameters.Click += new System.EventHandler(this.toolStripMenuItemNewParameters_Click);
             // 
             // toolStripMenuItemOpenParameters
             // 
             this.toolStripMenuItemOpenParameters.Name = "toolStripMenuItemOpenParameters";
-            this.toolStripMenuItemOpenParameters.Size = new System.Drawing.Size(216, 26);
+            this.toolStripMenuItemOpenParameters.Size = new System.Drawing.Size(197, 26);
             this.toolStripMenuItemOpenParameters.Text = "Open Parameters";
             this.toolStripMenuItemOpenParameters.Click += new System.EventHandler(this.toolStripMenuItemOpenParameters_Click);
             // 
             // toolStripMenuItemSaveParameters
             // 
             this.toolStripMenuItemSaveParameters.Name = "toolStripMenuItemSaveParameters";
-            this.toolStripMenuItemSaveParameters.Size = new System.Drawing.Size(216, 26);
+            this.toolStripMenuItemSaveParameters.Size = new System.Drawing.Size(197, 26);
             this.toolStripMenuItemSaveParameters.Text = "Save Parameters";
             this.toolStripMenuItemSaveParameters.Click += new System.EventHandler(this.toolStripMenuItemSaveParameters_Click);
             // 
             // exitToolStripMenuItemExit
             // 
             this.exitToolStripMenuItemExit.Name = "exitToolStripMenuItemExit";
-            this.exitToolStripMenuItemExit.Size = new System.Drawing.Size(216, 26);
+            this.exitToolStripMenuItemExit.Size = new System.Drawing.Size(197, 26);
             this.exitToolStripMenuItemExit.Text = "Exit";
             this.exitToolStripMenuItemExit.Click += new System.EventHandler(this.exitToolStripMenuItemExit_Click);
             // 
@@ -1018,8 +1069,9 @@
             // aboutToolStripMenuItem
             // 
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(192, 26);
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(216, 26);
             this.aboutToolStripMenuItem.Text = "About RawTools";
+            this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 
             // RawToolsGUI
             // 

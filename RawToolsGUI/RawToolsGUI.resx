@@ -117,12 +117,89 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <metadata name="toolTip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>337, 17</value>
+  </metadata>
   <metadata name="selectRawFiles.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>184, 17</value>
   </metadata>
   <metadata name="toolTip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>337, 17</value>
   </metadata>
+  <data name="comboBoxMinCharge.ToolTip" xml:space="preserve">
+    <value>Choose the minimum charge state to consider when
+recalculating charge state. In general, this should not
+be much different from what was chosen in your
+instrument method (assuming your method specified
+min and max charge states). If your method allowed
+all charge states, choose something reasonable like 2
+unless you have good reason to do otherwise.</value>
+  </data>
+  <data name="labelMinCharge.ToolTip" xml:space="preserve">
+    <value>Choose the minimum charge state to consider when
+recalculating charge state. In general, this should not
+be much different from what was chosen in your
+instrument method (assuming your method specified
+min and max charge states). If your method allowed
+all charge states, choose something reasonable like 2
+unless you have good reason to do otherwise.</value>
+  </data>
+  <data name="labelMaxCharge.ToolTip" xml:space="preserve">
+    <value>Choose the maximum charge state to consider when
+recalculating charge state. In general, this should not
+be much different from what was chosen in your
+instrument method (assuming your method specified
+min and max charge states). If your method allowed
+all charge states, choose something reasonable like 3
+or 4 unless you have good reason to do otherwise.</value>
+  </data>
+  <data name="comboBoxMaxCharge.ToolTip" xml:space="preserve">
+    <value>Choose the maximum charge state to consider when
+recalculating charge state. In general, this should not
+be much different from what was chosen in your
+instrument method (assuming your method specified
+min and max charge states). If your method allowed
+all charge states, choose something reasonable like 3
+or 4 unless you have good reason to do otherwise.</value>
+  </data>
+  <data name="checkBoxRefinePrecursor.ToolTip" xml:space="preserve">
+    <value>Choose to allow RawTools to recalculate the precursor
+charge and monoisotopic mass. This typically only
+results in a small improvement, if any, in downstream
+search results. However, if you have monoisotopic
+precursor selection (MIPS) or Peptide Match turned
+off in your instrument method, you will probably want
+to use this. Otherwise your MGF files will be populated
+with PEPMASS=0.</value>
+  </data>
+  <data name="textBoxIdentipyScript.ToolTip" xml:space="preserve">
+    <value>Select the IdentiPy script. On windows this should be in the Scripts folder
+found in the Python installation directory and is called identipy-script.py.
+On Linux it is usually in /bin or /usr/bin and is simply called identipy.
+However, if you are using a virtual python environment this location will
+vary from the system-wide installation. Include the extension if there is one.</value>
+  </data>
+  <data name="buttonIdentipyScript.ToolTip" xml:space="preserve">
+    <value>Select the IdentiPy script. On windows this should be in the Scripts folder
+found in the Python installation directory and is called identipy-script.py.
+On Linux it is usually in /bin or /usr/bin and is simply called identipy.
+However, if you are using a virtual python environment this location will
+vary from the system-wide installation. Include the extension if there is one.</value>
+  </data>
+  <data name="textBoxMgfLowMass.ToolTip" xml:space="preserve">
+    <value>Specify a low mass cutoff to use during MGF
+creation. You might want to use this to remove
+reporter ions prior. If it is specified, this will be
+applied to both files created as data output
+and as part of the QC database search.</value>
+  </data>
+  <data name="checkBoxMgfLowMass.ToolTip" xml:space="preserve">
+    <value>Specify a low mass cutoff to use during MGF
+creation. You might want to use this to remove
+reporter ions prior. If it is specified, this will be
+applied to both files created as data output
+and as part of the QC database search.</value>
+  </data>
   <metadata name="menuStrip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>450, 17</value>
   </metadata>
