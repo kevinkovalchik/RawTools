@@ -133,6 +133,7 @@
     <Compile Include="Constants\Constants.cs" />
     <Compile Include="Data\Collections.cs" />
     <Compile Include="Data\TestContainers.cs" />
+    <Compile Include="Examples.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -150,6 +151,7 @@
     <Compile Include="WorkFlows\DIA.cs" />
     <Compile Include="WorkFlows\DDA.cs" />
     <Compile Include="WorkFlows\WorkflowParameters.cs" />
+    <Compile Include="Utilities\ScanData\AveragePeakScans.cs" />
     <Compile Include="Write\DataWrite.cs" />
     <Compile Include="Utilities\Utilities.cs" />
     <Compile Include="Data\Containers.cs" />

@@ -553,38 +553,5 @@ namespace RawTools.QC
                 }
             }
         }
-
-        public static void ExampleMods()
-        {
-            StringBuilder examples = new StringBuilder();
-            examples.AppendLine("\n");
-            examples.AppendLine("-----------------------------");
-            examples.AppendLine("Peptide modification examples");
-            examples.AppendLine("-----------------------------");
-
-            examples.AppendLine("\nThere are four arguments which may be used on the command line to specify peptide modifications: " +
-                "fmods, nmod, kmod, xmod. RawTools passes these modifications to IdentiPy is a search is performed. " +
-                "fmods can be any number of fixed modifications, separated by a comma (an no spaces). The other three are always " +
-                "variable, and modification frequency (e.g. labeling efficiency) is calculated for each. nmod specifies a modification to the peptide N-terminus, kmod " +
-                "specifies a modification to lysine, and xmod can specify a modification to any other residue. The peptide modifications which RawTools passes to " +
-                "IdentiPy must be in mass@aa format. Examples of common modifications are given below.\n");
-
-            examples.AppendFormat("\t{0,-40}{1,-10}\n", "Oxidation of methionine:", "15.99491@M");
-            examples.AppendFormat("\t{0,-40}{1,-10}\n", "Carboxyamidomethylation of cysteine:", "57.02146@C");
-            examples.AppendFormat("\t{0,-40}{1,-10}\n", "Acetylation of (peptide) N-terminus:", "42.01056@[");
-            examples.AppendFormat("\t{0,-40}{1,-10}\n", "Phosphorylation at X:", "79.96633@X");
-            examples.AppendFormat("\t{0,-40}{1,-10}\n", "TMT0 label at K or N-terminus:", "224.15247@K,224.15247@[");
-            examples.AppendFormat("\t{0,-40}{1,-10}\n", "TMT2 label at K or N-terminus:", "225.15583@K,225.15583@[");
-            examples.AppendFormat("\t{0,-40}{1,-10}\n", "TMT6+ label at K or N-terminus:", "229.16293@K,229.16293@[");
-
-            examples.AppendLine("\nFor example, to specify fixed CamC, and variable oxidation of M and TMT10 quant labels, you would invoke the following arguments:");
-            examples.AppendLine("\t--fmods 57.02146@C --nmod 229.16293@[ --kmod 229.16293@K --xmod 15.99491@M");
-
-            examples.AppendLine("\nOr to include the TMT10 labels as fixed modifications, you could invoke the following:");
-            examples.AppendLine("\t--fmods 57.02146@C,229.16293@K,229.16293@[ --xmod 15.99491@M");
-
-            Console.Write(examples);
-
-        }
     }
 }

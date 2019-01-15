@@ -45,9 +45,19 @@ namespace RawTools.ArgumentParser
         public IEnumerable<string> InputFiles { get; set; }
     }
 
-    [Verb("examples", HelpText = "Display some common peptide modification in mass@aa format and examples of usage.")]
-    class ExampleMods
-    { }
+    [Verb("examples", HelpText = "This function provides command line examples and explanations of how to use RawTools. " +
+        "Examples of common peptide modifications in the mass@aa format used in RawTools can also be found here. " +
+        "To view the examples, enter \">RawTools examples --help\".")]
+    class ExampleOptions
+    {
+        [Option("modifications", HelpText = "Display some common peptide modification in mass@aa format and examples of how to use " +
+            "the --fmods, --nmod, --kmod and --xmod arguments. To view these examples enter \">RawTools examples --modifications\"")]
+        public bool DisplayModifications { get; set; }
+
+        [Option("interface", HelpText = "Display examples of of to use RawTools command line interface. " +
+            "To view these examples enter \">RawTools examples --interface\"")]
+        public bool InterfaceExamples { get; set; }
+    }
 
     [Verb("parse", HelpText = "Perform meta and quant data parsing. Also performs data processing, MGF file creation, and saves meta/quant data and run metrics to disk.")]
     class ParseOptions

@@ -28,6 +28,7 @@ using RawTools.Data.Collections;
 using RawTools.Data.Extraction;
 using RawTools.Utilities;
 using RawTools.QC;
+using RawTools.Algorithms;
 using ThermoFisher;
 using ThermoFisher.CommonCore.Data.Business;
 using ThermoFisher.CommonCore.Data.Interfaces;
@@ -67,7 +68,7 @@ namespace RawTools.Data.IO
 
                 if (Index.AnalysisOrder == MSOrderType.Ms3) f.Write("MS3IonInjectionTime\t");
 
-                f.Write("MS1IonInjectionTime\tMS2IonInjectionTime\tHCDEnergy\tMS2MedianIntensity\tMS1MedianIntensity\t");
+                f.Write("MS2IonInjectionTime\tMS1IonInjectionTime\tHCDEnergy\tMS2MedianIntensity\tMS1MedianIntensity\t");
 
                 if (quantData != null)
                 {
@@ -128,8 +129,6 @@ namespace RawTools.Data.IO
                     if (Index.AnalysisOrder == MSOrderType.Ms3) f.Write($"{metaData.FillTime[ms3scan]}\t");
 
                     f.Write($"{metaData.FillTime[ms2scan]}\t{metaData.FillTime[masterScan]}\t");
-
-                    if (Index.AnalysisOrder == MSOrderType.Ms3) f.Write("MS3IonInjectionTime\t");
 
                     f.Write($"{trailerExtras[scan].HCDEnergy}\t{metaData.IntensityDistribution[ms2scan].P50}\t{metaData.IntensityDistribution[masterScan].P50}\t");
 
@@ -357,7 +356,7 @@ namespace RawTools.Data.IO
                     f.WriteLine("TITLE=Spectrum_{0}", i);
                     f.WriteLine("PEPMASS={0}", precursorMasses[i].MonoisotopicMZ);
                     f.WriteLine("CHARGE={0}+", trailerExtras[i].ChargeState);
-                    f.WriteLine("RTINSECONDS={0}", retentionTimes[i]);
+                    f.WriteLine("RTINSECONDS={0}", retentionTimes[i] * 60);
                     f.WriteLine("SCANS={0}", i);
                     f.WriteLine("RAWFILE={0}", rawFileName);
 
@@ -975,7 +974,8 @@ namespace RawTools.Data.IO
 
                 foreach (int i in scans)
                 {
-                    f.WriteLine("\nBEGIN IONS");
+                    f.WriteLine("BEGIN IONS");
+
                     f.WriteLine("TITLE=Spectrum_{0}", i);
                     f.WriteLine("PEPMASS={0}", precursorMasses[i].MonoisotopicMZ);
                     f.WriteLine("CHARGE={0}", trailerExtras[i].ChargeState);
@@ -1027,7 +1027,7 @@ namespace RawTools.Data.IO
                         }
                     }
 
-                    f.WriteLine("END IONS");
+                    f.WriteLine("END IONS\n");
 
                     progress.Update();
                 }
@@ -1454,7 +1454,7 @@ namespace RawTools.Data.IO
                         f.WriteLine("TITLE=Spectrum_{0}_File{1}", scan[file], file+1);
                         f.WriteLine("MATCH_ID={0}", MatchID);
                         f.WriteLine("SCAN={0}", scan[file]);
-                        f.WriteLine("RTINSECONDS={0}", retentionTimes[file][scan[file]]);
+                        f.WriteLine("RTINSECONDS={0}", retentionTimes[file][scan[file]] * 60);
                         f.WriteLine("PEPMASS={0}", precursorMasses[file][scan[file]].MonoisotopicMZ);
                         f.WriteLine("CHARGE={0}", trailerExtras[file][scan[file]].ChargeState);
 

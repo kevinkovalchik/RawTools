@@ -2,23 +2,37 @@
 
 Welcome to the RawTools page! RawTools is an open-source and freely available package designed to perform scan data parsing and quantification, and quality control analysis of Thermo Orbitrap raw mass spectrometer files. RawTools is written in C# and uses the Thermo RawFileReader library. RawTools is fully compatible with Windows, Linux, and MacOS operating systems. RawTools is the replacement for the previously described [RawQuant](https://github.com/kevinkovalchik/RawQuant) Python package. 
 
-The RawTools manuscript preprint is [available on bioRxiv](https://www.biorxiv.org/content/early/2018/09/15/418400).
+The RawTools manuscript was just accepted for the Journal of Proteome Research special issue on Software Tools and Resources, [here](https://pubs.acs.org/doi/10.1021/acs.jproteome.8b00721). The RawTools original manuscript preprint is [available on bioRxiv](https://www.biorxiv.org/content/early/2018/09/15/418400).
 
 <br>
 
-### RawTools releases
+### RawTools releases and installation
 
 To obtain the latest compiled release of RawTools or to obtain an older version, please visit the [Releases page](https://github.com/kevinkovalchik/RawTools/releases). 
+
+If you need help installing and using RawTools, please visit the wiki page appropriate for your system and follow the instructions outlined [here](https://github.com/kevinkovalchik/RawTools/wiki).
 
 <br>
 
 ### Notable news
 
-* The Shiny application is now back online [here](https://rawtoolsqcdv.bcgsc.ca/). [2018-10-01] 
+* [Version 1.4.0 released](https://github.com/kevinkovalchik/RawTools/releases/tag/1.4.0) [2019-01-08]
 
-* The RawTools Shiny application has been revamped to use a new interface and to provide functionality for plotting of 'Matrix' and 'chromatogram' outputs. Matrix files are generated using the RawTools parse functionality and can be useful for visualizing data temporally across the acquisition. Chromatogram files are also generated using the parse functionality, with the `--chro` flag. The new application is currently available on GitHub [from here](https://github.com/kevinkovalchik/RawTools/tree/master/documentation/manuscript/RawTools_RShiny_Application). The web page can be accessed from [this link](https://rawtoolsqcdv.bcgsc.ca/). [2018-09-26]
+* A RawTools GUI is in the works and should be released soon! Initially this will simply allow you to set up RawTools parameters and run the program using a graphical interface instead of the command line. In the future we plan to add some basic features to visualy explore raw files, as well as to visualize some of the parse and QC data similar to our R Shiny app. If you have any features you would like to see in this regard, let us know by creating a [feature request](https://github.com/kevinkovalchik/RawTools/issues/new?assignees=&labels=&template=feature_request.md&title=)! [2019-01-07]
+
+* Thanks to a lot of behind the scenes work, the file downloads of plots from the Shiny app are now working! [2018-12-06]  
+
+* The R Shiny application now has greater support for plot customisation. We have also added the ability to highlight points on QC plots. Lastly, we have added a new 'multi-plot' page where multiple scan matrix files can be input at once and plots for all files will be generated alongside one another in the same space. The latest version is live on the web and available here.  [2018-11-29]
+
+* The Shiny application has been updated to allow downloading of pdf versions of the created plots. These images can be imported to programs like Adobe Illustrator and will be treated as vector images. We have also added the ability to mouseover data points to see values, as well as corrected some bugs. We have also added the ability to add mean and median lines to the QC plots. The latest Shiny web interface is available [here](https://rawtoolsqcdv.bcgsc.ca/). [2018-11-07] 
 
 * RawTools now offers support for X! Tandem in as a search engine to facilitate calculation of identification-related metrics. IdentiPy remains available and the user may decide which search engine they wish to use. We are working on updating the help documentation to reflect this addition. [2018-09-24]
+
+<br>
+
+### RawTools R Shiny page
+
+If you are just here looking for the web application page for visualizing your quality control results: [RawTools R Shiny web application](https://rawtoolsqcdv.bcgsc.ca/). You can also download the application [from here](https://github.com/kevinkovalchik/RawTools/tree/master/documentation/manuscript/RawTools_RShiny_Application) for local use on your own machine.
 
 <br>
 
@@ -27,12 +41,6 @@ To obtain the latest compiled release of RawTools or to obtain an older version,
 If you need help getting started with RawTools or with understanding the output, please visit the [RawTools Wiki](https://github.com/kevinkovalchik/RawTools/wiki).
 
 If you have noticed an error in RawTools or have an idea for a new feature, please make a post on the [Issues page](https://github.com/kevinkovalchik/RawTools/issues).
-
-<br>
-
-### RawTools R Shiny page
-
-If you are just here looking for the web application page for visualizing your quality control results: [RawTools R Shiny web application](https://rawtoolsqcdv.bcgsc.ca/). You can also download the application [from here](https://github.com/kevinkovalchik/RawTools/tree/master/documentation/manuscript/RawTools_RShiny_Application) for local use on your own machine.
 
 <br>
 

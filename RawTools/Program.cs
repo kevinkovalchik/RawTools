@@ -50,6 +50,9 @@ namespace RawTools
     {
         static void Main(string[] args)
         {
+            System.Globalization.CultureInfo.DefaultThreadCurrentCulture = System.Globalization.CultureInfo.InvariantCulture;
+            System.Globalization.CultureInfo.DefaultThreadCurrentUICulture = System.Globalization.CultureInfo.InvariantCulture;
+
             if (Environment.OSVersion.Platform == PlatformID.Unix | Environment.OSVersion.Platform == PlatformID.MacOSX)
             {
                 Console.Out.NewLine = "\n\n";
@@ -63,12 +66,12 @@ namespace RawTools
             Log.Information("Program started with arguments: {0}", String.Join(" ", args));
 
 
-            Parser.Default.ParseArguments<ArgumentParser.ParseOptions, ArgumentParser.QcOptions, ArgumentParser.UniversalOptions, ArgumentParser.TestOptions, ArgumentParser.ExampleMods, ArgumentParser.LogDumpOptions>(args)
+            Parser.Default.ParseArguments<ArgumentParser.ParseOptions, ArgumentParser.QcOptions, ArgumentParser.UniversalOptions, ArgumentParser.TestOptions, ArgumentParser.ExampleOptions, ArgumentParser.LogDumpOptions>(args)
                 .WithParsed<ArgumentParser.ParseOptions>(opts => DoStuff(opts))
                 .WithParsed<ArgumentParser.QcOptions>(opts => DoStuff(opts))
                 .WithParsed<ArgumentParser.UniversalOptions>(opts => DoStuff(opts))
                 .WithParsed<ArgumentParser.TestOptions>(opts => DoStuff(opts))
-                .WithParsed<ArgumentParser.ExampleMods>(opts => DoStuff(opts))
+                .WithParsed<ArgumentParser.ExampleOptions>(opts => DoStuff(opts))
                 .WithParsed<ArgumentParser.LogDumpOptions>(opts => DoStuff(opts))
                 .WithNotParsed((errs) => HandleParseError(args));
 
@@ -194,9 +197,18 @@ namespace RawTools
             return 0;
         }
 
-        static int DoStuff(ArgumentParser.ExampleMods opts)
+        static int DoStuff(ArgumentParser.ExampleOptions opts)
         {
-            SearchQC.ExampleMods();
+            if (opts.DisplayModifications)
+            {
+                Examples.ExampleMods();
+            }
+
+            if (opts.InterfaceExamples)
+            {
+                Examples.CommandLineUsage();
+            }
+
             return 0;
         }
 
@@ -342,6 +354,21 @@ namespace RawTools
 
         static int DoStuff(ArgumentParser.ParseOptions opts)
         {
+            if (!opts.ParseData & !opts.Quant & !opts.Metrics & !opts.WriteMGF & (opts.Chromatogram == null))
+            {
+                Console.WriteLine("You have not indicated what output you want (i.e. one or more of -p, -q, -m, -x, --chro). " +
+                    "Are you sure you want to proceed? Nothing will be written to disk.");
+                Console.Write("(press y to proceed): ");
+
+                string proceed = Console.ReadKey().KeyChar.ToString();
+                Console.WriteLine();
+
+                if (proceed != "y")
+                {
+                    Environment.Exit(0);
+                }
+            }
+
             List<string> files = new List<string>();
 
             if (opts.InputFiles.Count() > 0) // did the user give us a list of files?
