@@ -57,7 +57,7 @@
             this.comboBoxMaxCharge = new System.Windows.Forms.ComboBox();
             this.checkBoxRefinePrecursor = new System.Windows.Forms.CheckBox();
             this.groupBoxQcOptions = new System.Windows.Forms.GroupBox();
-            this.label1 = new System.Windows.Forms.Label();
+            this.labelPeptideMods = new System.Windows.Forms.Label();
             this.buttonPeptideMods = new System.Windows.Forms.Button();
             this.textBoxQcDataDirectory = new System.Windows.Forms.TextBox();
             this.buttonQcDataDirectory = new System.Windows.Forms.Button();
@@ -87,22 +87,22 @@
             this.checkBoxChroMs2 = new System.Windows.Forms.CheckBox();
             this.checkBoxChroMs1 = new System.Windows.Forms.CheckBox();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.comboBoxLabelingReagents = new System.Windows.Forms.ComboBox();
+            this.textBoxMgfLowMass = new System.Windows.Forms.TextBox();
+            this.checkBoxMgfLowMass = new System.Windows.Forms.CheckBox();
+            this.buttonGo = new System.Windows.Forms.Button();
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             this.groupBoxQuantOpt = new System.Windows.Forms.GroupBox();
             this.checkBoxReporterFilterMGF = new System.Windows.Forms.CheckBox();
             this.checkBoxReporterFilterMatrix = new System.Windows.Forms.CheckBox();
-            this.comboBoxLabelingReagents = new System.Windows.Forms.ComboBox();
             this.labelReporterIonFilteringApplyTo = new System.Windows.Forms.Label();
             this.groupBoxMgfOpts = new System.Windows.Forms.GroupBox();
             this.textBoxMgfFilterWindowSize = new System.Windows.Forms.TextBox();
             this.labelMgfIntensityFilterWindow = new System.Windows.Forms.Label();
             this.labelMgfFilterRelativeIntensity = new System.Windows.Forms.Label();
             this.textBoxMgfFilterRelativeIntensity = new System.Windows.Forms.TextBox();
-            this.textBoxMgfLowMass = new System.Windows.Forms.TextBox();
             this.checkBoxMgfIntensityFiltering = new System.Windows.Forms.CheckBox();
-            this.checkBoxMgfLowMass = new System.Windows.Forms.CheckBox();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.button1 = new System.Windows.Forms.Button();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItemNewParameters = new System.Windows.Forms.ToolStripMenuItem();
@@ -156,8 +156,8 @@
             this.checkBoxModeParse.Size = new System.Drawing.Size(67, 21);
             this.checkBoxModeParse.TabIndex = 0;
             this.checkBoxModeParse.Text = "Parse";
-            this.toolTip1.SetToolTip(this.checkBoxModeParse, "Enables parsing of quant and meta data. Select this\r\nfor options under the \"Data " +
-        "Output\" section.");
+            this.toolTip1.SetToolTip(this.checkBoxModeParse, "Enables parsing of quant and meta data. Select this\r\nfor options under the \"Parse" +
+        " Data Output\" section.");
             this.checkBoxModeParse.UseVisualStyleBackColor = true;
             this.checkBoxModeParse.CheckedChanged += new System.EventHandler(this.checkBoxModeParse_CheckedChanged);
             // 
@@ -254,12 +254,13 @@
             this.groupBoxDataOutput.Controls.Add(this.ckbxOutputMetrics);
             this.groupBoxDataOutput.Controls.Add(this.ckbxOutputParse);
             this.groupBoxDataOutput.Controls.Add(this.ckbxOutputMGF);
+            this.groupBoxDataOutput.Enabled = false;
             this.groupBoxDataOutput.Location = new System.Drawing.Point(3, 94);
             this.groupBoxDataOutput.Name = "groupBoxDataOutput";
             this.groupBoxDataOutput.Size = new System.Drawing.Size(333, 145);
             this.groupBoxDataOutput.TabIndex = 2;
             this.groupBoxDataOutput.TabStop = false;
-            this.groupBoxDataOutput.Text = "Data Output";
+            this.groupBoxDataOutput.Text = "Parse Data Output";
             // 
             // checkBoxDataOutputDirectory
             // 
@@ -448,7 +449,7 @@
             // 
             // groupBoxQcOptions
             // 
-            this.groupBoxQcOptions.Controls.Add(this.label1);
+            this.groupBoxQcOptions.Controls.Add(this.labelPeptideMods);
             this.groupBoxQcOptions.Controls.Add(this.buttonPeptideMods);
             this.groupBoxQcOptions.Controls.Add(this.textBoxQcDataDirectory);
             this.groupBoxQcOptions.Controls.Add(this.buttonQcDataDirectory);
@@ -475,17 +476,19 @@
             this.groupBoxQcOptions.TabStop = false;
             this.groupBoxQcOptions.Text = "QC Options";
             // 
-            // label1
+            // labelPeptideMods
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(331, 203);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(146, 17);
-            this.label1.TabIndex = 23;
-            this.label1.Text = "Peptide Modifications:";
+            this.labelPeptideMods.AutoSize = true;
+            this.labelPeptideMods.Enabled = false;
+            this.labelPeptideMods.Location = new System.Drawing.Point(331, 203);
+            this.labelPeptideMods.Name = "labelPeptideMods";
+            this.labelPeptideMods.Size = new System.Drawing.Size(146, 17);
+            this.labelPeptideMods.TabIndex = 23;
+            this.labelPeptideMods.Text = "Peptide Modifications:";
             // 
             // buttonPeptideMods
             // 
+            this.buttonPeptideMods.Enabled = false;
             this.buttonPeptideMods.Location = new System.Drawing.Point(483, 200);
             this.buttonPeptideMods.Name = "buttonPeptideMods";
             this.buttonPeptideMods.Size = new System.Drawing.Size(247, 23);
@@ -796,6 +799,63 @@
             this.toolTip1.SetToolTip(this.checkBoxChroMs1, "Write a MS1 chromatogram to disk. You must also\r\none or more of TIC and BP.");
             this.checkBoxChroMs1.UseVisualStyleBackColor = true;
             // 
+            // comboBoxLabelingReagents
+            // 
+            this.comboBoxLabelingReagents.Enabled = false;
+            this.comboBoxLabelingReagents.FormattingEnabled = true;
+            this.comboBoxLabelingReagents.Items.AddRange(new object[] {
+            "- select -",
+            "TMT0",
+            "TMT2",
+            "TMT6",
+            "TMT10",
+            "TMT11",
+            "iTRAQ4",
+            "iTRAQ8",
+            "Custom"});
+            this.comboBoxLabelingReagents.Location = new System.Drawing.Point(28, 48);
+            this.comboBoxLabelingReagents.Name = "comboBoxLabelingReagents";
+            this.comboBoxLabelingReagents.Size = new System.Drawing.Size(121, 24);
+            this.comboBoxLabelingReagents.TabIndex = 17;
+            this.toolTip1.SetToolTip(this.comboBoxLabelingReagents, "Select a labeling reagent from the drop down list.");
+            this.comboBoxLabelingReagents.SelectedIndexChanged += new System.EventHandler(this.comboBoxLabelingReagents_SelectedIndexChanged);
+            this.comboBoxLabelingReagents.Enter += new System.EventHandler(this.comboBoxLabelingReagents_Enter);
+            // 
+            // textBoxMgfLowMass
+            // 
+            this.textBoxMgfLowMass.Enabled = false;
+            this.textBoxMgfLowMass.Location = new System.Drawing.Point(185, 19);
+            this.textBoxMgfLowMass.Name = "textBoxMgfLowMass";
+            this.textBoxMgfLowMass.Size = new System.Drawing.Size(100, 22);
+            this.textBoxMgfLowMass.TabIndex = 2;
+            this.textBoxMgfLowMass.Text = "0";
+            this.toolTip1.SetToolTip(this.textBoxMgfLowMass, resources.GetString("textBoxMgfLowMass.ToolTip"));
+            this.textBoxMgfLowMass.TextChanged += new System.EventHandler(this.textBoxMgfLowMass_TextChanged);
+            this.textBoxMgfLowMass.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBoxMgfLowMass_KeyPress);
+            // 
+            // checkBoxMgfLowMass
+            // 
+            this.checkBoxMgfLowMass.AutoSize = true;
+            this.checkBoxMgfLowMass.Location = new System.Drawing.Point(6, 21);
+            this.checkBoxMgfLowMass.Name = "checkBoxMgfLowMass";
+            this.checkBoxMgfLowMass.Size = new System.Drawing.Size(173, 21);
+            this.checkBoxMgfLowMass.TabIndex = 0;
+            this.checkBoxMgfLowMass.Text = "Low Mass Cutoff (m/z):";
+            this.toolTip1.SetToolTip(this.checkBoxMgfLowMass, resources.GetString("checkBoxMgfLowMass.ToolTip"));
+            this.checkBoxMgfLowMass.UseVisualStyleBackColor = true;
+            this.checkBoxMgfLowMass.CheckedChanged += new System.EventHandler(this.checkBoxMgfLowMass_CheckedChanged);
+            // 
+            // buttonGo
+            // 
+            this.buttonGo.Location = new System.Drawing.Point(3, 9);
+            this.buttonGo.Name = "buttonGo";
+            this.buttonGo.Size = new System.Drawing.Size(555, 68);
+            this.buttonGo.TabIndex = 0;
+            this.buttonGo.Text = "Go!";
+            this.toolTip1.SetToolTip(this.buttonGo, "Start processing!");
+            this.buttonGo.UseVisualStyleBackColor = true;
+            this.buttonGo.Click += new System.EventHandler(this.buttonGo_Click);
+            // 
             // flowLayoutPanel1
             // 
             this.flowLayoutPanel1.AutoScroll = true;
@@ -857,28 +917,6 @@
             this.checkBoxReporterFilterMatrix.Text = "Matrix";
             this.checkBoxReporterFilterMatrix.UseVisualStyleBackColor = true;
             this.checkBoxReporterFilterMatrix.Visible = false;
-            // 
-            // comboBoxLabelingReagents
-            // 
-            this.comboBoxLabelingReagents.Enabled = false;
-            this.comboBoxLabelingReagents.FormattingEnabled = true;
-            this.comboBoxLabelingReagents.Items.AddRange(new object[] {
-            "- select -",
-            "TMT0",
-            "TMT2",
-            "TMT6",
-            "TMT10",
-            "TMT11",
-            "iTRAQ4",
-            "iTRAQ8",
-            "Custom"});
-            this.comboBoxLabelingReagents.Location = new System.Drawing.Point(28, 48);
-            this.comboBoxLabelingReagents.Name = "comboBoxLabelingReagents";
-            this.comboBoxLabelingReagents.Size = new System.Drawing.Size(121, 24);
-            this.comboBoxLabelingReagents.TabIndex = 17;
-            this.toolTip1.SetToolTip(this.comboBoxLabelingReagents, "Select a labeling reagent from the drop down list.");
-            this.comboBoxLabelingReagents.SelectedIndexChanged += new System.EventHandler(this.comboBoxLabelingReagents_SelectedIndexChanged);
-            this.comboBoxLabelingReagents.Enter += new System.EventHandler(this.comboBoxLabelingReagents_Enter);
             // 
             // labelReporterIonFilteringApplyTo
             // 
@@ -952,18 +990,6 @@
             this.textBoxMgfFilterRelativeIntensity.Visible = false;
             this.textBoxMgfFilterRelativeIntensity.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBoxMgfFilterRelativeIntensity_KeyPress);
             // 
-            // textBoxMgfLowMass
-            // 
-            this.textBoxMgfLowMass.Enabled = false;
-            this.textBoxMgfLowMass.Location = new System.Drawing.Point(185, 19);
-            this.textBoxMgfLowMass.Name = "textBoxMgfLowMass";
-            this.textBoxMgfLowMass.Size = new System.Drawing.Size(100, 22);
-            this.textBoxMgfLowMass.TabIndex = 2;
-            this.textBoxMgfLowMass.Text = "0";
-            this.toolTip1.SetToolTip(this.textBoxMgfLowMass, resources.GetString("textBoxMgfLowMass.ToolTip"));
-            this.textBoxMgfLowMass.TextChanged += new System.EventHandler(this.textBoxMgfLowMass_TextChanged);
-            this.textBoxMgfLowMass.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBoxMgfLowMass_KeyPress);
-            // 
             // checkBoxMgfIntensityFiltering
             // 
             this.checkBoxMgfIntensityFiltering.AutoSize = true;
@@ -976,36 +1002,13 @@
             this.checkBoxMgfIntensityFiltering.Visible = false;
             this.checkBoxMgfIntensityFiltering.CheckedChanged += new System.EventHandler(this.checkBoxMgfIntensityFiltering_CheckedChanged);
             // 
-            // checkBoxMgfLowMass
-            // 
-            this.checkBoxMgfLowMass.AutoSize = true;
-            this.checkBoxMgfLowMass.Location = new System.Drawing.Point(6, 21);
-            this.checkBoxMgfLowMass.Name = "checkBoxMgfLowMass";
-            this.checkBoxMgfLowMass.Size = new System.Drawing.Size(173, 21);
-            this.checkBoxMgfLowMass.TabIndex = 0;
-            this.checkBoxMgfLowMass.Text = "Low Mass Cutoff (m/z):";
-            this.toolTip1.SetToolTip(this.checkBoxMgfLowMass, resources.GetString("checkBoxMgfLowMass.ToolTip"));
-            this.checkBoxMgfLowMass.UseVisualStyleBackColor = true;
-            this.checkBoxMgfLowMass.CheckedChanged += new System.EventHandler(this.checkBoxMgfLowMass_CheckedChanged);
-            // 
             // panel1
             // 
-            this.panel1.Controls.Add(this.button1);
+            this.panel1.Controls.Add(this.buttonGo);
             this.panel1.Location = new System.Drawing.Point(192, 636);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(561, 80);
             this.panel1.TabIndex = 8;
-            // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(3, 9);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(555, 68);
-            this.button1.TabIndex = 0;
-            this.button1.Text = "Go!";
-            this.toolTip1.SetToolTip(this.button1, "Start processing!");
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.buttonGo_Click);
             // 
             // menuStrip1
             // 
@@ -1069,7 +1072,7 @@
             // aboutToolStripMenuItem
             // 
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(216, 26);
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(192, 26);
             this.aboutToolStripMenuItem.Text = "About RawTools";
             this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 
@@ -1163,7 +1166,7 @@
         private System.Windows.Forms.CheckBox checkBoxChroMs2;
         private System.Windows.Forms.CheckBox checkBoxChroMs1;
         private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button buttonGo;
         private System.Windows.Forms.TextBox textBoxReporterNumberMissingFilter;
         private System.Windows.Forms.TextBox textBoxReporterIntensityFilter;
         private System.Windows.Forms.Label labelReporterIonIntensityFilter;
@@ -1181,7 +1184,7 @@
         private System.Windows.Forms.TextBox textBoxMgfFilterRelativeIntensity;
         private System.Windows.Forms.TextBox textBoxQcDataDirectory;
         private System.Windows.Forms.Button buttonQcDataDirectory;
-        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label labelPeptideMods;
         private System.Windows.Forms.Button buttonPeptideMods;
 
         private PeptideModifications peptideModifications;

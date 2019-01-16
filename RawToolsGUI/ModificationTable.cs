@@ -19,8 +19,19 @@ namespace RawToolsGUI
         public PeptideModifications()
         {
             KMod.AA = "K";
+            KMod.Mass = "229.16293";
+            KMod.Use = true;
+
             NMod.AA = "[";
+            NMod.Mass = "229.16293";
+            NMod.Use = true;
+
             FMods = new List<(string Mass, string AA, bool Use)>();
+            FMods.Add(("57.02146", "C", true));
+
+            XMod.AA = "M";
+            XMod.Mass = "15.99491";
+            XMod.Use = true;
         }
 
         public string KModString { get { return GetModString(KMod); } }

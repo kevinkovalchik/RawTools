@@ -148,6 +148,9 @@ namespace RawToolsGUI
                 textBoxNumSpectra.Enabled = false;
 
                 checkBoxAutoSearchIdentipy.Enabled = false;
+
+                labelPeptideMods.Enabled = false;
+                buttonPeptideMods.Enabled = false;
             }
         }
 
@@ -169,6 +172,9 @@ namespace RawToolsGUI
                 textBoxNumSpectra.Enabled = true;
 
                 checkBoxAutoSearchIdentipy.Enabled = false;
+
+                labelPeptideMods.Enabled = true;
+                buttonPeptideMods.Enabled = true;
             }
         }
 
@@ -195,6 +201,9 @@ namespace RawToolsGUI
                     textBoxPythonExe.Enabled = true;
                     textBoxIdentipyScript.Enabled = true;
                 }
+
+                labelPeptideMods.Enabled = true;
+                buttonPeptideMods.Enabled = true;
             }
         }
 
@@ -218,6 +227,15 @@ namespace RawToolsGUI
 
         private void checkBoxModeParse_CheckedChanged(object sender, EventArgs e)
         {
+            if (checkBoxModeParse.Checked)
+            {
+                groupBoxDataOutput.Enabled = true;
+            }
+            else
+            {
+                groupBoxDataOutput.Enabled = false;
+            }
+            
         }
 
         private void checkBoxModeQC_CheckedChanged(object sender, EventArgs e)
