@@ -338,6 +338,10 @@ namespace RawTools.Algorithms.ExtractData
             rawFile.SelectInstrument(Device.MS, 1);
             CentroidStreamCollection centroids = new CentroidStreamCollection();
             SegmentScanCollection segments = new SegmentScanCollection();
+
+            CentroidStream centroid;
+            SegmentedScan segment;
+
             var scans = index.allScans;
             //var lockTarget = new object(); // this is so we can keep track of progress in the parallel loop
 
@@ -349,11 +353,15 @@ namespace RawTools.Algorithms.ExtractData
                 // first get out the mass spectrum
                 if (index.allScans[scan].MassAnalyzer == MassAnalyzerType.MassAnalyzerFTMS)
                 {
-                    centroids[scan] = new CentroidStreamData(rawFile.GetCentroidStream(scan, false));
+                    centroid = rawFile.GetCentroidStream(scan, false);
+
+                    centroids[scan] = new CentroidStreamData(centroid);
                 }
                 else
                 {
-                    segments[scan] = new SegmentedScanData(rawFile.GetSegmentedScanFromScanNumber(scan, null));
+                    segment = rawFile.GetSegmentedScanFromScanNumber(scan, null);
+
+                    segments[scan] = new SegmentedScanData(segment);
                 }
                 //lock (lockTarget)
                 //{

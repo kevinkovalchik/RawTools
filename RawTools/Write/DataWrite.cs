@@ -350,6 +350,9 @@ namespace RawTools.Data.IO
 
                 ProgressIndicator progress = new ProgressIndicator(scans.Count(), String.Format("Writing MGF file"));
 
+                // we need to add a blank line at the begining of the file so MS-GF+ works, no idea why...
+                f.WriteLine();
+
                 foreach (int i in scans)
                 {
                     f.WriteLine("BEGIN IONS");
