@@ -14,9 +14,20 @@ If you need help installing and using RawTools, please visit the wiki page appro
 
 <br>
 
-### Notable news
+### [RawToolsGUI](https://github.com/kevinkovalchik/RawTools/releases/tag/RawToolsGUI-beta) is here!
 
-* [Version 1.4.0 released](https://github.com/kevinkovalchik/RawTools/releases/tag/1.4.0) [2019-01-08]
+This [new beta release](https://github.com/kevinkovalchik/RawTools/releases/tag/RawToolsGUI-beta) adds a graphical user interface to RawTools. It runs on top of a modified version of [RawTools 1.4.1](https://github.com/kevinkovalchik/RawTools/releases/tag/1.4.1), and provides a user-friendly interface to set up all your parse and search parameters. RawToolsGUI then formats the proper command line arguments and runs a new instance of RawTools for you using those arguments. You can save and load the parameters as well, so once you have a standard routine set up, you won't need to click so many buttons every time you want to run it.
+
+The release includes regular RawTools as well, so there is no need to copy any files around. Once we are ready to move past the beta stage, RawToolsGUI will simply be incorporated into the regular RawTools distribution. You will be able to run RawTools with the CLI using `RawTools.exe` and as a GUI using `RawToolsGUI.exe`, but both files will be distributed in all releases.
+
+if you are using RawToolsGUI and have any issues or suggestions let us know!
+
+**NOTE**
+RawToolsGUI, like RawTools, requires the .NET or Mono Framework. This means if you are running from Linux or Mac you will still need to run it from a console like this: `$ mono RawToolsGUI.exe`. At some point we plan to include a simple console script that will do this for you when you click on it.
+
+<br>
+
+### Notable news
 
 * A RawTools GUI is in the works and should be released soon! Initially this will simply allow you to set up RawTools parameters and run the program using a graphical interface instead of the command line. In the future we plan to add some basic features to visualy explore raw files, as well as to visualize some of the parse and QC data similar to our R Shiny app. If you have any features you would like to see in this regard, let us know by creating a [feature request](https://github.com/kevinkovalchik/RawTools/issues/new?assignees=&labels=&template=feature_request.md&title=)! [2019-01-07]
 

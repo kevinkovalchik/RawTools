@@ -4,6 +4,10 @@ All notable changes to RawTools will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+### Changes
+- We have changed the internal settings of RawTools so output data files always use decimal dots rather than decimal commas (e.g. 1.234 vs 1,234). Previously decimal commas were sometimes the default depending on the system language. This decision was made because some database search engines are not able to properly parse MGF files with decimal commas. If this impacts your downstream workflow in a negative way, please let us know and we will try to make this change user-specified rather than a default.
+
 ## [1.4.1] 2019-01-11
 ### Fixed
 - Fixed a bug in which RTINSECONDS, as reported in the MGF file, was actually in minutes. It is now in seconds.
