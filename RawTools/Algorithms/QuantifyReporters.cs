@@ -77,7 +77,7 @@ namespace RawTools.Algorithms
                         quantData.Add(reporters.Labels[i], new ReporterIon(centroidStream.Masses[index], centroidStream.Intensities[index],
                                                                    centroidStream.Noises[index], centroidStream.Resolutions[index],
                                                                    centroidStream.Baselines[index], centroidStream.SignalToNoise[index],
-                                                                   massDiff[index] / mass * 1e6));
+                                                                   massDiff.Min() / mass * 1e6));
                     }
                     else
                     {
