@@ -93,7 +93,7 @@ namespace RawTools.QC
                 {
                     Log.Information("A file with the same creation date and time as {File} already exists in the QC data", fileName);
 
-                    Console.WriteLine("A file with the same creation date and time as {File} already exists in the QC data. Skipping to next file.",
+                    Console.WriteLine("A file with the same creation date and time as {0} already exists in the QC data. Skipping to next file.",
                         fileName);
 
                     continue;
