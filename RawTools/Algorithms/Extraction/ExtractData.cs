@@ -36,7 +36,7 @@ using Serilog;
 
 namespace RawTools.Algorithms.ExtractData
 {
-    static class Extract
+    public static class Extract
     {
         public static (ScanIndex, PrecursorScanCollection, ScanDependentsCollections) ScanIndicesPrecursorsDependents(IRawFileThreadManager rawFileAccessor)
         {

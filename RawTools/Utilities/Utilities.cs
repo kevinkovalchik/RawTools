@@ -137,7 +137,7 @@ namespace RawTools.Utilities
         }
     }
 
-    class ProgressIndicator
+    public class ProgressIndicator
     {
         string message;
         int x = 0;

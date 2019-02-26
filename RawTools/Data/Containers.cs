@@ -33,7 +33,7 @@ using RawTools.Data.Collections;
 
 namespace RawTools.Data.Containers
 {
-    class ScanData
+    public class ScanData
     {
         public MSOrderType MSOrder;
         public MassAnalyzerType MassAnalyzer;
@@ -41,7 +41,7 @@ namespace RawTools.Data.Containers
         public bool HasDependents;
     }
 
-    class ScanIndex
+    public class ScanIndex
     {
         public Dictionary<int, ScanData> allScans;
         public MSOrderType AnalysisOrder;
@@ -134,7 +134,7 @@ namespace RawTools.Data.Containers
         }
     }
 
-    class TrailerExtraData
+    public class TrailerExtraData
     {
         public int MasterScan = -1;
         public int ChargeState = -1;
@@ -144,7 +144,7 @@ namespace RawTools.Data.Containers
         public double[] SPSMasses;
     }
 
-    class PrecursorScanData
+    public class PrecursorScanData
     {
         public int MS3Scan, MS2Scan, MasterScan;
         public PrecursorScanData(int ms2scan, int masterScan)
@@ -161,7 +161,7 @@ namespace RawTools.Data.Containers
         }
     }
 
-    class PrecursorMassData
+    public class PrecursorMassData
     {
         public double MonoisotopicMZ, ParentMZ;
 

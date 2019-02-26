@@ -33,13 +33,13 @@ using System.Xml.Serialization;
 
 namespace RawTools.Data.Collections
 {
-    class CentroidStreamCollection : Dictionary<int, CentroidStreamData> { }
+    public class CentroidStreamCollection : Dictionary<int, CentroidStreamData> { }
 
-    class SegmentScanCollection : Dictionary<int, SegmentedScanData> { }
+    public class SegmentScanCollection : Dictionary<int, SegmentedScanData> { }
 
-    class TrailerExtraCollection : Dictionary<int, TrailerExtraData> { }
+    public class TrailerExtraCollection : Dictionary<int, TrailerExtraData> { }
 
-    class PrecursorScanCollection : Dictionary<int, PrecursorScanData>
+    public class PrecursorScanCollection : Dictionary<int, PrecursorScanData>
     {
         public PrecursorScanCollection()
         { }
@@ -61,11 +61,11 @@ namespace RawTools.Data.Collections
         }
     }
 
-    class PrecursorMassCollection : Dictionary<int, PrecursorMassData> { }
+    public class PrecursorMassCollection : Dictionary<int, PrecursorMassData> { }
 
-    class RetentionTimeCollection : Dictionary<int, double> { }
+    public class RetentionTimeCollection : Dictionary<int, double> { }
 
-    class ScanDependentsCollections : Dictionary<int, IScanDependents>
+    public class ScanDependentsCollections : Dictionary<int, IScanDependents>
     {
         public ScanDependentsCollections()
         { }
@@ -124,7 +124,7 @@ namespace RawTools.Data.Collections
         }
     }
 
-    class ScanEventReactionCollection: Dictionary<int, IReaction> { }
+    public class ScanEventReactionCollection : Dictionary<int, IReaction> { }
 
     [XmlRoot("dictionary")]
     public class SerializableDictionary<TKey, TValue>
