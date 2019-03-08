@@ -65,7 +65,7 @@ namespace RawTools.QC
             }
         }
 
-        public static void DoQc(WorkflowParameters parameters)
+        public static void DoQc(WorkflowParameters parameters, bool subdirectoriesIncluded)
         {
             //QcDataCollectionDDA qcDataCollection;
             dynamic qcDataCollection;
@@ -76,7 +76,7 @@ namespace RawTools.QC
 
             string qcFile = Path.Combine(qcDirectory, "QC.xml");
 
-            (fileList, qcDataCollection) = GetFileListAndQcFile(parameters);
+            (fileList, qcDataCollection) = GetFileListAndQcFile(parameters, subdirectoriesIncluded);
 
             foreach (string fileName in fileList)
             {
@@ -165,7 +165,7 @@ namespace RawTools.QC
             return qcDataCollection;
         }
         
-        private static (List<string> fileList, QcDataCollection qcDataCollection) GetFileListAndQcFile(WorkflowParameters parameters)
+        private static (List<string> fileList, QcDataCollection qcDataCollection) GetFileListAndQcFile(WorkflowParameters parameters, bool subdirectoriesIncluded)
         {
             QcDataCollection qcDataCollection;
             string dataDirectory = parameters.RawFileDirectory;
@@ -204,8 +204,18 @@ namespace RawTools.QC
             }
 
             // get our list of new raw files. it is every raw file in the directory that is not listed in the qc data
-            var fileList = Directory.GetFiles(dataDirectory, "*.*", SearchOption.TopDirectoryOnly)
+            List<string> fileList;
+            if (subdirectoriesIncluded)
+            {
+                fileList = Directory.GetFiles(dataDirectory, "*.*", SearchOption.AllDirectories)
                     .Where(s => s.EndsWith(".raw", StringComparison.OrdinalIgnoreCase)).ToList();
+            }
+            else
+            {
+                fileList = Directory.GetFiles(dataDirectory, "*.*", SearchOption.TopDirectoryOnly)
+                    .Where(s => s.EndsWith(".raw", StringComparison.OrdinalIgnoreCase)).ToList();
+            }
+            
 
             // make sure we've got absolute paths to the files
             fileList.EnsureAbsolutePaths();

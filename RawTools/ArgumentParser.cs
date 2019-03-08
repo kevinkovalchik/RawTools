@@ -189,5 +189,8 @@ namespace RawTools.ArgumentParser
         [Option('R', "refinemasscharge", HelpText = "Optional. Refine precursor charge and monoisotopic mass assignments. Highly recommended if " +
             "monoisotopic precursor selection was turned off in the instrument method.")]
         public bool RefineMassCharge { get; set; }
+
+        [Option("subdirectories", HelpText = "Optional. Search the specified data directory and all subdirectories for .raw file. i.e. all .files.")]
+        public bool SubdirectoriesIncluded { get; set; }
     }
 }

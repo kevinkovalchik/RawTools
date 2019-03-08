@@ -352,7 +352,7 @@ namespace RawTools
                 }
             }
 
-            QC.QcWorkflow.DoQc(parameters);
+            QC.QcWorkflow.DoQc(parameters, opts.SubdirectoriesIncluded);
             
             return 0;
         }
