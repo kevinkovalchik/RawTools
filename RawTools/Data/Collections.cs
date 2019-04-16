@@ -195,7 +195,6 @@ namespace RawTools.Data.Collections
 
     class PsmDataCollection: Dictionary<int, PsmData>
     {
-        public string FileName;
     }
 
     class MultiRunFeatureCollection: Dictionary<int, MultiRunFeature>
@@ -208,10 +207,6 @@ namespace RawTools.Data.Collections
         public bool FoundIn1;
         public bool FoundIn2;
         public bool ConfirmSeqMatch;
-        public double RT1, RT2;
-        public double Mass1, Mass2;
-        public int Ms2Scan1, Ms2Scan2;
-        public double XCorr;
         public Dictionary<(int scan1, int scan2), double> AllScores;
         public Dictionary<(int scan1, int scan2), double> LowScores;
 
@@ -229,10 +224,7 @@ namespace RawTools.Data.Collections
     
     class Ms1FeatureCollection: Dictionary<int, Ms1Feature>
     { }
-
-    class FeaturePreMatchDataCollection: Dictionary<int, FeaturePreMatchData>
-    { }
-
+    
     class FeatureMatchDataCollection : Dictionary<int, MultiRunFeatureMatchData>
     {
         Dictionary<int, string> RunNameKeys;

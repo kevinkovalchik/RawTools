@@ -559,9 +559,7 @@ namespace RawTools.Algorithms.ExtractData
             rawFile.SelectInstrument(Device.MS, 1);
             Log.Information("Extracting scan dependents/precursor scans");
             PrecursorScanCollection precursorScans = new PrecursorScanCollection();
-
-            int ms2Scan = -1;
-            int ms3Scan = -1;
+            
             IEnumerable<int> scans = index.ScanEnumerators[MSOrderType.Ms];
             ProgressIndicator progress = new ProgressIndicator(scans.Count(), "Indexing linked scan events");
 

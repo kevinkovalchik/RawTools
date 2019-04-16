@@ -336,43 +336,6 @@ namespace RawTools.Data.Containers
         }
     }
 
-    class ScanMetaDataDDA
-    {
-        public double DutyCycle, FillTime, MS2ScansPerCycle, Ms1IsolationInterference = -1;
-        public Distribution IntensityDistribution;
-        public double SummedIntensity;
-        public double FractionConsumingTop80PercentTotalIntensity;
-        
-        public ScanMetaDataDDA()
-        { }
-
-        public ScanMetaDataDDA(double dutyCycle, double fillTime, double scanTime, double ms2ScansPerCycle, Distribution intensityDistribution)
-        {
-            DutyCycle = dutyCycle;
-            FillTime = fillTime;
-            MS2ScansPerCycle = ms2ScansPerCycle;
-            IntensityDistribution = intensityDistribution;
-        }
-    }
-
-    class ScanMetaDataDIA
-    {
-        public double DutyCycle, FillTime = -1;
-        public Distribution IntensityDistribution;
-        public double SummedIntensity;
-        public double FractionConsumingTop80PercentTotalIntensity;
-
-        public ScanMetaDataDIA()
-        { }
-
-        public ScanMetaDataDIA(double dutyCycle, double fillTime, double scanTime, Distribution intensityDistribution)
-        {
-            DutyCycle = dutyCycle;
-            FillTime = fillTime;
-            IntensityDistribution = intensityDistribution;
-        }
-    }
-
     [Serializable]
     public class QuantMetaData
     {
@@ -475,7 +438,6 @@ namespace RawTools.Data.Containers
         public bool PeakFound = false, ContainsFirstMS1Scan = false, ContainsLastMS1Scan = false;
         public int[] Scans;
         public PeakShape PeakShape;
-        public PsmData PSM;
     }
 
     class NewMetaData
@@ -493,19 +455,6 @@ namespace RawTools.Data.Containers
             MS2ScansPerCycle = ms2ScansPerCycle;
             IntensityDistribution = intensityDistribution;
         }
-    }
-
-    class MasterDataContainer
-    {
-        /* The MasterDataContainer is intended to be indexed by peptide spectrum scan.  Take the following master scan and data dependent scans, for example: MS1 200, MS2 203, MS3 204
-         * Data from these scans will all be in one container. The master scan is 200, the peptide scan is 203, and the quant scan is 204. If it were an MS2 experiment, the peptide and quant
-         * scan indices would both be stored, but they would happen to be the same number. This allows for more general processing to take place.
-         */
-        int MasterScan, QuantScan, PeptideScan;
-        PrecursorPeakData PrecursorPeak;
-        
-        QuantData QuantData;
-
     }
 
     class Width: Distribution
@@ -603,15 +552,6 @@ namespace RawTools.Data.Containers
         public bool FixedScans;
     }
 
-    class QcParameters
-    {
-        public string RawFileDirectory, QcDirectory, QcFile;
-        public SearchParameters searchParameters;
-        public string QcSearchDataDirectory { get { return Path.Combine(QcDirectory, "QcSearchData"); } }
-        public bool RefineMassCharge;
-        public ExperimentType ExpType;
-    }
-
     public enum SearchAlgorithm
     {
         None = 0,
@@ -639,13 +579,6 @@ namespace RawTools.Data.Containers
     {
         public double Hyperscore, ExpectationValue, MassDrift;
         public int Id;
-        public int Scan;
-        public int MasterScan;
-        public double RetentionTime;
-        public double MasterScanRetentionTime;
-        public double PeakApexRT;
-        public double AlignedPeakApexRT;
-        public double MonoisotopicMZ;
         public bool Decoy;
         public string Seq;
         public int Start, End, Charge, MissedCleavages;
@@ -666,18 +599,6 @@ namespace RawTools.Data.Containers
                 return String.Concat(Mass, "@", AA);
             }
         }
-    }
-
-    class FeaturePreMatchData
-    {
-        public double RT;
-        public double Mass;
-        public double Ms2Sum;
-        public double Ms2SelfDotProduct;
-
-        public SimpleCentroid Ms2Spectra;
-
-        public int Ms2Scan;
     }
 
     class Ms1Feature
@@ -757,32 +678,6 @@ namespace RawTools.Data.Containers
         {
             Run = run;
             Ms2Scan = ms2scan;
-        }
-    }
-
-    class SingleFeatureMatchData
-    {
-        public bool IdInSelf;
-        public bool IdInOther;
-        public bool PickedInSelf;
-        public bool PickedInOther;
-        public bool ConfirmSeqMatch;
-        public double RtSelf, RtOther;
-        public double MassSelf, MassOther;
-        public int Ms2ScanSelf, Ms2ScanOther;
-        public double Score;
-        public Dictionary<(int scanSelf, int scanOther), double> AllScores;
-        //public Dictionary<(int scanSelf, int scanOther), double> LowScores;
-
-        public SingleFeatureMatchData()
-        {
-            IdInSelf = false;
-            IdInOther = false;
-            PickedInSelf = false;
-            PickedInOther = false;
-            ConfirmSeqMatch = false;
-            AllScores = new Dictionary<(int scanSelf, int scanOther), double>();
-            //LowScores = new Dictionary<(int scanSelf, int scanOther), double>();
         }
     }
 

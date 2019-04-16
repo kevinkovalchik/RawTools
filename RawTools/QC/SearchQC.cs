@@ -219,12 +219,10 @@ namespace RawTools.QC
 
         public static void ParsePSMs(this SearchMetricsContainer searchMetrics, PsmDataCollection psmCollection, WorkflowParameters parameters)
         {
-            XElement results, searchSummary;
-            IEnumerable<XElement> decoyPSMs, search_hits, spectrumQueries;
-            int numGoodPSMs, totalCleavageSites, pepsWithNoMissedCleavages, peptidesWithNoMissedCleavages;
-            IEnumerable<int> allMissedCleavages, charges;
+            int numGoodPSMs, pepsWithNoMissedCleavages;
+            IEnumerable<int> charges;
             double IdRate, chargeRatio3to2, chargeRatio4to2;
-            double digestionEfficiencyByCleavage, digestionEfficiency, topDecoyScore;
+            double digestionEfficiency, topDecoyScore;
             double missedCleavageRate;
             Dictionary<int, int> numCharges = new Dictionary<int, int>();
             List<PsmData> psms;
@@ -346,31 +344,9 @@ namespace RawTools.QC
                 AminosOfInterest.Add(splitString.Last());
             }
 
-            // now we need to get at labeling efficiency
-            int KTotalSites = 0;
-            int KTotalMissed = 0;
-            int NTotalSites = 0;
-            int NTotalMissed = 0;
-            int XTotalSites = 0;
-            int XTotalMissed = 0;
-
-            // define a function to return the number of labeling sites
-            int NumberOfSites(string aa, string seq)
-            {
-                if (aa == "[" | aa == "]")
-                {
-                    return 1;
-                }
-                else
-                {
-                    return seq.Count(x => x.ToString() == aa);
-                }
-            }
-
             foreach (PsmData psm in psms)
             {
                 mods = psm.Mods;
-                bool skipNterm = false;
 
                 // check the sequence in two steps. First the n-terminus, then remove the n-terminus and check the rest of it.
 

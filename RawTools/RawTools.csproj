@@ -127,7 +127,6 @@
     <Compile Include="ArgumentParser.cs" />
     <Compile Include="Constants\Constants.cs" />
     <Compile Include="Data\Collections.cs" />
-    <Compile Include="Data\TestContainers.cs" />
     <Compile Include="Examples.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
