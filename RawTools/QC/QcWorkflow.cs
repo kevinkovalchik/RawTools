@@ -165,7 +165,7 @@ namespace RawTools.QC
             return qcDataCollection;
         }
         
-        private static (List<string> fileList, QcDataCollection qcDataCollection) GetFileListAndQcFile(WorkflowParameters parameters, bool subdirectoriesIncluded)
+        public static (List<string> fileList, QcDataCollection qcDataCollection) GetFileListAndQcFile(WorkflowParameters parameters, bool subdirectoriesIncluded)
         {
             QcDataCollection qcDataCollection;
             string dataDirectory = parameters.RawFileDirectory;
@@ -243,7 +243,7 @@ namespace RawTools.QC
             return (fileList, qcDataCollection);
         }
 
-        private static bool CheckIfFilePresentInQcCollection(string fileName, QcDataCollection qcDataCollection)
+        public static bool CheckIfFilePresentInQcCollection(string fileName, QcDataCollection qcDataCollection)
         {
             IFileHeader rawHeader = FileHeaderReaderFactory.ReadFile(fileName);
 
