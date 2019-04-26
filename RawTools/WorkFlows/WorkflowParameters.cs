@@ -40,6 +40,8 @@ namespace RawTools.WorkFlows
             ParseParams = new ParseWorkflowParameters();
         }
 
+        public WorkflowParameters(Dictionary<string, dynamic> parameterOptions)
+
         public WorkflowParameters(ArgumentParser.ParseOptions parseOptions)
         {
             ParseParams = new ParseWorkflowParameters();
