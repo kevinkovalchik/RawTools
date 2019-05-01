@@ -1138,7 +1138,7 @@ namespace RawTools.Data.IO
                         "MedianPrecursorIntensity,MedianMs1IsolationInterence,MedianMs2PeakFractionConsumingTop80PercentTotalIntensity,EsiInstabilityFlags(count),MedianMassDrift(ppm)," +
                         "IdentificationRate(IDs/Ms2Scan),DigestionEfficiency,MissedCleavageRate(/PSM),ModificationFrequencyAtNTerm,ModificationFrequencyAtK,ModificationFrequencyAtX," +
                         "MedianMsFillTime(ms),MedianMs2FillTime(ms),MedianMs3FillTime(ms),WidthAt10%H(s),WidthAt50%H(s),AsymmetryAt10%H,AsymmetryAt50%H," +
-                        "PeakCapacity,TimeBeforeFirstExceedanceOf10%MaxIntensity,TimeAfterLastExceedanceOf10%MaxIntensity,FractionOfRunAbove10%MaxIntensity,IdChargeRatio3to2,IdChargeRatio4to2,IdentipyParameters");
+                        "PeakCapacity,TimeBeforeFirstExceedanceOf10%MaxIntensity,TimeAfterLastExceedanceOf10%MaxIntensity,FractionOfRunAbove10%MaxIntensity,IdChargeRatio3to2,IdChargeRatio4to2,SearchParameters");
                 }
 
                 List<DateTime> keys = qcData.QcData.Keys.ToList();

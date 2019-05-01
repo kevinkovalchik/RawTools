@@ -38,7 +38,7 @@ namespace RawTools.ArgumentParser
                 "fully compatible with Windows, Linux, and MacOS operating systems.");
 
             parser.Add(new Argument(name: "RawFiles", shortArgument: "-f", longArgument: "-files", required: false,
-                typeOf: typeof(List<string>),
+                typeOf: typeof(List<string>), allowList: true,
                 helpText: "Indicates input file(s) to be processed, separated by a space if there are multiple files. " +
             "Must be Thermo .raw files. You must use either -f or -d to indicate the file(s) to process."));
 
@@ -87,7 +87,7 @@ namespace RawTools.ArgumentParser
                    "May be of use if removal of reporter ions is desired prior to searching of MS2 spectra. Default is 0."));
 
             parser.Add(new Argument(name: "OutputDirectory", shortArgument: "-o", longArgument: "-out", required: false,
-                typeOf: typeof(bool),
+                typeOf: typeof(string),
                 helpText: "The directory in which to write output. Can be a relative or absolute path to the directory. If it is a relative path it will be placed inside " +
                 "the directory containing the respective raw file. Note that relative paths should not start with a slash. If this is left blank, the directory where the raw file is stored will " +
                 "be used by default."));
@@ -105,18 +105,21 @@ namespace RawTools.ArgumentParser
 
             parser.Add(new Argument(name: "RefineMassCharge", shortArgument: "-R", longArgument: "-refinemasscharge", required: false,
                 typeOf: typeof(bool),
+                defaultValue: true,
                 helpText: "Refine precursor charge and monoisotopic mass assignments. Highly recommended if " +
                 "monoisotopic precursor selection was turned off in the instrument method (or peptide match on a QE instrument)."));
 
             parser.Add(new Argument(name: "MinCharge", shortArgument: "-min", longArgument: "-mincharge", required: false,
                 typeOf: typeof(int),
+                defaultValue: 2,
                 helpText: "The minimum charge to consider when refining precursor mass and charge."));
 
             parser.Add(new Argument(name: "MaxCharge", shortArgument: "-max", longArgument: "-maxcharge", required: false,
                 typeOf: typeof(int),
+                defaultValue: 4,
                 helpText: "The maximum charge to consider when refining precursor mass and charge."));
 
-            parser.Add(new Argument(name: "FastaDB", shortArgument: "-f", longArgument: "-fastadb", required: false,
+            parser.Add(new Argument(name: "FastaDB", shortArgument: "-db", longArgument: "-fastadb", required: false,
                 typeOf: typeof(string),
                 helpText: "Required for an X! Tandem search during QC. Path to a fasta protein database."));
 
@@ -146,6 +149,7 @@ namespace RawTools.ArgumentParser
 
             parser.Add(new Argument(name: "NumberSpectra", shortArgument: "-N", longArgument: "-numberspectra", required: false,
                 typeOf: typeof(int),
+                defaultValue: 3000,
                 helpText: "The number of MS2 spectra to be passes to the search engine as an MGF file. Defaults to 10,000. " +
                 "If N is greater than the number of MS2 scans in a raw file, all MS2 scans will be used."));
 
@@ -156,14 +160,12 @@ namespace RawTools.ArgumentParser
             parser.AddMutuallyExclusiveGroup(new List<string> { "RawFiles", "RawFileDirectory" });
             parser.AddMutuallyExclusiveGroup(new List<string> { "RawFiles", "QcDirectory" });
 
-            parser.AddMutuallyDependenteGroup(new List<string> { "Quant", "LabelingReagents" });
+            parser.AddMutuallyDependenteGroup(new List<string> { "Quant", "LabelingReagent" });
             parser.AddMutuallyDependenteGroup(new List<string> { "XTandemDirectory", "FastaDB" });
 
             parser.AddRequiredGroup(new List<string> { "RawFiles", "RawFileDirectory" });
-
-            parser.AddDependencyGroup("LabelingReagent", new List<string> { "Quant" });
-            parser.AddDependencyGroup("Quant", new List<string> { "LabelingReagent" });
-            parser.AddDependencyGroup("MgfMassCutoff", new List<string> { "WriteMGF" });
+            
+            parser.AddDependencyGroup("WriteMGF", new List<string> { "MgfMassCutoff" });
             parser.AddDependencyGroup("XTandemDirectory", new List<string> { "FixedModifications",
                 "VariableModifications", "XModifications", "NumberSpectra" });
 

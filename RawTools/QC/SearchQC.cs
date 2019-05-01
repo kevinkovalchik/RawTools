@@ -59,6 +59,12 @@ namespace RawTools.QC
             string QcSearchDataDirectory = parameters.QcParams.QcSearchDataDirectory;
             string resultsFile = Path.Combine(QcSearchDataDirectory, Path.GetFileName(rawFileName) + ".pep.xml");
 
+            if (!File.Exists(resultsFile))
+            {
+                Console.WriteLine("ERROR: Database search results file does not exist. Did the search fail?");
+                Environment.Exit(1);
+            }
+
             return XElement.Load(resultsFile);
         }
 
@@ -126,89 +132,6 @@ namespace RawTools.QC
                             psm.Mods.Add(mod);
                         }
                     }                    
-
-                    psms.Add(psm.Id, psm);
-                }
-            }
-
-            if (searchAlgorithm == SearchAlgorithm.IdentiPy)
-            {
-                XNamespace nsp = "http://regis-web.systemsbiology.net/pepXML";
-
-                // first we need to make a dictionary of modification masses etc for the identipy results
-                // the keys are the amino acid mass after modification, which is what identipy reports
-                // the values are the mass difference values, which is what is given in the mass@aa arguments to the CLI
-                XElement summary = results.Descendants(nsp + "search_summary").First();
-                Dictionary<double, double> modInfo = new Dictionary<double, double>();
-
-                foreach (XElement mod in summary.Elements(nsp + "aminoacid_modification"))
-                {
-                    modInfo.Add(Convert.ToDouble(mod.Attribute("mass").Value), Convert.ToDouble(mod.Attribute("massdiff").Value));
-                }
-                foreach (XElement mod in summary.Elements(nsp + "terminal_modification"))
-                {
-                    modInfo.Add(Convert.ToDouble(mod.Attribute("mass").Value), Convert.ToDouble(mod.Attribute("massdiff").Value));
-                }
-
-                // now we can parse out the data
-
-                foreach (var x in results.Descendants(nsp + "spectrum_query"))
-                {
-                    psm = new PsmData();
-                    
-                    psm.Id = Convert.ToInt32(x.Attribute("index").Value);
-
-                    XElement searchHit = x.Element(nsp + "search_result").Element(nsp + "search_hit");
-
-                    psm.Decoy = searchHit.Attribute("protein").Value.StartsWith("DECOY_");
-
-                    psm.Seq = searchHit.Attribute("peptide").Value;
-
-                    psm.Start = -1;
-
-                    psm.End = -1;
-
-                    psm.Hyperscore = Convert.ToDouble(searchHit.Elements(nsp + "search_score")
-                        .Where(y => y.Attribute("name").Value == "hyperscore").First().Attribute("value").Value);
-
-                    psm.ExpectationValue = Convert.ToDouble(searchHit.Elements(nsp + "search_score")
-                        .Where(y => y.Attribute("name").Value == "expect").First().Attribute("value").Value);
-
-                    psm.MassDrift = Convert.ToDouble(searchHit.Attribute("massdiff").Value) / Convert.ToDouble(x.Attribute("precursor_neutral_mass").Value) * 1e6;
-
-                    psm.Charge = Convert.ToInt32(x.Attribute("assumed_charge").Value);
-
-                    psm.MissedCleavages = GetMissedCleavages(psm.Seq);
-
-                    // add the modifications, if there are any
-                    if (searchHit.Element(nsp + "modification_info")?.Attribute("mod_nterm_mass") != null)
-                    {
-                        Modification mod = new Modification();
-
-                        mod.Loc = 0; // its the n-terminus
-
-                        mod.AA = psm.Seq[0].ToString();
-
-                        mod.Mass = modInfo[Convert.ToDouble(searchHit.Element(nsp + "modification_info").Attribute("mod_nterm_mass").Value)];
-
-                        psm.Mods.Add(mod);
-                    }
-
-                    if (searchHit.Element(nsp + "modification_info")?.Elements(nsp + "mod_aminoacid_mass") != null)
-                    {
-                        foreach (XElement aa in searchHit.Element(nsp + "modification_info").Elements(nsp + "mod_aminoacid_mass"))
-                        {
-                            Modification mod = new Modification();
-                            // we convert the location to a zero-based index of the peptide
-                            mod.Loc = Convert.ToInt32(aa.Attribute("position").Value) - 1;
-
-                            mod.AA = psm.Seq[mod.Loc].ToString();
-
-                            mod.Mass = modInfo[Convert.ToDouble(aa.Attribute("mass").Value)];
-
-                            psm.Mods.Add(mod);
-                        }
-                    }
 
                     psms.Add(psm.Id, psm);
                 }

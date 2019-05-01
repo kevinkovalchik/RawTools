@@ -539,7 +539,7 @@ namespace RawTools.Data.Containers
 
     public class SearchParameters
     {
-        public string FastaDatabase, PythonExecutable, IdentipyScript, XTandemDirectory;
+        public string FastaDatabase, XTandemDirectory;
         public SearchAlgorithm SearchAlgorithm;
         public string FixedMods, NMod, KMod, XMod;
         public int NumSpectra;
@@ -556,7 +556,6 @@ namespace RawTools.Data.Containers
     {
         None = 0,
         XTandem = 1,
-        IdentiPy = 2
     }
 
     public enum ExperimentType

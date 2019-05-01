@@ -82,7 +82,7 @@ namespace RawTools
 
             WorkflowParameters parameters = new WorkflowParameters(opts);
 
-            if (parameters.InputFiles.Count() > 0) // did the user give us a list of files?
+            if (parameters.InputFiles != null) // did the user give us a list of files?
             {
                 List<string> problems = new List<string>();
                 files = parameters.InputFiles.ToList();

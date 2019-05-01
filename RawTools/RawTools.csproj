@@ -138,7 +138,6 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="QC\FastaManipulation.cs" />
-    <Compile Include="QC\Identipy.cs" />
     <Compile Include="QC\RunSearch.cs" />
     <Compile Include="QC\SearchQC.cs" />
     <Compile Include="QC\Watcher.cs" />
@@ -162,15 +161,7 @@
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
-    <None Include="orbitrap_config.cfg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="iontrap_config.cfg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.6.2">
