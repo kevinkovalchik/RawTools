@@ -21,8 +21,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using CommandLine;
-using CommandLine.Text;
 using CLParser;
 
 namespace RawTools.ArgumentParser
@@ -166,8 +164,8 @@ namespace RawTools.ArgumentParser
             parser.AddRequiredGroup(new List<string> { "RawFiles", "RawFileDirectory" });
             
             parser.AddDependencyGroup("WriteMGF", new List<string> { "MgfMassCutoff" });
-            parser.AddDependencyGroup("XTandemDirectory", new List<string> { "FixedModifications",
-                "VariableModifications", "XModifications", "NumberSpectra" });
+            //parser.AddDependencyGroup("XTandemDirectory", new List<string> { "FixedModifications",
+            //    "VariableModifications", "XModifications", "NumberSpectra" });
 
             return parser;
         }

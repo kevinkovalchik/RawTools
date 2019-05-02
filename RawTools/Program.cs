@@ -42,8 +42,6 @@ using System.Xml.Linq;
 using Serilog;
 using CLParser;
 //using Serilog.Sinks.File;
-using CommandLine;
-//using CommandLine.Text;
 
 namespace RawTools
 {
