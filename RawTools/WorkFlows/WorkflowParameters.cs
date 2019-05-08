@@ -90,10 +90,9 @@ namespace RawTools.WorkFlows
             ExpType = ExperimentType.DDA;
             
             QcParams.FastaDatabase = (string)TryGetElseDefault(Options, "FastaDB");
-            QcParams.FixedMods = (string)TryGetElseDefault(Options, "FixedMods");
+            QcParams.FixedMods = (string)TryGetElseDefault(Options, "FixedModifications");
             //QcParams.FixedScans = Options.FixedScans;
-            QcParams.VariableMods = (string)TryGetElseDefault(Options, "VariableKMods");
-            QcParams.FreqMods = (string)TryGetElseDefault(Options, "XKMods");
+            QcParams.VariableMods = (string)TryGetElseDefault(Options, "VariableModifications");
 
             QcParams.NumberSpectra = Convert.ToInt32(TryGetElseDefault(Options, "NumberSpectra"));
 
@@ -156,8 +155,7 @@ namespace RawTools.WorkFlows
 
         public SearchAlgorithm SearchAlgorithm;
 
-        public string QcDirectory, FastaDatabase, FixedMods, VariableMods, FreqMods,
-            NMod, KMod, XMod, XTandemDirectory;
+        public string QcDirectory, FastaDatabase, FixedMods, VariableMods, XTandemDirectory;
 
         public string QcSearchDataDirectory { get { return Path.Combine(QcDirectory, "QcSearchData"); } }
     }

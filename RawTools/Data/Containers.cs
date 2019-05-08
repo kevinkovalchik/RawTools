@@ -403,14 +403,13 @@ namespace RawTools.Data.Containers
     {
         public string RawFile, Instrument;
         public DateTime DateAcquired;
-        public double LabelingEfficiencyAtX, LabelingEfficiencyAtNTerm, LabelingEfficiencyAtK;
-        public string LabelX;
         public double IdentificationRate, MissedCleavageRate;
         public double DigestionEfficiency;
         public double ChargeRatio3to2, ChargeRatio4to2;
         public double MedianMassDrift;
         public string SearchParameters = "None";
         public SearchData SearchData;
+        public SerializableDictionary<string, double> ModificationFrequency;
 
         public SearchMetricsContainer()
         { }
@@ -420,11 +419,11 @@ namespace RawTools.Data.Containers
             RawFile = rawFile;
             Instrument = methodData.Instrument;
             DateAcquired = dateAquired;
-            LabelingEfficiencyAtX = LabelingEfficiencyAtNTerm = LabelingEfficiencyAtK = -1;
             DigestionEfficiency = IdentificationRate = MissedCleavageRate = -1;
             ChargeRatio3to2 = ChargeRatio4to2 = -1;
             MedianMassDrift = -1;
             SearchData = new SearchData();
+            ModificationFrequency = new SerializableDictionary<string, double>();
         }
     }
 

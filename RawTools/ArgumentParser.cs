@@ -132,13 +132,6 @@ namespace RawTools.ArgumentParser
                 "It is important that the values are separated with a comma and not spaces. Invoke \">RawTools qc -e\" " +
                 "to see examples of some common modifications"));
 
-            parser.Add(new Argument(name: "XModifications", shortArgument: "-xmods", longArgument: "-frequencymods", required: false,
-                typeOf: typeof(string),
-                helpText: "Variable modifications to pass to the search for which you want frequency calculated. For example, you " +
-                "could calculate the efficiency of TMT labeling, or frequency of oxidation. Use mass@aminoacid1,mass@aminoacid2 format. " +
-                "It is important that the values are separated with a comma and not spaces. Invoke \">RawTools qc -e\" " +
-                "to see examples of some common modifications"));
-
             parser.Add(new Argument(name: "XTandemDirectory", shortArgument: "-X", longArgument: "-xtandem", required: false,
                 typeOf: typeof(string),
                 helpText: "Specify the path to the X! Tandem directory (the directory containing \"tandem.exe\") if you want " +

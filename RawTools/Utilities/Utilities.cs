@@ -37,6 +37,33 @@ using Serilog;
 
 namespace RawTools.Utilities
 {
+    static class Extensions
+    {
+        public static V TryGetElseDefault<T, V>(this Dictionary<T, V> parameters, T key)
+        {
+            if (parameters.ContainsKey(key))
+            {
+                return parameters[key];
+            }
+            else
+            {
+                return default(V);
+            }
+        }
+
+        public static V TryGetElseDefault<T, V>(this SerializableDictionary<T, V> parameters, T key)
+        {
+            if (parameters.ContainsKey(key))
+            {
+                return parameters[key];
+            }
+            else
+            {
+                return default(V);
+            }
+        }
+    }
+
     static class ConsoleUtils
     {
         public static void ClearLastLine()

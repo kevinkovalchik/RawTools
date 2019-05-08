@@ -469,10 +469,10 @@ namespace RawTools.Data.IO
                     f.WriteLine("DigestionEfficiency\t" + Math.Round(searchMetrics.DigestionEfficiency, 4));
                     f.WriteLine("MissedCleavageRate(/PSM)\t" + Math.Round(searchMetrics.MissedCleavageRate, 4));
 
-                    f.WriteLine("ModificationFrequencyAtNTerm\t" + Math.Round(searchMetrics.LabelingEfficiencyAtNTerm, 4));
-                    f.WriteLine("ModificationFrequencyAtK\t" + Math.Round(searchMetrics.LabelingEfficiencyAtK, 4));
-                    f.WriteLine("ModificationFrequencyAtX\t" + Math.Round(searchMetrics.LabelingEfficiencyAtX, 4));
-                    f.WriteLine("XLabel:\t", searchMetrics.LabelX);
+                    foreach (var mod in searchMetrics.ModificationFrequency)
+                    {
+                        f.WriteLine("{0}_ModificationFrequency: {1}", mod.Key, mod.Value);
+                    }
 
                     f.WriteLine("PsmChargeRatio3to2\t" + Math.Round(searchMetrics.ChargeRatio3to2, 4));
                     f.WriteLine("PsmChargeRatio4to2\t" + Math.Round(searchMetrics.ChargeRatio4to2, 4));
@@ -522,16 +522,28 @@ namespace RawTools.Data.IO
             string fileName = Path.Combine(qcData.QcDirectory, "QcDataTable.csv");
             ReadWrite.CheckFileAccessibility(fileName);
 
+            HashSet<string> variableMods = new HashSet<string>();
+
+            foreach (var item in qcData.QcData.Values)
+            {
+                foreach (var mod in item.SearchMetrics.ModificationFrequency.Keys.ToList()) variableMods.Add(mod);
+            }
+
+            List<string> vMods = variableMods.ToList();
+
             if (qcData.DataType == ExperimentType.DDA)
             {
                 using (StreamWriter f = new StreamWriter(fileName, append: false))
                 {
-                    f.WriteLine("DateAcquired,RawFile,Instrument,ExperimentMsOrder,Ms1Analyzer,Ms2Analyzer,Ms3Analyzer,TotalAnalysisTime(min),TotalScans,NumMs1Scans,NumMs2Scans," +
+                    f.Write("DateAcquired,RawFile,Instrument,ExperimentMsOrder,Ms1Analyzer,Ms2Analyzer,Ms3Analyzer,TotalAnalysisTime(min),TotalScans,NumMs1Scans,NumMs2Scans," +
                         "NumMs3Scans,Ms1ScanRate(/s),Ms2ScanRate(/s),Ms3ScanRate(/s),MeanDutyCycle(s),MeanMs2TriggerRate(/Ms1Scan),Ms1MedianSummedIntensity,Ms2MedianSummedIntensity," +
                         "MedianPrecursorIntensity,MedianMs1IsolationInterence,MedianMs2PeakFractionConsumingTop80PercentTotalIntensity,NumEsiInstabilityFlags,MedianMassDrift(ppm)," +
-                        "IdentificationRate(IDs/Ms2Scan),DigestionEfficiency,MissedCleavageRate(/PSM),ModificationFrequencyAtNTerm,ModificationFrequencyAtK,ModificationFrequencyAtX," +
-                        "MedianMs1FillTime(ms),MedianMs2FillTime(ms),MedianMs3FillTime(ms),MedianPeakWidthAt10%H(s),MedianPeakWidthAt50%H(s),MedianAsymmetryAt10%H,MedianAsymmetryAt50%H," +
-                        "PeakCapacity,TimeBeforeFirstExceedanceOf10%MaxIntensity,TimeAfterLastExceedanceOf10%MaxIntensity,FractionOfRunAbove10%MaxIntensity,PsmChargeRatio3to2,PsmChargeRatio4to2,SearchParameters");
+                        "IdentificationRate(IDs/Ms2Scan),DigestionEfficiency,MissedCleavageRate(/PSM),");
+
+                    foreach (var mod in vMods) f.Write("{0}_ModificationFrequency,", mod);
+
+                    f.Write("MedianMs1FillTime(ms),MedianMs2FillTime(ms),MedianMs3FillTime(ms),MedianPeakWidthAt10%H(s),MedianPeakWidthAt50%H(s),MedianAsymmetryAt10%H,MedianAsymmetryAt50%H," +
+                        "PeakCapacity,TimeBeforeFirstExceedanceOf10%MaxIntensity,TimeAfterLastExceedanceOf10%MaxIntensity,FractionOfRunAbove10%MaxIntensity,PsmChargeRatio3to2,PsmChargeRatio4to2,SearchParameters\n");
                 }
 
                 List<DateTime> keys = qcData.QcData.Keys.ToList();
@@ -579,10 +591,8 @@ namespace RawTools.Data.IO
                         f.Write(searchMetrics.DigestionEfficiency + ",");
                         f.Write(searchMetrics.MissedCleavageRate + ",");
 
-                        f.Write(searchMetrics.LabelingEfficiencyAtNTerm + ",");
-                        f.Write(searchMetrics.LabelingEfficiencyAtK + ",");
-                        f.Write(searchMetrics.LabelingEfficiencyAtX + ",");
-
+                        foreach (var frequency in vMods) f.Write(searchMetrics.ModificationFrequency.TryGetElseDefault(frequency) + ",");
+                        
                         f.Write(rawMetrics.Ms1FillTimeDistribution.P50 + ",");
                         f.Write(rawMetrics.Ms2FillTimeDistribution.P50 + ",");
                         f.Write(rawMetrics?.Ms3FillTimeDistribution?.P50 + ",");

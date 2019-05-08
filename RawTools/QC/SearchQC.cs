@@ -213,7 +213,7 @@ namespace RawTools.QC
             Console.WriteLine("IDrate: {0}", IdRate);
 
             // get labeling efficiency metrics
-            if ((parameters.QcParams.NMod != null) | (parameters.QcParams.KMod != null) | (parameters.QcParams.XMod != null))
+            if (!String.IsNullOrEmpty(parameters.QcParams.VariableMods))
             {
                 searchMetrics.GetModificationFrequency(goodPsms, parameters);
             }
@@ -238,18 +238,15 @@ namespace RawTools.QC
 
         public static void GetModificationFrequency(this SearchMetricsContainer searchMetrics, IEnumerable<PsmData> psms, WorkflowParameters parameters)
         {
-
-            string nmod = parameters.QcParams.NMod;
-            string kmod = parameters.QcParams.KMod;
-            string xmod = parameters.QcParams.XMod;
             Dictionary<string, string> Modifications = new Dictionary<string, string>();
-            Dictionary<string, int> TotalLabelingSites = new Dictionary<string, int>();
+            Dictionary<char, int> TotalLabelingSites = new Dictionary<char, int>();
             Dictionary<string, int> LabelingSitesHit = new Dictionary<string, int>();
             Dictionary<string, double> LabelingEfficiency = new Dictionary<string, double>();
+            Dictionary<string, int> AmbiguousSites = new Dictionary<string, int>();
             List<Modification> mods;
-            List<string> AminosOfInterest = new List<string>();
-
-            string[] Mods = new string[] { nmod, kmod, xmod };
+            List<char> AminosOfInterest = new List<char>();
+            
+            string[] Mods = parameters.QcParams.VariableMods.Split(',');
 
             // "Prime" the dictionaries
             foreach (var item in Mods)
@@ -258,198 +255,110 @@ namespace RawTools.QC
                 {
                     continue;
                 }
+
                 var splitString = item.Split('@');
-                // add the key: value pairs as mass@AA:AA
-                Modifications.Add(item, splitString.Last());
-                // and AA:int
-                TotalLabelingSites.Add(splitString.Last(), 0);
-                LabelingSitesHit.Add(splitString.Last(), 0);
-                AminosOfInterest.Add(splitString.Last());
+
+                Modifications.Add(splitString.Last(), splitString.First());
+
+                TotalLabelingSites.Add(splitString.Last().Last(), 0);
+                AmbiguousSites.Add(splitString.Last(), 0);
+
+                LabelingSitesHit.Add(item, 0);
+
+                AminosOfInterest.Add(splitString.Last().Last());
             }
+
+            bool nTermIsVariable = Modifications.ContainsKey("[");
 
             foreach (PsmData psm in psms)
             {
-                mods = psm.Mods;
+                mods = psm.Mods.OrderBy(x => x.Loc).ToList();
+                int startLoc = 0;
 
-                // check the sequence in two steps. First the n-terminus, then remove the n-terminus and check the rest of it.
-
-                // FIRST STEP: N-TERMINUS
-
-                if (nmod != null)
+                if (AminosOfInterest.Contains(psm.Seq[0]) && nTermIsVariable &&
+                    Modifications["["] == Modifications[psm.Seq[0].ToString()])
                 {
-                    // check if the first residue is lysine
-                    if (psm.Seq[0] == 'K')
+                    // if both nTerm and the AA are variable and have the same modification mass,
+                    // then we can't tell which one is labeled if only one gets a hit.
+                    // If that is the case, skip the first amino acid in the sequence
+
+                    int hits = (from x in mods where x.Loc == 0 select 1).Count();
+
+                    if (hits == 1)
                     {
-                        // if so, we need to see if it was only labeled once. Skip the psm if that is the case because it is ambiguous
-                        IEnumerable<Modification> nMods = from x in mods
-                                                          where x.Loc == 0
-                                                          select x;
-                        int numMods = nMods.Count();
-
-                        if (numMods == 1)
-                        {
-                            // we can't know which reactive site is modified, so don't include this peptide
-                            continue;
-                        }
-                        if (numMods == 0)
-                        {
-                            // nothing is labeled
-                            TotalLabelingSites["["] += 1;
-                            if (AminosOfInterest.Contains("K"))
-                            {
-                                TotalLabelingSites["K"] += 1;
-                            }
-                        }
-                        if (numMods == 2)
-                        {
-                            TotalLabelingSites["["] += 1;
-                            LabelingSitesHit["["] += 1;
-
-                            if (AminosOfInterest.Contains("K"))
-                            {
-                                TotalLabelingSites["K"] += 1;
-                                LabelingSitesHit["K"] += 1;
-                            }
-                        }
+                        startLoc = 1;
+                        AmbiguousSites["["]++;
+                        AmbiguousSites[psm.Seq[0].ToString()]++;
+                    }// do nothing
+                    else if (hits == 0)
+                    {
+                        startLoc = 0;
                     }
-                    // If the first residue is not lysine
                     else
                     {
-                        IEnumerable<Modification> nMods = from x in mods
-                                                          where x.Loc == 0
-                                                          select x;
+                        startLoc = 2;
+                        LabelingSitesHit[Modifications[psm.Seq[0].ToString()] + "@["]++;
+                        LabelingSitesHit[Modifications[psm.Seq[0].ToString()] + "@" + psm.Seq[0].ToString()]++;
+                    }
 
-                        // add 1 to total n-termini, because it is always there
-                        TotalLabelingSites["["] += 1;
+                }
+                for (int i = startLoc; i < mods.Count; i++)
+                {
+                    var mod = mods[i];
 
-                        // get the aa residue letter
-                        string residue = psm.Seq[0].ToString();
-
-                        //see if it is of interest
-                        if (AminosOfInterest.Contains(residue))
-                        {
-                            // if so, add 1 to total sites for it
-                            TotalLabelingSites[residue] += 1;
-                        }
-
-                        // now go through each detected modification
-                        foreach (Modification mod in nMods)
-                        {
-                            if (nmod.Contains(mod.Mass.ToString()))
-                            {
-                                LabelingSitesHit["["] += 1;
-                            }
-                            else
-                            {
-                                if (AminosOfInterest.Contains(mod.AA))
-                                {
-                                    LabelingSitesHit[mod.AA] += 1;
-                                }
-                            }
-                        }
+                    if (mod.Loc == 0 & LabelingSitesHit.ContainsKey(mod.Mass.ToString() + "@["))
+                    {
+                        LabelingSitesHit[mod.Mass.ToString() + "@["]++;
+                    }
+                    else if (LabelingSitesHit.ContainsKey(mod.MassAtAa))
+                    {
+                        LabelingSitesHit[mod.MassAtAa]++;
                     }
                 }
-                int start;
-                if (nmod != null)
-                {
-                    start = 1;
-                }
-                else
-                {
-                    start = 0;
-                }
 
-                // now continue with the rest
+                // now add to total modifications sites
 
-                for (int i = start; i < psm.Seq.Length; i++)
+                TotalLabelingSites['[']++;
+
+                foreach (var aa in psm.Seq)
                 {
-                    // check if we care about this amino acid
-                    string aa = psm.Seq[i].ToString();
                     if (AminosOfInterest.Contains(aa))
                     {
-                        // add one to potential labeling sites
-                        TotalLabelingSites[aa] += 1;
-
-                        // There should only ever be one modification for each of the rest of the residues, so we can reference it by location to see if it exists
-                        bool hit = (from x in mods
-                                    where x.Loc == i
-                                    select 1).Count() == 1;
-                        if (hit)
+                        if (TotalLabelingSites.ContainsKey(aa))
                         {
-                            LabelingSitesHit[aa] += 1;
+                            TotalLabelingSites[aa]++;
                         }
-                    }
-                    else
-                    {
-                        continue;
                     }
                 }
             }
 
-            // spit out some metrics to the console
-
-            foreach (string aa in AminosOfInterest)
+            // remove ambiguous labeling sites
+            foreach (var site in TotalLabelingSites.Keys.ToList())
             {
-                if (aa == "[")
+                TotalLabelingSites[site] = TotalLabelingSites[site] - AmbiguousSites[site.ToString()];
+            }
+
+            // spit out some metrics to the console and write efficiencies to the search metrics container
+            /*
+            foreach (char aa in AminosOfInterest)
+            {
+                if (aa == '[')
                 {
-                    Console.WriteLine("Total N-term sites: {0}", TotalLabelingSites["["]);
+                    Console.WriteLine("Total N-term sites: {0}", TotalLabelingSites['[']);
                 }
                 else
                 {
                     Console.WriteLine("Total {0} sites: {1}", aa, TotalLabelingSites[aa]);
                 }
-            }
+            }*/
 
-            foreach (string aa in AminosOfInterest)
+            foreach (var hits in LabelingSitesHit)
             {
-                if (aa == "[")
-                {
-                    Console.WriteLine("Missed modifications at N-term: {0}", TotalLabelingSites["["] - LabelingSitesHit["["]);
-                }
-                else
-                {
-                    Console.WriteLine("Missed modifications at {0}: {1}", aa, TotalLabelingSites[aa] - LabelingSitesHit[aa]);
-                }
-            }
+                double efficiency = (double)hits.Value / TotalLabelingSites[hits.Key.Last()];
 
-            // calculate labelling efficiency for each site
-            foreach (var aa in AminosOfInterest)
-            {
-                double efficiency = (double)LabelingSitesHit[aa] / TotalLabelingSites[aa];
-                LabelingEfficiency.Add(aa, efficiency);
-                if (aa == "[")
-                {
-                    Console.WriteLine("Modification frequency at N-term: {0}", efficiency);
-                }
-                else
-                {
-                    Console.WriteLine("Modification frequency at {0}: {1}", aa, efficiency);
-                }
+                Console.WriteLine("{0} modification frequency: {1}", hits.Key, efficiency);
 
-                // if the sites are n-term or K add them to their own attributes
-                if (aa == "[")
-                {
-                    searchMetrics.LabelingEfficiencyAtNTerm = efficiency;
-                    searchMetrics.SearchData.NLabelSites = TotalLabelingSites[aa];
-                    searchMetrics.SearchData.NLabelSitesHit = LabelingSitesHit[aa];
-                }
-                else
-                {
-                    if (aa == "K")
-                    {
-                        searchMetrics.LabelingEfficiencyAtK = efficiency;
-                        searchMetrics.SearchData.KLabelSites = TotalLabelingSites[aa];
-                        searchMetrics.SearchData.KLabelSitesHit = LabelingSitesHit[aa];
-                    }
-                    // if not, then add it to xmod attributes
-                    else
-                    {
-                        searchMetrics.LabelingEfficiencyAtX = efficiency;
-                        searchMetrics.LabelX = aa;
-                        searchMetrics.SearchData.XLabelSites = TotalLabelingSites[aa];
-                        searchMetrics.SearchData.XLabelSitesHit = LabelingSitesHit[aa];
-                    }
-                }
+                searchMetrics.ModificationFrequency[hits.Key] = efficiency;
             }
         }
     }
