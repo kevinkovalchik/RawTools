@@ -123,9 +123,6 @@
   <metadata name="selectRawFiles.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>184, 17</value>
   </metadata>
-  <metadata name="toolTip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>337, 17</value>
-  </metadata>
   <data name="comboBoxMinCharge.ToolTip" xml:space="preserve">
     <value>Choose the minimum charge state to consider when
 recalculating charge state. In general, this should not
@@ -171,20 +168,6 @@ precursor selection (MIPS) or Peptide Match turned
 off in your instrument method, you will probably want
 to use this. Otherwise your MGF files will be populated
 with PEPMASS=0.</value>
-  </data>
-  <data name="textBoxIdentipyScript.ToolTip" xml:space="preserve">
-    <value>Select the IdentiPy script. On windows this should be in the Scripts folder
-found in the Python installation directory and is called identipy-script.py.
-On Linux it is usually in /bin or /usr/bin and is simply called identipy.
-However, if you are using a virtual python environment this location will
-vary from the system-wide installation. Include the extension if there is one.</value>
-  </data>
-  <data name="buttonIdentipyScript.ToolTip" xml:space="preserve">
-    <value>Select the IdentiPy script. On windows this should be in the Scripts folder
-found in the Python installation directory and is called identipy-script.py.
-On Linux it is usually in /bin or /usr/bin and is simply called identipy.
-However, if you are using a virtual python environment this location will
-vary from the system-wide installation. Include the extension if there is one.</value>
   </data>
   <data name="textBoxMgfLowMass.ToolTip" xml:space="preserve">
     <value>Specify a low mass cutoff to use during MGF

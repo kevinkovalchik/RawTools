@@ -63,16 +63,10 @@
             this.buttonQcDataDirectory = new System.Windows.Forms.Button();
             this.textBoxNumSpectra = new System.Windows.Forms.TextBox();
             this.labelNumSpectra = new System.Windows.Forms.Label();
-            this.checkBoxAutoSearchIdentipy = new System.Windows.Forms.CheckBox();
-            this.textBoxIdentipyScript = new System.Windows.Forms.TextBox();
-            this.textBoxPythonExe = new System.Windows.Forms.TextBox();
             this.textBoxXTandemDir = new System.Windows.Forms.TextBox();
             this.buttonXTandemDir = new System.Windows.Forms.Button();
             this.textBoxFastaFile = new System.Windows.Forms.TextBox();
-            this.buttonIdentipyScript = new System.Windows.Forms.Button();
-            this.buttonPythonExe = new System.Windows.Forms.Button();
             this.buttonFastaFile = new System.Windows.Forms.Button();
-            this.radioButtonSearchIdentipy = new System.Windows.Forms.RadioButton();
             this.radioButtonSearchXTandem = new System.Windows.Forms.RadioButton();
             this.radioButtonSearchNone = new System.Windows.Forms.RadioButton();
             this.label2 = new System.Windows.Forms.Label();
@@ -97,11 +91,6 @@
             this.checkBoxReporterFilterMatrix = new System.Windows.Forms.CheckBox();
             this.labelReporterIonFilteringApplyTo = new System.Windows.Forms.Label();
             this.groupBoxMgfOpts = new System.Windows.Forms.GroupBox();
-            this.textBoxMgfFilterWindowSize = new System.Windows.Forms.TextBox();
-            this.labelMgfIntensityFilterWindow = new System.Windows.Forms.Label();
-            this.labelMgfFilterRelativeIntensity = new System.Windows.Forms.Label();
-            this.textBoxMgfFilterRelativeIntensity = new System.Windows.Forms.TextBox();
-            this.checkBoxMgfIntensityFiltering = new System.Windows.Forms.CheckBox();
             this.panel1 = new System.Windows.Forms.Panel();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -377,6 +366,7 @@
             // 
             // comboBoxMinCharge
             // 
+            this.comboBoxMinCharge.Enabled = false;
             this.comboBoxMinCharge.FormattingEnabled = true;
             this.comboBoxMinCharge.Items.AddRange(new object[] {
             "1",
@@ -397,6 +387,7 @@
             // labelMinCharge
             // 
             this.labelMinCharge.AutoSize = true;
+            this.labelMinCharge.Enabled = false;
             this.labelMinCharge.Location = new System.Drawing.Point(32, 48);
             this.labelMinCharge.Name = "labelMinCharge";
             this.labelMinCharge.Size = new System.Drawing.Size(117, 17);
@@ -407,6 +398,7 @@
             // labelMaxCharge
             // 
             this.labelMaxCharge.AutoSize = true;
+            this.labelMaxCharge.Enabled = false;
             this.labelMaxCharge.Location = new System.Drawing.Point(32, 79);
             this.labelMaxCharge.Name = "labelMaxCharge";
             this.labelMaxCharge.Size = new System.Drawing.Size(120, 17);
@@ -416,6 +408,7 @@
             // 
             // comboBoxMaxCharge
             // 
+            this.comboBoxMaxCharge.Enabled = false;
             this.comboBoxMaxCharge.FormattingEnabled = true;
             this.comboBoxMaxCharge.Items.AddRange(new object[] {
             "1",
@@ -436,8 +429,6 @@
             // checkBoxRefinePrecursor
             // 
             this.checkBoxRefinePrecursor.AutoSize = true;
-            this.checkBoxRefinePrecursor.Checked = true;
-            this.checkBoxRefinePrecursor.CheckState = System.Windows.Forms.CheckState.Checked;
             this.checkBoxRefinePrecursor.Location = new System.Drawing.Point(6, 21);
             this.checkBoxRefinePrecursor.Name = "checkBoxRefinePrecursor";
             this.checkBoxRefinePrecursor.Size = new System.Drawing.Size(252, 21);
@@ -455,23 +446,17 @@
             this.groupBoxQcOptions.Controls.Add(this.buttonQcDataDirectory);
             this.groupBoxQcOptions.Controls.Add(this.textBoxNumSpectra);
             this.groupBoxQcOptions.Controls.Add(this.labelNumSpectra);
-            this.groupBoxQcOptions.Controls.Add(this.checkBoxAutoSearchIdentipy);
-            this.groupBoxQcOptions.Controls.Add(this.textBoxIdentipyScript);
-            this.groupBoxQcOptions.Controls.Add(this.textBoxPythonExe);
             this.groupBoxQcOptions.Controls.Add(this.textBoxXTandemDir);
             this.groupBoxQcOptions.Controls.Add(this.buttonXTandemDir);
             this.groupBoxQcOptions.Controls.Add(this.textBoxFastaFile);
-            this.groupBoxQcOptions.Controls.Add(this.buttonIdentipyScript);
-            this.groupBoxQcOptions.Controls.Add(this.buttonPythonExe);
             this.groupBoxQcOptions.Controls.Add(this.buttonFastaFile);
-            this.groupBoxQcOptions.Controls.Add(this.radioButtonSearchIdentipy);
             this.groupBoxQcOptions.Controls.Add(this.radioButtonSearchXTandem);
             this.groupBoxQcOptions.Controls.Add(this.radioButtonSearchNone);
             this.groupBoxQcOptions.Controls.Add(this.label2);
             this.groupBoxQcOptions.Enabled = false;
             this.groupBoxQcOptions.Location = new System.Drawing.Point(3, 245);
             this.groupBoxQcOptions.Name = "groupBoxQcOptions";
-            this.groupBoxQcOptions.Size = new System.Drawing.Size(750, 237);
+            this.groupBoxQcOptions.Size = new System.Drawing.Size(750, 195);
             this.groupBoxQcOptions.TabIndex = 4;
             this.groupBoxQcOptions.TabStop = false;
             this.groupBoxQcOptions.Text = "QC Options";
@@ -480,7 +465,7 @@
             // 
             this.labelPeptideMods.AutoSize = true;
             this.labelPeptideMods.Enabled = false;
-            this.labelPeptideMods.Location = new System.Drawing.Point(331, 203);
+            this.labelPeptideMods.Location = new System.Drawing.Point(331, 152);
             this.labelPeptideMods.Name = "labelPeptideMods";
             this.labelPeptideMods.Size = new System.Drawing.Size(146, 17);
             this.labelPeptideMods.TabIndex = 23;
@@ -489,7 +474,7 @@
             // buttonPeptideMods
             // 
             this.buttonPeptideMods.Enabled = false;
-            this.buttonPeptideMods.Location = new System.Drawing.Point(483, 200);
+            this.buttonPeptideMods.Location = new System.Drawing.Point(483, 149);
             this.buttonPeptideMods.Name = "buttonPeptideMods";
             this.buttonPeptideMods.Size = new System.Drawing.Size(247, 23);
             this.buttonPeptideMods.TabIndex = 9;
@@ -520,7 +505,7 @@
             // textBoxNumSpectra
             // 
             this.textBoxNumSpectra.Enabled = false;
-            this.textBoxNumSpectra.Location = new System.Drawing.Point(211, 200);
+            this.textBoxNumSpectra.Location = new System.Drawing.Point(211, 149);
             this.textBoxNumSpectra.Name = "textBoxNumSpectra";
             this.textBoxNumSpectra.Size = new System.Drawing.Size(100, 22);
             this.textBoxNumSpectra.TabIndex = 20;
@@ -534,43 +519,11 @@
             // 
             this.labelNumSpectra.AutoSize = true;
             this.labelNumSpectra.Enabled = false;
-            this.labelNumSpectra.Location = new System.Drawing.Point(9, 203);
+            this.labelNumSpectra.Location = new System.Drawing.Point(9, 152);
             this.labelNumSpectra.Name = "labelNumSpectra";
             this.labelNumSpectra.Size = new System.Drawing.Size(196, 17);
             this.labelNumSpectra.TabIndex = 19;
             this.labelNumSpectra.Text = "Number of Spectra to Search:";
-            // 
-            // checkBoxAutoSearchIdentipy
-            // 
-            this.checkBoxAutoSearchIdentipy.AutoSize = true;
-            this.checkBoxAutoSearchIdentipy.Checked = true;
-            this.checkBoxAutoSearchIdentipy.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxAutoSearchIdentipy.Enabled = false;
-            this.checkBoxAutoSearchIdentipy.Location = new System.Drawing.Point(374, 53);
-            this.checkBoxAutoSearchIdentipy.Name = "checkBoxAutoSearchIdentipy";
-            this.checkBoxAutoSearchIdentipy.Size = new System.Drawing.Size(286, 21);
-            this.checkBoxAutoSearchIdentipy.TabIndex = 8;
-            this.checkBoxAutoSearchIdentipy.Text = "Let RawTools search for Python/IdentiPy";
-            this.checkBoxAutoSearchIdentipy.UseVisualStyleBackColor = true;
-            this.checkBoxAutoSearchIdentipy.CheckedChanged += new System.EventHandler(this.checkBoxAutoSearchIdentipy_CheckedChanged);
-            // 
-            // textBoxIdentipyScript
-            // 
-            this.textBoxIdentipyScript.Enabled = false;
-            this.textBoxIdentipyScript.Location = new System.Drawing.Point(163, 133);
-            this.textBoxIdentipyScript.Name = "textBoxIdentipyScript";
-            this.textBoxIdentipyScript.Size = new System.Drawing.Size(571, 22);
-            this.textBoxIdentipyScript.TabIndex = 18;
-            this.toolTip1.SetToolTip(this.textBoxIdentipyScript, resources.GetString("textBoxIdentipyScript.ToolTip"));
-            // 
-            // textBoxPythonExe
-            // 
-            this.textBoxPythonExe.Enabled = false;
-            this.textBoxPythonExe.Location = new System.Drawing.Point(163, 105);
-            this.textBoxPythonExe.Name = "textBoxPythonExe";
-            this.textBoxPythonExe.Size = new System.Drawing.Size(571, 22);
-            this.textBoxPythonExe.TabIndex = 17;
-            this.toolTip1.SetToolTip(this.textBoxPythonExe, "Select the executable file for the Python distribution\r\nyou wish to use.");
             // 
             // textBoxXTandemDir
             // 
@@ -596,40 +549,16 @@
             // textBoxFastaFile
             // 
             this.textBoxFastaFile.Enabled = false;
-            this.textBoxFastaFile.Location = new System.Drawing.Point(163, 162);
+            this.textBoxFastaFile.Location = new System.Drawing.Point(163, 104);
             this.textBoxFastaFile.Name = "textBoxFastaFile";
             this.textBoxFastaFile.Size = new System.Drawing.Size(571, 22);
             this.textBoxFastaFile.TabIndex = 8;
             this.toolTip1.SetToolTip(this.textBoxFastaFile, "Select the FASTA file you wish to use for the database\r\nsearch.");
             // 
-            // buttonIdentipyScript
-            // 
-            this.buttonIdentipyScript.Enabled = false;
-            this.buttonIdentipyScript.Location = new System.Drawing.Point(6, 133);
-            this.buttonIdentipyScript.Name = "buttonIdentipyScript";
-            this.buttonIdentipyScript.Size = new System.Drawing.Size(151, 23);
-            this.buttonIdentipyScript.TabIndex = 14;
-            this.buttonIdentipyScript.Text = "IdentiPy Script";
-            this.toolTip1.SetToolTip(this.buttonIdentipyScript, resources.GetString("buttonIdentipyScript.ToolTip"));
-            this.buttonIdentipyScript.UseVisualStyleBackColor = true;
-            this.buttonIdentipyScript.Click += new System.EventHandler(this.buttonIdentipyScript_Click);
-            // 
-            // buttonPythonExe
-            // 
-            this.buttonPythonExe.Enabled = false;
-            this.buttonPythonExe.Location = new System.Drawing.Point(6, 104);
-            this.buttonPythonExe.Name = "buttonPythonExe";
-            this.buttonPythonExe.Size = new System.Drawing.Size(151, 23);
-            this.buttonPythonExe.TabIndex = 13;
-            this.buttonPythonExe.Text = "Python Executable";
-            this.toolTip1.SetToolTip(this.buttonPythonExe, "Select the executable file for the Python distribution\r\nyou wish to use.");
-            this.buttonPythonExe.UseVisualStyleBackColor = true;
-            this.buttonPythonExe.Click += new System.EventHandler(this.buttonPythonExe_Click);
-            // 
             // buttonFastaFile
             // 
             this.buttonFastaFile.Enabled = false;
-            this.buttonFastaFile.Location = new System.Drawing.Point(6, 162);
+            this.buttonFastaFile.Location = new System.Drawing.Point(6, 104);
             this.buttonFastaFile.Name = "buttonFastaFile";
             this.buttonFastaFile.Size = new System.Drawing.Size(151, 23);
             this.buttonFastaFile.TabIndex = 12;
@@ -637,17 +566,6 @@
             this.toolTip1.SetToolTip(this.buttonFastaFile, "Select the FASTA file you wish to use for the database\r\nsearch.");
             this.buttonFastaFile.UseVisualStyleBackColor = true;
             this.buttonFastaFile.Click += new System.EventHandler(this.buttonFastaFile_Click);
-            // 
-            // radioButtonSearchIdentipy
-            // 
-            this.radioButtonSearchIdentipy.AutoSize = true;
-            this.radioButtonSearchIdentipy.Location = new System.Drawing.Point(292, 53);
-            this.radioButtonSearchIdentipy.Name = "radioButtonSearchIdentipy";
-            this.radioButtonSearchIdentipy.Size = new System.Drawing.Size(79, 21);
-            this.radioButtonSearchIdentipy.TabIndex = 11;
-            this.radioButtonSearchIdentipy.Text = "IdentiPy";
-            this.radioButtonSearchIdentipy.UseVisualStyleBackColor = true;
-            this.radioButtonSearchIdentipy.CheckedChanged += new System.EventHandler(this.radioButtonSearchIdentipy_CheckedChanged);
             // 
             // radioButtonSearchXTandem
             // 
@@ -746,7 +664,7 @@
             this.groupBoxChromatograms.Controls.Add(this.checkBoxChroMs2);
             this.groupBoxChromatograms.Controls.Add(this.checkBoxChroMs1);
             this.groupBoxChromatograms.Enabled = false;
-            this.groupBoxChromatograms.Location = new System.Drawing.Point(3, 636);
+            this.groupBoxChromatograms.Location = new System.Drawing.Point(3, 545);
             this.groupBoxChromatograms.Name = "groupBoxChromatograms";
             this.groupBoxChromatograms.Size = new System.Drawing.Size(183, 80);
             this.groupBoxChromatograms.TabIndex = 7;
@@ -871,7 +789,7 @@
             this.flowLayoutPanel1.Location = new System.Drawing.Point(10, 36);
             this.flowLayoutPanel1.MaximumSize = new System.Drawing.Size(781, 720);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
-            this.flowLayoutPanel1.Size = new System.Drawing.Size(781, 720);
+            this.flowLayoutPanel1.Size = new System.Drawing.Size(781, 639);
             this.flowLayoutPanel1.TabIndex = 8;
             // 
             // groupBoxQuantOpt
@@ -887,9 +805,9 @@
             this.groupBoxQuantOpt.Controls.Add(this.textBoxReporterIntensityFilter);
             this.groupBoxQuantOpt.Controls.Add(this.labelReporterIonIntensityFilter);
             this.groupBoxQuantOpt.Enabled = false;
-            this.groupBoxQuantOpt.Location = new System.Drawing.Point(3, 488);
+            this.groupBoxQuantOpt.Location = new System.Drawing.Point(3, 446);
             this.groupBoxQuantOpt.Name = "groupBoxQuantOpt";
-            this.groupBoxQuantOpt.Size = new System.Drawing.Size(426, 142);
+            this.groupBoxQuantOpt.Size = new System.Drawing.Size(426, 93);
             this.groupBoxQuantOpt.TabIndex = 16;
             this.groupBoxQuantOpt.TabStop = false;
             this.groupBoxQuantOpt.Text = "Quantification Options";
@@ -931,81 +849,20 @@
             // 
             // groupBoxMgfOpts
             // 
-            this.groupBoxMgfOpts.Controls.Add(this.textBoxMgfFilterWindowSize);
-            this.groupBoxMgfOpts.Controls.Add(this.labelMgfIntensityFilterWindow);
-            this.groupBoxMgfOpts.Controls.Add(this.labelMgfFilterRelativeIntensity);
-            this.groupBoxMgfOpts.Controls.Add(this.textBoxMgfFilterRelativeIntensity);
             this.groupBoxMgfOpts.Controls.Add(this.textBoxMgfLowMass);
-            this.groupBoxMgfOpts.Controls.Add(this.checkBoxMgfIntensityFiltering);
             this.groupBoxMgfOpts.Controls.Add(this.checkBoxMgfLowMass);
             this.groupBoxMgfOpts.Enabled = false;
-            this.groupBoxMgfOpts.Location = new System.Drawing.Point(435, 488);
+            this.groupBoxMgfOpts.Location = new System.Drawing.Point(435, 446);
             this.groupBoxMgfOpts.Name = "groupBoxMgfOpts";
-            this.groupBoxMgfOpts.Size = new System.Drawing.Size(318, 142);
+            this.groupBoxMgfOpts.Size = new System.Drawing.Size(318, 93);
             this.groupBoxMgfOpts.TabIndex = 17;
             this.groupBoxMgfOpts.TabStop = false;
             this.groupBoxMgfOpts.Text = "MGF Options";
             // 
-            // textBoxMgfFilterWindowSize
-            // 
-            this.textBoxMgfFilterWindowSize.Enabled = false;
-            this.textBoxMgfFilterWindowSize.Location = new System.Drawing.Point(198, 98);
-            this.textBoxMgfFilterWindowSize.Name = "textBoxMgfFilterWindowSize";
-            this.textBoxMgfFilterWindowSize.Size = new System.Drawing.Size(100, 22);
-            this.textBoxMgfFilterWindowSize.TabIndex = 23;
-            this.textBoxMgfFilterWindowSize.Text = "0";
-            this.textBoxMgfFilterWindowSize.Visible = false;
-            this.textBoxMgfFilterWindowSize.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBoxMgfFilterWindowSize_KeyPress);
-            // 
-            // labelMgfIntensityFilterWindow
-            // 
-            this.labelMgfIntensityFilterWindow.AutoSize = true;
-            this.labelMgfIntensityFilterWindow.Enabled = false;
-            this.labelMgfIntensityFilterWindow.Location = new System.Drawing.Point(35, 102);
-            this.labelMgfIntensityFilterWindow.Name = "labelMgfIntensityFilterWindow";
-            this.labelMgfIntensityFilterWindow.Size = new System.Drawing.Size(157, 17);
-            this.labelMgfIntensityFilterWindow.TabIndex = 22;
-            this.labelMgfIntensityFilterWindow.Text = "Filter window size (m/z):";
-            this.labelMgfIntensityFilterWindow.Visible = false;
-            // 
-            // labelMgfFilterRelativeIntensity
-            // 
-            this.labelMgfFilterRelativeIntensity.AutoSize = true;
-            this.labelMgfFilterRelativeIntensity.Enabled = false;
-            this.labelMgfFilterRelativeIntensity.Location = new System.Drawing.Point(35, 76);
-            this.labelMgfFilterRelativeIntensity.Name = "labelMgfFilterRelativeIntensity";
-            this.labelMgfFilterRelativeIntensity.Size = new System.Drawing.Size(119, 17);
-            this.labelMgfFilterRelativeIntensity.TabIndex = 21;
-            this.labelMgfFilterRelativeIntensity.Text = "Relative intensity:";
-            this.labelMgfFilterRelativeIntensity.Visible = false;
-            // 
-            // textBoxMgfFilterRelativeIntensity
-            // 
-            this.textBoxMgfFilterRelativeIntensity.Enabled = false;
-            this.textBoxMgfFilterRelativeIntensity.Location = new System.Drawing.Point(198, 73);
-            this.textBoxMgfFilterRelativeIntensity.Name = "textBoxMgfFilterRelativeIntensity";
-            this.textBoxMgfFilterRelativeIntensity.Size = new System.Drawing.Size(100, 22);
-            this.textBoxMgfFilterRelativeIntensity.TabIndex = 20;
-            this.textBoxMgfFilterRelativeIntensity.Text = "0";
-            this.textBoxMgfFilterRelativeIntensity.Visible = false;
-            this.textBoxMgfFilterRelativeIntensity.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBoxMgfFilterRelativeIntensity_KeyPress);
-            // 
-            // checkBoxMgfIntensityFiltering
-            // 
-            this.checkBoxMgfIntensityFiltering.AutoSize = true;
-            this.checkBoxMgfIntensityFiltering.Location = new System.Drawing.Point(6, 50);
-            this.checkBoxMgfIntensityFiltering.Name = "checkBoxMgfIntensityFiltering";
-            this.checkBoxMgfIntensityFiltering.Size = new System.Drawing.Size(136, 21);
-            this.checkBoxMgfIntensityFiltering.TabIndex = 1;
-            this.checkBoxMgfIntensityFiltering.Text = "Intensity Filtering";
-            this.checkBoxMgfIntensityFiltering.UseVisualStyleBackColor = true;
-            this.checkBoxMgfIntensityFiltering.Visible = false;
-            this.checkBoxMgfIntensityFiltering.CheckedChanged += new System.EventHandler(this.checkBoxMgfIntensityFiltering_CheckedChanged);
-            // 
             // panel1
             // 
             this.panel1.Controls.Add(this.buttonGo);
-            this.panel1.Location = new System.Drawing.Point(192, 636);
+            this.panel1.Location = new System.Drawing.Point(192, 545);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(561, 80);
             this.panel1.TabIndex = 8;
@@ -1081,7 +938,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoScroll = true;
-            this.ClientSize = new System.Drawing.Size(801, 774);
+            this.ClientSize = new System.Drawing.Size(801, 680);
             this.Controls.Add(this.flowLayoutPanel1);
             this.Controls.Add(this.menuStrip1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -1139,20 +996,14 @@
         private System.Windows.Forms.CheckBox checkBoxRefinePrecursor;
         private System.Windows.Forms.GroupBox groupBoxQcOptions;
         private System.Windows.Forms.GroupBox groupBoxChromatograms;
-        private System.Windows.Forms.RadioButton radioButtonSearchIdentipy;
         private System.Windows.Forms.RadioButton radioButtonSearchXTandem;
         private System.Windows.Forms.RadioButton radioButtonSearchNone;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox textBoxFastaFile;
-        private System.Windows.Forms.Button buttonIdentipyScript;
-        private System.Windows.Forms.Button buttonPythonExe;
         private System.Windows.Forms.Button buttonFastaFile;
         private System.Windows.Forms.TextBox textBoxXTandemDir;
         private System.Windows.Forms.Button buttonXTandemDir;
-        private System.Windows.Forms.TextBox textBoxIdentipyScript;
-        private System.Windows.Forms.TextBox textBoxPythonExe;
         private System.Windows.Forms.ToolTip toolTip1;
-        private System.Windows.Forms.CheckBox checkBoxAutoSearchIdentipy;
         private System.Windows.Forms.Label labelNumSpectra;
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
         private System.Windows.Forms.TextBox textBoxNumSpectra;
@@ -1179,18 +1030,13 @@
         private System.Windows.Forms.ComboBox comboBoxLabelingReagents;
         private System.Windows.Forms.GroupBox groupBoxMgfOpts;
         private System.Windows.Forms.TextBox textBoxMgfLowMass;
-        private System.Windows.Forms.CheckBox checkBoxMgfIntensityFiltering;
         private System.Windows.Forms.CheckBox checkBoxMgfLowMass;
-        private System.Windows.Forms.TextBox textBoxMgfFilterRelativeIntensity;
         private System.Windows.Forms.TextBox textBoxQcDataDirectory;
         private System.Windows.Forms.Button buttonQcDataDirectory;
         private System.Windows.Forms.Label labelPeptideMods;
         private System.Windows.Forms.Button buttonPeptideMods;
 
         private PeptideModifications peptideModifications;
-        private System.Windows.Forms.Label labelMgfFilterRelativeIntensity;
-        private System.Windows.Forms.Label labelMgfIntensityFilterWindow;
-        private System.Windows.Forms.TextBox textBoxMgfFilterWindowSize;
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem fileStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemNewParameters;

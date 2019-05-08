@@ -103,7 +103,6 @@ namespace RawTools.ArgumentParser
 
             parser.Add(new Argument(name: "RefineMassCharge", shortArgument: "-R", longArgument: "-refinemasscharge", required: false,
                 typeOf: typeof(bool),
-                defaultValue: true,
                 helpText: "Refine precursor charge and monoisotopic mass assignments. Highly recommended if " +
                 "monoisotopic precursor selection was turned off in the instrument method (or peptide match on a QE instrument)."));
 

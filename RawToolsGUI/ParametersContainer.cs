@@ -23,9 +23,9 @@ namespace RawToolsGUI
 
         public string QcDataDirectory;
 
-        public bool SearchEngineNone, SearchEngineXTandem, SearchEngineIdentipy, SearchEngineIdentipyAutoFind;
+        public bool SearchEngineNone, SearchEngineXTandem;
 
-        public string XTandemDirectory, PythonExecutable, IdentipyScript, FastaFile;
+        public string XTandemDirectory, FastaFile;
 
         public string NumberSpectraToSearch;
 

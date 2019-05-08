@@ -86,28 +86,6 @@ namespace RawToolsGUI
             }
         }
 
-        private void buttonPythonExe_Click(object sender, EventArgs e)
-        {
-            VistaOpenFileDialog dlg = new VistaOpenFileDialog();
-            dlg.Multiselect = false;
-
-            if (dlg.ShowDialog() == DialogResult.OK)
-            {
-                textBoxPythonExe.Text = dlg.FileName;
-            }
-        }
-
-        private void buttonIdentipyScript_Click(object sender, EventArgs e)
-        {
-            VistaOpenFileDialog dlg = new VistaOpenFileDialog();
-            dlg.Multiselect = false;
-
-            if (dlg.ShowDialog() == DialogResult.OK)
-            {
-                textBoxIdentipyScript.Text = dlg.FileName;
-            }
-        }
-
         private void buttonFastaFile_Click(object sender, EventArgs e)
         {
             VistaOpenFileDialog dlg = new VistaOpenFileDialog();
@@ -136,18 +114,12 @@ namespace RawToolsGUI
             {
                 buttonFastaFile.Enabled = false;
                 buttonXTandemDir.Enabled = false;
-                buttonPythonExe.Enabled = false;
-                buttonIdentipyScript.Enabled = false;
 
                 textBoxFastaFile.Enabled = false;
                 textBoxXTandemDir.Enabled = false;
-                textBoxPythonExe.Enabled = false;
-                textBoxIdentipyScript.Enabled = false;
 
                 labelNumSpectra.Enabled = false;
                 textBoxNumSpectra.Enabled = false;
-
-                checkBoxAutoSearchIdentipy.Enabled = false;
 
                 labelPeptideMods.Enabled = false;
                 buttonPeptideMods.Enabled = false;
@@ -160,71 +132,18 @@ namespace RawToolsGUI
             {
                 buttonFastaFile.Enabled = true;
                 buttonXTandemDir.Enabled = true;
-                buttonPythonExe.Enabled = false;
-                buttonIdentipyScript.Enabled = false;
 
                 textBoxFastaFile.Enabled = true;
                 textBoxXTandemDir.Enabled = true;
-                textBoxPythonExe.Enabled = false;
-                textBoxIdentipyScript.Enabled = false;
 
                 labelNumSpectra.Enabled = true;
                 textBoxNumSpectra.Enabled = true;
-
-                checkBoxAutoSearchIdentipy.Enabled = false;
 
                 labelPeptideMods.Enabled = true;
                 buttonPeptideMods.Enabled = true;
             }
         }
-
-        private void radioButtonSearchIdentipy_CheckedChanged(object sender, EventArgs e)
-        {
-            if (radioButtonSearchIdentipy.Checked)
-            {
-                buttonFastaFile.Enabled = true;
-                buttonXTandemDir.Enabled = false;
-
-                textBoxFastaFile.Enabled = true;
-                textBoxXTandemDir.Enabled = false;
-
-                labelNumSpectra.Enabled = true;
-                textBoxNumSpectra.Enabled = true;
-
-                checkBoxAutoSearchIdentipy.Enabled = true;
-
-                if (!checkBoxAutoSearchIdentipy.Checked)
-                {
-                    buttonPythonExe.Enabled = true;
-                    buttonIdentipyScript.Enabled = true;
-
-                    textBoxPythonExe.Enabled = true;
-                    textBoxIdentipyScript.Enabled = true;
-                }
-
-                labelPeptideMods.Enabled = true;
-                buttonPeptideMods.Enabled = true;
-            }
-        }
-
-        private void checkBoxAutoSearchIdentipy_CheckedChanged(object sender, EventArgs e)
-        {
-            if (!checkBoxAutoSearchIdentipy.Checked)
-            {
-                textBoxPythonExe.Enabled = true;
-                textBoxIdentipyScript.Enabled = true;
-                buttonPythonExe.Enabled = true;
-                buttonIdentipyScript.Enabled = true;
-            }
-            else
-            {
-                textBoxPythonExe.Enabled = false;
-                textBoxIdentipyScript.Enabled = false;
-                buttonPythonExe.Enabled = false;
-                buttonIdentipyScript.Enabled = false;
-            }
-        }
-
+        
         private void checkBoxModeParse_CheckedChanged(object sender, EventArgs e)
         {
             if (checkBoxModeParse.Checked)
@@ -235,7 +154,6 @@ namespace RawToolsGUI
             {
                 groupBoxDataOutput.Enabled = false;
             }
-            
         }
 
         private void checkBoxModeQC_CheckedChanged(object sender, EventArgs e)
@@ -714,24 +632,6 @@ namespace RawToolsGUI
             }
         }
 
-        private void checkBoxMgfIntensityFiltering_CheckedChanged(object sender, EventArgs e)
-        {
-            if (checkBoxMgfIntensityFiltering.Checked)
-            {
-                textBoxMgfFilterRelativeIntensity.Enabled = true;
-                textBoxMgfFilterWindowSize.Enabled = true;
-                labelMgfFilterRelativeIntensity.Enabled = true;
-                labelMgfIntensityFilterWindow.Enabled = true;
-            }
-            else
-            {
-                textBoxMgfFilterRelativeIntensity.Enabled = false;
-                textBoxMgfFilterWindowSize.Enabled = false;
-                labelMgfFilterRelativeIntensity.Enabled = false;
-                labelMgfIntensityFilterWindow.Enabled = false;
-            }
-        }
-
         private void checkBoxReporterIonFiltering_CheckedChanged(object sender, EventArgs e)
         {
             if (checkBoxReporterIonFiltering.Checked)
@@ -776,8 +676,6 @@ namespace RawToolsGUI
 
         private void reset()
         {
-            checkBoxAutoSearchIdentipy.Checked = true;
-
             foreach (Control x in groupBoxChromatograms.Controls) if (x is CheckBox) ((CheckBox)x).Checked = false;
 
             foreach (Control x in groupBoxRawFiles.Controls) if (x is TextBox) ((TextBox)x).Clear();
@@ -785,8 +683,7 @@ namespace RawToolsGUI
             radioButtonSelectDirectory.Checked = true;
 
             textBoxDataOutputDir.Clear();
-
-            checkBoxMgfIntensityFiltering.Checked = false;
+            
             checkBoxMgfLowMass.Checked = false;
 
             foreach (Control x in groupBoxMode.Controls) if (x is CheckBox) ((CheckBox)x).Checked = false;
@@ -820,8 +717,6 @@ namespace RawToolsGUI
 
         private void LoadParameters(ParametersContainer Pars)
         {
-            checkBoxAutoSearchIdentipy.Checked = Pars.SearchEngineIdentipyAutoFind;
-
             checkBoxChroBP.Checked = Pars.ChromatogramBP;
             checkBoxChroMs1.Checked = Pars.ChromatogramMs1;
             checkBoxChroMs2.Checked = Pars.ChromatogramMs2;
@@ -854,13 +749,10 @@ namespace RawToolsGUI
             checkBoxDataOutputDirectory.Checked = Pars.DataOutputDirectory;
             
             radioButtonSearchNone.Checked = Pars.SearchEngineNone;
-            radioButtonSearchIdentipy.Checked = Pars.SearchEngineIdentipy;
             radioButtonSearchXTandem.Checked = Pars.SearchEngineXTandem;
 
             textBoxQcDataDirectory.Text = Pars.QcDataDirectory;
             textBoxXTandemDir.Text = Pars.XTandemDirectory;
-            textBoxPythonExe.Text = Pars.PythonExecutable;
-            textBoxIdentipyScript.Text = Pars.IdentipyScript;
             textBoxFastaFile.Text = Pars.FastaFile;
 
             textBoxNumSpectra.Text = Pars.NumberSpectraToSearch;
@@ -878,9 +770,7 @@ namespace RawToolsGUI
         private ParametersContainer GetOutParameters()
         {
             ParametersContainer Pars = new ParametersContainer();
-
-            Pars.SearchEngineIdentipyAutoFind = checkBoxAutoSearchIdentipy.Checked;
-
+            
             Pars.ChromatogramBP = checkBoxChroBP.Checked;
             Pars.ChromatogramMs1 = checkBoxChroMs1.Checked;
             Pars.ChromatogramMs2 = checkBoxChroMs2.Checked;
@@ -911,13 +801,10 @@ namespace RawToolsGUI
             Pars.DataOutputDirectory = checkBoxDataOutputDirectory.Checked;
 
             Pars.SearchEngineNone = radioButtonSearchNone.Checked;
-            Pars.SearchEngineIdentipy = radioButtonSearchIdentipy.Checked;
             Pars.SearchEngineXTandem = radioButtonSearchXTandem.Checked;
 
             Pars.QcDataDirectory = textBoxQcDataDirectory.Text;
             Pars.XTandemDirectory = textBoxXTandemDir.Text;
-            Pars.PythonExecutable = textBoxPythonExe.Text;
-            Pars.IdentipyScript = textBoxIdentipyScript.Text;
             Pars.FastaFile = textBoxFastaFile.Text;
 
             Pars.NumberSpectraToSearch = textBoxNumSpectra.Text;
