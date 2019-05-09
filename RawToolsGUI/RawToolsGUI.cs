@@ -522,25 +522,15 @@ namespace RawToolsGUI
                         return;
                     }
                     arguments.Append($" -db \"{textBoxFastaFile.Text}\"");
-
-                    if (peptideModifications.KMod.Use)
-                    {
-                        arguments.Append($" -kmod {peptideModifications.KModString}");
-                    }
-
-                    if (peptideModifications.NMod.Use)
-                    {
-                        arguments.Append($" -nmod {peptideModifications.NModString}");
-                    }
-
-                    if (peptideModifications.XMod.Use)
-                    {
-                        arguments.Append($" -xmod {peptideModifications.XModString}");
-                    }
-
-                    if ((from x in peptideModifications.FMods where x.Use select 1).Sum() > 0)
+                    
+                    if ((from x in peptideModifications.Mods where x.Fixed select 1).Sum() > 0)
                     {
                         arguments.Append($" -fmods {peptideModifications.FModsString}");
+                    }
+
+                    if ((from x in peptideModifications.Mods where !x.Fixed select 1).Sum() > 0)
+                    {
+                        arguments.Append($" -vmods {peptideModifications.FModsString}");
                     }
 
                     arguments.Append($" -N {textBoxNumSpectra.Text}");

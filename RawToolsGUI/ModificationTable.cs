@@ -11,44 +11,41 @@ namespace RawToolsGUI
     [Serializable]
     public class PeptideModifications
     {
-        public (string Mass, string AA, bool Use) KMod;
-        public (string Mass, string AA, bool Use) NMod;
-        public (string Mass, string AA, bool Use) XMod;
-        public List<(string Mass, string AA, bool Use)> FMods;
+        public List<(string Mass, string AA, bool Fixed)> Mods;
 
         public PeptideModifications()
         {
-            KMod.AA = "K";
-            KMod.Mass = "229.16293";
-            KMod.Use = true;
-
-            NMod.AA = "[";
-            NMod.Mass = "229.16293";
-            NMod.Use = true;
-
-            FMods = new List<(string Mass, string AA, bool Use)>();
-            FMods.Add(("57.02146", "C", true));
-
-            XMod.AA = "M";
-            XMod.Mass = "15.99491";
-            XMod.Use = true;
+            Mods = new List<(string Mass, string AA, bool Use)>();
+            Mods.Add(("57.02146", "C", true));
+            Mods.Add(("15.99491", "M", false));
+            Mods.Add(("229.16293", "K", false));
+            Mods.Add(("229.16293", "[", false));
         }
-
-        public string KModString { get { return GetModString(KMod); } }
-
-        public string NModString { get { return GetModString(NMod); } }
-
-        public string XModString { get { return GetModString(XMod); } }
-
+        
         public string FModsString
         {
             get
             {
                 List<string> mods = new List<string>();
 
-                foreach (var mod in FMods)
+                foreach (var mod in Mods)
                 {
-                    if (mod.Use) mods.Add(GetModString(mod));
+                    if (mod.Fixed) mods.Add(GetModString(mod));
+                }
+
+                return String.Join(",", mods);
+            }
+        }
+
+        public string VModsString
+        {
+            get
+            {
+                List<string> mods = new List<string>();
+
+                foreach (var mod in Mods)
+                {
+                    if (!mod.Fixed) mods.Add(GetModString(mod));
                 }
 
                 return String.Join(",", mods);
@@ -58,36 +55,31 @@ namespace RawToolsGUI
         public PeptideModifications Copy()
         {
             PeptideModifications copied = new PeptideModifications();
-            copied.KMod = CopyPeptideMod(KMod);
-            copied.NMod = CopyPeptideMod(NMod);
-            copied.XMod = CopyPeptideMod(XMod);
 
-            foreach (var mod in FMods) copied.FMods.Add(CopyPeptideMod(mod));
+            copied.Mods = new List<(string Mass, string AA, bool Fixed)>();
+
+            foreach (var mod in this.Mods) copied.Mods.Add(CopyPeptideMod(mod));
 
             return copied;
         }
 
         public void UpdateModifications(DataGridView data)
         {
-            KMod = GetModFromGridRow(data.Rows[0]);
-            NMod = GetModFromGridRow(data.Rows[1]);
-            XMod = GetModFromGridRow(data.Rows[2]);
+            Mods = new List<(string Mass, string AA, bool Use)>();
 
-            FMods = new List<(string Mass, string AA, bool Use)>();
-
-            for (int i = 3; i < data.Rows.Count; i++)
+            for (int i = 0; i < data.Rows.Count; i++)
             {
-                FMods.Add(GetModFromGridRow(data.Rows[i]));
+                Mods.Add(GetModFromGridRow(data.Rows[i]));
             }
         }
 
         private (string Mass, string AA, bool Use) GetModFromGridRow(DataGridViewRow row)
         {
-            (string Mass, string AA, bool Use) mod;
+            (string Mass, string AA, bool Fixed) mod;
 
             mod.AA = (string)row.Cells["ModAA"].Value;
             mod.Mass = (string)row.Cells["ModMass"].Value;
-            mod.Use = (bool)row.Cells["UseMod"].Value;
+            mod.Fixed = (bool)row.Cells["FixedMod"].Value;
 
             return mod;
         }

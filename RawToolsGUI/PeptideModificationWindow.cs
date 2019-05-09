@@ -19,24 +19,9 @@ namespace RawToolsGUI
 
         public void PopulateTable(PeptideModifications Mods)
         {
-            dataGridViewModifications.Rows.Add("Variable at K", Mods.KMod.Mass, "K", Mods.KMod.Use);
-            dataGridViewModifications.Rows[0].Cells["ModAA"].ReadOnly = true;
-            dataGridViewModifications.Rows[0].Cells["ModAA"].Style.BackColor = Color.LightGray;
-            dataGridViewModifications.Rows[0].Cells["ModType"].Style.BackColor = Color.LightGray;
-
-            dataGridViewModifications.Rows.Add("Variable at N-term", Mods.NMod.Mass, "[", Mods.NMod.Use);
-            dataGridViewModifications.Rows[1].Cells["ModAA"].ReadOnly = true;
-            dataGridViewModifications.Rows[1].Cells["ModAA"].Style.BackColor = Color.LightGray;
-            dataGridViewModifications.Rows[1].Cells["ModType"].Style.BackColor = Color.LightGray;
-
-            dataGridViewModifications.Rows.Add("Variable at X", Mods.XMod.Mass, Mods.XMod.AA, Mods.XMod.Use);
-            dataGridViewModifications.Rows[2].Cells["ModType"].Style.BackColor = Color.LightGray;
-
-            int r = 3;
-            foreach (var mod in Mods.FMods)
+            foreach (var mod in Mods.Mods)
             {
-                dataGridViewModifications.Rows.Add("Fixed", mod.Mass, mod.AA, mod.Use);
-                dataGridViewModifications.Rows[r++].Cells["ModType"].Style.BackColor = Color.LightGray;
+                dataGridViewModifications.Rows.Add(mod.Mass, mod.AA, mod.Fixed);
             }
         }
 
@@ -59,20 +44,12 @@ namespace RawToolsGUI
 
         private void buttonAddFixedMod_Click(object sender, EventArgs e)
         {
-            dataGridViewModifications.Rows.Add("Fixed", "", "", true);
-            dataGridViewModifications.Rows[dataGridViewModifications.Rows.Count - 1].Cells["ModType"].Style.BackColor = Color.LightGray;;
+            dataGridViewModifications.Rows.Add("", "", false);
         }
 
         private void buttonRemoveFixedMod_Click(object sender, EventArgs e)
         {
-            if (dataGridViewModifications.CurrentRow.Index <= 2)
-            {
-                return;
-            }
-            else
-            {
-                dataGridViewModifications.Rows.Remove(dataGridViewModifications.CurrentRow);
-            }
+            dataGridViewModifications.Rows.Remove(dataGridViewModifications.CurrentRow);
         }
 
         private void buttonEditModsOK_Click(object sender, EventArgs e)
@@ -87,23 +64,25 @@ namespace RawToolsGUI
 
         private void dataGridViewModifications_CellValidating(object sender, DataGridViewCellValidatingEventArgs e)
         {
-            if (e.ColumnIndex == 1 & dataGridViewModifications.EditingControl != null) // 1 should be your column index
+            if (e.ColumnIndex == 0 & dataGridViewModifications.EditingControl != null) // 1 should be your column index
             {
                 double i;
 
                 if (!double.TryParse(Convert.ToString(e.FormattedValue), out i))
                 {
-                    dataGridViewModifications.EditingControl.Text = "";
+                    //dataGridViewModifications.EditingControl.Text = "";
+                    dataGridViewModifications.CurrentCell.Style.BackColor = Color.Red;
                     
                     e.Cancel = false;
                 }
                 else
                 {
+                    dataGridViewModifications.CurrentCell.Style.BackColor = Color.White;
                     e.Cancel = false;
                 }
             }
 
-            if (e.ColumnIndex == 2 & e.RowIndex != 0 & e.RowIndex != 1
+            if (e.ColumnIndex == 1
                 & dataGridViewModifications.EditingControl != null) // 1 should be your column index
             {
                 string value = Convert.ToString(e.FormattedValue);
@@ -115,17 +94,23 @@ namespace RawToolsGUI
                     if (Char.IsLetter(value.First()))
                     {
                         dataGridViewModifications.EditingControl.Text = value.ToUpper();
+                        dataGridViewModifications.CurrentCell.Style.BackColor = Color.White;
+
                         e.Cancel = false;
                     }
                     else
                     {
-                        dataGridViewModifications.EditingControl.Text = "";
+                        //dataGridViewModifications.EditingControl.Text = "";
+                        dataGridViewModifications.CurrentCell.Style.BackColor = Color.Red;
+
                         e.Cancel = false;
                     }
                 }
                 else
                 {
-                    dataGridViewModifications.EditingControl.Text = "";
+                    //dataGridViewModifications.EditingControl.Text = "";
+                    dataGridViewModifications.CurrentCell.Style.BackColor = Color.Red;
+
                     e.Cancel = false;
                 }
             }

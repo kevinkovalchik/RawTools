@@ -248,6 +248,9 @@ namespace RawTools.QC
             
             string[] Mods = parameters.QcParams.VariableMods.Split(',');
 
+            //TotalLabelingSites.Add('[', 0);
+            //AmbiguousSites.Add("[", 0);
+
             // "Prime" the dictionaries
             foreach (var item in Mods)
             {
@@ -318,7 +321,7 @@ namespace RawTools.QC
 
                 // now add to total modifications sites
 
-                TotalLabelingSites['[']++;
+                if (nTermIsVariable) TotalLabelingSites['[']++;
 
                 foreach (var aa in psm.Seq)
                 {

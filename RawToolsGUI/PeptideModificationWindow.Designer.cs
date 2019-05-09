@@ -33,12 +33,11 @@
             this.buttonRemoveFixedMod = new System.Windows.Forms.Button();
             this.buttonEditModsOK = new System.Windows.Forms.Button();
             this.buttonEditModsCancel = new System.Windows.Forms.Button();
-            this.UseMod = new System.Windows.Forms.DataGridViewCheckBoxColumn();
-            this.ModAA = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.ModMass = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.ModType = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewModifications = new System.Windows.Forms.DataGridView();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.ModMass = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ModAA = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.FixedMod = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewModifications)).BeginInit();
             this.SuspendLayout();
             // 
@@ -88,27 +87,6 @@
             this.buttonEditModsCancel.Text = "Cancel";
             this.buttonEditModsCancel.UseVisualStyleBackColor = true;
             // 
-            // UseMod
-            // 
-            this.UseMod.HeaderText = "Use";
-            this.UseMod.Name = "UseMod";
-            // 
-            // ModAA
-            // 
-            this.ModAA.HeaderText = "Amino Acid";
-            this.ModAA.Name = "ModAA";
-            // 
-            // ModMass
-            // 
-            this.ModMass.HeaderText = "Modification Mass";
-            this.ModMass.Name = "ModMass";
-            // 
-            // ModType
-            // 
-            this.ModType.HeaderText = "Type";
-            this.ModType.Name = "ModType";
-            this.ModType.ReadOnly = true;
-            // 
             // dataGridViewModifications
             // 
             this.dataGridViewModifications.AllowUserToAddRows = false;
@@ -119,10 +97,9 @@
             this.dataGridViewModifications.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.dataGridViewModifications.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridViewModifications.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.ModType,
             this.ModMass,
             this.ModAA,
-            this.UseMod});
+            this.FixedMod});
             this.dataGridViewModifications.Location = new System.Drawing.Point(10, 10);
             this.dataGridViewModifications.MultiSelect = false;
             this.dataGridViewModifications.Name = "dataGridViewModifications";
@@ -130,6 +107,21 @@
             this.dataGridViewModifications.Size = new System.Drawing.Size(624, 312);
             this.dataGridViewModifications.TabIndex = 3;
             this.dataGridViewModifications.CellValidating += new System.Windows.Forms.DataGridViewCellValidatingEventHandler(this.dataGridViewModifications_CellValidating);
+            // 
+            // ModMass
+            // 
+            this.ModMass.HeaderText = "Modification Mass";
+            this.ModMass.Name = "ModMass";
+            // 
+            // ModAA
+            // 
+            this.ModAA.HeaderText = "Amino Acid";
+            this.ModAA.Name = "ModAA";
+            // 
+            // FixedMod
+            // 
+            this.FixedMod.HeaderText = "Fixed";
+            this.FixedMod.Name = "FixedMod";
             // 
             // PeptideModificationForm
             // 
@@ -155,11 +147,10 @@
         private System.Windows.Forms.Button buttonRemoveFixedMod;
         private System.Windows.Forms.Button buttonEditModsOK;
         private System.Windows.Forms.Button buttonEditModsCancel;
-        private System.Windows.Forms.DataGridViewCheckBoxColumn UseMod;
-        private System.Windows.Forms.DataGridViewTextBoxColumn ModAA;
-        private System.Windows.Forms.DataGridViewTextBoxColumn ModMass;
-        private System.Windows.Forms.DataGridViewTextBoxColumn ModType;
         public System.Windows.Forms.DataGridView dataGridViewModifications;
         private System.Windows.Forms.ToolTip toolTip1;
+        private System.Windows.Forms.DataGridViewTextBoxColumn ModMass;
+        private System.Windows.Forms.DataGridViewTextBoxColumn ModAA;
+        private System.Windows.Forms.DataGridViewCheckBoxColumn FixedMod;
     }
 }
