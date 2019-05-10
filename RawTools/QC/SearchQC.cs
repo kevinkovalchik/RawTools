@@ -239,9 +239,9 @@ namespace RawTools.QC
         public static void GetModificationFrequency(this SearchMetricsContainer searchMetrics, IEnumerable<PsmData> psms, WorkflowParameters parameters)
         {
             Dictionary<string, string> Modifications = new Dictionary<string, string>();
-            Dictionary<char, int> TotalLabelingSites = new Dictionary<char, int>();
-            Dictionary<string, int> LabelingSitesHit = new Dictionary<string, int>();
-            Dictionary<string, double> LabelingEfficiency = new Dictionary<string, double>();
+            Dictionary<char, int> TotalModificationsSites = new Dictionary<char, int>();
+            Dictionary<string, int> ModificationSitesHit = new Dictionary<string, int>();
+            Dictionary<string, double> ModificationEfficiency = new Dictionary<string, double>();
             Dictionary<string, int> AmbiguousSites = new Dictionary<string, int>();
             List<Modification> mods;
             List<char> AminosOfInterest = new List<char>();
@@ -263,10 +263,10 @@ namespace RawTools.QC
 
                 Modifications.Add(splitString.Last(), splitString.First());
 
-                TotalLabelingSites.Add(splitString.Last().Last(), 0);
+                TotalModificationsSites.Add(splitString.Last().Last(), 0);
                 AmbiguousSites.Add(splitString.Last(), 0);
 
-                LabelingSitesHit.Add(item, 0);
+                ModificationSitesHit.Add(item, 0);
 
                 AminosOfInterest.Add(splitString.Last().Last());
             }
@@ -300,8 +300,8 @@ namespace RawTools.QC
                     else
                     {
                         startLoc = 2;
-                        LabelingSitesHit[Modifications[psm.Seq[0].ToString()] + "@["]++;
-                        LabelingSitesHit[Modifications[psm.Seq[0].ToString()] + "@" + psm.Seq[0].ToString()]++;
+                        ModificationSitesHit[Modifications[psm.Seq[0].ToString()] + "@["]++;
+                        ModificationSitesHit[Modifications[psm.Seq[0].ToString()] + "@" + psm.Seq[0].ToString()]++;
                     }
 
                 }
@@ -309,36 +309,36 @@ namespace RawTools.QC
                 {
                     var mod = mods[i];
 
-                    if (mod.Loc == 0 & LabelingSitesHit.ContainsKey(mod.Mass.ToString() + "@["))
+                    if (mod.Loc == 0 & ModificationSitesHit.ContainsKey(mod.Mass.ToString() + "@["))
                     {
-                        LabelingSitesHit[mod.Mass.ToString() + "@["]++;
+                        ModificationSitesHit[mod.Mass.ToString() + "@["]++;
                     }
-                    else if (LabelingSitesHit.ContainsKey(mod.MassAtAa))
+                    else if (ModificationSitesHit.ContainsKey(mod.MassAtAa))
                     {
-                        LabelingSitesHit[mod.MassAtAa]++;
+                        ModificationSitesHit[mod.MassAtAa]++;
                     }
                 }
 
                 // now add to total modifications sites
 
-                if (nTermIsVariable) TotalLabelingSites['[']++;
+                if (nTermIsVariable) TotalModificationsSites['[']++;
 
                 foreach (var aa in psm.Seq)
                 {
                     if (AminosOfInterest.Contains(aa))
                     {
-                        if (TotalLabelingSites.ContainsKey(aa))
+                        if (TotalModificationsSites.ContainsKey(aa))
                         {
-                            TotalLabelingSites[aa]++;
+                            TotalModificationsSites[aa]++;
                         }
                     }
                 }
             }
 
-            // remove ambiguous labeling sites
-            foreach (var site in TotalLabelingSites.Keys.ToList())
+            // remove ambiguous modification sites from total modification sites
+            foreach (var site in TotalModificationsSites.Keys.ToList())
             {
-                TotalLabelingSites[site] = TotalLabelingSites[site] - AmbiguousSites[site.ToString()];
+                TotalModificationsSites[site] = TotalModificationsSites[site] - AmbiguousSites[site.ToString()];
             }
 
             // spit out some metrics to the console and write efficiencies to the search metrics container
@@ -355,9 +355,9 @@ namespace RawTools.QC
                 }
             }*/
 
-            foreach (var hits in LabelingSitesHit)
+            foreach (var hits in ModificationSitesHit)
             {
-                double efficiency = (double)hits.Value / TotalLabelingSites[hits.Key.Last()];
+                double efficiency = (double)hits.Value / TotalModificationsSites[hits.Key.Last()];
 
                 Console.WriteLine("{0} modification frequency: {1}", hits.Key, efficiency);
 
