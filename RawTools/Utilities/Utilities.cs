@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.Linq;
+using System.Data;
 using System.Diagnostics;
 using System.Text;
 using System.IO;
@@ -554,7 +555,7 @@ namespace RawTools.Utilities
         }
     }
 
-    static class ReadWrite
+    public static class ReadWrite
     {
         public static string GetPathToFile(string outputDirectory, string fileName, string suffix)
         {
@@ -654,6 +655,40 @@ namespace RawTools.Utilities
                     files[i] = Path.Combine(wd, fileName);
                 }
             }
+        }
+
+        public static DataTable LoadDataTable(string filePath)
+        {
+            DataTable tbl = new DataTable();
+
+            int numberOfColumns;
+
+            string[] lines = File.ReadAllLines(filePath);
+
+            string[] firstLine = lines[0].Split(',');
+
+            numberOfColumns = firstLine.Length;
+
+            foreach (var columnName in firstLine)
+            {
+                tbl.Columns.Add(new DataColumn(columnName));
+            }
+
+            for (int i = 1; i < lines.Length; i++)
+            {
+                var entries = lines[i].Split(',');
+
+                DataRow dr = tbl.NewRow();
+
+                for (int j = 0; j < entries.Length; j++)
+                {
+                    dr[j] = entries[j];
+                }
+
+                tbl.Rows.Add(dr);
+            }
+
+            return tbl;
         }
     }
 
