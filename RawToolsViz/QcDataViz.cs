@@ -17,11 +17,11 @@ namespace RawToolsViz
     using OxyPlot;
     using OxyPlot.Series;
     using OxyPlot.Axes;
-    using PresentationControls;
 
     public partial class QcDataViz : Form
     {
         DataTable QcData;
+        string RawFileTitle;
 
         public QcDataViz()
         {
@@ -31,14 +31,21 @@ namespace RawToolsViz
         public QcDataViz(string pathToQcCsvFile)
         {
             this.InitializeComponent();
-            QcData = ReadWrite.LoadDataTable(pathToQcCsvFile);
-            
+            QcData = ReadWrite.LoadDataTable(pathToQcCsvFile, ',');
+
+            var columnNames = (from dc in QcData.Columns.Cast<DataColumn>()
+                                    select dc.ColumnName).ToList();
+
+            if (columnNames.Contains("RawFile")) RawFileTitle = "RawFile";
+            else RawFileTitle = "FileName";
+
             foreach (DataColumn d in QcData.Columns)
             {
                 double i;
                 if (Double.TryParse(QcData.Rows[0][d.ColumnName].ToString(), out i))
                 {
                     checkBoxComboBox1.Items.Add(d.ColumnName);
+                    axisTypeComboBox.Items.Add(d.ColumnName);
                 }
             }
             axisTypeComboBox.SelectedIndex = 0;
@@ -76,6 +83,8 @@ namespace RawToolsViz
             var myModel = new PlotModel();
 
             myModel.LegendPlacement = LegendPlacement.Outside;
+            myModel.LegendPosition = LegendPosition.BottomCenter;
+            myModel.LegendOrientation = LegendOrientation.Horizontal;
 
             if (logYScale.Checked)
             {
@@ -86,7 +95,7 @@ namespace RawToolsViz
                 myModel.Axes.Add(new LinearAxis { Position = AxisPosition.Left });
             }
 
-            if (axisTypeComboBox.SelectedIndex == 0)
+            if (axisTypeComboBox.Text == "Sequential")
             {
                 foreach (string columnName in selected)
                 {
@@ -97,14 +106,14 @@ namespace RawToolsViz
 
                     for (int currRow = 0; currRow < QcData.Rows.Count; currRow++)
                     {
-                        scatter.Points.Add(new RawFileDataPoint(currRow + 1, Convert.ToDouble(QcData.Rows[currRow][columnName].ToString()), rawFile: QcData.Rows[currRow]["RawFile"].ToString()));
+                        scatter.Points.Add(new RawFileDataPoint(currRow + 1, Convert.ToDouble(QcData.Rows[currRow][columnName].ToString()), rawFile: QcData.Rows[currRow][RawFileTitle].ToString()));
                     }
                     myModel.Series.Add(scatter);
                 }
                 myModel.Axes.Add(new LinearAxis { Position = AxisPosition.Bottom});
                 
             }
-            else
+            else if (axisTypeComboBox.Text == "Date-Time")
             {
                 DateTimeAxis xAxis = new DateTimeAxis
                 {
@@ -128,12 +137,30 @@ namespace RawToolsViz
                     for (int currRow = 0; currRow < QcData.Rows.Count; currRow++)
                     {
                         
-                        scatter.Points.Add(new RawFileDataPoint(DateTimeAxis.ToDouble(Convert.ToDateTime(QcData.Rows[currRow]["DateAcquired"].ToString())), Convert.ToDouble(QcData.Rows[currRow][columnName].ToString()), rawFile: QcData.Rows[currRow]["FileName"].ToString()));
+                        scatter.Points.Add(new RawFileDataPoint(DateTimeAxis.ToDouble(Convert.ToDateTime(QcData.Rows[currRow]["DateAcquired"].ToString())), Convert.ToDouble(QcData.Rows[currRow][columnName].ToString()), rawFile: QcData.Rows[currRow][RawFileTitle].ToString()));
                         
                     }
                     myModel.Series.Add(scatter);
                 }
                 myModel.Axes.Add(xAxis);
+            }
+            else
+            {
+                foreach (string columnName in selected)
+                {
+                    var scatter = new ScatterSeries();
+                    scatter.Title = columnName;
+                    scatter.MarkerType = MarkerType.Circle;
+                    scatter.MarkerSize = 4.0;
+
+                    for (int currRow = 0; currRow < QcData.Rows.Count; currRow++)
+                    {
+                        scatter.Points.Add(new RawFileDataPoint(Convert.ToDouble(QcData.Rows[currRow][axisTypeComboBox.Text].ToString()), Convert.ToDouble(QcData.Rows[currRow][columnName].ToString()), rawFile: QcData.Rows[currRow][RawFileTitle].ToString()));
+                    }
+                    myModel.Series.Add(scatter);
+                }
+                myModel.Axes.Add(new LinearAxis { Position = AxisPosition.Bottom });
+
             }
 
             for (int i = 0; i < myModel.Axes.Count; i++)
@@ -156,8 +183,13 @@ namespace RawToolsViz
                 myModel.Axes[y].Maximum = Convert.ToDouble(yMaxFixedValue.Text);
             }
 
+            myModel.Axes[y].IsZoomEnabled = false;
+
             myModel.Axes[y].MinimumPadding = 0.05;
             myModel.Axes[y].MaximumPadding = 0.05;
+
+            if (!String.IsNullOrEmpty(xAxisLabel.Text)) myModel.Axes[x].Title = xAxisLabel.Text;
+            if (!String.IsNullOrEmpty(yAxisLabel.Text)) myModel.Axes[y].Title = yAxisLabel.Text;
 
             this.plotView1.Model = myModel;
         }
@@ -229,13 +261,14 @@ namespace RawToolsViz
             double i;
             bool success = double.TryParse(Convert.ToString(yMinFixedValue.Text), out i);
 
-            if (!success || yMinFixedValue.Text == "")
+            if (!success || yMinFixedValue.Text == "" || yMinFixedValue.Text == yMaxFixedValue.Text)
             {
                 yMinFixedValue.BackColor = Color.Red;
             }
             else
             {
                 yMinFixedValue.BackColor = Color.White;
+                UpdateChart();
             }
         }
 
@@ -244,13 +277,14 @@ namespace RawToolsViz
             double i;
             bool success = double.TryParse(Convert.ToString(yMaxFixedValue.Text), out i);
 
-            if (!success || yMaxFixedValue.Text == "")
+            if (!success || yMaxFixedValue.Text == "" || yMinFixedValue.Text == yMaxFixedValue.Text)
             {
                 yMaxFixedValue.BackColor = Color.Red;
             }
             else
             {
                 yMaxFixedValue.BackColor = Color.White;
+                UpdateChart();
             }
         }
 
@@ -338,31 +372,54 @@ namespace RawToolsViz
                 return;
             }
 
-            if (exportAsSvg.Checked)
+            if (exportAsComboBox.Text == "SVG")
             {
                 SaveFileDialog saveParameters = new SaveFileDialog();
-                saveParameters.Filter = ".svg files|*.svg";
+                saveParameters.Filter = "SVG files|*.svg";
                 saveParameters.Title = "Export figure as .svg";
                 saveParameters.ShowDialog();
 
                 using (var stream = File.Create(saveParameters.FileName))
                 {
-                    var exporter = new SvgExporter { Width = Convert.ToInt32(exportWidthValue.Text.ToString()),
-                        Height = Convert.ToInt32(exportHeightValue.Text.ToString()) };
+                    var exporter = new SvgExporter
+                    {
+                        Width = Convert.ToInt32(exportWidthValue.Text.ToString()),
+                        Height = Convert.ToInt32(exportHeightValue.Text.ToString())
+                    };
                     exporter.Export(plotView1.Model, stream);
                 }
             }
-            else if (exportAsPdf.Checked)
+            else if (exportAsComboBox.Text == "PDF")
             {
                 SaveFileDialog saveParameters = new SaveFileDialog();
-                saveParameters.Filter = ".pdf files|*.pdf";
+                saveParameters.Filter = "PDF files|*.pdf";
                 saveParameters.Title = "Export figure as .pdf";
                 saveParameters.ShowDialog();
 
                 using (var stream = File.Create(saveParameters.FileName))
                 {
-                    var exporter = new PdfExporter { Width = Convert.ToInt32(exportWidthValue.Text.ToString()),
-                        Height = Convert.ToInt32(exportHeightValue.Text.ToString()) };
+                    var exporter = new PdfExporter
+                    {
+                        Width = Convert.ToInt32(exportWidthValue.Text.ToString()),
+                        Height = Convert.ToInt32(exportHeightValue.Text.ToString())
+                    };
+                    exporter.Export(plotView1.Model, stream);
+                }
+            }
+            else if (exportAsComboBox.Text == "PNG")
+            {
+                SaveFileDialog saveParameters = new SaveFileDialog();
+                saveParameters.Filter = "PNG files|*.pdf";
+                saveParameters.Title = "Export figure as .pdf";
+                saveParameters.ShowDialog();
+
+                using (var stream = File.Create(saveParameters.FileName))
+                {
+                    var exporter = new OxyPlot.WindowsForms.PngExporter
+                    {
+                        Width = Convert.ToInt32(exportWidthValue.Text.ToString()),
+                        Height = Convert.ToInt32(exportHeightValue.Text.ToString())
+                    };
                     exporter.Export(plotView1.Model, stream);
                 }
             }
@@ -393,6 +450,26 @@ namespace RawToolsViz
                 return true;
             else
                 return false;
+        }
+
+        private void checkBoxComboBox1_CheckBoxCheckedChanged_1(object sender, EventArgs e)
+        {
+            UpdateChart();
+        }
+
+        private void axisTypeComboBox_SelectedIndexChanged_1(object sender, EventArgs e)
+        {
+            UpdateChart();
+        }
+
+        private void xAxisLabel_TextChanged(object sender, EventArgs e)
+        {
+            UpdateChart();
+        }
+
+        private void yAxisLabel_TextChanged(object sender, EventArgs e)
+        {
+            UpdateChart();
         }
     }
 }

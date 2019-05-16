@@ -96,6 +96,7 @@
             this.loadChroButton.TabIndex = 2;
             this.loadChroButton.Text = "Load chromatogram file";
             this.loadChroButton.UseVisualStyleBackColor = true;
+            this.loadChroButton.Click += new System.EventHandler(this.loadChroButton_Click);
             // 
             // loadRawButton
             // 
@@ -107,6 +108,7 @@
             this.loadRawButton.TabIndex = 3;
             this.loadRawButton.Text = "Load Thermo .raw file";
             this.loadRawButton.UseVisualStyleBackColor = true;
+            this.loadRawButton.Click += new System.EventHandler(this.loadRawButton_Click);
             // 
             // exitButton
             // 

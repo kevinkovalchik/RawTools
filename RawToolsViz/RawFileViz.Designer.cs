@@ -1,6 +1,6 @@
 ﻿namespace RawToolsViz
 {
-    partial class ParseDataViz
+    partial class RawFileViz
     {
         /// <summary>
         /// Required designer variable.
@@ -28,22 +28,18 @@
         /// </summary>
         private void InitializeComponent()
         {
-            PresentationControls.CheckBoxProperties checkBoxProperties1 = new PresentationControls.CheckBoxProperties();
-            this.plotView1 = new OxyPlot.WindowsForms.PlotView();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.totalScans = new System.Windows.Forms.Label();
+            this.scanNumber = new System.Windows.Forms.TextBox();
             this.yAxisLabel = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
             this.xAxisLabel = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
-            this.checkBoxComboBox1 = new PresentationControls.CheckBoxComboBox();
-            this.label1 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
-            this.axisTypeComboBox = new System.Windows.Forms.ComboBox();
             this.panel2 = new System.Windows.Forms.Panel();
             this.exportAsComboBox = new System.Windows.Forms.ComboBox();
             this.exportHeightValue = new System.Windows.Forms.TextBox();
@@ -66,26 +62,30 @@
             this.logYScale = new System.Windows.Forms.RadioButton();
             this.linearYScale = new System.Windows.Forms.RadioButton();
             this.label3 = new System.Windows.Forms.Label();
+            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.plotView1 = new OxyPlot.WindowsForms.PlotView();
+            this.tabControl1 = new System.Windows.Forms.TabControl();
+            this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.scanFilterTextBox = new System.Windows.Forms.TextBox();
+            this.trailerExtraTextBox = new System.Windows.Forms.TextBox();
+            this.instLogTextBox = new System.Windows.Forms.TextBox();
+            this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.menuStrip1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.panel4.SuspendLayout();
             this.panel3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
+            this.splitContainer1.Panel1.SuspendLayout();
+            this.splitContainer1.Panel2.SuspendLayout();
+            this.splitContainer1.SuspendLayout();
+            this.tabControl1.SuspendLayout();
+            this.tabPage2.SuspendLayout();
+            this.tabPage3.SuspendLayout();
+            this.tableLayoutPanel2.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // plotView1
-            // 
-            this.plotView1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.plotView1.Location = new System.Drawing.Point(3, 93);
-            this.plotView1.Name = "plotView1";
-            this.plotView1.PanCursor = System.Windows.Forms.Cursors.Hand;
-            this.plotView1.Size = new System.Drawing.Size(976, 433);
-            this.plotView1.TabIndex = 0;
-            this.plotView1.Text = "plotView1";
-            this.plotView1.ZoomHorizontalCursor = System.Windows.Forms.Cursors.SizeWE;
-            this.plotView1.ZoomRectangleCursor = System.Windows.Forms.Cursors.SizeNWSE;
-            this.plotView1.ZoomVerticalCursor = System.Windows.Forms.Cursors.SizeNS;
             // 
             // menuStrip1
             // 
@@ -95,7 +95,7 @@
             this.helpToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(982, 28);
+            this.menuStrip1.Size = new System.Drawing.Size(1031, 28);
             this.menuStrip1.TabIndex = 1;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -124,9 +124,9 @@
             // 
             this.tableLayoutPanel1.ColumnCount = 1;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel1.Controls.Add(this.plotView1, 0, 1);
             this.tableLayoutPanel1.Controls.Add(this.panel1, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.panel2, 0, 2);
+            this.tableLayoutPanel1.Controls.Add(this.splitContainer1, 0, 1);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 28);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
@@ -134,101 +134,74 @@
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 90F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 90F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(982, 619);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(1031, 619);
             this.tableLayoutPanel1.TabIndex = 2;
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.totalScans);
+            this.panel1.Controls.Add(this.scanNumber);
             this.panel1.Controls.Add(this.yAxisLabel);
             this.panel1.Controls.Add(this.label6);
             this.panel1.Controls.Add(this.xAxisLabel);
             this.panel1.Controls.Add(this.label5);
-            this.panel1.Controls.Add(this.checkBoxComboBox1);
-            this.panel1.Controls.Add(this.label1);
-            this.panel1.Controls.Add(this.label2);
-            this.panel1.Controls.Add(this.axisTypeComboBox);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel1.Location = new System.Drawing.Point(3, 3);
             this.panel1.Name = "panel1";
             this.panel1.Padding = new System.Windows.Forms.Padding(3, 6, 6, 3);
-            this.panel1.Size = new System.Drawing.Size(976, 84);
+            this.panel1.Size = new System.Drawing.Size(1025, 84);
             this.panel1.TabIndex = 1;
+            // 
+            // totalScans
+            // 
+            this.totalScans.AutoSize = true;
+            this.totalScans.Location = new System.Drawing.Point(218, 27);
+            this.totalScans.Name = "totalScans";
+            this.totalScans.Size = new System.Drawing.Size(40, 17);
+            this.totalScans.TabIndex = 9;
+            this.totalScans.Text = "/ 100";
+            // 
+            // scanNumber
+            // 
+            this.scanNumber.Location = new System.Drawing.Point(146, 24);
+            this.scanNumber.Name = "scanNumber";
+            this.scanNumber.Size = new System.Drawing.Size(62, 22);
+            this.scanNumber.TabIndex = 8;
+            this.scanNumber.TextChanged += new System.EventHandler(this.scanNumber_TextChanged);
             // 
             // yAxisLabel
             // 
-            this.yAxisLabel.Location = new System.Drawing.Point(593, 51);
+            this.yAxisLabel.Location = new System.Drawing.Point(680, 48);
             this.yAxisLabel.Name = "yAxisLabel";
-            this.yAxisLabel.Size = new System.Drawing.Size(369, 22);
-            this.yAxisLabel.TabIndex = 19;
-            this.yAxisLabel.TextChanged += new System.EventHandler(this.yAxisLabel_TextChanged_1);
+            this.yAxisLabel.Size = new System.Drawing.Size(271, 22);
+            this.yAxisLabel.TabIndex = 7;
+            this.yAxisLabel.TextChanged += new System.EventHandler(this.yAxisLabel_TextChanged);
             // 
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(534, 54);
+            this.label6.Location = new System.Drawing.Point(620, 51);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(54, 17);
-            this.label6.TabIndex = 18;
+            this.label6.TabIndex = 6;
             this.label6.Text = "y-label:";
             // 
             // xAxisLabel
             // 
-            this.xAxisLabel.Location = new System.Drawing.Point(74, 51);
+            this.xAxisLabel.Location = new System.Drawing.Point(680, 3);
             this.xAxisLabel.Name = "xAxisLabel";
-            this.xAxisLabel.Size = new System.Drawing.Size(369, 22);
-            this.xAxisLabel.TabIndex = 17;
-            this.xAxisLabel.TextChanged += new System.EventHandler(this.xAxisLabel_TextChanged_1);
+            this.xAxisLabel.Size = new System.Drawing.Size(271, 22);
+            this.xAxisLabel.TabIndex = 5;
+            this.xAxisLabel.TextChanged += new System.EventHandler(this.xAxisLabel_TextChanged);
             // 
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(15, 54);
+            this.label5.Location = new System.Drawing.Point(621, 6);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(53, 17);
-            this.label5.TabIndex = 16;
+            this.label5.TabIndex = 4;
             this.label5.Text = "x-label:";
-            // 
-            // checkBoxComboBox1
-            // 
-            checkBoxProperties1.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.checkBoxComboBox1.CheckBoxProperties = checkBoxProperties1;
-            this.checkBoxComboBox1.DisplayMemberSingleItem = "";
-            this.checkBoxComboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.checkBoxComboBox1.FormattingEnabled = true;
-            this.checkBoxComboBox1.Location = new System.Drawing.Point(593, 11);
-            this.checkBoxComboBox1.Name = "checkBoxComboBox1";
-            this.checkBoxComboBox1.Size = new System.Drawing.Size(369, 24);
-            this.checkBoxComboBox1.TabIndex = 13;
-            this.checkBoxComboBox1.CheckBoxCheckedChanged += new System.EventHandler(this.checkBoxComboBox1_CheckBoxCheckedChanged_1);
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(539, 14);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(48, 17);
-            this.label1.TabIndex = 12;
-            this.label1.Text = "y-axis:";
-            this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(21, 14);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(47, 17);
-            this.label2.TabIndex = 15;
-            this.label2.Text = "x-axis:";
-            // 
-            // axisTypeComboBox
-            // 
-            this.axisTypeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.axisTypeComboBox.FormattingEnabled = true;
-            this.axisTypeComboBox.Location = new System.Drawing.Point(74, 11);
-            this.axisTypeComboBox.Name = "axisTypeComboBox";
-            this.axisTypeComboBox.Size = new System.Drawing.Size(369, 24);
-            this.axisTypeComboBox.TabIndex = 14;
-            this.axisTypeComboBox.SelectedIndexChanged += new System.EventHandler(this.axisTypeComboBox_SelectedIndexChanged_1);
             // 
             // panel2
             // 
@@ -250,7 +223,7 @@
             this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel2.Location = new System.Drawing.Point(3, 532);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(976, 84);
+            this.panel2.Size = new System.Drawing.Size(1025, 84);
             this.panel2.TabIndex = 2;
             // 
             // exportAsComboBox
@@ -340,7 +313,6 @@
             this.yMaxFixedValue.TabIndex = 3;
             this.yMaxFixedValue.Text = "NaN";
             this.yMaxFixedValue.TextChanged += new System.EventHandler(this.yMaxFixedValue_TextChanged);
-            this.yMaxFixedValue.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.yMaxFixedValue_KeyPress);
             this.yMaxFixedValue.Leave += new System.EventHandler(this.yMaxFixedValue_Leave);
             // 
             // yMaxFixed
@@ -385,7 +357,6 @@
             this.yMinFixedValue.TabIndex = 2;
             this.yMinFixedValue.Text = "NaN";
             this.yMinFixedValue.TextChanged += new System.EventHandler(this.yMinFixedValue_TextChanged);
-            this.yMinFixedValue.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.yMinFixedValue_KeyPress);
             this.yMinFixedValue.Leave += new System.EventHandler(this.yMinFixedValue_Leave);
             // 
             // yMinFixed
@@ -471,17 +442,137 @@
             this.label3.TabIndex = 4;
             this.label3.Text = "y-axis:";
             // 
-            // ParseDataViz
+            // splitContainer1
+            // 
+            this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer1.Location = new System.Drawing.Point(3, 93);
+            this.splitContainer1.Name = "splitContainer1";
+            // 
+            // splitContainer1.Panel1
+            // 
+            this.splitContainer1.Panel1.Controls.Add(this.tableLayoutPanel2);
+            // 
+            // splitContainer1.Panel2
+            // 
+            this.splitContainer1.Panel2.Controls.Add(this.tabControl1);
+            this.splitContainer1.Size = new System.Drawing.Size(1025, 433);
+            this.splitContainer1.SplitterDistance = 700;
+            this.splitContainer1.TabIndex = 3;
+            // 
+            // plotView1
+            // 
+            this.plotView1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.plotView1.Location = new System.Drawing.Point(3, 33);
+            this.plotView1.Name = "plotView1";
+            this.plotView1.PanCursor = System.Windows.Forms.Cursors.Hand;
+            this.plotView1.Size = new System.Drawing.Size(694, 397);
+            this.plotView1.TabIndex = 1;
+            this.plotView1.Text = "plotView1";
+            this.plotView1.ZoomHorizontalCursor = System.Windows.Forms.Cursors.SizeWE;
+            this.plotView1.ZoomRectangleCursor = System.Windows.Forms.Cursors.SizeNWSE;
+            this.plotView1.ZoomVerticalCursor = System.Windows.Forms.Cursors.SizeNS;
+            // 
+            // tabControl1
+            // 
+            this.tabControl1.Controls.Add(this.tabPage2);
+            this.tabControl1.Controls.Add(this.tabPage3);
+            this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tabControl1.Location = new System.Drawing.Point(0, 0);
+            this.tabControl1.MinimumSize = new System.Drawing.Size(320, 433);
+            this.tabControl1.Name = "tabControl1";
+            this.tabControl1.SelectedIndex = 0;
+            this.tabControl1.Size = new System.Drawing.Size(321, 433);
+            this.tabControl1.TabIndex = 0;
+            // 
+            // tabPage2
+            // 
+            this.tabPage2.Controls.Add(this.trailerExtraTextBox);
+            this.tabPage2.Location = new System.Drawing.Point(4, 25);
+            this.tabPage2.Name = "tabPage2";
+            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage2.Size = new System.Drawing.Size(313, 404);
+            this.tabPage2.TabIndex = 1;
+            this.tabPage2.Text = "Trailer extra";
+            this.tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // tabPage3
+            // 
+            this.tabPage3.Controls.Add(this.instLogTextBox);
+            this.tabPage3.Location = new System.Drawing.Point(4, 25);
+            this.tabPage3.Name = "tabPage3";
+            this.tabPage3.Size = new System.Drawing.Size(313, 404);
+            this.tabPage3.TabIndex = 2;
+            this.tabPage3.Text = "Instrument log";
+            this.tabPage3.UseVisualStyleBackColor = true;
+            // 
+            // scanFilterTextBox
+            // 
+            this.scanFilterTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.scanFilterTextBox.BackColor = System.Drawing.Color.White;
+            this.scanFilterTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.scanFilterTextBox.Location = new System.Drawing.Point(3, 3);
+            this.scanFilterTextBox.Name = "scanFilterTextBox";
+            this.scanFilterTextBox.ReadOnly = true;
+            this.scanFilterTextBox.ShortcutsEnabled = false;
+            this.scanFilterTextBox.Size = new System.Drawing.Size(694, 15);
+            this.scanFilterTextBox.TabIndex = 0;
+            // 
+            // trailerExtraTextBox
+            // 
+            this.trailerExtraTextBox.BackColor = System.Drawing.Color.White;
+            this.trailerExtraTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.trailerExtraTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.trailerExtraTextBox.Location = new System.Drawing.Point(3, 3);
+            this.trailerExtraTextBox.Multiline = true;
+            this.trailerExtraTextBox.Name = "trailerExtraTextBox";
+            this.trailerExtraTextBox.ReadOnly = true;
+            this.trailerExtraTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Both;
+            this.trailerExtraTextBox.Size = new System.Drawing.Size(307, 398);
+            this.trailerExtraTextBox.TabIndex = 1;
+            this.trailerExtraTextBox.WordWrap = false;
+            // 
+            // instLogTextBox
+            // 
+            this.instLogTextBox.BackColor = System.Drawing.Color.White;
+            this.instLogTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.instLogTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.instLogTextBox.Location = new System.Drawing.Point(0, 0);
+            this.instLogTextBox.Multiline = true;
+            this.instLogTextBox.Name = "instLogTextBox";
+            this.instLogTextBox.ReadOnly = true;
+            this.instLogTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Both;
+            this.instLogTextBox.Size = new System.Drawing.Size(313, 404);
+            this.instLogTextBox.TabIndex = 2;
+            this.instLogTextBox.WordWrap = false;
+            // 
+            // tableLayoutPanel2
+            // 
+            this.tableLayoutPanel2.ColumnCount = 1;
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel2.Controls.Add(this.scanFilterTextBox, 0, 0);
+            this.tableLayoutPanel2.Controls.Add(this.plotView1, 0, 1);
+            this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel2.Location = new System.Drawing.Point(0, 0);
+            this.tableLayoutPanel2.Name = "tableLayoutPanel2";
+            this.tableLayoutPanel2.RowCount = 2;
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(700, 433);
+            this.tableLayoutPanel2.TabIndex = 0;
+            // 
+            // RawFileViz
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
-            this.ClientSize = new System.Drawing.Size(982, 647);
+            this.ClientSize = new System.Drawing.Size(1031, 647);
             this.Controls.Add(this.tableLayoutPanel1);
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
             this.MinimumSize = new System.Drawing.Size(1000, 694);
-            this.Name = "ParseDataViz";
+            this.Name = "RawFileViz";
             this.Text = "ParseDataViz";
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
@@ -494,14 +585,23 @@
             this.panel4.PerformLayout();
             this.panel3.ResumeLayout(false);
             this.panel3.PerformLayout();
+            this.splitContainer1.Panel1.ResumeLayout(false);
+            this.splitContainer1.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
+            this.splitContainer1.ResumeLayout(false);
+            this.tabControl1.ResumeLayout(false);
+            this.tabPage2.ResumeLayout(false);
+            this.tabPage2.PerformLayout();
+            this.tabPage3.ResumeLayout(false);
+            this.tabPage3.PerformLayout();
+            this.tableLayoutPanel2.ResumeLayout(false);
+            this.tableLayoutPanel2.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
         }
 
         #endregion
-
-        private OxyPlot.WindowsForms.PlotView plotView1;
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
@@ -534,10 +634,17 @@
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.TextBox xAxisLabel;
         private System.Windows.Forms.Label label5;
-        private PresentationControls.CheckBoxComboBox checkBoxComboBox1;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.ComboBox axisTypeComboBox;
+        private System.Windows.Forms.Label totalScans;
+        private System.Windows.Forms.TextBox scanNumber;
+        private System.Windows.Forms.SplitContainer splitContainer1;
+        private OxyPlot.WindowsForms.PlotView plotView1;
+        private System.Windows.Forms.TabControl tabControl1;
+        private System.Windows.Forms.TabPage tabPage2;
+        private System.Windows.Forms.TextBox scanFilterTextBox;
+        private System.Windows.Forms.TabPage tabPage3;
+        private System.Windows.Forms.TextBox trailerExtraTextBox;
+        private System.Windows.Forms.TextBox instLogTextBox;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
     }
 }
 

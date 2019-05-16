@@ -657,7 +657,7 @@ namespace RawTools.Utilities
             }
         }
 
-        public static DataTable LoadDataTable(string filePath)
+        public static DataTable LoadDataTable(string filePath, char delimiter)
         {
             DataTable tbl = new DataTable();
 
@@ -665,7 +665,7 @@ namespace RawTools.Utilities
 
             string[] lines = File.ReadAllLines(filePath);
 
-            string[] firstLine = lines[0].Split(',');
+            string[] firstLine = lines[0].Split(delimiter);
 
             numberOfColumns = firstLine.Length;
 
@@ -676,7 +676,7 @@ namespace RawTools.Utilities
 
             for (int i = 1; i < lines.Length; i++)
             {
-                var entries = lines[i].Split(',');
+                var entries = lines[i].Split(delimiter);
 
                 DataRow dr = tbl.NewRow();
 

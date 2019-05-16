@@ -8,6 +8,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Threading;
 using System.Windows.Forms;
+using ThermoFisher.CommonCore.Data.Interfaces;
+using ThermoFisher.CommonCore.Data.Business;
 
 namespace RawToolsViz
 {
@@ -48,7 +50,7 @@ namespace RawToolsViz
         private void loadQcButton_Click(object sender, EventArgs e)
         {
             OpenFileDialog openQcData = new OpenFileDialog();
-            openQcData.Filter = "RawTools QC data (.csv)|*.csv";
+            openQcData.Filter = "RawTools QC data|*.csv";
             openQcData.Title = "Select QC data";
             openQcData.ShowDialog();
 
@@ -65,7 +67,7 @@ namespace RawToolsViz
         private void loadParseButton_Click(object sender, EventArgs e)
         {
             OpenFileDialog openParseData = new OpenFileDialog();
-            openParseData.Filter = "RawTools parse data (.csv)|*.csv";
+            openParseData.Filter = "RawTools parse data|*.txt";
             openParseData.Title = "Select parse data";
             openParseData.ShowDialog();
 
@@ -76,6 +78,40 @@ namespace RawToolsViz
 
             var t = new Thread(() => new ParseDataViz(openParseData.FileName).ShowDialog());
             t.SetApartmentState(ApartmentState.STA);
+            t.Start();
+        }
+
+        private void loadChroButton_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog openChroData = new OpenFileDialog();
+            openChroData.Filter = "RawTools chromatogram data|*.txt";
+            openChroData.Title = "Select chromatogram data";
+            openChroData.ShowDialog();
+
+            if (String.IsNullOrEmpty(openChroData.FileName))
+            {
+                return;
+            }
+
+            var t = new Thread(() => new ChromatogramViz(openChroData.FileName).ShowDialog());
+            t.SetApartmentState(ApartmentState.STA);
+            t.Start();
+        }
+
+        private void loadRawButton_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog openChroData = new OpenFileDialog();
+            openChroData.Filter = "Thermo RAW files|*.raw";
+            openChroData.Title = "Select RAW file";
+            openChroData.ShowDialog();
+
+            if (String.IsNullOrEmpty(openChroData.FileName))
+            {
+                return;
+            }
+
+            var t = new Thread(() => new RawFileViz(openChroData.FileName).ShowDialog());
+            //t.SetApartmentState(ApartmentState.STA);
             t.Start();
         }
     }

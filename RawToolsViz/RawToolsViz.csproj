@@ -52,13 +52,41 @@
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
+    <Reference Include="ThermoFisher.CommonCore.BackgroundSubtraction, Version=1.0.0.0, Culture=neutral, PublicKeyToken=1aef06afb5abd953, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\ThermoFisher.CommonCore.RawFileReader.4.0.26\lib\Windows\ThermoFisher.CommonCore.BackgroundSubtraction.dll</HintPath>
+    </Reference>
+    <Reference Include="ThermoFisher.CommonCore.Data, Version=1.0.0.0, Culture=neutral, PublicKeyToken=1aef06afb5abd953, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\ThermoFisher.CommonCore.RawFileReader.4.0.26\lib\Windows\ThermoFisher.CommonCore.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="ThermoFisher.CommonCore.MassPrecisionEstimator, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\ThermoFisher.CommonCore.RawFileReader.4.0.26\lib\Windows\ThermoFisher.CommonCore.MassPrecisionEstimator.dll</HintPath>
+    </Reference>
+    <Reference Include="ThermoFisher.CommonCore.RawFileReader, Version=1.0.0.0, Culture=neutral, PublicKeyToken=1aef06afb5abd953, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\ThermoFisher.CommonCore.RawFileReader.4.0.26\lib\Windows\ThermoFisher.CommonCore.RawFileReader.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="RawFileViz.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="RawFileViz.Designer.cs">
+      <DependentUpon>RawFileViz.cs</DependentUpon>
+    </Compile>
     <Compile Include="ParseDataViz.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="ParseDataViz.Designer.cs">
       <DependentUpon>ParseDataViz.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ChromatogramViz.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ChromatogramViz.Designer.cs">
+      <DependentUpon>ChromatogramViz.cs</DependentUpon>
     </Compile>
     <Compile Include="QcDataViz.cs">
       <SubType>Form</SubType>
@@ -75,8 +103,14 @@
       <DependentUpon>Launcher.cs</DependentUpon>
     </Compile>
     <Compile Include="RawFileDataPoint.cs" />
+    <EmbeddedResource Include="RawFileViz.resx">
+      <DependentUpon>RawFileViz.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="ParseDataViz.resx">
       <DependentUpon>ParseDataViz.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ChromatogramViz.resx">
+      <DependentUpon>ChromatogramViz.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="QcDataViz.resx">
       <DependentUpon>QcDataViz.cs</DependentUpon>

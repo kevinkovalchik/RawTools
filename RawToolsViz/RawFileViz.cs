@@ -10,6 +10,10 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using RawTools.QC;
 using RawTools.Utilities;
+using ThermoFisher.CommonCore.Data.Business;
+using ThermoFisher.CommonCore.Data.Interfaces;
+using ThermoFisher.CommonCore.Data;
+using RawTools.Data.Containers;
 
 
 namespace RawToolsViz
@@ -19,31 +23,89 @@ namespace RawToolsViz
     using OxyPlot.Axes;
     using PresentationControls;
 
-    public partial class ParseDataViz : Form
+    public partial class RawFileViz : Form
     {
-        DataTable QcData;
+        IRawDataPlus RawData;
+        IRawFileThreadManager rawFileThreadManager;
+        CentroidStreamData CentroidData;
+        SegmentedScanData SegmentedScanData;
+        SimpleCentroid SimpleCentroidData;
+        int TotalNumScans;
+        int FirstScan, LastScan;
 
-        public ParseDataViz()
+        public RawFileViz()
         {
 
         }
 
-        public ParseDataViz(string pathToQcCsvFile)
+        public RawFileViz(string rawFile)
         {
             this.InitializeComponent();
-            QcData = ReadWrite.LoadDataTable(pathToQcCsvFile, '\t');
-            
-            foreach (DataColumn d in QcData.Columns)
+
+            rawFileThreadManager = RawFileReaderFactory.CreateThreadManager(rawFile);
+
+            RawData = rawFileThreadManager.CreateThreadAccessor();
+
+            RawData.SelectMsData();
+
+            TotalNumScans = RawData.RunHeaderEx.SpectraCount;
+
+            FirstScan = RawData.RunHeader.FirstSpectrum;
+
+            LastScan = RawData.RunHeader.LastSpectrum;
+
+            this.Text = "ParseDataViz - " + RawData.FileName;
+
+            totalScans.Text = String.Format("/ {0}", TotalNumScans);
+
+            splitContainer1.SplitterDistance = this.Size.Width - 300;
+        }
+
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            if (ConfirmExit() == false)
             {
-                double i;
-                if (Double.TryParse(QcData.Rows[0][d.ColumnName].ToString(), out i))
-                {
-                    checkBoxComboBox1.Items.Add(d.ColumnName);
-                    axisTypeComboBox.Items.Add(d.ColumnName);
-                }
+                e.Cancel = true;
             }
-            axisTypeComboBox.SelectedIndex = 0;
-            this.Text = "ParseDataViz - " + pathToQcCsvFile;
+            else
+	        {
+                RawData.Dispose();
+                rawFileThreadManager.Dispose();
+            }
+        }
+
+        private void updateScanHeaderTextBox()
+        {
+            var scanEvent = RawData.GetScanEventStringForScanNumber(Convert.ToInt32(scanNumber.Text));
+            scanFilterTextBox.Text = "Scan event: "+ scanEvent;
+        }
+
+        private void updateTrailerExtraTextBox()
+        {
+            var trailer = RawData.GetTrailerExtraInformation(Convert.ToInt32(scanNumber.Text));
+            string text = "";
+
+            for (int i = 0; i < trailer.Length; i++)
+            {
+                text += String.Format("{0} {1}{2}", trailer.Labels[i], trailer.Values[i], Environment.NewLine);
+            }
+            
+            trailerExtraTextBox.Text = text;
+        }
+
+        private void updateInstLogTextBox()
+        {
+            var retTime = RawData.RetentionTimeFromScanNumber(Convert.ToInt32(scanNumber.Text));
+            var statusLog = RawData.GetStatusLogForRetentionTime(retTime);
+
+            string text = "";
+
+            for (int i = 0; i < statusLog.Length; i++)
+            {
+                text += String.Format("{0} {1}{2}", statusLog.Labels[i], statusLog.Values[i], Environment.NewLine);
+            }
+
+            instLogTextBox.Text = text;
         }
 
         private void checkBoxComboBox1_CheckBoxCheckedChanged(object sender, EventArgs e)
@@ -63,16 +125,7 @@ namespace RawToolsViz
             }
 
             List<string> selected = new List<string>();
-
-            foreach (var data in checkBoxComboBox1.CheckBoxItems)
-            {
-                //if (!(from x in checkBoxComboBox1.CheckBoxItems select x.Text).Contains(data.ColumnName)) return;
-
-                if (data.Checked)
-                {
-                    selected.Add(data.Text);
-                }
-            }
+            
 
             var myModel = new PlotModel();
 
@@ -96,11 +149,11 @@ namespace RawToolsViz
                 scatter.Title = columnName;
                 scatter.MarkerType = MarkerType.Circle;
                 scatter.MarkerSize = 4.0;
-
-                for (int currRow = 0; currRow < QcData.Rows.Count; currRow++)
+                /*
+                for (int currRow = 0; currRow < ParseData.Rows.Count; currRow++)
                 {
-                    scatter.Points.Add(new ScatterPoint(Convert.ToDouble(QcData.Rows[currRow][axisTypeComboBox.Text].ToString()), Convert.ToDouble(QcData.Rows[currRow][columnName].ToString())));
-                }
+                    scatter.Points.Add(new ScatterPoint(Convert.ToDouble(ParseData.Rows[currRow][axisTypeComboBox.Text].ToString()), Convert.ToDouble(ParseData.Rows[currRow][columnName].ToString())));
+                }*/
                 myModel.Series.Add(scatter);
             }
             myModel.Axes.Add(new LinearAxis { Position = AxisPosition.Bottom });
@@ -124,6 +177,8 @@ namespace RawToolsViz
             {
                 myModel.Axes[y].Maximum = Convert.ToDouble(yMaxFixedValue.Text);
             }
+
+            myModel.Axes[y].IsZoomEnabled = false;
 
             myModel.Axes[y].MinimumPadding = 0.05;
             myModel.Axes[y].MaximumPadding = 0.05;
@@ -225,22 +280,6 @@ namespace RawToolsViz
             {
                 yMaxFixedValue.BackColor = Color.White;
                 UpdateChart();
-            }
-        }
-
-        private void yMinFixedValue_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            if (e.KeyChar == (char)Keys.Enter || e.KeyChar == (char)Keys.Return)
-            {
-                label1.Focus();
-            }
-        }
-
-        private void yMaxFixedValue_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            if (e.KeyChar == (char)Keys.Enter || e.KeyChar == (char)Keys.Return)
-            {
-                label1.Focus();
             }
         }
 
@@ -364,14 +403,6 @@ namespace RawToolsViz
             this.Close();
         }
 
-        protected override void OnFormClosing(FormClosingEventArgs e)
-        {
-            if (ConfirmExit() == false)
-            {
-                e.Cancel = true;
-            };
-        }
-
         private bool ConfirmExit()
         {
             const string message = "Are you sure you wish to exit?";
@@ -396,24 +427,22 @@ namespace RawToolsViz
             UpdateChart();
         }
 
-        private void checkBoxComboBox1_CheckBoxCheckedChanged_1(object sender, EventArgs e)
+        private void scanNumber_TextChanged(object sender, EventArgs e)
         {
-            UpdateChart();
-        }
+            int i;
+            bool success = int.TryParse(Convert.ToString(exportHeightValue.Text), out i);
 
-        private void axisTypeComboBox_SelectedIndexChanged_1(object sender, EventArgs e)
-        {
-            UpdateChart();
-        }
-
-        private void xAxisLabel_TextChanged_1(object sender, EventArgs e)
-        {
-            UpdateChart();
-        }
-
-        private void yAxisLabel_TextChanged_1(object sender, EventArgs e)
-        {
-            UpdateChart();
+            if (!success || exportHeightValue.Text == "" || i < FirstScan || i > LastScan)
+            {
+                exportHeightValue.BackColor = Color.Red;
+            }
+            else
+            {
+                exportHeightValue.BackColor = Color.White;
+                updateScanHeaderTextBox();
+                updateTrailerExtraTextBox();
+                updateInstLogTextBox();
+            }
         }
     }
 }

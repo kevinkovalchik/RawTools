@@ -17,33 +17,28 @@ namespace RawToolsViz
     using OxyPlot;
     using OxyPlot.Series;
     using OxyPlot.Axes;
-    using PresentationControls;
 
-    public partial class ParseDataViz : Form
+    public partial class ChromatogramViz : Form
     {
-        DataTable QcData;
+        DataTable ChromatogramData;
+        string RawFileTitle;
 
-        public ParseDataViz()
+        public ChromatogramViz()
         {
 
         }
 
-        public ParseDataViz(string pathToQcCsvFile)
+        public ChromatogramViz(string pathToChromatogramFile)
         {
             this.InitializeComponent();
-            QcData = ReadWrite.LoadDataTable(pathToQcCsvFile, '\t');
+            ChromatogramData = ReadWrite.LoadDataTable(pathToChromatogramFile, '\t');
+
+            var columnNames = (from dc in ChromatogramData.Columns.Cast<DataColumn>()
+                                    select dc.ColumnName).ToList();
             
-            foreach (DataColumn d in QcData.Columns)
-            {
-                double i;
-                if (Double.TryParse(QcData.Rows[0][d.ColumnName].ToString(), out i))
-                {
-                    checkBoxComboBox1.Items.Add(d.ColumnName);
-                    axisTypeComboBox.Items.Add(d.ColumnName);
-                }
-            }
-            axisTypeComboBox.SelectedIndex = 0;
-            this.Text = "ParseDataViz - " + pathToQcCsvFile;
+            this.Text = "ChromatogramViz - " + pathToChromatogramFile;
+
+            UpdateChart();
         }
 
         private void checkBoxComboBox1_CheckBoxCheckedChanged(object sender, EventArgs e)
@@ -63,24 +58,9 @@ namespace RawToolsViz
             }
 
             List<string> selected = new List<string>();
-
-            foreach (var data in checkBoxComboBox1.CheckBoxItems)
-            {
-                //if (!(from x in checkBoxComboBox1.CheckBoxItems select x.Text).Contains(data.ColumnName)) return;
-
-                if (data.Checked)
-                {
-                    selected.Add(data.Text);
-                }
-            }
-
+            
             var myModel = new PlotModel();
-
-            myModel.LegendPosition = LegendPosition.BottomCenter;
-            myModel.LegendPlacement = LegendPlacement.Outside;
-            myModel.LegendOrientation = LegendOrientation.Horizontal;
-
-
+            
             if (logYScale.Checked)
             {
                 myModel.Axes.Add(new LogarithmicAxis { Position = AxisPosition.Left, Base = Convert.ToDouble(logYScaleBase.Text) });
@@ -90,29 +70,22 @@ namespace RawToolsViz
                 myModel.Axes.Add(new LinearAxis { Position = AxisPosition.Left });
             }
 
-            foreach (string columnName in selected)
-            {
-                var scatter = new ScatterSeries();
-                scatter.Title = columnName;
-                scatter.MarkerType = MarkerType.Circle;
-                scatter.MarkerSize = 4.0;
+            var area = new AreaSeries();
+            area.Color = OxyColor.Parse("#3280ff");
 
-                for (int currRow = 0; currRow < QcData.Rows.Count; currRow++)
-                {
-                    scatter.Points.Add(new ScatterPoint(Convert.ToDouble(QcData.Rows[currRow][axisTypeComboBox.Text].ToString()), Convert.ToDouble(QcData.Rows[currRow][columnName].ToString())));
-                }
-                myModel.Series.Add(scatter);
+            for (int currRow = 0; currRow < ChromatogramData.Rows.Count; currRow++)
+            {
+                area.Points.Add(new DataPoint(Convert.ToDouble(ChromatogramData.Rows[currRow]["RetentionTime"].ToString()),
+                    Convert.ToDouble(ChromatogramData.Rows[currRow]["Intensity"].ToString())));
             }
+
+            myModel.Series.Add(area);
+
             myModel.Axes.Add(new LinearAxis { Position = AxisPosition.Bottom });
 
             for (int i = 0; i < myModel.Axes.Count; i++)
             {
                 myModel.Axes[i].MajorGridlineStyle = LineStyle.Solid;
-            }
-
-            for (int i = 0; i < myModel.Series.Count; i++)
-            {
-                myModel.Series[i].TrackerFormatString = "{0}\n{1}: {2:0.###}\n{3}: {4}\nFile: {RawFile}";
             }
 
             if (yMinFixed.Checked)
@@ -125,7 +98,9 @@ namespace RawToolsViz
                 myModel.Axes[y].Maximum = Convert.ToDouble(yMaxFixedValue.Text);
             }
 
-            myModel.Axes[y].MinimumPadding = 0.05;
+            myModel.Axes[y].IsZoomEnabled = false;
+
+            myModel.Axes[y].MinimumPadding = 0;
             myModel.Axes[y].MaximumPadding = 0.05;
 
             if (!String.IsNullOrEmpty(xAxisLabel.Text)) myModel.Axes[x].Title = xAxisLabel.Text;
@@ -232,7 +207,7 @@ namespace RawToolsViz
         {
             if (e.KeyChar == (char)Keys.Enter || e.KeyChar == (char)Keys.Return)
             {
-                label1.Focus();
+                label3.Focus();
             }
         }
 
@@ -240,7 +215,7 @@ namespace RawToolsViz
         {
             if (e.KeyChar == (char)Keys.Enter || e.KeyChar == (char)Keys.Return)
             {
-                label1.Focus();
+                label3.Focus();
             }
         }
 
@@ -315,28 +290,34 @@ namespace RawToolsViz
             if (exportAsComboBox.Text == "SVG")
             {
                 SaveFileDialog saveParameters = new SaveFileDialog();
-                saveParameters.Filter = ".svg files|*.svg";
+                saveParameters.Filter = "SVG files|*.svg";
                 saveParameters.Title = "Export figure as .svg";
                 saveParameters.ShowDialog();
 
                 using (var stream = File.Create(saveParameters.FileName))
                 {
-                    var exporter = new SvgExporter { Width = Convert.ToInt32(exportWidthValue.Text.ToString()),
-                        Height = Convert.ToInt32(exportHeightValue.Text.ToString()) };
+                    var exporter = new SvgExporter
+                    {
+                        Width = Convert.ToInt32(exportWidthValue.Text.ToString()),
+                        Height = Convert.ToInt32(exportHeightValue.Text.ToString())
+                    };
                     exporter.Export(plotView1.Model, stream);
                 }
             }
             else if (exportAsComboBox.Text == "PDF")
             {
                 SaveFileDialog saveParameters = new SaveFileDialog();
-                saveParameters.Filter = ".pdf files|*.pdf";
+                saveParameters.Filter = "PDF files|*.pdf";
                 saveParameters.Title = "Export figure as .pdf";
                 saveParameters.ShowDialog();
 
                 using (var stream = File.Create(saveParameters.FileName))
                 {
-                    var exporter = new PdfExporter { Width = Convert.ToInt32(exportWidthValue.Text.ToString()),
-                        Height = Convert.ToInt32(exportHeightValue.Text.ToString()) };
+                    var exporter = new PdfExporter
+                    {
+                        Width = Convert.ToInt32(exportWidthValue.Text.ToString()),
+                        Height = Convert.ToInt32(exportHeightValue.Text.ToString())
+                    };
                     exporter.Export(plotView1.Model, stream);
                 }
             }
@@ -386,16 +367,6 @@ namespace RawToolsViz
                 return false;
         }
 
-        private void xAxisLabel_TextChanged(object sender, EventArgs e)
-        {
-            UpdateChart();
-        }
-
-        private void yAxisLabel_TextChanged(object sender, EventArgs e)
-        {
-            UpdateChart();
-        }
-
         private void checkBoxComboBox1_CheckBoxCheckedChanged_1(object sender, EventArgs e)
         {
             UpdateChart();
@@ -406,12 +377,12 @@ namespace RawToolsViz
             UpdateChart();
         }
 
-        private void xAxisLabel_TextChanged_1(object sender, EventArgs e)
+        private void xAxisLabel_TextChanged(object sender, EventArgs e)
         {
             UpdateChart();
         }
 
-        private void yAxisLabel_TextChanged_1(object sender, EventArgs e)
+        private void yAxisLabel_TextChanged(object sender, EventArgs e)
         {
             UpdateChart();
         }
