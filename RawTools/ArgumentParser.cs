@@ -16,11 +16,7 @@
 // any third-party libraries ditributed with RawTools. All third party
 // licenses are provided in accompanying files as outline in the NOTICE.
 
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using CLParser;
 
 namespace RawTools.ArgumentParser

@@ -34,16 +34,32 @@ namespace RawToolsViz
 
         private void exitButton_Click(object sender, EventArgs e)
         {
-            if (ConfirmExit())
+            this.Close();
+        }
+
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            if (ConfirmExit() == false)
             {
-                this.Close();
-                //Environment.Exit(0);
-            }
+                e.Cancel = true;
+            };
         }
 
         private void loadQcButton_Click(object sender, EventArgs e)
         {
-            new Thread(() => new QcDataViz(@"C:\Users\Kevin\Downloads\QcDataTable.csv").ShowDialog()).Start();
+            OpenFileDialog openQcData = new OpenFileDialog();
+            openQcData.Filter = "RawTools QC data file (.csv)|*.csv";
+            openQcData.Title = "Select QC data";
+            openQcData.ShowDialog();
+
+            if (String.IsNullOrEmpty(openQcData.FileName))
+            {
+                return;
+            }
+
+            var t = new Thread(() => new QcDataViz(openQcData.FileName).ShowDialog());
+            t.SetApartmentState(ApartmentState.STA);
+            t.Start();
         }
     }
 }

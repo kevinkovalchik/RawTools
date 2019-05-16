@@ -68,6 +68,7 @@
     <Compile Include="Launcher.Designer.cs">
       <DependentUpon>Launcher.cs</DependentUpon>
     </Compile>
+    <Compile Include="RawFileDataPoint.cs" />
     <EmbeddedResource Include="QcDataViz.resx">
       <DependentUpon>QcDataViz.cs</DependentUpon>
     </EmbeddedResource>

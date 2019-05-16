@@ -10,7 +10,6 @@ using System.Windows.Forms;
 using System.IO;
 using System.Xml.Serialization;
 using System.Diagnostics;
-using Ookii.Dialogs.WinForms;
 
 namespace RawToolsGUI
 {
@@ -43,7 +42,7 @@ namespace RawToolsGUI
 
         private void buttonSelectFiles_Click(object sender, EventArgs e)
         {
-            VistaOpenFileDialog dlg = new VistaOpenFileDialog();
+            OpenFileDialog dlg = new OpenFileDialog();
             dlg.Multiselect = true;
             dlg.Filter = "*.raw|*.raw";
 
@@ -55,40 +54,42 @@ namespace RawToolsGUI
 
         private void buttonSelectDirectory_Click(object sender, EventArgs e)
         {
-            VistaFolderBrowserDialog dlg = new VistaFolderBrowserDialog();
-            dlg.ShowNewFolderButton = false;
+            FolderBrowser.FolderSelectDialog dlg = new FolderBrowser.FolderSelectDialog();
+            dlg.Title = "Select raw file directory";
 
-            if (dlg.ShowDialog() == DialogResult.OK)
+            //dlg.ShowNewFolderButton = false;
+
+            if (dlg.ShowDialog())
             {
-                textBoxRawFileDirectory.Text = dlg.SelectedPath;
+                textBoxRawFileDirectory.Text = dlg.FileName;
             }
         }
 
         private void buttonQcDataDirectory_Click(object sender, EventArgs e)
         {
-            VistaFolderBrowserDialog dlg = new VistaFolderBrowserDialog();
-            dlg.ShowNewFolderButton = true;
+            FolderBrowser.FolderSelectDialog dlg = new FolderBrowser.FolderSelectDialog();
+            dlg.Title = "Select QC directory";
 
-            if (dlg.ShowDialog() == DialogResult.OK)
+            if (dlg.ShowDialog())
             {
-                textBoxQcDataDirectory.Text = dlg.SelectedPath;
+                textBoxQcDataDirectory.Text = dlg.FileName;
             }
         }
 
         private void buttonXTandemDir_Click(object sender, EventArgs e)
         {
-            VistaFolderBrowserDialog dlg = new VistaFolderBrowserDialog();
-            dlg.ShowNewFolderButton = false;
+            FolderBrowser.FolderSelectDialog dlg = new FolderBrowser.FolderSelectDialog();
+            dlg.Title = "Select X! Tandem directory";
 
-            if (dlg.ShowDialog() == DialogResult.OK)
+            if (dlg.ShowDialog())
             {
-                textBoxXTandemDir.Text = dlg.SelectedPath;
+                textBoxXTandemDir.Text = dlg.FileName;
             }
         }
 
         private void buttonFastaFile_Click(object sender, EventArgs e)
         {
-            VistaOpenFileDialog dlg = new VistaOpenFileDialog();
+            OpenFileDialog dlg = new OpenFileDialog();
             dlg.Multiselect = false;
 
             if (dlg.ShowDialog() == DialogResult.OK)
@@ -99,12 +100,12 @@ namespace RawToolsGUI
 
         private void buttonDataOutputDir_Click(object sender, EventArgs e)
         {
-            VistaFolderBrowserDialog dlg = new VistaFolderBrowserDialog();
-            dlg.ShowNewFolderButton = false;
+            FolderBrowser.FolderSelectDialog dlg = new FolderBrowser.FolderSelectDialog();
+            dlg.Title = "Select parse output directory";
 
-            if (dlg.ShowDialog() == DialogResult.OK)
+            if (dlg.ShowDialog())
             {
-                textBoxDataOutputDir.Text = dlg.SelectedPath;
+                textBoxDataOutputDir.Text = dlg.FileName;
             }
         }
 

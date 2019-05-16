@@ -28,11 +28,10 @@
         /// </summary>
         private void InitializeComponent()
         {
-            PresentationControls.CheckBoxProperties checkBoxProperties1 = new PresentationControls.CheckBoxProperties();
+            PresentationControls.CheckBoxProperties checkBoxProperties2 = new PresentationControls.CheckBoxProperties();
             this.plotView1 = new OxyPlot.WindowsForms.PlotView();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.exportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
@@ -56,12 +55,22 @@
             this.yMaxAuto = new System.Windows.Forms.RadioButton();
             this.yMinFixedValue = new System.Windows.Forms.TextBox();
             this.yMaxFixedValue = new System.Windows.Forms.TextBox();
+            this.button1 = new System.Windows.Forms.Button();
+            this.label4 = new System.Windows.Forms.Label();
+            this.exportAsSvg = new System.Windows.Forms.RadioButton();
+            this.exportAsPdf = new System.Windows.Forms.RadioButton();
+            this.panel5 = new System.Windows.Forms.Panel();
+            this.exportWidth = new System.Windows.Forms.Label();
+            this.exportHeight = new System.Windows.Forms.Label();
+            this.exportWidthValue = new System.Windows.Forms.TextBox();
+            this.exportHeightValue = new System.Windows.Forms.TextBox();
             this.menuStrip1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.panel3.SuspendLayout();
             this.panel4.SuspendLayout();
+            this.panel5.SuspendLayout();
             this.SuspendLayout();
             // 
             // plotView1
@@ -70,7 +79,7 @@
             this.plotView1.Location = new System.Drawing.Point(3, 43);
             this.plotView1.Name = "plotView1";
             this.plotView1.PanCursor = System.Windows.Forms.Cursors.Hand;
-            this.plotView1.Size = new System.Drawing.Size(1179, 486);
+            this.plotView1.Size = new System.Drawing.Size(1083, 486);
             this.plotView1.TabIndex = 0;
             this.plotView1.Text = "plotView1";
             this.plotView1.ZoomHorizontalCursor = System.Windows.Forms.Cursors.SizeWE;
@@ -85,30 +94,24 @@
             this.helpToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(1185, 28);
+            this.menuStrip1.Size = new System.Drawing.Size(1089, 28);
             this.menuStrip1.TabIndex = 1;
             this.menuStrip1.Text = "menuStrip1";
             // 
             // fileToolStripMenuItem
             // 
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.exportToolStripMenuItem,
             this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(44, 24);
             this.fileToolStripMenuItem.Text = "File";
             // 
-            // exportToolStripMenuItem
-            // 
-            this.exportToolStripMenuItem.Name = "exportToolStripMenuItem";
-            this.exportToolStripMenuItem.Size = new System.Drawing.Size(127, 26);
-            this.exportToolStripMenuItem.Text = "Export";
-            // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(127, 26);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(216, 26);
             this.exitToolStripMenuItem.Text = "Exit";
+            this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
             // helpToolStripMenuItem
             // 
@@ -130,7 +133,7 @@
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 85F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 15F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(1185, 619);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(1089, 619);
             this.tableLayoutPanel1.TabIndex = 2;
             // 
             // panel1
@@ -141,18 +144,18 @@
             this.panel1.Location = new System.Drawing.Point(3, 3);
             this.panel1.Name = "panel1";
             this.panel1.Padding = new System.Windows.Forms.Padding(3, 6, 6, 3);
-            this.panel1.Size = new System.Drawing.Size(1179, 34);
+            this.panel1.Size = new System.Drawing.Size(1083, 34);
             this.panel1.TabIndex = 1;
             // 
             // checkBoxComboBox1
             // 
             this.checkBoxComboBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            checkBoxProperties1.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.checkBoxComboBox1.CheckBoxProperties = checkBoxProperties1;
+            checkBoxProperties2.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.checkBoxComboBox1.CheckBoxProperties = checkBoxProperties2;
             this.checkBoxComboBox1.DisplayMemberSingleItem = "";
             this.checkBoxComboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.checkBoxComboBox1.FormattingEnabled = true;
-            this.checkBoxComboBox1.Location = new System.Drawing.Point(689, 6);
+            this.checkBoxComboBox1.Location = new System.Drawing.Point(593, 6);
             this.checkBoxComboBox1.Name = "checkBoxComboBox1";
             this.checkBoxComboBox1.Size = new System.Drawing.Size(484, 24);
             this.checkBoxComboBox1.TabIndex = 2;
@@ -162,7 +165,7 @@
             // 
             this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(598, 9);
+            this.label1.Location = new System.Drawing.Point(502, 9);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(85, 17);
             this.label1.TabIndex = 1;
@@ -171,6 +174,13 @@
             // 
             // panel2
             // 
+            this.panel2.Controls.Add(this.exportHeightValue);
+            this.panel2.Controls.Add(this.exportWidthValue);
+            this.panel2.Controls.Add(this.exportHeight);
+            this.panel2.Controls.Add(this.exportWidth);
+            this.panel2.Controls.Add(this.panel5);
+            this.panel2.Controls.Add(this.label4);
+            this.panel2.Controls.Add(this.button1);
             this.panel2.Controls.Add(this.panel4);
             this.panel2.Controls.Add(this.panel3);
             this.panel2.Controls.Add(this.yAxisMax);
@@ -184,7 +194,7 @@
             this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel2.Location = new System.Drawing.Point(3, 535);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(1179, 81);
+            this.panel2.Size = new System.Drawing.Size(1083, 81);
             this.panel2.TabIndex = 2;
             // 
             // logYScaleBase
@@ -253,7 +263,7 @@
             // yAxisMin
             // 
             this.yAxisMin.AutoSize = true;
-            this.yAxisMin.Location = new System.Drawing.Point(339, 13);
+            this.yAxisMin.Location = new System.Drawing.Point(339, 48);
             this.yAxisMin.Name = "yAxisMin";
             this.yAxisMin.Size = new System.Drawing.Size(46, 17);
             this.yAxisMin.TabIndex = 8;
@@ -262,7 +272,7 @@
             // yAxisMax
             // 
             this.yAxisMax.AutoSize = true;
-            this.yAxisMax.Location = new System.Drawing.Point(336, 49);
+            this.yAxisMax.Location = new System.Drawing.Point(336, 13);
             this.yAxisMax.Name = "yAxisMax";
             this.yAxisMax.Size = new System.Drawing.Size(49, 17);
             this.yAxisMax.TabIndex = 9;
@@ -273,7 +283,7 @@
             this.panel3.Controls.Add(this.yMinFixedValue);
             this.panel3.Controls.Add(this.yMinFixed);
             this.panel3.Controls.Add(this.yMinAuto);
-            this.panel3.Location = new System.Drawing.Point(391, 11);
+            this.panel3.Location = new System.Drawing.Point(391, 44);
             this.panel3.Name = "panel3";
             this.panel3.Size = new System.Drawing.Size(248, 30);
             this.panel3.TabIndex = 10;
@@ -306,7 +316,7 @@
             this.panel4.Controls.Add(this.yMaxFixedValue);
             this.panel4.Controls.Add(this.yMaxFixed);
             this.panel4.Controls.Add(this.yMaxAuto);
-            this.panel4.Location = new System.Drawing.Point(391, 46);
+            this.panel4.Location = new System.Drawing.Point(391, 8);
             this.panel4.Name = "panel4";
             this.panel4.Size = new System.Drawing.Size(248, 30);
             this.panel4.TabIndex = 11;
@@ -358,15 +368,103 @@
             this.yMaxFixedValue.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.yMaxFixedValue_KeyPress);
             this.yMaxFixedValue.Leave += new System.EventHandler(this.yMaxFixedValue_Leave);
             // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(922, 8);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(155, 66);
+            this.button1.TabIndex = 12;
+            this.button1.Text = "Export";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(668, 13);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(71, 17);
+            this.label4.TabIndex = 13;
+            this.label4.Text = "Export as:";
+            // 
+            // exportAsSvg
+            // 
+            this.exportAsSvg.AutoSize = true;
+            this.exportAsSvg.Checked = true;
+            this.exportAsSvg.Location = new System.Drawing.Point(3, 9);
+            this.exportAsSvg.Name = "exportAsSvg";
+            this.exportAsSvg.Size = new System.Drawing.Size(55, 21);
+            this.exportAsSvg.TabIndex = 14;
+            this.exportAsSvg.TabStop = true;
+            this.exportAsSvg.Text = ".svg";
+            this.exportAsSvg.UseVisualStyleBackColor = true;
+            // 
+            // exportAsPdf
+            // 
+            this.exportAsPdf.AutoSize = true;
+            this.exportAsPdf.Location = new System.Drawing.Point(64, 9);
+            this.exportAsPdf.Name = "exportAsPdf";
+            this.exportAsPdf.Size = new System.Drawing.Size(53, 21);
+            this.exportAsPdf.TabIndex = 15;
+            this.exportAsPdf.TabStop = true;
+            this.exportAsPdf.Text = ".pdf";
+            this.exportAsPdf.UseVisualStyleBackColor = true;
+            // 
+            // panel5
+            // 
+            this.panel5.Controls.Add(this.exportAsSvg);
+            this.panel5.Controls.Add(this.exportAsPdf);
+            this.panel5.Location = new System.Drawing.Point(740, 3);
+            this.panel5.Name = "panel5";
+            this.panel5.Size = new System.Drawing.Size(125, 36);
+            this.panel5.TabIndex = 16;
+            // 
+            // exportWidth
+            // 
+            this.exportWidth.AutoSize = true;
+            this.exportWidth.Location = new System.Drawing.Point(691, 52);
+            this.exportWidth.Name = "exportWidth";
+            this.exportWidth.Size = new System.Drawing.Size(48, 17);
+            this.exportWidth.TabIndex = 17;
+            this.exportWidth.Text = "Width:";
+            // 
+            // exportHeight
+            // 
+            this.exportHeight.AutoSize = true;
+            this.exportHeight.Location = new System.Drawing.Point(804, 50);
+            this.exportHeight.Name = "exportHeight";
+            this.exportHeight.Size = new System.Drawing.Size(53, 17);
+            this.exportHeight.TabIndex = 18;
+            this.exportHeight.Text = "Height:";
+            // 
+            // exportWidthValue
+            // 
+            this.exportWidthValue.Location = new System.Drawing.Point(744, 50);
+            this.exportWidthValue.Name = "exportWidthValue";
+            this.exportWidthValue.Size = new System.Drawing.Size(54, 22);
+            this.exportWidthValue.TabIndex = 19;
+            this.exportWidthValue.Text = "800";
+            this.exportWidthValue.TextChanged += new System.EventHandler(this.exportWidthValue_TextChanged);
+            // 
+            // exportHeightValue
+            // 
+            this.exportHeightValue.Location = new System.Drawing.Point(863, 50);
+            this.exportHeightValue.Name = "exportHeightValue";
+            this.exportHeightValue.Size = new System.Drawing.Size(53, 22);
+            this.exportHeightValue.TabIndex = 20;
+            this.exportHeightValue.Text = "540";
+            this.exportHeightValue.TextChanged += new System.EventHandler(this.exportHeightValue_TextChanged);
+            // 
             // QcDataViz
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
-            this.ClientSize = new System.Drawing.Size(1185, 647);
+            this.ClientSize = new System.Drawing.Size(1089, 647);
             this.Controls.Add(this.tableLayoutPanel1);
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
+            this.MinimumSize = new System.Drawing.Size(1107, 694);
             this.Name = "QcDataViz";
             this.Text = "QcDataViz";
             this.menuStrip1.ResumeLayout(false);
@@ -380,6 +478,8 @@
             this.panel3.PerformLayout();
             this.panel4.ResumeLayout(false);
             this.panel4.PerformLayout();
+            this.panel5.ResumeLayout(false);
+            this.panel5.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -396,7 +496,6 @@
         private System.Windows.Forms.Label label1;
         private PresentationControls.CheckBoxComboBox checkBoxComboBox1;
         private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.ToolStripMenuItem exportToolStripMenuItem;
         private System.Windows.Forms.ComboBox axisTypeComboBox;
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Label label2;
@@ -414,6 +513,15 @@
         private System.Windows.Forms.RadioButton yMinAuto;
         private System.Windows.Forms.Label yAxisMax;
         private System.Windows.Forms.Label yAxisMin;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Label exportWidth;
+        private System.Windows.Forms.Panel panel5;
+        private System.Windows.Forms.RadioButton exportAsSvg;
+        private System.Windows.Forms.RadioButton exportAsPdf;
+        private System.Windows.Forms.TextBox exportHeightValue;
+        private System.Windows.Forms.TextBox exportWidthValue;
+        private System.Windows.Forms.Label exportHeight;
     }
 }
 

@@ -99,8 +99,8 @@ namespace RawTools
                 {
                     Console.WriteLine("\nERROR: {0} does not appear to be a .raw file. Invoke '>RawTools --help' if you need help.", problems.ElementAt(0));
                     Log.Error("Invalid file provided: {0}", problems.ElementAt(0));
-                    Console.Write("Press any key to exit...");
-                    Console.ReadKey();
+                    //Console.Write("Press any key to exit...");
+                    //Console.ReadKey();
                     return 1;
                 }
 
@@ -109,8 +109,8 @@ namespace RawTools
                     Console.WriteLine("\nERROR: The following {0} files do not appear to be .raw files. Invoke '>RawTools --help' if you need help." +
                         "\n\n{1}", problems.Count(), String.Join("\n", problems));
                     Log.Error("Invalid files provided: {0}", String.Join(" ", problems));
-                    Console.Write("Press any key to exit...");
-                    Console.ReadKey();
+                    //Console.Write("Press any key to exit...");
+                    //Console.ReadKey();
                     return 1;
                 }
 
@@ -138,8 +138,8 @@ namespace RawTools
                 {
                     Console.WriteLine("ERROR: The provided directory does not appear to be valid.");
                     Log.Error("Invalid directory provided: {0}", parameters.RawFileDirectory);
-                    Console.Write("Press any key to exit...");
-                    Console.ReadKey();
+                    //Console.Write("Press any key to exit...");
+                    //Console.ReadKey();
                     return 1;
                 }
 
@@ -157,8 +157,8 @@ namespace RawTools
                 {
                     Console.WriteLine("ERROR: For quantification, the labeling reagent must be one of {TMT0, TMT2, TMT6, TMT10, TMT11, iTRAQ4, iTRAQ8}");
                     Log.Error("Invalid labeling reagent provided: {0}", parameters.ParseParams.LabelingReagents);
-                    Console.Write("Press any key to exit...");
-                    Console.ReadKey();
+                    //Console.Write("Press any key to exit...");
+                    //Console.ReadKey();
                     return 1;
                 }
             }
@@ -172,8 +172,8 @@ namespace RawTools
                     {
                         Console.WriteLine("ERROR: Incorrect format for --chro. See help.");
                         Log.Error("Invalid chromatogram argument provided: {Chro}", parameters.ParseParams.Chromatogram);
-                        Console.Write("Press any key to exit...");
-                        Console.ReadKey();
+                        //Console.Write("Press any key to exit...");
+                        //Console.ReadKey();
                         return 1;
                     }
                 }
@@ -213,8 +213,8 @@ namespace RawTools
             totalTime.Stop();
             Console.WriteLine("\nTime to process all {0} files: {1}", files.Count(), totalTime.Elapsed);
 
-            Console.Write("Press any key to exit...");
-            Console.ReadKey();
+            //Console.Write("Press any key to exit...");
+            //Console.ReadKey();
 
             return 0;
         }
