@@ -48,7 +48,7 @@ namespace RawToolsViz
         private void loadQcButton_Click(object sender, EventArgs e)
         {
             OpenFileDialog openQcData = new OpenFileDialog();
-            openQcData.Filter = "RawTools QC data file (.csv)|*.csv";
+            openQcData.Filter = "RawTools QC data (.csv)|*.csv";
             openQcData.Title = "Select QC data";
             openQcData.ShowDialog();
 
@@ -58,6 +58,23 @@ namespace RawToolsViz
             }
 
             var t = new Thread(() => new QcDataViz(openQcData.FileName).ShowDialog());
+            t.SetApartmentState(ApartmentState.STA);
+            t.Start();
+        }
+
+        private void loadParseButton_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog openParseData = new OpenFileDialog();
+            openParseData.Filter = "RawTools parse data (.csv)|*.csv";
+            openParseData.Title = "Select parse data";
+            openParseData.ShowDialog();
+
+            if (String.IsNullOrEmpty(openParseData.FileName))
+            {
+                return;
+            }
+
+            var t = new Thread(() => new ParseDataViz(openParseData.FileName).ShowDialog());
             t.SetApartmentState(ApartmentState.STA);
             t.Start();
         }

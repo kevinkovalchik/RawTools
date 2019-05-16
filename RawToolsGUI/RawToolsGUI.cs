@@ -908,42 +908,9 @@ namespace RawToolsGUI
                     CreateNoWindow = false,
                 }
             };
-
-            //string result = string.Empty;
-            /*
+            
             process.Start();
-            using (StreamReader reader = process.StandardOutput)
-            {
-                process.WaitForExit();
-                string stderr = process.StandardError.ReadToEnd(); // Here are the exceptions from our Python script
-                string result = reader.ReadToEnd(); // Here is the result of StdOut(for example: print "test")
-                return result;
-            }
-            */
-            process.Start();
-            //string result = process.StandardOutput.ReadToEnd();
-            process.WaitForExit();
             return;
         }
-
-        // The following is a placeholder for a function to open up the custom reporter ion form
-        /*
-        public void ShowMyDialogBox()
-        {
-            Form2 testDialog = new Form2();
-
-            // Show testDialog as a modal dialog and determine if DialogResult = OK.
-            if (testDialog.ShowDialog(this) == DialogResult.OK)
-            {
-                // Read the contents of testDialog's TextBox.
-                this.txtResult.Text = testDialog.TextBox1.Text;
-            }
-            else
-            {
-                this.txtResult.Text = "Cancelled";
-            }
-            testDialog.Dispose();
-        }
-        */
     }
 }

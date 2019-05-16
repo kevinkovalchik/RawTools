@@ -1,6 +1,6 @@
 ﻿namespace RawToolsViz
 {
-    partial class QcDataViz
+    partial class ParseDataViz
     {
         /// <summary>
         /// Required designer variable.
@@ -437,7 +437,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(16, 14);
+            this.label2.Location = new System.Drawing.Point(16, 15);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(79, 17);
             this.label2.TabIndex = 3;
@@ -447,15 +447,15 @@
             // 
             this.axisTypeComboBox.FormattingEnabled = true;
             this.axisTypeComboBox.Items.AddRange(new object[] {
-            "Sequential",
-            "Date-Time"});
+            "Scan number",
+            "Retention time (min)"});
             this.axisTypeComboBox.Location = new System.Drawing.Point(101, 10);
             this.axisTypeComboBox.Name = "axisTypeComboBox";
             this.axisTypeComboBox.Size = new System.Drawing.Size(206, 24);
             this.axisTypeComboBox.TabIndex = 2;
             this.axisTypeComboBox.SelectedIndexChanged += new System.EventHandler(this.axisTypeComboBox_SelectedIndexChanged);
             // 
-            // QcDataViz
+            // ParseDataViz
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -465,8 +465,8 @@
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
             this.MinimumSize = new System.Drawing.Size(1107, 694);
-            this.Name = "QcDataViz";
-            this.Text = "QcDataViz";
+            this.Name = "ParseDataViz";
+            this.Text = "ParseDataViz";
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.tableLayoutPanel1.ResumeLayout(false);

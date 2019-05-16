@@ -84,6 +84,7 @@
             this.loadParseButton.TabIndex = 1;
             this.loadParseButton.Text = "Load parse results file";
             this.loadParseButton.UseVisualStyleBackColor = true;
+            this.loadParseButton.Click += new System.EventHandler(this.loadParseButton_Click);
             // 
             // loadChroButton
             // 

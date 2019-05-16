@@ -170,7 +170,7 @@ namespace RawTools
                 {
                     if (!possible.Contains(x.ToString()))
                     {
-                        Console.WriteLine("ERROR: Incorrect format for --chro. See help.");
+                        Console.WriteLine("ERROR: Incorrect format for -chro. See help.");
                         Log.Error("Invalid chromatogram argument provided: {Chro}", parameters.ParseParams.Chromatogram);
                         //Console.Write("Press any key to exit...");
                         //Console.ReadKey();

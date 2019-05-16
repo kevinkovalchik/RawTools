@@ -54,6 +54,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ParseDataViz.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ParseDataViz.Designer.cs">
+      <DependentUpon>ParseDataViz.cs</DependentUpon>
+    </Compile>
     <Compile Include="QcDataViz.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -69,6 +75,9 @@
       <DependentUpon>Launcher.cs</DependentUpon>
     </Compile>
     <Compile Include="RawFileDataPoint.cs" />
+    <EmbeddedResource Include="ParseDataViz.resx">
+      <DependentUpon>ParseDataViz.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="QcDataViz.resx">
       <DependentUpon>QcDataViz.cs</DependentUpon>
     </EmbeddedResource>

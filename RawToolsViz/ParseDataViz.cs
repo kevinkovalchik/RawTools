@@ -19,16 +19,16 @@ namespace RawToolsViz
     using OxyPlot.Axes;
     using PresentationControls;
 
-    public partial class QcDataViz : Form
+    public partial class ParseDataViz : Form
     {
         DataTable QcData;
 
-        public QcDataViz()
+        public ParseDataViz()
         {
 
         }
 
-        public QcDataViz(string pathToQcCsvFile)
+        public ParseDataViz(string pathToQcCsvFile)
         {
             this.InitializeComponent();
             QcData = ReadWrite.LoadDataTable(pathToQcCsvFile);
@@ -86,55 +86,27 @@ namespace RawToolsViz
                 myModel.Axes.Add(new LinearAxis { Position = AxisPosition.Left });
             }
 
-            if (axisTypeComboBox.SelectedIndex == 0)
+            foreach (string columnName in selected)
             {
-                foreach (string columnName in selected)
-                {
-                    var scatter = new ScatterSeries();
-                    scatter.Title = columnName;
-                    scatter.MarkerType = MarkerType.Circle;
-                    scatter.MarkerSize = 4.0;
+                var scatter = new ScatterSeries();
+                scatter.Title = columnName;
+                scatter.MarkerType = MarkerType.Circle;
+                scatter.MarkerSize = 4.0;
 
-                    for (int currRow = 0; currRow < QcData.Rows.Count; currRow++)
+                for (int currRow = 0; currRow < QcData.Rows.Count; currRow++)
+                {
+                    if (axisTypeComboBox.Text == "Scan number")
                     {
-                        scatter.Points.Add(new RawFileDataPoint(currRow + 1, Convert.ToDouble(QcData.Rows[currRow][columnName].ToString()), rawFile: QcData.Rows[currRow]["RawFile"].ToString()));
+                        scatter.Points.Add(new ScatterPoint(currRow + 1, Convert.ToDouble(QcData.Rows[currRow][columnName].ToString())));
                     }
-                    myModel.Series.Add(scatter);
-                }
-                myModel.Axes.Add(new LinearAxis { Position = AxisPosition.Bottom});
-                
-            }
-            else
-            {
-                DateTimeAxis xAxis = new DateTimeAxis
-                {
-                    Position = AxisPosition.Bottom,
-                    StringFormat = "yyy-MM-dd_HH:mm",
-                    Title = "Acquisition date and time",
-                    MinorIntervalType = DateTimeIntervalType.Auto,
-                    IntervalType = DateTimeIntervalType.Auto,
-                    MajorGridlineStyle = LineStyle.Solid,
-                    MinorGridlineStyle = LineStyle.None,
-                    Angle = 45,
-                };
-
-                foreach (string columnName in selected)
-                {
-                    var scatter = new ScatterSeries();
-                    scatter.Title = columnName;
-                    scatter.MarkerType = MarkerType.Circle;
-                    scatter.MarkerSize = 4.0;
-
-                    for (int currRow = 0; currRow < QcData.Rows.Count; currRow++)
+                    else
                     {
-                        
-                        scatter.Points.Add(new RawFileDataPoint(DateTimeAxis.ToDouble(Convert.ToDateTime(QcData.Rows[currRow]["DateAcquired"].ToString())), Convert.ToDouble(QcData.Rows[currRow][columnName].ToString()), rawFile: QcData.Rows[currRow]["FileName"].ToString()));
-                        
+                        scatter.Points.Add(new ScatterPoint(Convert.ToDouble(QcData.Rows[currRow]["MS2RetTime(min)"].ToString()), Convert.ToDouble(QcData.Rows[currRow][columnName].ToString())));
                     }
-                    myModel.Series.Add(scatter);
                 }
-                myModel.Axes.Add(xAxis);
+                myModel.Series.Add(scatter);
             }
+            myModel.Axes.Add(new LinearAxis { Position = AxisPosition.Bottom });
 
             for (int i = 0; i < myModel.Axes.Count; i++)
             {
