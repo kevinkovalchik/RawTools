@@ -10,6 +10,8 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using RawTools.QC;
 using RawTools.Utilities;
+using RawToolsViz.Resources;
+using RawToolsViz.Data;
 
 
 namespace RawToolsViz
@@ -81,6 +83,8 @@ namespace RawToolsViz
             }
 
             var myModel = new PlotModel();
+
+            myModel.SetDefaultColorsToColorBrewer8ClassSet2();
 
             myModel.LegendPlacement = LegendPlacement.Outside;
             myModel.LegendPosition = LegendPosition.BottomCenter;

@@ -30,7 +30,11 @@ namespace RawToolsGUI
 
                 foreach (var mod in Mods)
                 {
-                    if (mod.Fixed) mods.Add(GetModString(mod));
+                    if (String.IsNullOrEmpty(mod.AA) | String.IsNullOrEmpty(mod.Mass))
+                    {
+                        continue;
+                    }
+                    else if (mod.Fixed) mods.Add(GetModString(mod));
                 }
 
                 return String.Join(",", mods);
@@ -45,7 +49,12 @@ namespace RawToolsGUI
 
                 foreach (var mod in Mods)
                 {
-                    if (!mod.Fixed) mods.Add(GetModString(mod));
+                    if (String.IsNullOrEmpty(mod.AA) | String.IsNullOrEmpty(mod.Mass))
+                    {
+                        continue;
+                    }
+
+                    else if (!mod.Fixed) mods.Add(GetModString(mod));
                 }
 
                 return String.Join(",", mods);

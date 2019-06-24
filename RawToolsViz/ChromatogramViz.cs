@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using RawTools.QC;
 using RawTools.Utilities;
+using RawToolsViz.Resources;
 
 
 namespace RawToolsViz
@@ -21,7 +22,7 @@ namespace RawToolsViz
     public partial class ChromatogramViz : Form
     {
         DataTable ChromatogramData;
-        string RawFileTitle;
+        double minValue;
 
         public ChromatogramViz()
         {
@@ -37,6 +38,11 @@ namespace RawToolsViz
                                     select dc.ColumnName).ToList();
             
             this.Text = "ChromatogramViz - " + pathToChromatogramFile;
+
+            List<double> intensities = new List<double>();
+            for (int currRow = 0; currRow < ChromatogramData.Rows.Count; currRow++)
+                intensities.Add(Convert.ToDouble(ChromatogramData.Rows[currRow]["Intensity"].ToString()));
+            minValue = intensities.Min();
 
             UpdateChart();
         }
@@ -71,12 +77,18 @@ namespace RawToolsViz
             }
 
             var area = new AreaSeries();
-            area.Color = OxyColor.Parse("#3280ff");
+            area.Color = Colors.ColorBrewer8ClassSet2(255).First();
+
+            List<double> intensities = new List<double>();
+            for (int currRow = 0; currRow < ChromatogramData.Rows.Count; currRow++)
+                intensities.Add(Convert.ToDouble(ChromatogramData.Rows[currRow]["Intensity"].ToString()));
+            double minValue = intensities.Min();
 
             for (int currRow = 0; currRow < ChromatogramData.Rows.Count; currRow++)
             {
                 area.Points.Add(new DataPoint(Convert.ToDouble(ChromatogramData.Rows[currRow]["RetentionTime"].ToString()),
                     Convert.ToDouble(ChromatogramData.Rows[currRow]["Intensity"].ToString())));
+                area.Points2.Add(new DataPoint(Convert.ToDouble(ChromatogramData.Rows[currRow]["RetentionTime"].ToString()), minValue));
             }
 
             myModel.Series.Add(area);
@@ -98,7 +110,7 @@ namespace RawToolsViz
                 myModel.Axes[y].Maximum = Convert.ToDouble(yMaxFixedValue.Text);
             }
 
-            myModel.Axes[y].IsZoomEnabled = false;
+            //myModel.Axes[y].IsZoomEnabled = false;
 
             myModel.Axes[y].MinimumPadding = 0;
             myModel.Axes[y].MaximumPadding = 0.05;

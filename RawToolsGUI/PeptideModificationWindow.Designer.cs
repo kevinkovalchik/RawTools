@@ -34,10 +34,11 @@
             this.buttonEditModsOK = new System.Windows.Forms.Button();
             this.buttonEditModsCancel = new System.Windows.Forms.Button();
             this.dataGridViewModifications = new System.Windows.Forms.DataGridView();
-            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.ModMass = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ModAA = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.FixedMod = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.VariableMod = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewModifications)).BeginInit();
             this.SuspendLayout();
             // 
@@ -48,7 +49,7 @@
             this.buttonAddFixedMod.Name = "buttonAddFixedMod";
             this.buttonAddFixedMod.Size = new System.Drawing.Size(164, 27);
             this.buttonAddFixedMod.TabIndex = 4;
-            this.buttonAddFixedMod.Text = "Add Fixed Modification";
+            this.buttonAddFixedMod.Text = "Add Modification";
             this.toolTip1.SetToolTip(this.buttonAddFixedMod, "Add an additional fixed modification to the table.");
             this.buttonAddFixedMod.UseVisualStyleBackColor = true;
             this.buttonAddFixedMod.Click += new System.EventHandler(this.buttonAddFixedMod_Click);
@@ -60,7 +61,7 @@
             this.buttonRemoveFixedMod.Name = "buttonRemoveFixedMod";
             this.buttonRemoveFixedMod.Size = new System.Drawing.Size(209, 27);
             this.buttonRemoveFixedMod.TabIndex = 5;
-            this.buttonRemoveFixedMod.Text = "Remove Selected Fixed Mod";
+            this.buttonRemoveFixedMod.Text = "Remove Selected Modification";
             this.toolTip1.SetToolTip(this.buttonRemoveFixedMod, "Remove the selected fixed modifiation from the table.");
             this.buttonRemoveFixedMod.UseVisualStyleBackColor = true;
             this.buttonRemoveFixedMod.Click += new System.EventHandler(this.buttonRemoveFixedMod_Click);
@@ -99,13 +100,16 @@
             this.dataGridViewModifications.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.ModMass,
             this.ModAA,
-            this.FixedMod});
+            this.FixedMod,
+            this.VariableMod});
             this.dataGridViewModifications.Location = new System.Drawing.Point(10, 10);
             this.dataGridViewModifications.MultiSelect = false;
             this.dataGridViewModifications.Name = "dataGridViewModifications";
             this.dataGridViewModifications.RowTemplate.Height = 24;
             this.dataGridViewModifications.Size = new System.Drawing.Size(624, 312);
             this.dataGridViewModifications.TabIndex = 3;
+            this.dataGridViewModifications.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridViewModifications_CellContentClick);
+            this.dataGridViewModifications.CellContentDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridViewModifications_CellContentDoubleClick);
             this.dataGridViewModifications.CellValidating += new System.Windows.Forms.DataGridViewCellValidatingEventHandler(this.dataGridViewModifications_CellValidating);
             // 
             // ModMass
@@ -122,6 +126,11 @@
             // 
             this.FixedMod.HeaderText = "Fixed";
             this.FixedMod.Name = "FixedMod";
+            // 
+            // VariableMod
+            // 
+            this.VariableMod.HeaderText = "Variable";
+            this.VariableMod.Name = "VariableMod";
             // 
             // PeptideModificationForm
             // 
@@ -152,5 +161,6 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn ModMass;
         private System.Windows.Forms.DataGridViewTextBoxColumn ModAA;
         private System.Windows.Forms.DataGridViewCheckBoxColumn FixedMod;
+        private System.Windows.Forms.DataGridViewCheckBoxColumn VariableMod;
     }
 }

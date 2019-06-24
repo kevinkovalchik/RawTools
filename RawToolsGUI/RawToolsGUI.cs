@@ -531,7 +531,7 @@ namespace RawToolsGUI
 
                     if ((from x in peptideModifications.Mods where !x.Fixed select 1).Sum() > 0)
                     {
-                        arguments.Append($" -vmods {peptideModifications.FModsString}");
+                        arguments.Append($" -vmods {peptideModifications.VModsString}");
                     }
 
                     arguments.Append($" -N {textBoxNumSpectra.Text}");

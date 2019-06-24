@@ -100,17 +100,22 @@ namespace RawToolsViz
 
         private void loadRawButton_Click(object sender, EventArgs e)
         {
-            OpenFileDialog openChroData = new OpenFileDialog();
-            openChroData.Filter = "Thermo RAW files|*.raw";
-            openChroData.Title = "Select RAW file";
-            openChroData.ShowDialog();
+            OpenFileDialog openRawData = new OpenFileDialog();
+            openRawData.Filter = "Thermo RAW files|*.raw";
+            openRawData.Title = "Select RAW file";
+            openRawData.ShowDialog();
 
-            if (String.IsNullOrEmpty(openChroData.FileName))
+            if (String.IsNullOrEmpty(openRawData.FileName))
             {
                 return;
             }
 
-            var t = new Thread(() => new RawFileViz(openChroData.FileName).ShowDialog());
+            if (Utilities.CheckRawFiles.HasErrorsOrWarnings(openRawData.FileName))
+            {
+                return;
+            }
+
+            var t = new Thread(() => new RawFileViz(openRawData.FileName).ShowDialog());
             //t.SetApartmentState(ApartmentState.STA);
             t.Start();
         }

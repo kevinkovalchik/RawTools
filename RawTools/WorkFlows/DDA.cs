@@ -17,10 +17,7 @@
 // licenses are provided in accompanying files as outline in the NOTICE.
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
 using RawTools.Data.Collections;
 using RawTools.Data.Extraction;
 using RawTools.Data.Containers;
@@ -50,15 +47,31 @@ namespace RawTools.WorkFlows
             ScanEventReactionCollection reactions;
             ScanMetaDataCollectionDDA metaData = null;
             PrecursorPeakCollection peakData = null;
+            int nScans;
 
             var staticRawFile = rawFileThreadManager.CreateThreadAccessor();
             staticRawFile.SelectInstrument(Device.MS, 1);
 
+            var err = staticRawFile.FileError;
+
+            if (err.HasError)
+            {
+                Console.WriteLine("ERROR: {0} reports error code: {1}. The associated message is: {2}",
+                    Path.GetFileName(staticRawFile.FileName), err.ErrorCode, err.ErrorMessage);
+                Console.WriteLine("Skipping this file");
+
+                Log.Error("{FILE} reports error code: {ERRORCODE}. The associated message is: {ERRORMESSAGE}",
+                    Path.GetFileName(staticRawFile.FileName), err.ErrorCode, err.ErrorMessage);
+
+                return;
+            }
 
             //staticRawFile.CheckIfBoxcar();
 
             (ScanIndex Index, PrecursorScanCollection precursorScans, ScanDependentsCollections scanDependents) =
                 Extract.ScanIndicesPrecursorsDependents(rawFileThreadManager);
+
+            nScans = Index.ScanEnumerators[MSOrderType.Ms2].Length;
 
             using (var rawFile = rawFileThreadManager.CreateThreadAccessor())
             {
@@ -75,7 +88,7 @@ namespace RawTools.WorkFlows
                 retentionTimes = Extract.RetentionTimes(rawFile, Index);
             }
 
-            if (parameters.ParseParams.Parse | parameters.ParseParams.Metrics | parameters.RefineMassCharge | parameters.QcParams.QcDirectory != null)
+            if (parameters.ParseParams.Parse | parameters.ParseParams.Quant | parameters.ParseParams.Metrics | parameters.RefineMassCharge | parameters.QcParams.QcDirectory != null)
             {
                 peakData = AnalyzePeaks.AnalyzeAllPeaks(centroidStreams, retentionTimes, precursorMasses, precursorScans, Index);
 
@@ -154,7 +167,7 @@ namespace RawTools.WorkFlows
 
                         Search.RunSearch(parameters, methodData, staticRawFile.FileName);
 
-                        searchMetrics = SearchQC.ParseSearchResults(searchMetrics, parameters, staticRawFile.FileName);
+                        searchMetrics = SearchQC.ParseSearchResults(searchMetrics, parameters, staticRawFile.FileName, nScans);
                     }
 
                     QcDataContainer qcData = new QcDataContainer();

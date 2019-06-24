@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using OxyPlot;
 using OxyPlot.Series;
 
-namespace RawToolsViz
+namespace RawToolsViz.Data
 {
     class RawFileDataPoint : ScatterPoint
     {

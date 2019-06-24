@@ -68,13 +68,13 @@ namespace RawTools.QC
             return XElement.Load(resultsFile);
         }
 
-        public static SearchMetricsContainer ParseSearchResults(SearchMetricsContainer searchMetrics, WorkflowParameters parameters, string rawFileName)
+        public static SearchMetricsContainer ParseSearchResults(SearchMetricsContainer searchMetrics, WorkflowParameters parameters, string rawFileName, int nScans)
         {
             XElement results = LoadSearchResults(parameters, rawFileName);
 
             PsmDataCollection Psms = ExtractPsmData(results, parameters.QcParams.SearchAlgorithm);
 
-            searchMetrics.ParsePSMs(Psms, parameters);
+            searchMetrics.ParsePSMs(Psms, parameters, nScans: nScans);
 
             return searchMetrics;
         }
@@ -140,7 +140,7 @@ namespace RawTools.QC
             return psms;
         }
 
-        public static void ParsePSMs(this SearchMetricsContainer searchMetrics, PsmDataCollection psmCollection, WorkflowParameters parameters)
+        public static void ParsePSMs(this SearchMetricsContainer searchMetrics, PsmDataCollection psmCollection, WorkflowParameters parameters, int nScans)
         {
             int numGoodPSMs, pepsWithNoMissedCleavages;
             IEnumerable<int> charges;
@@ -152,6 +152,8 @@ namespace RawTools.QC
             IEnumerable<PsmData> goodPsms, nonDecoys;
 
             int numSearched = parameters.QcParams.NumberSpectra;
+
+            if (numSearched > nScans) numSearched = nScans;
 
             // convert the dictionary to a list for easy parsing
             psms = psmCollection.Values.ToList();

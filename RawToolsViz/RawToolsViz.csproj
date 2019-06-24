@@ -70,6 +70,14 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Data\Ion.cs" />
+    <Compile Include="Data\Spectrum.cs" />
+    <Compile Include="HelpWindows\RawfileVizHelp.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="HelpWindows\RawfileVizHelp.Designer.cs">
+      <DependentUpon>RawfileVizHelp.cs</DependentUpon>
+    </Compile>
     <Compile Include="RawFileViz.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -102,7 +110,12 @@
     <Compile Include="Launcher.Designer.cs">
       <DependentUpon>Launcher.cs</DependentUpon>
     </Compile>
-    <Compile Include="RawFileDataPoint.cs" />
+    <Compile Include="Data\RawFileDataPoint.cs" />
+    <Compile Include="Resources\Colors.cs" />
+    <Compile Include="Utilities\CheckRawFiles.cs" />
+    <EmbeddedResource Include="HelpWindows\RawfileVizHelp.resx">
+      <DependentUpon>RawfileVizHelp.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="RawFileViz.resx">
       <DependentUpon>RawFileViz.cs</DependentUpon>
     </EmbeddedResource>
@@ -147,5 +160,6 @@
       <Name>RawTools</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
