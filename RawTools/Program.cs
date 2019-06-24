@@ -114,6 +114,8 @@ namespace RawTools
                     return 1;
                 }
 
+                files = RawFileInfo.RemoveInAcquistionFiles(files);
+
                 // if the file location(s) are relative, we need to get the absolute path to them
                 files.EnsureAbsolutePaths();
 
@@ -142,6 +144,8 @@ namespace RawTools
                     //Console.ReadKey();
                     return 1;
                 }
+
+                files = RawFileInfo.RemoveInAcquistionFiles(files);
 
                 // if the file location(s) are relative, we need to get the absolute path to them
                 files.EnsureAbsolutePaths();

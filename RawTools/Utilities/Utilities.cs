@@ -856,6 +856,33 @@ namespace RawTools.Utilities
                 return false;
             }
         }
+
+        public static List<string> RemoveInAcquistionFiles(List<string> rawFiles)
+        {
+            List<string> filesToRemove = new List<string>();
+            foreach (var file in rawFiles)
+            {
+                using (var raw = RawFileReaderFactory.ReadFile(file))
+                {
+                    if (raw.InAcquisition)
+                    {
+                        Console.WriteLine("The following file is \"in acquisition\" and will not be processed{0}: ", Path.GetFileName(file));
+
+                        filesToRemove.Add(file);
+                    }
+                }
+            }
+
+            if (filesToRemove.Count > 0)
+            {
+                foreach (var file in filesToRemove)
+                {
+                    rawFiles.Remove(file);
+                }
+            }
+
+            return rawFiles;
+        }
     }
 
     public static class Conversion
