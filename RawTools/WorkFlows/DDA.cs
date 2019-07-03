@@ -17,10 +17,7 @@
 // licenses are provided in accompanying files as outline in the NOTICE.
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
 using RawTools.Data.Collections;
 using RawTools.Data.Extraction;
 using RawTools.Data.Containers;
@@ -39,7 +36,7 @@ namespace RawTools.WorkFlows
 {
     static class WorkFlowsDDA
     {
-        public static void ParseDDA(IRawFileThreadManager rawFileThreadManager, WorkflowParameters parameters)
+        public static void UniversalDDA(IRawFileThreadManager rawFileThreadManager, WorkflowParameters parameters, QcDataCollection qcDataCollection)
         {
             MethodDataContainer methodData;
             CentroidStreamCollection centroidStreams;
@@ -50,17 +47,32 @@ namespace RawTools.WorkFlows
             ScanEventReactionCollection reactions;
             ScanMetaDataCollectionDDA metaData = null;
             PrecursorPeakCollection peakData = null;
-            RawMetricsDataDDA rawMetrics = null;
-            QuantDataCollection quantData = null;
+            int nScans;
 
             var staticRawFile = rawFileThreadManager.CreateThreadAccessor();
             staticRawFile.SelectInstrument(Device.MS, 1);
+
+            var err = staticRawFile.FileError;
+
+            if (err.HasError)
+            {
+                Console.WriteLine("ERROR: {0} reports error code: {1}. The associated message is: {2}",
+                    Path.GetFileName(staticRawFile.FileName), err.ErrorCode, err.ErrorMessage);
+                Console.WriteLine("Skipping this file");
+
+                Log.Error("{FILE} reports error code: {ERRORCODE}. The associated message is: {ERRORMESSAGE}",
+                    Path.GetFileName(staticRawFile.FileName), err.ErrorCode, err.ErrorMessage);
+
+                return;
+            }
 
             //staticRawFile.CheckIfBoxcar();
 
             (ScanIndex Index, PrecursorScanCollection precursorScans, ScanDependentsCollections scanDependents) =
                 Extract.ScanIndicesPrecursorsDependents(rawFileThreadManager);
-            
+
+            nScans = Index.ScanEnumerators[MSOrderType.Ms2].Length;
+
             using (var rawFile = rawFileThreadManager.CreateThreadAccessor())
             {
                 reactions = Extract.ScanEvents(rawFile, Index);
@@ -76,27 +88,33 @@ namespace RawTools.WorkFlows
                 retentionTimes = Extract.RetentionTimes(rawFile, Index);
             }
 
-            if (parameters.ParseParams.Parse | parameters.ParseParams.Quant | parameters.ParseParams.Metrics | parameters.RefineMassCharge)
+            if (parameters.ParseParams.Parse | parameters.ParseParams.Quant | parameters.ParseParams.Metrics | parameters.RefineMassCharge | parameters.QcParams.QcDirectory != null)
             {
                 peakData = AnalyzePeaks.AnalyzeAllPeaks(centroidStreams, retentionTimes, precursorMasses, precursorScans, Index);
 
                 if (parameters.RefineMassCharge)
                 {
-                    MonoIsoPredictor.RefineMonoIsoMassChargeValues(centroidStreams, precursorMasses, trailerExtras, peakData, precursorScans);
+                    MonoIsoPredictor.RefineMonoIsoMassChargeValues(parameters, centroidStreams, precursorMasses, trailerExtras, peakData, precursorScans);
                 }
 
                 metaData = MetaDataProcessingDDA.AggregateMetaDataDDA(centroidStreams, segmentScans, methodData, precursorScans,
                     trailerExtras, precursorMasses, retentionTimes, scanDependents, reactions, Index);
             }
-            
+
+            QuantDataCollection quantData = null;
             if (parameters.ParseParams.Quant)
             {
                 quantData = Quantification.Quantify(centroidStreams, segmentScans, parameters, methodData, Index);
             }
-            
-            if (parameters.ParseParams.Metrics)
+
+            RawMetricsDataDDA rawMetrics = null;
+            if (parameters.ParseParams.Metrics | parameters.QcParams.QcDirectory != null)
             {
                 rawMetrics = MetaDataProcessingDDA.GetMetricsDataDDA(metaData, methodData, staticRawFile.FileName, retentionTimes, Index, peakData, precursorScans, quantData);
+            }
+
+            if (parameters.ParseParams.Metrics)
+            {
                 MetricsWriter.WriteMatrix(rawMetrics, null, staticRawFile.FileName, parameters.ParseParams.OutputDirectory);
             }
 
@@ -126,74 +144,39 @@ namespace RawTools.WorkFlows
                 ChromatogramWriter.WriteChromatogram(centroidStreams, segmentScans, retentionTimes, methodData, Index, parameters, staticRawFile.FileName);
             }
 
-        }
-
-        public static void QcDDA(IRawFileThreadManager rawFileThreadManager, WorkflowParameters parameters)
-        {
-            MethodDataContainer methodData;
-            CentroidStreamCollection centroidStreams;
-            SegmentScanCollection segmentScans;
-            TrailerExtraCollection trailerExtras;
-            PrecursorMassCollection precursorMasses;
-            RetentionTimeCollection retentionTimes;
-            ScanEventReactionCollection reactions;
-
-            var staticRawFile = rawFileThreadManager.CreateThreadAccessor();
-            staticRawFile.SelectInstrument(Device.MS, 1);
-
-            staticRawFile.CheckIfBoxcar();
-
-            (ScanIndex Index, PrecursorScanCollection precursorScans, ScanDependentsCollections scanDependents) =
-                Extract.ScanIndicesPrecursorsDependents(rawFileThreadManager);
-
-            using (var rawFile = rawFileThreadManager.CreateThreadAccessor())
+            if (parameters.QcParams.QcDirectory != null)
             {
-                methodData = Extract.MethodData(rawFile, Index);
+                qcDataCollection = QC.QcWorkflow.LoadOrCreateQcCollection(parameters);
 
-                reactions = Extract.ScanEvents(rawFile, Index);
+                SearchMetricsContainer searchMetrics = new SearchMetricsContainer(staticRawFile.FileName, staticRawFile.CreationDate, methodData);
 
-                (centroidStreams, segmentScans) = Extract.MsData(rawFile: rawFile, index: Index);
+                // check if the raw file already exists in the QC data with a different name
+                if (QcWorkflow.CheckIfFilePresentInQcCollection(staticRawFile.FileName, qcDataCollection))
+                {
+                    Log.Information("A file with the same creation date and time as {File} already exists in the QC data", staticRawFile.FileName);
 
-                trailerExtras = Extract.TrailerExtras(rawFile, Index);
+                    Console.WriteLine("A file with the same creation date and time as {File} already exists in the QC data. Skipping to next file.",
+                        staticRawFile.FileName);
+                }
+                else
+                {
+                    if (parameters.QcParams.PerformSearch)
+                    {
+                        Search.WriteSearchMGF(parameters, centroidStreams, segmentScans, retentionTimes, precursorMasses, precursorScans, trailerExtras, methodData,
+                            Index, staticRawFile.FileName, parameters.QcParams.FixedScans);
 
-                precursorMasses = Extract.PrecursorMasses(rawFile, precursorScans, trailerExtras, Index);
+                        Search.RunSearch(parameters, methodData, staticRawFile.FileName);
 
-                retentionTimes = Extract.RetentionTimes(rawFile, Index);
+                        searchMetrics = SearchQC.ParseSearchResults(searchMetrics, parameters, staticRawFile.FileName, nScans);
+                    }
+
+                    QcDataContainer qcData = new QcDataContainer();
+                    qcData.DDA = rawMetrics;
+                    qcData.SearchMetrics = searchMetrics;
+
+                    QC.QcWorkflow.UpdateQcCollection(qcDataCollection, qcData, methodData, staticRawFile.FileName);
+                }
             }
-
-            PrecursorPeakCollection peakData = AnalyzePeaks.AnalyzeAllPeaks(centroidStreams, retentionTimes, precursorMasses, precursorScans, Index);
-
-            if (parameters.RefineMassCharge)
-            {
-                MonoIsoPredictor.RefineMonoIsoMassChargeValues(centroidStreams, precursorMasses, trailerExtras, peakData, precursorScans);
-            }
-
-            ScanMetaDataCollectionDDA metaData = MetaDataProcessingDDA.AggregateMetaDataDDA(centroidStreams, segmentScans, methodData, precursorScans,
-                trailerExtras, precursorMasses, retentionTimes, scanDependents, reactions, Index);
-
-            RawMetricsDataDDA rawMetrics = MetaDataProcessingDDA.GetMetricsDataDDA(metaData, methodData, staticRawFile.FileName, retentionTimes, Index, peakData, precursorScans);
-
-            QcDataCollection qcDataCollection = QC.QcWorkflow.LoadOrCreateQcCollection(parameters);
-
-            SearchMetricsContainer searchMetrics = new SearchMetricsContainer(staticRawFile.FileName, staticRawFile.CreationDate, methodData);
-
-            if (parameters.QcParams.PerformSearch)
-            {
-                Search.WriteSearchMGF(parameters, centroidStreams, segmentScans, retentionTimes, precursorMasses, precursorScans, trailerExtras, methodData,
-                    Index, staticRawFile.FileName, parameters.QcParams.FixedScans);
-
-                Search.RunSearch(parameters, methodData, staticRawFile.FileName);
-
-                searchMetrics = SearchQC.ParseSearchResults(searchMetrics, parameters, staticRawFile.FileName);
-            }
-
-            QcDataContainer qcData = new QcDataContainer();
-            qcData.DDA = rawMetrics;
-            qcData.SearchMetrics = searchMetrics;
-
-            QC.QcWorkflow.UpdateQcCollection(qcDataCollection, qcData, methodData, staticRawFile.FileName);
-
-            staticRawFile.Dispose();
         }
     }
 

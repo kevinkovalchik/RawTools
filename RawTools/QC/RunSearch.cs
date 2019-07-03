@@ -60,12 +60,6 @@ namespace RawTools.QC
             {
                 XTandem.RunXTandem(parameters, methodData, mgfFile, outputFile, genDecoy: true);
             }
-
-            if (parameters.QcParams.SearchAlgorithm == SearchAlgorithm.IdentiPy)
-            {
-                var pars = parameters;
-                Identipy.RunIdentipy(parameters, methodData, mgfFile, outputFile);
-            }
         }
     }
 }

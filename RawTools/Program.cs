@@ -40,9 +40,8 @@ using RawTools.Algorithms.ExtractData;
 using RawTools.Utilities.MathStats;
 using System.Xml.Linq;
 using Serilog;
+using CLParser;
 //using Serilog.Sinks.File;
-using CommandLine;
-//using CommandLine.Text;
 
 namespace RawTools
 {
@@ -65,26 +64,36 @@ namespace RawTools
 
             Log.Information("Program started with arguments: {0}", String.Join(" ", args));
 
+            ClParser parser = ArgumentParser.ParserForRawTools.Create();
 
-            Parser.Default.ParseArguments<ArgumentParser.ParseOptions, ArgumentParser.QcOptions, ArgumentParser.TestOptions, ArgumentParser.ExampleOptions, ArgumentParser.LogDumpOptions>(args)
-                .WithParsed<ArgumentParser.ParseOptions>(opts => DoStuff(opts))
-                .WithParsed<ArgumentParser.QcOptions>(opts => DoStuff(opts))
-                .WithParsed<ArgumentParser.TestOptions>(opts => DoStuff(opts))
-                .WithParsed<ArgumentParser.ExampleOptions>(opts => DoStuff(opts))
-                .WithParsed<ArgumentParser.LogDumpOptions>(opts => DoStuff(opts))
-                .WithNotParsed((errs) => HandleParseError(args));
+            var arguments = parser.Parse(args);
+
+            Run(arguments);
 
             Log.CloseAndFlush();
         }
 
-        static int DoStuff(ArgumentParser.LogDumpOptions opts)
+        static int Run(Dictionary<string, object> opts)
         {
-            List<string> files = new List<string>();
+            if ((bool)opts["ExampleCommands"] == true)
+            {
+                Examples.CommandLineUsage();
+            }
 
-            if (opts.InputFiles.Count() > 0) // did the user give us a list of files?
+            if ((bool)opts["ExampleModifications"] == true)
+            {
+                Examples.ExampleMods();
+            }
+
+            List<string> files = new List<string>();
+            QcDataCollection qcDataCollection = new QcDataCollection();
+
+            WorkflowParameters parameters = new WorkflowParameters(opts);
+
+            if (parameters.InputFiles != null) // did the user give us a list of files?
             {
                 List<string> problems = new List<string>();
-                files = opts.InputFiles.ToList();
+                files = parameters.InputFiles.ToList();
 
                 // check if the list provided contains only .raw files
                 foreach (string file in files)
@@ -100,7 +109,8 @@ namespace RawTools
                 {
                     Console.WriteLine("\nERROR: {0} does not appear to be a .raw file. Invoke '>RawTools --help' if you need help.", problems.ElementAt(0));
                     Log.Error("Invalid file provided: {0}", problems.ElementAt(0));
-
+                    //Console.Write("Press any key to exit...");
+                    //Console.ReadKey();
                     return 1;
                 }
 
@@ -109,374 +119,89 @@ namespace RawTools
                     Console.WriteLine("\nERROR: The following {0} files do not appear to be .raw files. Invoke '>RawTools --help' if you need help." +
                         "\n\n{1}", problems.Count(), String.Join("\n", problems));
                     Log.Error("Invalid files provided: {0}", String.Join(" ", problems));
+                    //Console.Write("Press any key to exit...");
+                    //Console.ReadKey();
                     return 1;
                 }
+
+                files = RawFileInfo.RemoveInAcquistionFiles(files);
+
+                // if the file location(s) are relative, we need to get the absolute path to them
+                files.EnsureAbsolutePaths();
 
                 Log.Information("Files to be processed, provided as list: {0}", String.Join(" ", files));
             }
 
-            else // did the user give us a directory?
+            else if (!String.IsNullOrEmpty(parameters.RawFileDirectory)) // did the user give us a directory?
             {
-                if (Directory.Exists(opts.InputDirectory))
+                // if QC is being done, use the QC method snf get the qc data collection at the same time
+                if (parameters.QcParams.QcDirectory != null)
                 {
-                    files = Directory.GetFiles(opts.InputDirectory, "*.*", SearchOption.TopDirectoryOnly)
+                    (files, qcDataCollection) = QcWorkflow.GetFileListAndQcFile(parameters, parameters.IncludeSubdirectories);
+                }
+
+                // if not, the parse method
+                else if (Directory.Exists(parameters.RawFileDirectory))
+                {
+                    files = Directory.GetFiles(parameters.RawFileDirectory, "*.*", SearchOption.TopDirectoryOnly)
                     .Where(s => s.EndsWith(".raw", StringComparison.OrdinalIgnoreCase)).ToList();
                 }
                 else
                 {
                     Console.WriteLine("ERROR: The provided directory does not appear to be valid.");
-                    Log.Error("Invalid directory provided: {0}", opts.InputDirectory);
+                    Log.Error("Invalid directory provided: {0}", parameters.RawFileDirectory);
+                    //Console.Write("Press any key to exit...");
+                    //Console.ReadKey();
                     return 1;
                 }
 
+                files = RawFileInfo.RemoveInAcquistionFiles(files);
+
+                // if the file location(s) are relative, we need to get the absolute path to them
+                files.EnsureAbsolutePaths();
+
                 Log.Information("Files to be processed, provided as directory: {0}", String.Join(" ", files));
-
             }
-
-            Console.WriteLine();
-
-            foreach (var file in files)
-            {
-                Console.WriteLine(Path.GetFileName(file));
-                Console.WriteLine("----------------------------------------");
-                using (IRawDataPlus rawFile = RawFileReaderFactory.ReadFile(file))
-                {
-                    rawFile.SelectMsData();
-
-                    var numberOfLogs = rawFile.GetStatusLogEntriesCount();
-                    var logInfo = rawFile.GetStatusLogHeaderInformation();
-
-                    string logName = file + ".INST_LOG.txt";
-
-                    Dictionary<int, ISingleValueStatusLog> log = new Dictionary<int, ISingleValueStatusLog>();
-
-                    ProgressIndicator P = new ProgressIndicator(logInfo.Count(), "Preparing log data");
-                    P.Start();
-                    for (int i = 0; i < logInfo.Count(); i++)
-                    {
-                        log.Add(i, rawFile.GetStatusLogAtPosition(i));
-                        P.Update();
-                    }
-                    P.Done();
-
-                    using (StreamWriter f = new StreamWriter(logName))
-                    {
-                        P = new ProgressIndicator(numberOfLogs, $"Writing log");
-                        P.Start();
-                        f.Write("Time\t");
-                        foreach (var x in logInfo)
-                        {
-                            f.Write(x.Label + "\t");
-                        }
-                        f.Write("\n");
-
-                        for (int i = 0; i < numberOfLogs; i++)
-                        {
-                            f.Write($"{log[0].Times[i]}\t");
-
-                            for (int j = 0; j < logInfo.Length; j++)
-                            {
-                                try
-                                {
-                                    f.Write("{0}\t", log[j].Values[i]);
-                                }
-                                catch (Exception)
-                                {
-                                    f.Write("\t");
-                                }
-                            }
-                            f.Write("\n");
-                            P.Update();
-                        }
-                        P.Done();
-                    }
-                }
-                Console.WriteLine("\n");
-            }
-            return 0;
-        }
-
-        static int DoStuff(ArgumentParser.ExampleOptions opts)
-        {
-            if (opts.DisplayModifications)
-            {
-                Examples.ExampleMods();
-            }
-
-            if (opts.InterfaceExamples)
-            {
-                Examples.CommandLineUsage();
-            }
-
-            return 0;
-        }
-
-        static int DoStuff(ArgumentParser.TestOptions opts)
-        {
-            var rawFile = RawFileReaderFactory.ReadFile(opts.InputFiles.First());
-            rawFile.SelectInstrument(Device.MS, 1);
-
-            var created = rawFile.CreationDate;
-            var modified = rawFile.FileHeader.ModifiedDate;
-            var diff = modified - created;
-            var estTime = rawFile.RunHeader.ExpectedRuntime;
-
-            var timesModified = rawFile.FileHeader.NumberOfTimesModified;
-
-            Console.WriteLine("=============================================");
-            Console.WriteLine($"Creation date/time: {created}");
-            Console.WriteLine($"Last modified date/time: {modified}");
-            Console.WriteLine($"Number of times modified: {timesModified}");
-            Console.WriteLine($"Total time: {diff}");
-            Console.WriteLine($"Expected run time: {estTime}");
-            Console.WriteLine();
-
-            Console.WriteLine($"Estimated dead time: {diff.TotalMinutes - estTime}");
-            Console.WriteLine("=============================================");
-            /*
-            var numberOfLogs = rawFile.GetStatusLogEntriesCount();
-            var logInfo = rawFile.GetStatusLogHeaderInformation();
-
-            string logName = opts.InputFiles.First() + ".INST_LOG.txt";
-
-            Dictionary<int, ISingleValueStatusLog> log = new Dictionary<int, ISingleValueStatusLog>();
-
-            for (int i = 0; i < logInfo.Count(); i++)
-            {
-                log.Add(i, rawFile.GetStatusLogAtPosition(i));
-            }
-
-            using (StreamWriter f = new StreamWriter(logName))
-            {
-                ProgressIndicator P = new ProgressIndicator(numberOfLogs, "Writing instrument log");
-                P.Start();
-                f.Write("Time\t");
-                foreach (var x in logInfo)
-                {
-                    f.Write(x.Label + "\t");
-                }
-                f.Write("\n");
-
-                for (int i = 0; i < numberOfLogs; i++)
-                {
-                    f.Write($"{log[0].Times[i]}\t");
-
-                    for (int j = 0; j < logInfo.Length; j++)
-                    {
-                        try
-                        {
-                            f.Write("{0}\t",log[j].Values[i]);
-                        }
-                        catch (Exception)
-                        {
-                            f.Write("\t");
-                        }
-                    }
-                    f.Write("\n");
-                    P.Update();
-                }
-                P.Done();
-            }
-
-            Console.WriteLine(rawFile.GetInstrumentMethod(0));
-            Console.WriteLine(rawFile.CreationDate);
-            Console.WriteLine(rawFile.FileHeader.ModifiedDate);
-            Console.WriteLine(rawFile.RunHeader.StartTime);
-            Console.WriteLine(rawFile.RunHeader.EndTime);
-            */
-            return 0;
-        }
-
-        static int DoStuff(ArgumentParser.QcOptions opts)
-        {
-            Log.Information("Starting QC. Identipy: {Identipy}", opts.Identipy);
-            //Console.WriteLine("\n");
-            
-            /*
-            if (new List<string>() { "DDA", "DIA", "PRM" }.Contains(opts.ExperimentType))
-            { }
             else
             {
-                Log.Error("Experiment type of {ExpType} was passed", opts.ExperimentType);
-                Console.WriteLine("Experiment type must be one of ['DDA', 'DIA', 'PRM'], not {0}", opts.ExperimentType);
-                Environment.Exit(1);
-            }*/
-
-            if (opts.SearchAlgorithm != null & !(new List<string>() { "identipy", "xtandem", "None" }.Contains(opts.SearchAlgorithm)))
-            {
-                // the search algorithm is not null but it also it not identipy or xtandem
-                Log.Error("Invalid search algorithm argument: {Argument}", opts.SearchAlgorithm);
-                Console.WriteLine("ERROR: Search algorithm must be one of {identipy, xtandem}");
+                Console.WriteLine("ERROR: At least one of the following arguments is required: -f, -d");
+                Log.Error("No raw files or directory specified.");
                 return 1;
             }
 
-            if (opts.Identipy)
+            if (parameters.ParseParams.Quant)
             {
-                opts.SearchAlgorithm = "identipy";
+                List<string> possible = new List<string>() { "TMT0", "TMT2", "TMT6", "TMT10", "TMT11", "iTRAQ4", "iTRAQ8" };
+                if (!possible.Contains(parameters.ParseParams.LabelingReagents))
+                {
+                    Console.WriteLine("ERROR: For quantification, the labeling reagent must be one of {TMT0, TMT2, TMT6, TMT10, TMT11, iTRAQ4, iTRAQ8}");
+                    Log.Error("Invalid labeling reagent provided: {0}", parameters.ParseParams.LabelingReagents);
+                    //Console.Write("Press any key to exit...");
+                    //Console.ReadKey();
+                    return 1;
+                }
             }
 
-            WorkflowParameters parameters = new WorkflowParameters(opts);
-
-
-            if (opts.SearchAlgorithm != "None")
+            if (parameters.ParseParams.Chromatogram != null)
             {
-                if (opts.FastaDatabase == null)
+                List<string> possible = new List<string>() { "1", "2", "3", "T", "B" };
+                foreach (var x in parameters.ParseParams.Chromatogram)
                 {
-                    Log.Error("No fasta database provided for Identipy search");
-                    Console.WriteLine("ERROR: A fasta protein database is required for a database search. Please use the --db parameter to " +
-                        "provide the path to a database.");
-                    Environment.Exit(1);
-                }
-                
-                if (opts.SearchAlgorithm == "identipy")
-                {
-                    if ((opts.IdentipyScript == null & opts.PythonExecutable != null) | (opts.IdentipyScript != null & opts.PythonExecutable == null))
+                    if (!possible.Contains(x.ToString()))
                     {
-                        Log.Error("If providing location of python or identipy, must specify both of them.");
-                        Console.WriteLine("ERROR: When invoking the -p or -I options, you must supply both of them.");
-                        Environment.Exit(1);
-                    }
-
-                    Identipy.CheckIdentipyDependencies(parameters);
-                    
-                }
-
-                if (opts.SearchAlgorithm == "xtandem")
-                {
-                    if (opts.XTandemDirectory == null)
-                    {
-                        Log.Error("Path to XTandem directory was not provided");
-                        Console.WriteLine("ERROR: You must specify the X! Tandem directory using the -X argument to perform a search using X! Tandem.");
+                        Console.WriteLine("ERROR: Incorrect format for -chro. See help.");
+                        Log.Error("Invalid chromatogram argument provided: {Chro}", parameters.ParseParams.Chromatogram);
+                        //Console.Write("Press any key to exit...");
+                        //Console.ReadKey();
                         return 1;
                     }
                 }
             }
 
-            QC.QcWorkflow.DoQc(parameters, opts.SubdirectoriesIncluded);
-            
-            return 0;
-        }
-
-        static int HandleParseError(string[] args)
-        {
-            Log.Error("Error occured during command line parsing. Arguments given: {0}", String.Join(" ", args));
-            return 1;
-        }
-
-        static int DoStuff(ArgumentParser.ParseOptions opts)
-        {
-            if (!opts.ParseData & !opts.Quant & !opts.Metrics & !opts.WriteMGF & (opts.Chromatogram == null))
-            {
-                Console.WriteLine("You have not indicated what output you want (i.e. one or more of -p, -q, -m, -x, --chro). " +
-                    "Are you sure you want to proceed? Nothing will be written to disk.");
-                Console.Write("(press y to proceed): ");
-
-                string proceed = Console.ReadKey().KeyChar.ToString();
-                Console.WriteLine();
-
-                if (proceed != "y")
-                {
-                    Environment.Exit(0);
-                }
-            }
-
-            List<string> files = new List<string>();
-
-            if (opts.InputFiles.Count() > 0) // did the user give us a list of files?
-            {
-                List<string> problems = new List<string>();
-                files = opts.InputFiles.ToList();
-
-                // check if the list provided contains only .raw files
-                foreach (string file in files)
-                {
-                    
-                    if (!file.EndsWith(".raw", StringComparison.OrdinalIgnoreCase))
-                    {
-                        problems.Add(file);
-                    }
-                }
-
-                if (problems.Count() == 1)
-                {
-                    Console.WriteLine("\nERROR: {0} does not appear to be a .raw file. Invoke '>RawTools --help' if you need help.", problems.ElementAt(0));
-                    Log.Error("Invalid file provided: {0}", problems.ElementAt(0));
-
-                    return 1;
-                }
-
-                if (problems.Count() > 1)
-                {
-                    Console.WriteLine("\nERROR: The following {0} files do not appear to be .raw files. Invoke '>RawTools --help' if you need help." +
-                        "\n\n{1}", problems.Count(), String.Join("\n", problems));
-                    Log.Error("Invalid files provided: {0}", String.Join(" ", problems));
-                    return 1;
-                }
-
-                // if the file location(s) are relative, we need to get the absolute path to them
-                files.EnsureAbsolutePaths();
-
-                Log.Information("Files to be processed, provided as list: {0}", String.Join(" ", files));
-            }
-
-            else // did the user give us a directory?
-            {
-                if (Directory.Exists(opts.InputDirectory))
-                {
-                    files = Directory.GetFiles(opts.InputDirectory, "*.*", SearchOption.TopDirectoryOnly)
-                    .Where(s => s.EndsWith(".raw", StringComparison.OrdinalIgnoreCase)).ToList();
-                }
-                else
-                {
-                    Console.WriteLine("ERROR: The provided directory does not appear to be valid.");
-                    Log.Error("Invalid directory provided: {0}", opts.InputDirectory);
-                    return 1;
-                }
-
-                // if the file location(s) are relative, we need to get the absolute path to them
-                files.EnsureAbsolutePaths();
-
-                Log.Information("Files to be processed, provided as directory: {0}", String.Join(" ", files));
-
-            }
-
-            if (opts.Quant)
-            {
-                List<string> possible = new List<string>() { "TMT0", "TMT2", "TMT6", "TMT10", "TMT11", "iTRAQ4", "iTRAQ8" };
-                if (!possible.Contains(opts.LabelingReagents))
-                {
-                    Console.WriteLine("ERROR: For quantification, the labeling reagent must be one of {TMT0, TMT2, TMT6, TMT10, TMT11, iTRAQ4, iTRAQ8}");
-                    Log.Error("Invalid labeling reagent provided: {0}", opts.LabelingReagents);
-                    return 1;
-                }
-            }
-
-            if (opts.Chromatogram != null)
-            {
-                List<string> possible = new List<string>() { "1T", "2T", "3T", "1B", "2B", "3B", "1TB", "2TB", "3TB", "1TB", "2TB", "3TB"};
-                if (!possible.Contains(opts.Chromatogram))
-                {
-                    Console.WriteLine("ERROR: Incorrect format for --chro. See help.");
-                    Log.Error("Invalid chromatogram argument provided: {Chro}", opts.Chromatogram);
-                    return 1;
-                }
-            }
-            /*
-            // is the experiment type valid?
-            if (! new List<string>() { "DDA", "DIA", "PRM" }.Contains(opts.ExperimentType))
-            {
-                Log.Error("Experiment type of {ExpType} was passed", opts.ExperimentType);
-                Console.WriteLine("Experiment type must be one of ['DDA', 'DIA', 'PRM'], not {0}", opts.ExperimentType);
-                Environment.Exit(1);
-            }*/
-
-
             System.Diagnostics.Stopwatch singleFileTime = new System.Diagnostics.Stopwatch();
             System.Diagnostics.Stopwatch totalTime = new System.Diagnostics.Stopwatch();
             totalTime.Start();
-
-            WorkflowParameters parameters = new WorkflowParameters(opts);
-
+            
             foreach (string file in files)
             {
                 singleFileTime.Start();
@@ -491,22 +216,24 @@ namespace RawTools
                         parameters.ParseParams.OutputDirectory = Path.GetDirectoryName(file);
                     }
 
-                    if (parameters.ExpType == ExperimentType.DDA)
-                    {
-                        WorkFlowsDDA.ParseDDA(rawFile, parameters);
-                    }
-                    else if (parameters.ExpType == ExperimentType.DIA)
-                    {
-                        WorkFlowsDIA.ParseDIA(rawFile, parameters);
-                    }
+                    WorkFlowsDDA.UniversalDDA(rawFile, parameters, qcDataCollection);
                 }
 
                 singleFileTime.Stop();
-                Console.WriteLine("\nElapsed time: {0} s", Math.Round(Convert.ToDouble(singleFileTime.ElapsedMilliseconds)/1000.0,2));
+                Console.WriteLine("\nElapsed time: {0} s", Math.Round(Convert.ToDouble(singleFileTime.ElapsedMilliseconds) / 1000.0, 2));
                 singleFileTime.Reset();
             }
+
+            if (parameters.LogDump)
+            {
+                Write.LogDump.WriteToDisk(parameters);
+            }
+
             totalTime.Stop();
             Console.WriteLine("\nTime to process all {0} files: {1}", files.Count(), totalTime.Elapsed);
+
+            //Console.Write("Press any key to exit...");
+            //Console.ReadKey();
 
             return 0;
         }

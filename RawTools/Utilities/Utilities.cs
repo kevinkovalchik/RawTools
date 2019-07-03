@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.Linq;
+using System.Data;
 using System.Diagnostics;
 using System.Text;
 using System.IO;
@@ -37,6 +38,33 @@ using Serilog;
 
 namespace RawTools.Utilities
 {
+    static class Extensions
+    {
+        public static V TryGetElseDefault<T, V>(this Dictionary<T, V> parameters, T key)
+        {
+            if (parameters.ContainsKey(key))
+            {
+                return parameters[key];
+            }
+            else
+            {
+                return default(V);
+            }
+        }
+
+        public static V TryGetElseDefault<T, V>(this SerializableDictionary<T, V> parameters, T key)
+        {
+            if (parameters.ContainsKey(key))
+            {
+                return parameters[key];
+            }
+            else
+            {
+                return default(V);
+            }
+        }
+    }
+
     static class ConsoleUtils
     {
         public static void ClearLastLine()
@@ -527,7 +555,7 @@ namespace RawTools.Utilities
         }
     }
 
-    static class ReadWrite
+    public static class ReadWrite
     {
         public static string GetPathToFile(string outputDirectory, string fileName, string suffix)
         {
@@ -627,6 +655,40 @@ namespace RawTools.Utilities
                     files[i] = Path.Combine(wd, fileName);
                 }
             }
+        }
+
+        public static DataTable LoadDataTable(string filePath, char delimiter)
+        {
+            DataTable tbl = new DataTable();
+
+            int numberOfColumns;
+
+            string[] lines = File.ReadAllLines(filePath);
+
+            string[] firstLine = lines[0].Split(delimiter);
+
+            numberOfColumns = firstLine.Length;
+
+            foreach (var columnName in firstLine)
+            {
+                tbl.Columns.Add(new DataColumn(columnName));
+            }
+
+            for (int i = 1; i < lines.Length; i++)
+            {
+                var entries = lines[i].Split(delimiter);
+
+                DataRow dr = tbl.NewRow();
+
+                for (int j = 0; j < entries.Length; j++)
+                {
+                    dr[j] = entries[j];
+                }
+
+                tbl.Rows.Add(dr);
+            }
+
+            return tbl;
         }
     }
 
@@ -793,6 +855,33 @@ namespace RawTools.Utilities
                 Console.WriteLine("{0} is not a valid raw file, continuing to next file.", fileName);
                 return false;
             }
+        }
+
+        public static List<string> RemoveInAcquistionFiles(List<string> rawFiles)
+        {
+            List<string> filesToRemove = new List<string>();
+            foreach (var file in rawFiles)
+            {
+                using (var raw = RawFileReaderFactory.ReadFile(file))
+                {
+                    if (raw.InAcquisition)
+                    {
+                        Console.WriteLine("The following file is \"in acquisition\" and will not be processed{0}: ", Path.GetFileName(file));
+
+                        filesToRemove.Add(file);
+                    }
+                }
+            }
+
+            if (filesToRemove.Count > 0)
+            {
+                foreach (var file in filesToRemove)
+                {
+                    rawFiles.Remove(file);
+                }
+            }
+
+            return rawFiles;
         }
     }
 

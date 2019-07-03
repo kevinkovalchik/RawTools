@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using RawTools.Data.Containers;
+using RawTools.Utilities;
 
 namespace RawTools.WorkFlows
 {
@@ -28,7 +29,8 @@ namespace RawTools.WorkFlows
         public ExperimentType ExpType;
         public double MgfIntensityCutoff, MgfMassCutoff;
         public string RawFileDirectory;
-        public bool RefineMassCharge;
+        public bool IncludeSubdirectories, RefineMassCharge, LogDump;
+        public (int Min, int Max) ConsideredChargeStates;
         public IEnumerable<string> InputFiles;
 
         public ParseWorkflowParameters ParseParams;
@@ -40,59 +42,59 @@ namespace RawTools.WorkFlows
             ParseParams = new ParseWorkflowParameters();
         }
 
-        public WorkflowParameters(ArgumentParser.ParseOptions parseOptions)
+        public WorkflowParameters(Dictionary<string, object> Options)
         {
             ParseParams = new ParseWorkflowParameters();
-
+            
             ExpType = ExperimentType.DDA;
-            MgfIntensityCutoff = parseOptions.IntensityCutoff;
-            MgfMassCutoff = parseOptions.MassCutOff;
-            InputFiles = parseOptions.InputFiles;
-            RawFileDirectory = parseOptions.InputDirectory;
-            RefineMassCharge = parseOptions.RefineMassCharge;
-            ParseParams.Chromatogram = parseOptions.Chromatogram;
-            ParseParams.LabelingReagents = String.Empty;
-            ParseParams.LabelingReagents = parseOptions.LabelingReagents;
-            ParseParams.Metrics = parseOptions.Metrics;
-            ParseParams.Parse = parseOptions.ParseData;
-            ParseParams.Quant = parseOptions.Quant;
-            ParseParams.UnlabeledQuant = parseOptions.UnlabeledQuant;
-            ParseParams.WriteMgf = parseOptions.WriteMGF;
+            MgfIntensityCutoff = 0;
 
-            if (parseOptions.OutputDirectory != null)
+            MgfMassCutoff = Convert.ToDouble(TryGetElseDefault(Options, "MgfMassCutOff"));
+            InputFiles = (List<string>)TryGetElseDefault(Options,"RawFiles");
+            RawFileDirectory = (string)TryGetElseDefault(Options,"RawFileDirectory");
+            IncludeSubdirectories = (bool)TryGetElseDefault(Options,"SearchSubdirectories");
+            RefineMassCharge = (bool)TryGetElseDefault(Options,"RefineMassCharge");
+            ParseParams.Chromatogram = (string)TryGetElseDefault(Options, "Chromatogram");
+            ParseParams.LabelingReagents = (string)TryGetElseDefault(Options, "LabelingReagent");
+            ParseParams.Metrics = (bool)TryGetElseDefault(Options, "Metrics");
+            ParseParams.Parse = (bool)TryGetElseDefault(Options, "Parse");
+            ParseParams.Quant = (bool)TryGetElseDefault(Options, "Quant");
+            ParseParams.UnlabeledQuant = (bool)TryGetElseDefault(Options, "UnlabeledQuant");
+            ParseParams.WriteMgf = (bool)TryGetElseDefault(Options, "WriteMGF");
+            ConsideredChargeStates.Min = Convert.ToInt32(TryGetElseDefault(Options, "MinCharge"));
+            ConsideredChargeStates.Max = Convert.ToInt32(TryGetElseDefault(Options, "MaxCharge"));
+            LogDump = (bool)TryGetElseDefault(Options, "LogDump");
+
+            string output = (string)TryGetElseDefault(Options, "OutputDirectory");
+
+            if (!String.IsNullOrEmpty(output))
             {
-                if (!Path.IsPathRooted(parseOptions.OutputDirectory))
+                if (!Path.IsPathRooted(output))
                 {
-                    parseOptions.OutputDirectory = Path.Combine(Directory.GetCurrentDirectory(), parseOptions.OutputDirectory);
+                    output = Path.Combine(Directory.GetCurrentDirectory(), output);
                 }
             }
-            
-            ParseParams.OutputDirectory = parseOptions.OutputDirectory;
-        }
 
-        public WorkflowParameters(ArgumentParser.QcOptions qcOptions)
-        {
+            ParseParams.OutputDirectory = output;
+
             QcParams = new QcWorkflowParameters();
-            Enum.TryParse(qcOptions.SearchAlgorithm, true, out QcParams.SearchAlgorithm);
+
+            QcParams.QcDirectory = (string)TryGetElseDefault(Options, "QcDirectory");
+            QcParams.XTandemDirectory = (string)TryGetElseDefault(Options, "XTandemDirectory");
+
+            if (!String.IsNullOrEmpty(QcParams.XTandemDirectory))
+            {
+                QcParams.SearchAlgorithm = SearchAlgorithm.XTandem;
+            }
 
             ExpType = ExperimentType.DDA;
+            
+            QcParams.FastaDatabase = (string)TryGetElseDefault(Options, "FastaDB");
+            QcParams.FixedMods = (string)TryGetElseDefault(Options, "FixedModifications");
+            //QcParams.FixedScans = Options.FixedScans;
+            QcParams.VariableMods = (string)TryGetElseDefault(Options, "VariableModifications");
 
-            MgfIntensityCutoff = qcOptions.IntensityCutoff;
-            MgfMassCutoff = qcOptions.MassCutOff;
-            RawFileDirectory = qcOptions.DirectoryToQc;
-            RefineMassCharge = qcOptions.RefineMassCharge;
-
-            QcParams.FastaDatabase = qcOptions.FastaDatabase;
-            QcParams.FixedMods = qcOptions.FixedMods;
-            QcParams.FixedScans = qcOptions.FixedScans;
-            QcParams.IdentipyScript = qcOptions.IdentipyScript;
-            QcParams.KMod = qcOptions.VariableKMod;
-            QcParams.NMod = qcOptions.VariableNMod;
-            QcParams.XMod = qcOptions.VariableXMod;
-            QcParams.NumberSpectra = qcOptions.NumberSpectra;
-            QcParams.PythonExecutable = qcOptions.PythonExecutable;
-            QcParams.QcDirectory = qcOptions.QcDirectory;
-            QcParams.XTandemDirectory = qcOptions.XTandemDirectory;
+            QcParams.NumberSpectra = Convert.ToInt32(TryGetElseDefault(Options, "NumberSpectra"));
 
             if (QcParams.SearchAlgorithm != SearchAlgorithm.None)
             {
@@ -123,7 +125,18 @@ namespace RawTools.WorkFlows
                 }
             }
         }
-        
+
+        private V TryGetElseDefault<T, V>(Dictionary<T, V> parameters, T key)
+        {
+            if (parameters.ContainsKey(key))
+            {
+                return parameters[key];
+            }
+            else
+            {
+                return default(V);
+            }
+        }
     }
 
     public class ParseWorkflowParameters
@@ -142,8 +155,7 @@ namespace RawTools.WorkFlows
 
         public SearchAlgorithm SearchAlgorithm;
 
-        public string QcDirectory, FastaDatabase, FixedMods,
-            NMod, KMod, XMod, PythonExecutable, IdentipyScript, XTandemDirectory;
+        public string QcDirectory, FastaDatabase, FixedMods, VariableMods, XTandemDirectory;
 
         public string QcSearchDataDirectory { get { return Path.Combine(QcDirectory, "QcSearchData"); } }
     }

@@ -14,16 +14,17 @@ If you need help installing and using RawTools, please visit the wiki page appro
 
 <br>
 
-### [RawToolsGUI](https://github.com/kevinkovalchik/RawTools/releases/tag/RawToolsGUI-beta) is here!
+### RawTools 2.0 is coming soon
+We are working on finalizing RawTools v2.0. You will now be able to performing parsing and QC in the same command, which should streamline 
+workflows as well as bring the CLI in line with the GUI. This will break compatibility with any pipelines based on the old CLI, which is why
+we have chosen a major version increment. However, the command line arguments will remain very similar to those in previous versions, so it 
+should only take a few minutes to update any scripts using the CLI.
 
-This [new beta release](https://github.com/kevinkovalchik/RawTools/releases/tag/RawToolsGUI-beta) adds a graphical user interface to RawTools. It runs on top of a modified version of [RawTools 1.4.1](https://github.com/kevinkovalchik/RawTools/releases/tag/1.4.1), and provides a user-friendly interface to set up all your parse and search parameters. RawToolsGUI then formats the proper command line arguments and runs a new instance of RawTools for you using those arguments. You can save and load the parameters as well, so once you have a standard routine set up, you won't need to click so many buttons every time you want to run it.
+Additionaly, the GUI will now be part of every release. To use it simply run RawToolsGUI.exe in the RawTools directory.
 
-The release includes regular RawTools as well, so there is no need to copy any files around. Once we are ready to move past the beta stage, RawToolsGUI will simply be incorporated into the regular RawTools distribution. You will be able to run RawTools with the CLI using `RawTools.exe` and as a GUI using `RawToolsGUI.exe`, but both files will be distributed in all releases.
-
-if you are using RawToolsGUI and have any issues or suggestions let us know!
-
-**NOTE**
-RawToolsGUI, like RawTools, requires the .NET or Mono Framework. This means if you are running from Linux or Mac you will still need to run it from a console like this: `$ mono RawToolsGUI.exe`. At some point we plan to include a simple console script that will do this for you when you click on it.
+Finally, IdentiPy will no longer supported as a search engine by RawTools. We made this decision because we frequently ran into issues with
+different installations Python and IdentiPy dependencies, and we found X!Tandem to be better suited for our particular purpose of running a fast 
+"preview" search.
 
 <br>
 
