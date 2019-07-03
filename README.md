@@ -20,7 +20,7 @@ If you need help installing and using RawTools, please visit the wiki page appro
 - The command line interface has been updated and streamlined. While this breaks compatibility with old versions, we think the improvements
 are worth it. Parsing and QC are no longer separate operations, but can be performed at the same time. As such, there are no longer "parse"
 and "qc" modes to invoke. We have made efforts to preserve most of the original arguments as they were, so there shouldn't be too much to
-update if you use RawTools as part of a script. For help with this new interface, see RawTools -commands.
+update if you use RawTools as part of a script. For help with this new interface, see `>RawTools.exe -commands`.
 - We have now integrated data visualization into the tool itself (see examples below). The new RawToolsViz.exe allows for visualization of QC and parse data
 and RawTools-generated chromatograms, and exploration of Thermo .raw files themselves. While the .raw file exploration has only been
 extensively tested in Windows, it should be compatible with Linux and Mac systems as well.
