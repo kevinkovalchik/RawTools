@@ -14,18 +14,38 @@ If you need help installing and using RawTools, please visit the wiki page appro
 
 <br>
 
-### RawTools 2.0 is coming soon
-We are working on finalizing RawTools v2.0. You will now be able to performing parsing and QC in the same command, which should streamline 
-workflows as well as bring the CLI in line with the GUI. This will break compatibility with any pipelines based on the old CLI, which is why
-we have chosen a major version increment. However, the command line arguments will remain very similar to those in previous versions, so it 
-should only take a few minutes to update any scripts using the CLI.
+### RawTools 2.0.0 released
 
+- A lot has changed since v1.4.2!
+- The command line interface has been updated and streamlined. While this breaks compatibility with old versions, we think the improvements
+are worth it. Parsing and QC are no longer separate operations, but can be performed at the same time. As such, there are no longer "parse"
+and "qc" modes to invoke. We have made efforts to preserve most of the original arguments as they were, so there shouldn't be too much to
+update if you use RawTools as part of a script. For help with this new interface, see RawTools -commands.
+- We have now integrated data visualization into the tool itself (see examples below). The new RawToolsViz.exe allows for visualization of QC and parse data
+and RawTools-generated chromatograms, and exploration of Thermo .raw files themselves. While the .raw file exploration has only been
+extensively tested in Windows, it should be compatible with Linux and Mac systems as well.
+- Some metrics have been renamed to align the naming schemes used in the various data files (parse, qc, metrics). Because of this, the 
+hiny app may not work anymore. It is unlikely the app will be updated as visualization can now be carried out locally.
+- New metrics have been added to QC output, including the number of cycles across the average peak profile, median peptide hyperscore
+and cutoff hyperscore used for FDR.
+- IdentiPy is no longer supported as a search engine. While we don't have any issues with IdentiPy, we felt it was easiest to maintain
+support for only a single search engine. As X! Tandem does not have any external dependencies (i.e. Python), we felt it was the best choice
+for this particular case.
+
+#### RawToolsViz parse visualization
+![](https://github.com/kevinkovalchik/RawTools/blob/master/documentation/parseFullWindow.png)
+
+#### RawToolsViz qc visualization
+![](https://github.com/kevinkovalchik/RawTools/blob/master/documentation/qcFullWindow.png)
+
+#### RawToolsViz raw file visualization
+![](https://github.com/kevinkovalchik/RawTools/blob/master/documentation/rawFileFullWindow.png)
 
 <br>
 
 ### Notable news
 
-* A RawTools GUI is in the works and should be released soon! Initially this will simply allow you to set up RawTools parameters and run the program using a graphical interface instead of the command line. In the future we plan to add some basic features to visualy explore raw files, as well as to visualize some of the parse and QC data similar to our R Shiny app. If you have any features you would like to see in this regard, let us know by creating a [feature request](https://github.com/kevinkovalchik/RawTools/issues/new?assignees=&labels=&template=feature_request.md&title=)! [2019-01-07]
+* RawTools 2.0.0 ig [here!](https://github.com/kevinkovalchik/RawTools/releases/tag/2.0.0)
 
 * Thanks to a lot of behind the scenes work, the file downloads of plots from the Shiny app are now working! [2018-12-06]  
 
