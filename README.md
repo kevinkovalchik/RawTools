@@ -20,11 +20,6 @@ workflows as well as bring the CLI in line with the GUI. This will break compati
 we have chosen a major version increment. However, the command line arguments will remain very similar to those in previous versions, so it 
 should only take a few minutes to update any scripts using the CLI.
 
-Additionaly, the GUI will now be part of every release. To use it simply run RawToolsGUI.exe in the RawTools directory.
-
-Finally, IdentiPy will no longer supported as a search engine by RawTools. We made this decision because we frequently ran into issues with
-different installations Python and IdentiPy dependencies, and we found X!Tandem to be better suited for our particular purpose of running a fast 
-"preview" search.
 
 <br>
 
