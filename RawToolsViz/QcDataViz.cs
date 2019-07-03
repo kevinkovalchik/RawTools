@@ -24,10 +24,11 @@ namespace RawToolsViz
     {
         DataTable QcData;
         string RawFileTitle;
+        string RawFileFilter;
 
         public QcDataViz()
         {
-
+            RawFileFilter = "";
         }
 
         public QcDataViz(string pathToQcCsvFile)
@@ -110,7 +111,12 @@ namespace RawToolsViz
 
                     for (int currRow = 0; currRow < QcData.Rows.Count; currRow++)
                     {
-                        scatter.Points.Add(new RawFileDataPoint(currRow + 1, Convert.ToDouble(QcData.Rows[currRow][columnName].ToString()), rawFile: QcData.Rows[currRow][RawFileTitle].ToString()));
+                        if (String.IsNullOrEmpty(RawFileFilter) ||
+                            QcData.Rows[currRow][RawFileTitle].ToString().Contains(RawFileFilter) ||
+                            RawFileFilter == "")
+                        {
+                            scatter.Points.Add(new RawFileDataPoint(currRow + 1, Convert.ToDouble(QcData.Rows[currRow][columnName].ToString()), rawFile: QcData.Rows[currRow][RawFileTitle].ToString()));
+                        }
                     }
                     myModel.Series.Add(scatter);
                 }
@@ -485,6 +491,21 @@ namespace RawToolsViz
         private void yAxisLabel_TextChanged(object sender, EventArgs e)
         {
             UpdateChart();
+        }
+
+        private void filterButton_Click(object sender, EventArgs e)
+        {
+            RawFileFilter = filterString.Text;
+            UpdateChart();
+        }
+
+        private void filterString_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter || e.KeyCode == Keys.Return)
+            {
+                RawFileFilter = filterString.Text;
+                UpdateChart();
+            }
         }
     }
 }

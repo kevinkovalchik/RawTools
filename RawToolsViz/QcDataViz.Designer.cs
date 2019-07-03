@@ -30,7 +30,7 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(QcDataViz));
-            PresentationControls.CheckBoxProperties checkBoxProperties2 = new PresentationControls.CheckBoxProperties();
+            PresentationControls.CheckBoxProperties checkBoxProperties1 = new PresentationControls.CheckBoxProperties();
             this.plotView1 = new OxyPlot.WindowsForms.PlotView();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -69,6 +69,8 @@
             this.linearYScale = new System.Windows.Forms.RadioButton();
             this.label3 = new System.Windows.Forms.Label();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.filterString = new System.Windows.Forms.TextBox();
+            this.filterButton = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -80,10 +82,10 @@
             // plotView1
             // 
             this.plotView1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.plotView1.Location = new System.Drawing.Point(3, 93);
+            this.plotView1.Location = new System.Drawing.Point(3, 123);
             this.plotView1.Name = "plotView1";
             this.plotView1.PanCursor = System.Windows.Forms.Cursors.Hand;
-            this.plotView1.Size = new System.Drawing.Size(976, 433);
+            this.plotView1.Size = new System.Drawing.Size(976, 403);
             this.plotView1.TabIndex = 0;
             this.plotView1.Text = "plotView1";
             this.toolTip1.SetToolTip(this.plotView1, resources.GetString("plotView1.ToolTip"));
@@ -135,7 +137,7 @@
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 28);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 3;
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 90F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 120F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 90F));
             this.tableLayoutPanel1.Size = new System.Drawing.Size(982, 619);
@@ -143,6 +145,8 @@
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.filterButton);
+            this.panel1.Controls.Add(this.filterString);
             this.panel1.Controls.Add(this.yAxisLabel);
             this.panel1.Controls.Add(this.label6);
             this.panel1.Controls.Add(this.xAxisLabel);
@@ -155,7 +159,7 @@
             this.panel1.Location = new System.Drawing.Point(3, 3);
             this.panel1.Name = "panel1";
             this.panel1.Padding = new System.Windows.Forms.Padding(3, 6, 6, 3);
-            this.panel1.Size = new System.Drawing.Size(976, 84);
+            this.panel1.Size = new System.Drawing.Size(976, 114);
             this.panel1.TabIndex = 1;
             // 
             // yAxisLabel
@@ -194,8 +198,8 @@
             // 
             // checkBoxComboBox1
             // 
-            checkBoxProperties2.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.checkBoxComboBox1.CheckBoxProperties = checkBoxProperties2;
+            checkBoxProperties1.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.checkBoxComboBox1.CheckBoxProperties = checkBoxProperties1;
             this.checkBoxComboBox1.DisplayMemberSingleItem = "";
             this.checkBoxComboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.checkBoxComboBox1.FormattingEnabled = true;
@@ -478,6 +482,26 @@
             this.label3.TabIndex = 4;
             this.label3.Text = "y-axis:";
             // 
+            // filterString
+            // 
+            this.filterString.Location = new System.Drawing.Point(62, 86);
+            this.filterString.Name = "filterString";
+            this.filterString.Size = new System.Drawing.Size(196, 22);
+            this.filterString.TabIndex = 12;
+            this.toolTip1.SetToolTip(this.filterString, "Filter to display only certain files.\r\n\r\nExample: entering \"HeLa\" will display on" +
+        "ly data for\r\nraw files which contain \"HeLa\" in the raw file name.");
+            this.filterString.KeyUp += new System.Windows.Forms.KeyEventHandler(this.filterString_KeyUp);
+            // 
+            // filterButton
+            // 
+            this.filterButton.Location = new System.Drawing.Point(267, 86);
+            this.filterButton.Name = "filterButton";
+            this.filterButton.Size = new System.Drawing.Size(164, 23);
+            this.filterButton.TabIndex = 13;
+            this.filterButton.Text = "Filter files";
+            this.filterButton.UseVisualStyleBackColor = true;
+            this.filterButton.Click += new System.EventHandler(this.filterButton_Click);
+            // 
             // QcDataViz
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -546,6 +570,8 @@
         private System.Windows.Forms.TextBox xAxisLabel;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.ToolTip toolTip1;
+        private System.Windows.Forms.Button filterButton;
+        private System.Windows.Forms.TextBox filterString;
     }
 }
 
