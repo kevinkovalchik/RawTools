@@ -65,72 +65,6 @@ namespace RawTools.QC
             }
         }
 
-        public static void DoQc(WorkflowParameters parameters, bool subdirectoriesIncluded)
-        {
-            //QcDataCollectionDDA qcDataCollection;
-            dynamic qcDataCollection;
-            string dataDirectory = parameters.RawFileDirectory;
-            string qcDirectory = parameters.QcParams.QcDirectory;
-            string qcSearchDataDirecotry = parameters.QcParams.QcSearchDataDirectory;
-            List<string> fileList = new List<string>();
-
-            string qcFile = Path.Combine(qcDirectory, "QC.xml");
-
-            (fileList, qcDataCollection) = GetFileListAndQcFile(parameters, subdirectoriesIncluded);
-
-            foreach (string fileName in fileList)
-            {
-                Console.WriteLine("\nProcessing {0}", fileName);
-
-                if (!RawFileInfo.CheckIfValid(fileName))
-                {
-                    continue;
-                }
-                // okay, it is probably a real raw file, let's do the QC
-
-                // check if the raw file already exists in the QC data with a different name
-                if (CheckIfFilePresentInQcCollection(fileName, qcDataCollection))
-                {
-                    Log.Information("A file with the same creation date and time as {File} already exists in the QC data", fileName);
-
-                    Console.WriteLine("A file with the same creation date and time as {0} already exists in the QC data. Skipping to next file.",
-                        fileName);
-
-                    continue;
-                }
-
-                IRawFileThreadManager rawFileThreadManager = RawFileReaderFactory.CreateThreadManager(fileName);
-
-                if (parameters.ExpType == ExperimentType.DDA)
-                {
-                    WorkFlowsDDA.QcDDA(rawFileThreadManager, parameters);
-                }
-                //else if (parameters.ExpType == ExperimentType.DIA)
-                //{
-                //    WorkFlowsDIA.QcDIA(rawFileThreadManager, parameters);
-                //}
-                /*
-                using (IRawDataPlus rawFile = RawFileReaderFactory.ReadFile(fileName))
-                {
-                    rawFile.SelectInstrument(Device.MS, 1);
-
-                    if (parameters.ExpType == ExperimentType.DDA)
-                    {
-                        WorkFlowsDDA.QcDDA(rawFile, parameters);
-                    }
-                    else if (parameters.ExpType == ExperimentType.DIA)
-                    {
-                        WorkFlowsDIA.QcDIA(rawFile, parameters);
-                    }
-                }*/
-
-                Log.Information("QC finished: {File}", fileName);
-            }
-
-            Log.Information("QC of all files completed");
-            Console.WriteLine("QC of all files completed!");
-        }
-
         public static QcDataCollection LoadOrCreateQcCollection(WorkflowParameters parameters)
         {
             QcDataCollection qcDataCollection;
@@ -165,7 +99,7 @@ namespace RawTools.QC
             return qcDataCollection;
         }
         
-        private static (List<string> fileList, QcDataCollection qcDataCollection) GetFileListAndQcFile(WorkflowParameters parameters, bool subdirectoriesIncluded)
+        public static (List<string> fileList, QcDataCollection qcDataCollection) GetFileListAndQcFile(WorkflowParameters parameters, bool subdirectoriesIncluded)
         {
             QcDataCollection qcDataCollection;
             string dataDirectory = parameters.RawFileDirectory;
@@ -243,7 +177,7 @@ namespace RawTools.QC
             return (fileList, qcDataCollection);
         }
 
-        private static bool CheckIfFilePresentInQcCollection(string fileName, QcDataCollection qcDataCollection)
+        public static bool CheckIfFilePresentInQcCollection(string fileName, QcDataCollection qcDataCollection)
         {
             IFileHeader rawHeader = FileHeaderReaderFactory.ReadFile(fileName);
 
@@ -268,86 +202,7 @@ namespace RawTools.QC
         public QcDataContainer()
         { }
     }
-    
-    /*
-    //[Serializable]
-    public class QcDataContainer
-    {
-        public string RawFile, Instrument;
-        public MSOrderType ExperimentMsOrder;
-        public string Ms1Analyzer, Ms2Analyzer, Ms3Analyzer;
-        public DateTime DateAcquired;
-        public int TotalScans, NumMs1Scans, NumMs2Scans, NumMs3Scans;
-        public double Ms1ScanRate, Ms2ScanRate, Ms3ScanRate;
-        public double MeanDutyCycle;
-        public double MeanTopN;
-        public double MedianSummedMs2Intensity;
-        public double MedianSummedMs1Intensity;
-        public double MedianMs1IsolationInterference;
-        public double MedianMs2FractionConsumingTop80PercentTotalIntensity;
-        public double MedianPrecursorIntensity;
-        public double LabelingEfficiencyAtX, LabelingEfficiencyAtNTerm, LabelingEfficiencyAtK;
-        public string LabelX;
-        public double ColumnPeakCapacity, GradientTime, IdentificationRate, MissedCleavageRate, DigestionEfficiency, ChargeRatio3to2, ChargeRatio4to2;
-        public double MedianMassDrift;
-        public ((double P10, double P50) Asymmetry, (double P10, double P50) Width) PeakShape;
-        public double TimeBeforeFirstScanToExceedPoint1MaxIntensity;
-        public double TimeAfterLastScanToExceedPoint1MaxIntensity;
-        public double FractionOfRunAbovePoint1MaxIntensity;
-        public string IdentipyParameters = "None";
-        public int NumEsiStabilityFlags;
-        public SearchData SearchData;
 
-        public Distribution Ms1FillTimeDistribution, Ms2FillTimeDistribution, Ms3FillTimeDistribution;
-
-        public QuantMetaData QuantMeta;
-
-        public QcDataContainer()
-        { }
-
-        public QcDataContainer(string rawFile, DateTime dateAquired, RawMetricsDataDDA metricsData)
-        {
-            RawFile = rawFile;
-            DateAcquired = dateAquired;
-            Ms1FillTimeDistribution = Ms2FillTimeDistribution = Ms3FillTimeDistribution = new Distribution();
-            LabelingEfficiencyAtX = LabelingEfficiencyAtNTerm = LabelingEfficiencyAtK = -1;
-            DigestionEfficiency = IdentificationRate = MissedCleavageRate = -1;
-            ChargeRatio3to2 = ChargeRatio4to2 = -1;
-            Ms3ScanRate = -1;
-            MedianMassDrift = -1;
-            SearchData = new SearchData();
-
-            TotalScans = metricsData.TotalScans;
-            NumMs1Scans = metricsData.MS1Scans;
-            NumMs2Scans = metricsData.MS2Scans;
-            NumMs3Scans = metricsData.MS3Scans;
-            Ms1ScanRate = metricsData.MS1ScanRate;
-            Ms2ScanRate = metricsData.MS2ScanRate;
-            MeanDutyCycle = metricsData.MeanDutyCycle;
-            MeanTopN = metricsData.MeanTopN;
-            MedianPrecursorIntensity = metricsData.MedianPrecursorIntensity;
-            MedianSummedMs2Intensity = metricsData.MedianSummedMS2Intensity;
-            MedianMs1IsolationInterference = metricsData.MedianMs1IsolationInterference;
-            MedianMs2FractionConsumingTop80PercentTotalIntensity = metricsData.MedianMs2FractionConsumingTop80PercentTotalIntensity;
-            NumEsiStabilityFlags = metricsData.NumberOfEsiFlags;
-            QuantMeta = metricsData.QuantMeta;
-            GradientTime = metricsData.Gradient;
-            ColumnPeakCapacity = metricsData.PeakCapacity;
-            TimeBeforeFirstScanToExceedPoint1MaxIntensity = metricsData.TimeBeforeFirstScanToExceedPoint1MaxIntensity;
-            TimeAfterLastScanToExceedPoint1MaxIntensity = metricsData.TimeAfterLastScanToExceedPoint1MaxIntensity;
-            FractionOfRunAbovePoint1MaxIntensity = metricsData.FractionOfRunAbovePoint1MaxIntensity;
-            PeakShape.Asymmetry.P10 = metricsData.PeakShape.Asymmetry.P10;
-            PeakShape.Asymmetry.P50 = metricsData.PeakShape.Asymmetry.P50;
-            PeakShape.Width.P10 = metricsData.PeakShape.Width.P10;
-            PeakShape.Width.P50 = metricsData.PeakShape.Width.P50;
-            MedianSummedMs1Intensity = metricsData.MedianSummedMS1Intensity;
-            Ms1FillTimeDistribution = metricsData.Ms1FillTimeDistribution;
-            Ms2FillTimeDistribution = metricsData.Ms2FillTimeDistribution;
-            Ms3FillTimeDistribution = metricsData.Ms3FillTimeDistribution;
-        }
-    }
-    */
-    
 
     [Serializable]
     public class QcDataCollection

@@ -55,17 +55,14 @@ namespace RawTools.QC
             customParameters.AddNoteToXTandemParameters(type: "input", label: "residue, modification mass", value: parameters.QcParams.FixedMods);
 
             // add the variable modifications
+            /*
             var tempMods = from x in (new string[] { parameters.QcParams.NMod, parameters.QcParams.KMod, parameters.QcParams.XMod })
-                           where x != null
+                           where !String.IsNullOrEmpty(x)
                            select x;
-            
-            if (tempMods.Count() > 0)
-            {
-                string vmods = tempMods.Aggregate((i, j) => i + "," + j);
-                customParameters.AddNoteToXTandemParameters(type: "input", label: "residue, potential modification mass", value: vmods);
-            }
-            
+                           */
 
+            customParameters.AddNoteToXTandemParameters(type: "input", label: "residue, potential modification mass", value: parameters.QcParams.VariableMods);
+             
             // add the parent and fragment mass errors
             // we assume the parent scan is in the FTMS
             customParameters.AddNoteToXTandemParameters(type: "input", label: "spectrum, parent monoisotopic mass error plus", value: "10");
