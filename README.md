@@ -25,12 +25,11 @@ update if you use RawTools as part of a script. For help with this new interface
 and RawTools-generated chromatograms, and exploration of Thermo .raw files themselves. While the .raw file exploration has only been
 extensively tested in Windows, it should be compatible with Linux and Mac systems as well.
 - Some metrics have been renamed to align the naming schemes used in the various data files (parse, qc, metrics). Because of this, the 
-hiny app may not work anymore. It is unlikely the app will be updated as visualization can now be carried out locally.
+R Shiny app may not work anymore. The Shiny app will no longer be updated and will be taken offline in the near future, as visualization can now be carried out locally with RawToolsViz.
 - New metrics have been added to QC output, including the number of cycles across the average peak profile, median peptide hyperscore
 and cutoff hyperscore used for FDR.
 - IdentiPy is no longer supported as a search engine. While we don't have any issues with IdentiPy, we felt it was easiest to maintain
-support for only a single search engine. As X! Tandem does not have any external dependencies (i.e. Python), we felt it was the best choice
-for this particular case.
+support for only a single search engine. As X! Tandem does not have any external dependencies (i.e. Python), we felt it was the best choice for this particular case.
 - We will be working to update the wiki over the next week to reflect changes in v2.0.0.
 
 #### RawToolsViz parse visualization
