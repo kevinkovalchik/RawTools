@@ -4,9 +4,9 @@ All notable changes to RawTools will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [2.0.0]
 ### Changes
-- The command line interface is being changed to streamline workflows and align the CLI with the GUI. There will no longer be "modes" 
+- The command line interface has changed to streamline workflows and align the CLI with the GUI. There will no longer be "modes" 
 which you need to call before parameters. e.g. You do not need `parse` or `qc` after RawTools on the command line anymore. This means you 
 can perform parsing and qc at the same time. The interface will be slightly different in terms of what parameters are called, so be sure you
 check out `RawTools -help`.
@@ -15,6 +15,8 @@ check out `RawTools -help`.
 SearchCLI in the future to allow users to select a search engine of their choice.
 
 - The GUI is now intergrated and will be part of all releases. To use it just open RawToolsGUI in the RawTools directory.
+
+- Data visualization is now available as part of RawTools via RawToolsViz.exe
 
 ## [1.4.2] 2019-02-05
 ### Changes

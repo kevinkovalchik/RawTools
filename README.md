@@ -31,6 +31,7 @@ and cutoff hyperscore used for FDR.
 - IdentiPy is no longer supported as a search engine. While we don't have any issues with IdentiPy, we felt it was easiest to maintain
 support for only a single search engine. As X! Tandem does not have any external dependencies (i.e. Python), we felt it was the best choice
 for this particular case.
+- We will be working to update the wiki over the next week to reflect changes in v2.0.0.
 
 #### RawToolsViz parse visualization
 ![](https://github.com/kevinkovalchik/RawTools/blob/master/documentation/parseFullWindow.png)
