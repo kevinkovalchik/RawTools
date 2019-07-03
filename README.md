@@ -33,13 +33,13 @@ support for only a single search engine. As X! Tandem does not have any external
 for this particular case.
 
 #### RawToolsViz parse visualization
-![](https://github.com/kevinkovalchik/RawTools/blob/master/documentation/parseFullWindow.png)
+<img src="https://github.com/kevinkovalchik/RawTools/blob/master/documentation/parseFullWindow.png" width="50%">
 
 #### RawToolsViz qc visualization
-![](https://github.com/kevinkovalchik/RawTools/blob/master/documentation/qcFullWindow.png)
+<img src="https://github.com/kevinkovalchik/RawTools/blob/master/documentation/qcFullWindow.png" width="50%">
 
 #### RawToolsViz raw file visualization
-![](https://github.com/kevinkovalchik/RawTools/blob/master/documentation/rawFileFullWindow.png)
+<img src="https://github.com/kevinkovalchik/RawTools/blob/master/documentation/rawFileFullWindow.png" width="50%">
 
 <br>
 
