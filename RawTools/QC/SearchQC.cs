@@ -174,6 +174,20 @@ namespace RawTools.QC
                        where !x.Decoy & x.Hyperscore > topDecoyScore
                        select x;
 
+            searchMetrics.CutoffDecoyScore = topDecoyScore;
+            searchMetrics.NumPSMs = goodPsms.Count();
+
+            searchMetrics.MedianPeptideScore = (from x in goodPsms
+                                                select x.Hyperscore)
+                                                .ToArray().Percentile(50);
+
+            HashSet<string> seqs = new HashSet<string>();
+
+            foreach (var psm in goodPsms) seqs.Add(psm.Seq);
+
+            searchMetrics.NumUniquePeptides = seqs.Count;
+
+
             Console.WriteLine("Total hits: {0}", psms.Count());
             Console.WriteLine("Top decoy score: {0}", topDecoyScore);
             Console.WriteLine("Non-decoy hits: {0}", nonDecoys.Count());

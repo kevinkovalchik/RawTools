@@ -143,13 +143,19 @@ namespace RawTools.ArgumentParser
                 typeOf: typeof(bool),
                 helpText: "Write the instrument logs from all provided raw files to disk."));
 
+            parser.Add(new Argument(name: "ExampleCommands", shortArgument: "-commands", longArgument: "-examplecommands", required: false, typeOf: typeof(bool),
+                helpText: "Displays command line examples."));
+
+            parser.Add(new Argument(name: "ExampleModifications", shortArgument: "-modifications", longArgument: "-examplemods", required: false, typeOf: typeof(bool),
+                helpText: "Displays example peptide modifications."));
+
             parser.AddMutuallyExclusiveGroup(new List<string> { "RawFiles", "RawFileDirectory" });
             parser.AddMutuallyExclusiveGroup(new List<string> { "RawFiles", "QcDirectory" });
 
             parser.AddMutuallyDependenteGroup(new List<string> { "Quant", "LabelingReagent" });
             parser.AddMutuallyDependenteGroup(new List<string> { "XTandemDirectory", "FastaDB" });
 
-            parser.AddRequiredGroup(new List<string> { "RawFiles", "RawFileDirectory" });
+            //parser.AddRequiredGroup(new List<string> { "RawFiles", "RawFileDirectory" });
             
             parser.AddDependencyGroup("WriteMGF", new List<string> { "MgfMassCutoff" });
             //parser.AddDependencyGroup("XTandemDirectory", new List<string> { "FixedModifications",

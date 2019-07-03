@@ -28,6 +28,8 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ChromatogramViz));
             this.plotView1 = new OxyPlot.WindowsForms.PlotView();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -61,6 +63,7 @@
             this.logYScale = new System.Windows.Forms.RadioButton();
             this.linearYScale = new System.Windows.Forms.RadioButton();
             this.label3 = new System.Windows.Forms.Label();
+            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.menuStrip1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -78,6 +81,7 @@
             this.plotView1.Size = new System.Drawing.Size(976, 473);
             this.plotView1.TabIndex = 0;
             this.plotView1.Text = "plotView1";
+            this.toolTip1.SetToolTip(this.plotView1, resources.GetString("plotView1.ToolTip"));
             this.plotView1.ZoomHorizontalCursor = System.Windows.Forms.Cursors.SizeWE;
             this.plotView1.ZoomRectangleCursor = System.Windows.Forms.Cursors.SizeNWSE;
             this.plotView1.ZoomVerticalCursor = System.Windows.Forms.Cursors.SizeNS;
@@ -483,6 +487,7 @@
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.TextBox xAxisLabel;
         private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.ToolTip toolTip1;
     }
 }
 

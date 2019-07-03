@@ -542,7 +542,7 @@ namespace RawTools.Data.IO
 
                     foreach (var mod in vMods) f.Write("{0}_ModificationFrequency,", mod);
 
-                    f.Write("MedianMs1FillTime(ms),MedianMs2FillTime(ms),MedianMs3FillTime(ms),MedianPeakWidthAt10%H(s),MedianPeakWidthAt50%H(s),MedianAsymmetryAt10%H,MedianAsymmetryAt50%H," +
+                    f.Write("MedianPeptideScore,CutoffDecoyScore(0.05FDR),NumberOfPSMs,NumberOfUniquePeptides,MedianMs1FillTime(ms),MedianMs2FillTime(ms),MedianMs3FillTime(ms),MedianPeakWidthAt10%H(s),MedianPeakWidthAt50%H(s),MedianAsymmetryAt10%H,MedianAsymmetryAt50%H,MeanCyclesPerAveragePeak," +
                         "PeakCapacity,TimeBeforeFirstExceedanceOf10%MaxIntensity,TimeAfterLastExceedanceOf10%MaxIntensity,FractionOfRunAbove10%MaxIntensity,PsmChargeRatio3to2,PsmChargeRatio4to2,SearchParameters\n");
                 }
 
@@ -592,6 +592,11 @@ namespace RawTools.Data.IO
                         f.Write(searchMetrics.MissedCleavageRate + ",");
 
                         foreach (var frequency in vMods) f.Write(searchMetrics.ModificationFrequency.TryGetElseDefault(frequency) + ",");
+
+                        f.Write(searchMetrics.MedianPeptideScore + ",");
+                        f.Write(searchMetrics.CutoffDecoyScore + ",");
+                        f.Write(searchMetrics.NumPSMs + ",");
+                        f.Write(searchMetrics.NumUniquePeptides + ",");
                         
                         f.Write(rawMetrics.Ms1FillTimeDistribution.P50 + ",");
                         f.Write(rawMetrics.Ms2FillTimeDistribution.P50 + ",");
@@ -601,6 +606,7 @@ namespace RawTools.Data.IO
                         f.Write(rawMetrics.PeakShape.Width.P50 * 60 + ",");
                         f.Write(rawMetrics.PeakShape.Asymmetry.P10 + ",");
                         f.Write(rawMetrics.PeakShape.Asymmetry.P50 + ",");
+                        f.Write(rawMetrics.PeakShape.Width.P10 * 60 / rawMetrics.MeanDutyCycle + ",");
                         f.Write(rawMetrics.PeakCapacity + ",");
                         f.Write(rawMetrics.TimeBeforeFirstScanToExceedPoint1MaxIntensity + ",");
                         f.Write(rawMetrics.TimeAfterLastScanToExceedPoint1MaxIntensity + ",");

@@ -381,7 +381,11 @@ namespace RawToolsViz
                 SaveFileDialog saveParameters = new SaveFileDialog();
                 saveParameters.Filter = "SVG files|*.svg";
                 saveParameters.Title = "Export figure as .svg";
-                saveParameters.ShowDialog();
+
+                if (saveParameters.ShowDialog() == DialogResult.Cancel)
+                {
+                    return;
+                }
 
                 using (var stream = File.Create(saveParameters.FileName))
                 {
@@ -398,7 +402,11 @@ namespace RawToolsViz
                 SaveFileDialog saveParameters = new SaveFileDialog();
                 saveParameters.Filter = "PDF files|*.pdf";
                 saveParameters.Title = "Export figure as .pdf";
-                saveParameters.ShowDialog();
+
+                if (saveParameters.ShowDialog() == DialogResult.Cancel)
+                {
+                    return;
+                }
 
                 using (var stream = File.Create(saveParameters.FileName))
                 {
@@ -415,8 +423,11 @@ namespace RawToolsViz
                 SaveFileDialog saveParameters = new SaveFileDialog();
                 saveParameters.Filter = "PNG files|*.pdf";
                 saveParameters.Title = "Export figure as .pdf";
-                saveParameters.ShowDialog();
-
+                
+                if (saveParameters.ShowDialog() == DialogResult.Cancel)
+                {
+                    return;
+                }
                 using (var stream = File.Create(saveParameters.FileName))
                 {
                     var exporter = new OxyPlot.WindowsForms.PngExporter

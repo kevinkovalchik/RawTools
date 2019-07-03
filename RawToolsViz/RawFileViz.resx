@@ -120,6 +120,27 @@
   <metadata name="menuStrip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>17, 17</value>
   </metadata>
+  <metadata name="toolTip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>152, 17</value>
+  </metadata>
+  <data name="plotViewMassSpectrum.ToolTip" xml:space="preserve">
+    <value>Controls:
+LeftMB - view mass and intensity of nearest peak
+RightMB - hold and drag to pan
+MiddleMB - hold and drag to zoom
+ctrl + RightMB - hold and drag to zoom
+ctrl + RightMB (double click) - reset zoom</value>
+  </data>
+  <data name="plotViewChromatogram.ToolTip" xml:space="preserve">
+    <value>Controls:
+LeftMB - click to select scan
+LeftMB - hold and drag "scan line" to scan through spectra
+RightMB - hold and drag to pan
+MiddleMB - hold and drag to zoom
+ctrl + RightMB - hold and drag to zoom
+ctrl + RightMB (double click) - reset zoom
+</value>
+  </data>
   <metadata name="$this.TrayHeight" type="System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>37</value>
   </metadata>

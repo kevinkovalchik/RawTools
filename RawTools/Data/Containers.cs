@@ -408,6 +408,10 @@ namespace RawTools.Data.Containers
         public double ChargeRatio3to2, ChargeRatio4to2;
         public double MedianMassDrift;
         public string SearchParameters = "None";
+        public double MedianPeptideScore;
+        public double CutoffDecoyScore;
+        public int NumPSMs;
+        public int NumUniquePeptides;
         public SearchData SearchData;
         public SerializableDictionary<string, double> ModificationFrequency;
 

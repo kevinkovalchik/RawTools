@@ -28,6 +28,8 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(RawFileViz));
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -64,10 +66,6 @@
             this.yMinAuto = new System.Windows.Forms.RadioButton();
             this.yAxisMax = new System.Windows.Forms.Label();
             this.yAxisMin = new System.Windows.Forms.Label();
-            this.logYScaleBase = new System.Windows.Forms.TextBox();
-            this.logYScale = new System.Windows.Forms.RadioButton();
-            this.linearYScale = new System.Windows.Forms.RadioButton();
-            this.label3 = new System.Windows.Forms.Label();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.plotAreaTableLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
             this.scanFilterTextBox = new System.Windows.Forms.TextBox();
@@ -93,6 +91,7 @@
             this.ChroTICRadioButton = new System.Windows.Forms.RadioButton();
             this.ChroMsLevelComboBox = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
+            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.menuStrip1.SuspendLayout();
             this.topTableLayoutPanel.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -249,6 +248,7 @@
             this.nextScanButton.Size = new System.Drawing.Size(32, 26);
             this.nextScanButton.TabIndex = 11;
             this.nextScanButton.Text = ">";
+            this.toolTip1.SetToolTip(this.nextScanButton, "Next scan");
             this.nextScanButton.UseVisualStyleBackColor = true;
             this.nextScanButton.Click += new System.EventHandler(this.nextScanButton_Click);
             // 
@@ -263,6 +263,7 @@
             this.previousScanButton.TabIndex = 12;
             this.previousScanButton.Text = "<";
             this.previousScanButton.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.toolTip1.SetToolTip(this.previousScanButton, "Previous scan");
             this.previousScanButton.UseVisualStyleBackColor = true;
             this.previousScanButton.Click += new System.EventHandler(this.previousScanButton_Click);
             // 
@@ -274,6 +275,7 @@
             this.scanNumber.Name = "scanNumber";
             this.scanNumber.Size = new System.Drawing.Size(68, 22);
             this.scanNumber.TabIndex = 8;
+            this.toolTip1.SetToolTip(this.scanNumber, "Selected scan");
             this.scanNumber.TextChanged += new System.EventHandler(this.scanNumber_TextChanged);
             // 
             // yAxisLabel
@@ -323,10 +325,6 @@
             this.panel2.Controls.Add(this.panel3);
             this.panel2.Controls.Add(this.yAxisMax);
             this.panel2.Controls.Add(this.yAxisMin);
-            this.panel2.Controls.Add(this.logYScaleBase);
-            this.panel2.Controls.Add(this.logYScale);
-            this.panel2.Controls.Add(this.linearYScale);
-            this.panel2.Controls.Add(this.label3);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel2.Location = new System.Drawing.Point(3, 650);
             this.panel2.Name = "panel2";
@@ -341,14 +339,14 @@
             "PNG",
             "SVG",
             "PDF"});
-            this.exportAsComboBox.Location = new System.Drawing.Point(617, 11);
+            this.exportAsComboBox.Location = new System.Drawing.Point(422, 15);
             this.exportAsComboBox.Name = "exportAsComboBox";
             this.exportAsComboBox.Size = new System.Drawing.Size(171, 24);
             this.exportAsComboBox.TabIndex = 21;
             // 
             // exportHeightValue
             // 
-            this.exportHeightValue.Location = new System.Drawing.Point(736, 50);
+            this.exportHeightValue.Location = new System.Drawing.Point(541, 54);
             this.exportHeightValue.Name = "exportHeightValue";
             this.exportHeightValue.Size = new System.Drawing.Size(53, 22);
             this.exportHeightValue.TabIndex = 20;
@@ -357,7 +355,7 @@
             // 
             // exportWidthValue
             // 
-            this.exportWidthValue.Location = new System.Drawing.Point(617, 50);
+            this.exportWidthValue.Location = new System.Drawing.Point(422, 54);
             this.exportWidthValue.Name = "exportWidthValue";
             this.exportWidthValue.Size = new System.Drawing.Size(54, 22);
             this.exportWidthValue.TabIndex = 19;
@@ -367,7 +365,7 @@
             // exportHeight
             // 
             this.exportHeight.AutoSize = true;
-            this.exportHeight.Location = new System.Drawing.Point(677, 50);
+            this.exportHeight.Location = new System.Drawing.Point(482, 54);
             this.exportHeight.Name = "exportHeight";
             this.exportHeight.Size = new System.Drawing.Size(53, 17);
             this.exportHeight.TabIndex = 18;
@@ -376,7 +374,7 @@
             // exportWidth
             // 
             this.exportWidth.AutoSize = true;
-            this.exportWidth.Location = new System.Drawing.Point(564, 52);
+            this.exportWidth.Location = new System.Drawing.Point(369, 56);
             this.exportWidth.Name = "exportWidth";
             this.exportWidth.Size = new System.Drawing.Size(48, 17);
             this.exportWidth.TabIndex = 17;
@@ -385,7 +383,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(541, 13);
+            this.label4.Location = new System.Drawing.Point(346, 17);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(71, 17);
             this.label4.TabIndex = 13;
@@ -393,7 +391,7 @@
             // 
             // exportButton
             // 
-            this.exportButton.Location = new System.Drawing.Point(795, 8);
+            this.exportButton.Location = new System.Drawing.Point(600, 12);
             this.exportButton.Name = "exportButton";
             this.exportButton.Size = new System.Drawing.Size(155, 66);
             this.exportButton.TabIndex = 12;
@@ -406,7 +404,7 @@
             this.panel4.Controls.Add(this.yMaxFixedValue);
             this.panel4.Controls.Add(this.yMaxFixed);
             this.panel4.Controls.Add(this.yMaxAuto);
-            this.panel4.Location = new System.Drawing.Point(264, 8);
+            this.panel4.Location = new System.Drawing.Point(69, 12);
             this.panel4.Name = "panel4";
             this.panel4.Size = new System.Drawing.Size(248, 30);
             this.panel4.TabIndex = 11;
@@ -450,7 +448,7 @@
             this.panel3.Controls.Add(this.yMinFixedValue);
             this.panel3.Controls.Add(this.yMinFixed);
             this.panel3.Controls.Add(this.yMinAuto);
-            this.panel3.Location = new System.Drawing.Point(264, 44);
+            this.panel3.Location = new System.Drawing.Point(69, 48);
             this.panel3.Name = "panel3";
             this.panel3.Size = new System.Drawing.Size(248, 30);
             this.panel3.TabIndex = 10;
@@ -492,7 +490,7 @@
             // yAxisMax
             // 
             this.yAxisMax.AutoSize = true;
-            this.yAxisMax.Location = new System.Drawing.Point(209, 13);
+            this.yAxisMax.Location = new System.Drawing.Point(14, 17);
             this.yAxisMax.Name = "yAxisMax";
             this.yAxisMax.Size = new System.Drawing.Size(49, 17);
             this.yAxisMax.TabIndex = 9;
@@ -501,53 +499,11 @@
             // yAxisMin
             // 
             this.yAxisMin.AutoSize = true;
-            this.yAxisMin.Location = new System.Drawing.Point(212, 48);
+            this.yAxisMin.Location = new System.Drawing.Point(17, 52);
             this.yAxisMin.Name = "yAxisMin";
             this.yAxisMin.Size = new System.Drawing.Size(46, 17);
             this.yAxisMin.TabIndex = 8;
             this.yAxisMin.Text = "y-min:";
-            // 
-            // logYScaleBase
-            // 
-            this.logYScaleBase.Enabled = false;
-            this.logYScaleBase.Location = new System.Drawing.Point(155, 46);
-            this.logYScaleBase.Name = "logYScaleBase";
-            this.logYScaleBase.Size = new System.Drawing.Size(33, 22);
-            this.logYScaleBase.TabIndex = 7;
-            this.logYScaleBase.Text = "10";
-            this.logYScaleBase.TextChanged += new System.EventHandler(this.logYScaleBase_TextChanged);
-            // 
-            // logYScale
-            // 
-            this.logYScale.AutoSize = true;
-            this.logYScale.Location = new System.Drawing.Point(63, 46);
-            this.logYScale.Name = "logYScale";
-            this.logYScale.Size = new System.Drawing.Size(92, 21);
-            this.logYScale.TabIndex = 6;
-            this.logYScale.Text = "Log base:";
-            this.logYScale.UseVisualStyleBackColor = true;
-            // 
-            // linearYScale
-            // 
-            this.linearYScale.AutoSize = true;
-            this.linearYScale.Checked = true;
-            this.linearYScale.Location = new System.Drawing.Point(63, 11);
-            this.linearYScale.Name = "linearYScale";
-            this.linearYScale.Size = new System.Drawing.Size(69, 21);
-            this.linearYScale.TabIndex = 5;
-            this.linearYScale.TabStop = true;
-            this.linearYScale.Text = "Linear";
-            this.linearYScale.UseVisualStyleBackColor = true;
-            this.linearYScale.CheckedChanged += new System.EventHandler(this.linearYScale_CheckedChanged);
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(9, 13);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(48, 17);
-            this.label3.TabIndex = 4;
-            this.label3.Text = "y-axis:";
             // 
             // splitContainer1
             // 
@@ -606,6 +562,7 @@
             this.plotViewMassSpectrum.Size = new System.Drawing.Size(771, 395);
             this.plotViewMassSpectrum.TabIndex = 1;
             this.plotViewMassSpectrum.Text = "plotView1";
+            this.toolTip1.SetToolTip(this.plotViewMassSpectrum, resources.GetString("plotViewMassSpectrum.ToolTip"));
             this.plotViewMassSpectrum.ZoomHorizontalCursor = System.Windows.Forms.Cursors.SizeWE;
             this.plotViewMassSpectrum.ZoomRectangleCursor = System.Windows.Forms.Cursors.SizeNWSE;
             this.plotViewMassSpectrum.ZoomVerticalCursor = System.Windows.Forms.Cursors.SizeNS;
@@ -696,6 +653,7 @@
             this.plotViewChromatogram.Size = new System.Drawing.Size(933, 138);
             this.plotViewChromatogram.TabIndex = 2;
             this.plotViewChromatogram.Text = "plotView1";
+            this.toolTip1.SetToolTip(this.plotViewChromatogram, resources.GetString("plotViewChromatogram.ToolTip"));
             this.plotViewChromatogram.ZoomHorizontalCursor = System.Windows.Forms.Cursors.SizeWE;
             this.plotViewChromatogram.ZoomRectangleCursor = System.Windows.Forms.Cursors.SizeNWSE;
             this.plotViewChromatogram.ZoomVerticalCursor = System.Windows.Forms.Cursors.SizeNS;
@@ -909,10 +867,6 @@
         private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
         private System.Windows.Forms.TableLayoutPanel topTableLayoutPanel;
         private System.Windows.Forms.Panel panel2;
-        private System.Windows.Forms.TextBox logYScaleBase;
-        private System.Windows.Forms.RadioButton logYScale;
-        private System.Windows.Forms.RadioButton linearYScale;
-        private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Panel panel4;
         private System.Windows.Forms.TextBox yMaxFixedValue;
         private System.Windows.Forms.RadioButton yMaxFixed;
@@ -968,6 +922,7 @@
         private OxyPlot.WindowsForms.PlotView plotViewChromatogram;
         private System.Windows.Forms.RadioButton chroMassTolmDa;
         private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem1;
+        private System.Windows.Forms.ToolTip toolTip1;
     }
 }
 

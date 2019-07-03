@@ -75,6 +75,16 @@ namespace RawTools
 
         static int Run(Dictionary<string, object> opts)
         {
+            if ((bool)opts["ExampleCommands"] == true)
+            {
+                Examples.CommandLineUsage();
+            }
+
+            if ((bool)opts["ExampleModifications"] == true)
+            {
+                Examples.ExampleMods();
+            }
+
             List<string> files = new List<string>();
             QcDataCollection qcDataCollection = new QcDataCollection();
 
@@ -122,7 +132,7 @@ namespace RawTools
                 Log.Information("Files to be processed, provided as list: {0}", String.Join(" ", files));
             }
 
-            else // did the user give us a directory?
+            else if (!String.IsNullOrEmpty(parameters.RawFileDirectory)) // did the user give us a directory?
             {
                 // if QC is being done, use the QC method snf get the qc data collection at the same time
                 if (parameters.QcParams.QcDirectory != null)
@@ -151,7 +161,12 @@ namespace RawTools
                 files.EnsureAbsolutePaths();
 
                 Log.Information("Files to be processed, provided as directory: {0}", String.Join(" ", files));
-
+            }
+            else
+            {
+                Console.WriteLine("ERROR: At least one of the following arguments is required: -f, -d");
+                Log.Error("No raw files or directory specified.");
+                return 1;
             }
 
             if (parameters.ParseParams.Quant)

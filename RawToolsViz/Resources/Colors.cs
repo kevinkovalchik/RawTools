@@ -13,7 +13,7 @@ namespace RawToolsViz.Resources
     {
         public static void SetDefaultColorsToColorBrewer8ClassSet2(this PlotModel model)
         {
-            model.DefaultColors = ColorBrewer8ClassSet2(155);
+            model.DefaultColors = ColorBrewer8ClassSet2(200);
         }
 
         public static List<OxyColor> ColorBrewer8ClassSet2(byte alpha)

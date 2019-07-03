@@ -116,7 +116,7 @@ namespace RawToolsViz
             }
 
             var t = new Thread(() => new RawFileViz(openRawData.FileName).ShowDialog());
-            //t.SetApartmentState(ApartmentState.STA);
+            t.SetApartmentState(ApartmentState.STA);
             t.Start();
         }
     }

@@ -91,12 +91,17 @@ namespace RawToolsViz
             InitializeChromatogramPlot();
 
             ChroMsLevelComboBox.SelectedIndex = 0;
-            
+
+            initializeMassSpecData();
+
+            initializeMassSpectrum();
+
             scanNumber.Text = FirstScan.ToString();
             
             y = 0;
 
             x = 1;
+
 
             #endregion
 
@@ -390,11 +395,75 @@ namespace RawToolsViz
             ChromatogramData = RawData.GetChromatogramDataEx(allSettings, -1, -1, tolerance);
         }
 
+        private void initializeMassSpectrum()
+        {
+            int y = 0;
+            int x = 1;
+            
+            var spectrumModel = new PlotModel();
+
+            spectrumModel.Axes.Add(new LinearAxis { Position = AxisPosition.Left });
+            spectrumModel.Axes.Add(new LinearAxis { Position = AxisPosition.Bottom });
+
+            for (int i = 0; i < spectrumModel.Axes.Count; i++)
+            {
+                spectrumModel.Axes[i].MajorGridlineStyle = LineStyle.Solid;
+            }
+
+            var scatter = new LineSeries();
+            scatter.MarkerSize = 0;
+            scatter.StrokeThickness = 1;
+            scatter.Color = OxyColors.Black;
+
+            foreach (Ion ion in this.spectrum.Ions)
+            {
+                var basePoint = new DataPoint(ion.Mass, 0);
+                var topPoint = new DataPoint(ion.Mass, ion.Intensity);
+                scatter.Points.Add(basePoint);
+                scatter.Points.Add(topPoint);
+                scatter.Points.Add(basePoint);
+            }
+
+            spectrumModel.Series.Add(scatter);
+            
+            for (int i = 0; i < spectrumModel.Series.Count; i++)
+            {
+                spectrumModel.Series[i].TrackerFormatString = "{0}\n{1}: {2:0.###}\n{3}: {4}\nFile: {RawFile}";
+            }
+
+            if (yMinFixed.Checked)
+            {
+                spectrumModel.Axes[y].Minimum = Convert.ToDouble(yMinFixedValue.Text);
+            }
+            else
+            {
+                spectrumModel.Axes[y].Minimum = 0;
+            }
+
+            if (yMaxFixed.Checked)
+            {
+                spectrumModel.Axes[y].Maximum = Convert.ToDouble(yMaxFixedValue.Text);
+            }
+            else
+            {
+                spectrumModel.Axes[y].MaximumPadding = 0.05;
+            }
+            
+            if (!String.IsNullOrEmpty(xAxisLabel.Text)) spectrumModel.Axes[x].Title = xAxisLabel.Text;
+            if (!String.IsNullOrEmpty(yAxisLabel.Text)) spectrumModel.Axes[y].Title = yAxisLabel.Text;
+            spectrumModel.Axes[x].AbsoluteMaximum = this.spectrum.MaximumMass;
+            spectrumModel.Axes[x].AbsoluteMinimum = this.spectrum.MinimumMass;
+            spectrumModel.Axes[y].AbsoluteMinimum = 0;
+            spectrumModel.Axes[y].AbsoluteMaximum = this.spectrum.MaximumIntensity * 1.5;
+
+            this.plotViewMassSpectrum.Model = spectrumModel;
+        }
+
         private void updateMassSpectrum()
         {
             int y = 0;
             int x = 1;
-
+            /*
             if ((yMinFixed.Checked && yMinFixedValue.BackColor == Color.Red)
                 || yMaxFixed.Checked && yMaxFixedValue.BackColor == Color.Red
                 || scanNumber.BackColor == Color.Red)
@@ -408,17 +477,9 @@ namespace RawToolsViz
             {
                 return;
             }
-               
-            var myModel = new PlotModel();
-            
-            if (logYScale.Checked)
-            {
-                myModel.Axes.Add(new LogarithmicAxis { Position = AxisPosition.Left, Base = Convert.ToDouble(logYScaleBase.Text) });
-            }
-            else
-            {
-                myModel.Axes.Add(new LinearAxis { Position = AxisPosition.Left });
-            }
+            */
+
+            plotViewMassSpectrum.Model.Series.Clear();
 
             var scatter = new LineSeries();
             scatter.MarkerSize = 0;
@@ -434,81 +495,49 @@ namespace RawToolsViz
                 scatter.Points.Add(basePoint);
             }
 
-            myModel.Series.Add(scatter);
+            plotViewMassSpectrum.Model.Series.Add(scatter);
 
-            myModel.Axes.Add(new LinearAxis { Position = AxisPosition.Bottom });
-
-            //myModel.Axes[x].AxisChanged += (sender, e) => autoAdjustYScale(myModel.Axes[x], myModel.Axes[y]);
-
-            for (int i = 0; i < myModel.Axes.Count; i++)
+            for (int i = 0; i < plotViewMassSpectrum.Model.Series.Count; i++)
             {
-                myModel.Axes[i].MajorGridlineStyle = LineStyle.Solid;
-            }
-
-            for (int i = 0; i < myModel.Series.Count; i++)
-            {
-                myModel.Series[i].TrackerFormatString = "{0}\n{1}: {2:0.###}\n{3}: {4}\nFile: {RawFile}";
+                plotViewMassSpectrum.Model.Series[i].TrackerFormatString = "{0}\n{1}: {2:0.###}\n{3}: {4}\nFile: {RawFile}";
             }
 
             if (yMinFixed.Checked)
             {
-                myModel.Axes[y].Minimum = Convert.ToDouble(yMinFixedValue.Text);
+                plotViewMassSpectrum.Model.Axes[y].Minimum = Convert.ToDouble(yMinFixedValue.Text);
             }
             else
             {
-                myModel.Axes[y].Minimum = 0;
+                plotViewMassSpectrum.Model.Axes[y].Minimum = 0;
             }
 
             if (yMaxFixed.Checked)
             {
-                myModel.Axes[y].Maximum = Convert.ToDouble(yMaxFixedValue.Text);
+                plotViewMassSpectrum.Model.Axes[y].Maximum = Convert.ToDouble(yMaxFixedValue.Text);
             }
             else
             {
-                myModel.Axes[y].MaximumPadding = 0.05;
+                plotViewMassSpectrum.Model.Axes[y].MaximumPadding = 0.05;
             }
 
             //myModel.Axes[y].IsZoomEnabled = false;
 
-            if (!String.IsNullOrEmpty(xAxisLabel.Text)) myModel.Axes[x].Title = xAxisLabel.Text;
-            if (!String.IsNullOrEmpty(yAxisLabel.Text)) myModel.Axes[y].Title = yAxisLabel.Text;
-            myModel.Axes[x].AbsoluteMaximum = spectrum.MaximumMass;
-            myModel.Axes[x].AbsoluteMinimum = spectrum.MinimumMass;
-            myModel.Axes[y].AbsoluteMinimum = 0;
-            myModel.Axes[y].AbsoluteMaximum = spectrum.MaximumIntensity * 1.5;
+            if (!String.IsNullOrEmpty(xAxisLabel.Text)) plotViewMassSpectrum.Model.Axes[x].Title = xAxisLabel.Text;
+            if (!String.IsNullOrEmpty(yAxisLabel.Text)) plotViewMassSpectrum.Model.Axes[y].Title = yAxisLabel.Text;
+            plotViewMassSpectrum.Model.Axes[x].AbsoluteMaximum = spectrum.MaximumMass;
+            //plotViewMassSpectrum.Model.Axes[x].Maximum = spectrum.MaximumMass;
+            plotViewMassSpectrum.Model.Axes[x].AbsoluteMinimum = spectrum.MinimumMass;
+            //plotViewMassSpectrum.Model.Axes[x].Minimum = spectrum.MinimumMass;
+            plotViewMassSpectrum.Model.Axes[y].AbsoluteMinimum = 0;
+            //plotViewMassSpectrum.Model.Axes[y].Minimum = 0;
+            plotViewMassSpectrum.Model.Axes[y].AbsoluteMaximum = spectrum.MaximumIntensity * 1.5;
+            //plotViewMassSpectrum.Model.Axes[y].Maximum = spectrum.MaximumIntensity * 1.5;
 
-            this.plotViewMassSpectrum.Model = myModel;
+            plotViewMassSpectrum.Model.ZoomAllAxes(1e-6);
+
+            plotViewMassSpectrum.Model.InvalidatePlot(true);
         }
         
-        private void linearYScale_CheckedChanged(object sender, EventArgs e)
-        {
-            if (linearYScale.Checked)
-            {
-                logYScaleBase.Enabled = false;
-            }
-            else
-            {
-                logYScaleBase.Enabled = true;
-            }
-            updateMassSpectrum();
-        }
-
-        private void logYScaleBase_TextChanged(object sender, EventArgs e)
-        {
-            double i;
-            bool success = double.TryParse(Convert.ToString(logYScaleBase.Text), out i);
-
-            if (!success || i <= 1 || logYScaleBase.Text == "")
-            {
-                logYScaleBase.BackColor = Color.Red;
-            }
-            else
-            {
-                logYScaleBase.BackColor = Color.White;
-                updateMassSpectrum();
-            }
-        }
-
         private void yMinAuto_CheckedChanged(object sender, EventArgs e)
         {
             if (yMinAuto.Checked)
@@ -642,7 +671,11 @@ namespace RawToolsViz
                 SaveFileDialog saveParameters = new SaveFileDialog();
                 saveParameters.Filter = ".svg files|*.svg";
                 saveParameters.Title = "Export figure as .svg";
-                saveParameters.ShowDialog();
+
+                if (saveParameters.ShowDialog() == DialogResult.Cancel)
+                {
+                    return;
+                }
 
                 using (var stream = File.Create(saveParameters.FileName))
                 {
@@ -656,7 +689,11 @@ namespace RawToolsViz
                 SaveFileDialog saveParameters = new SaveFileDialog();
                 saveParameters.Filter = ".pdf files|*.pdf";
                 saveParameters.Title = "Export figure as .pdf";
-                saveParameters.ShowDialog();
+
+                if (saveParameters.ShowDialog() == DialogResult.Cancel)
+                {
+                    return;
+                }
 
                 using (var stream = File.Create(saveParameters.FileName))
                 {
@@ -668,9 +705,13 @@ namespace RawToolsViz
             else if (exportAsComboBox.Text == "PNG")
             {
                 SaveFileDialog saveParameters = new SaveFileDialog();
-                saveParameters.Filter = "PNG files|*.pdf";
-                saveParameters.Title = "Export figure as .pdf";
-                saveParameters.ShowDialog();
+                saveParameters.Filter = "PNG files|*.png";
+                saveParameters.Title = "Export figure as .png";
+
+                if (saveParameters.ShowDialog() == DialogResult.Cancel)
+                {
+                    return;
+                }
 
                 using (var stream = File.Create(saveParameters.FileName))
                 {
@@ -732,6 +773,20 @@ namespace RawToolsViz
             if (success)
             {
                 scanNumber.Text = (scan - 1).ToString();
+            }
+        }
+
+        private void initializeMassSpecData()
+        {
+            var massAnalyzer = RawData.GetScanEventForScanNumber(FirstScan).MassAnalyzer;
+
+            if (massAnalyzer == MassAnalyzerType.MassAnalyzerFTMS)
+            {
+                spectrum = new Spectrum(RawData.GetCentroidStream(FirstScan, false));
+            }
+            else
+            {
+                spectrum = new Spectrum(RawData.GetSegmentedScanFromScanNumber(FirstScan, null));
             }
         }
 
