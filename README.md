@@ -46,19 +46,14 @@ for this particular case.
 
 ### Notable news
 
-* RawTools 2.0.0 ig [here!](https://github.com/kevinkovalchik/RawTools/releases/tag/2.0.0)
-
-* Thanks to a lot of behind the scenes work, the file downloads of plots from the Shiny app are now working! [2018-12-06]  
-
-* The R Shiny application now has greater support for plot customisation. We have also added the ability to highlight points on QC plots. Lastly, we have added a new 'multi-plot' page where multiple scan matrix files can be input at once and plots for all files will be generated alongside one another in the same space. The latest version is live on the web and available here.  [2018-11-29]
-
-* The Shiny application has been updated to allow downloading of pdf versions of the created plots. These images can be imported to programs like Adobe Illustrator and will be treated as vector images. We have also added the ability to mouseover data points to see values, as well as corrected some bugs. We have also added the ability to add mean and median lines to the QC plots. The latest Shiny web interface is available [here](https://rawtoolsqcdv.bcgsc.ca/). [2018-11-07] 
-
-* RawTools now offers support for X! Tandem in as a search engine to facilitate calculation of identification-related metrics. IdentiPy remains available and the user may decide which search engine they wish to use. We are working on updating the help documentation to reflect this addition. [2018-09-24]
+* RawTools 2.0.0 is [here!](https://github.com/kevinkovalchik/RawTools/releases/tag/2.0.0)
 
 <br>
 
 ### RawTools R Shiny page
+
+* NOTE: The [newest version of RawTools](https://github.com/kevinkovalchik/RawTools/releases/tag/2.0.0) contains its own tools for
+data visualization. As such, it is unlikely that we will be continuing support for the R Shiny web application.
 
 If you are just here looking for the web application page for visualizing your quality control results: [RawTools R Shiny web application](https://rawtoolsqcdv.bcgsc.ca/). You can also download the application [from here](https://github.com/kevinkovalchik/RawTools/tree/master/documentation/manuscript/RawTools_RShiny_Application) for local use on your own machine.
 
