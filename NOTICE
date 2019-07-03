@@ -29,8 +29,8 @@
 
  Serilog is distributed under the Apache 2.0 license, original license
  file to be found within the accompanying file named SerilogLicense.
-
- CommandLineParser is distributed under the MIT license, original
- license to be found within the accompanying file named
- CommandLineParserLicense.
+ 
+ Oxyplot is distributed under the MIT license, original
+ license can be found at:
+ https://github.com/oxyplot/oxyplot/blob/develop/LICENSE
 ---------------------------------------------------------------------------
