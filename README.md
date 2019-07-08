@@ -14,15 +14,13 @@ If you need help installing and using RawTools, please visit the wiki page appro
 
 <br>
 
-### Erm... that's embarrassing...
+### RawTools 2.0.2 released
 
-Well, when building the release version of RawToolsViz I basically forgot to check a button which makes the whole thing not crash. And
-then, when testing it, I was accidentally running the debug version! So for anyone who downloaded 2.0.0 and tried to run RawToolsViz, sorry
-about that. This is now fixed in 2.0.1
+- 2.0.0 and 2.0.1 contained a bug which crashed the command line help in Linux and MacOS. This is now fixed.
 
 ### RawTools 2.0.1 released
 
-- 2.0.0 contained a fatal bug which prevented RawToolsViz from running (see "Erm... that's embarrassing" above). This is now fixed!
+- 2.0.0 contained a fatal bug which prevented RawToolsViz from running. This is now fixed!
 - Note that the .raw file viewer is working on Linux systems, but the QC and parse viewers are having some issues on Linux. We will try to
 address this in the next few weeks.
 
