@@ -78,11 +78,13 @@ namespace RawTools
             if ((bool)opts["ExampleCommands"] == true)
             {
                 Examples.CommandLineUsage();
+                Environment.Exit(0);
             }
 
             if ((bool)opts["ExampleModifications"] == true)
             {
                 Examples.ExampleMods();
+                Environment.Exit(0);
             }
 
             List<string> files = new List<string>();

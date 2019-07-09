@@ -119,13 +119,13 @@ namespace RawTools.ArgumentParser
             parser.Add(new Argument(name: "FixedModifications", shortArgument: "-fmods", longArgument: "-fixedmods", required: false,
                 typeOf: typeof(string),
                 helpText: "Fixed modifications to pass to the search, if desired. Use mass@aminoacid1,mass@aminoacid2 format. " +
-                "It is important that the values are separated with a comma and not spaces. Invoke \">RawTools qc -e\" " +
+                "It is important that the values are separated with a comma and not spaces. Invoke \">RawTools -modifications\" " +
                 "to see examples of some common modifications"));
 
             parser.Add(new Argument(name: "VariableModifications", shortArgument: "-vmods", longArgument: "-variablemods", required: false,
                 typeOf: typeof(string),
                 helpText: "Variable modifications to pass to the search, if desired. Use mass@aminoacid1,mass@aminoacid2 format. " +
-                "It is important that the values are separated with a comma and not spaces. Invoke \">RawTools qc -e\" " +
+                "It is important that the values are separated with a comma and not spaces. Invoke \">RawTools -modifications\" " +
                 "to see examples of some common modifications"));
 
             parser.Add(new Argument(name: "XTandemDirectory", shortArgument: "-X", longArgument: "-xtandem", required: false,
