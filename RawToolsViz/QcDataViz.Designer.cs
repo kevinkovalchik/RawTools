@@ -226,8 +226,10 @@
             // 
             // axisTypeComboBox
             // 
+            this.axisTypeComboBox.DropDownHeight = 1000;
             this.axisTypeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.axisTypeComboBox.FormattingEnabled = true;
+            this.axisTypeComboBox.IntegralHeight = false;
             this.axisTypeComboBox.Items.AddRange(new object[] {
             "Sequential",
             "Date-Time"});
@@ -494,7 +496,7 @@
             this.checkedListBox1.FormattingEnabled = true;
             this.checkedListBox1.Location = new System.Drawing.Point(491, 8);
             this.checkedListBox1.Name = "checkedListBox1";
-            this.checkedListBox1.Size = new System.Drawing.Size(463, 106);
+            this.checkedListBox1.Size = new System.Drawing.Size(463, 123);
             this.checkedListBox1.TabIndex = 14;
             this.checkedListBox1.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.checkedListBox1_ItemCheck);
             // 
