@@ -30,7 +30,6 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ParseDataViz));
-            PresentationControls.CheckBoxProperties checkBoxProperties2 = new PresentationControls.CheckBoxProperties();
             this.plotView1 = new OxyPlot.WindowsForms.PlotView();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -42,7 +41,6 @@
             this.label6 = new System.Windows.Forms.Label();
             this.xAxisLabel = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
-            this.checkBoxComboBox1 = new PresentationControls.CheckBoxComboBox();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.axisTypeComboBox = new System.Windows.Forms.ComboBox();
@@ -69,6 +67,7 @@
             this.linearYScale = new System.Windows.Forms.RadioButton();
             this.label3 = new System.Windows.Forms.Label();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.checkedListBox1 = new System.Windows.Forms.CheckedListBox();
             this.menuStrip1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -80,10 +79,10 @@
             // plotView1
             // 
             this.plotView1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.plotView1.Location = new System.Drawing.Point(3, 93);
+            this.plotView1.Location = new System.Drawing.Point(3, 123);
             this.plotView1.Name = "plotView1";
             this.plotView1.PanCursor = System.Windows.Forms.Cursors.Hand;
-            this.plotView1.Size = new System.Drawing.Size(976, 433);
+            this.plotView1.Size = new System.Drawing.Size(976, 403);
             this.plotView1.TabIndex = 0;
             this.plotView1.Text = "plotView1";
             this.toolTip1.SetToolTip(this.plotView1, resources.GetString("plotView1.ToolTip"));
@@ -135,7 +134,7 @@
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 28);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 3;
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 90F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 120F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 90F));
             this.tableLayoutPanel1.Size = new System.Drawing.Size(982, 619);
@@ -143,11 +142,11 @@
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.checkedListBox1);
             this.panel1.Controls.Add(this.yAxisLabel);
             this.panel1.Controls.Add(this.label6);
             this.panel1.Controls.Add(this.xAxisLabel);
             this.panel1.Controls.Add(this.label5);
-            this.panel1.Controls.Add(this.checkBoxComboBox1);
             this.panel1.Controls.Add(this.label1);
             this.panel1.Controls.Add(this.label2);
             this.panel1.Controls.Add(this.axisTypeComboBox);
@@ -155,12 +154,12 @@
             this.panel1.Location = new System.Drawing.Point(3, 3);
             this.panel1.Name = "panel1";
             this.panel1.Padding = new System.Windows.Forms.Padding(3, 6, 6, 3);
-            this.panel1.Size = new System.Drawing.Size(976, 84);
+            this.panel1.Size = new System.Drawing.Size(976, 114);
             this.panel1.TabIndex = 1;
             // 
             // yAxisLabel
             // 
-            this.yAxisLabel.Location = new System.Drawing.Point(593, 51);
+            this.yAxisLabel.Location = new System.Drawing.Point(74, 41);
             this.yAxisLabel.Name = "yAxisLabel";
             this.yAxisLabel.Size = new System.Drawing.Size(369, 22);
             this.yAxisLabel.TabIndex = 19;
@@ -169,7 +168,7 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(534, 54);
+            this.label6.Location = new System.Drawing.Point(15, 44);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(54, 17);
             this.label6.TabIndex = 18;
@@ -177,7 +176,7 @@
             // 
             // xAxisLabel
             // 
-            this.xAxisLabel.Location = new System.Drawing.Point(74, 51);
+            this.xAxisLabel.Location = new System.Drawing.Point(74, 69);
             this.xAxisLabel.Name = "xAxisLabel";
             this.xAxisLabel.Size = new System.Drawing.Size(369, 22);
             this.xAxisLabel.TabIndex = 17;
@@ -186,29 +185,16 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(15, 54);
+            this.label5.Location = new System.Drawing.Point(15, 72);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(53, 17);
             this.label5.TabIndex = 16;
             this.label5.Text = "x-label:";
             // 
-            // checkBoxComboBox1
-            // 
-            checkBoxProperties2.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.checkBoxComboBox1.CheckBoxProperties = checkBoxProperties2;
-            this.checkBoxComboBox1.DisplayMemberSingleItem = "";
-            this.checkBoxComboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.checkBoxComboBox1.FormattingEnabled = true;
-            this.checkBoxComboBox1.Location = new System.Drawing.Point(593, 11);
-            this.checkBoxComboBox1.Name = "checkBoxComboBox1";
-            this.checkBoxComboBox1.Size = new System.Drawing.Size(369, 24);
-            this.checkBoxComboBox1.TabIndex = 13;
-            this.checkBoxComboBox1.CheckBoxCheckedChanged += new System.EventHandler(this.checkBoxComboBox1_CheckBoxCheckedChanged_1);
-            // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(539, 14);
+            this.label1.Location = new System.Drawing.Point(464, 14);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(48, 17);
             this.label1.TabIndex = 12;
@@ -226,8 +212,10 @@
             // 
             // axisTypeComboBox
             // 
+            this.axisTypeComboBox.DropDownHeight = 1000;
             this.axisTypeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.axisTypeComboBox.FormattingEnabled = true;
+            this.axisTypeComboBox.IntegralHeight = false;
             this.axisTypeComboBox.Location = new System.Drawing.Point(74, 11);
             this.axisTypeComboBox.Name = "axisTypeComboBox";
             this.axisTypeComboBox.Size = new System.Drawing.Size(369, 24);
@@ -475,6 +463,16 @@
             this.label3.TabIndex = 4;
             this.label3.Text = "y-axis:";
             // 
+            // checkedListBox1
+            // 
+            this.checkedListBox1.CheckOnClick = true;
+            this.checkedListBox1.FormattingEnabled = true;
+            this.checkedListBox1.Location = new System.Drawing.Point(518, 9);
+            this.checkedListBox1.Name = "checkedListBox1";
+            this.checkedListBox1.Size = new System.Drawing.Size(449, 106);
+            this.checkedListBox1.TabIndex = 20;
+            this.checkedListBox1.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.checkedListBox1_ItemCheck);
+            // 
             // ParseDataViz
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -538,11 +536,11 @@
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.TextBox xAxisLabel;
         private System.Windows.Forms.Label label5;
-        private PresentationControls.CheckBoxComboBox checkBoxComboBox1;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.ComboBox axisTypeComboBox;
         private System.Windows.Forms.ToolTip toolTip1;
+        private System.Windows.Forms.CheckedListBox checkedListBox1;
     }
 }
 

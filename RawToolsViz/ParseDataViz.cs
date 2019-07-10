@@ -39,7 +39,7 @@ namespace RawToolsViz
                 double i;
                 if (Double.TryParse(QcData.Rows[0][d.ColumnName].ToString(), out i))
                 {
-                    checkBoxComboBox1.Items.Add(d.ColumnName);
+                    checkedListBox1.Items.Add(d.ColumnName);
                     axisTypeComboBox.Items.Add(d.ColumnName);
                 }
             }
@@ -65,13 +65,13 @@ namespace RawToolsViz
 
             List<string> selected = new List<string>();
 
-            foreach (var data in checkBoxComboBox1.CheckBoxItems)
+            for (int i = 0; i < checkedListBox1.Items.Count; i++)
             {
                 //if (!(from x in checkBoxComboBox1.CheckBoxItems select x.Text).Contains(data.ColumnName)) return;
 
-                if (data.Checked)
+                if (checkedListBox1.GetItemChecked(i))
                 {
-                    selected.Add(data.Text);
+                    selected.Add(checkedListBox1.Items[i].ToString());
                 }
             }
 
@@ -417,6 +417,12 @@ namespace RawToolsViz
         private void yAxisLabel_TextChanged_1(object sender, EventArgs e)
         {
             UpdateChart();
+        }
+
+        private void checkedListBox1_ItemCheck(object sender, ItemCheckEventArgs e)
+        {
+            this.BeginInvoke((MethodInvoker)(
+                () => UpdateChart()));
         }
     }
 }

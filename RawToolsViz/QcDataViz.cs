@@ -73,7 +73,7 @@ namespace RawToolsViz
 
             List<string> selected = new List<string>();
 
-            for (int i = 0; i <= (checkedListBox1.Items.Count - 1); i++)
+            for (int i = 0; i < checkedListBox1.Items.Count; i++)
             {
                 //if (!(from x in checkBoxComboBox1.CheckBoxItems select x.Text).Contains(data.ColumnName)) return;
 
