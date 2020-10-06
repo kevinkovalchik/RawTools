@@ -261,7 +261,7 @@ namespace RawTools.Algorithms
         }
 
         public static PrecursorPeakCollection AnalyzeAllPeaks(CentroidStreamCollection centroids, RetentionTimeCollection retentionTimes,
-            PrecursorMassCollection precursorMasses, PrecursorScanCollection precursorScans, ScanIndex index)
+            PrecursorMassCollection precursorMasses, PrecursorScanCollection precursorScans, ScanIndex index, int MaxProcesses)
         {
             ConcurrentDictionary<int, PrecursorPeakData> peaks = new ConcurrentDictionary<int, PrecursorPeakData>();
             
@@ -276,7 +276,7 @@ namespace RawTools.Algorithms
             ProgressIndicator P = new ProgressIndicator(total: index.ScanEnumerators[MSOrderType.Ms2].Length, message: "Analyzing precursor peaks");
             P.Start();
 
-            Parallel.ForEach(batches, Constants.MultiThreading.Options(), batch =>
+            Parallel.ForEach(batches, Constants.MultiThreading.Options(MaxProcesses), batch =>
             {
                 PrecursorPeakData peak;
                 foreach (int scan in batch)

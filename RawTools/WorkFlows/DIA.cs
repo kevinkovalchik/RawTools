@@ -60,7 +60,7 @@ namespace RawTools.WorkFlows
             RetentionTimeCollection retentionTimes = Extract.RetentionTimes(rawFile.CreateThreadAccessor(), Index);
 
             ScanMetaDataCollectionDIA metaData = MetaDataProcessingDIA.AggregateMetaDataDIA(centroidStreams, segmentScans, methodData,
-                trailerExtras, retentionTimes, Index);
+                trailerExtras, retentionTimes, Index, parameters.MaxProcesses);
 
             RawMetricsDataDIA metrics = null;
             if (parameters.ParseParams.Metrics)
@@ -110,7 +110,7 @@ namespace RawTools.WorkFlows
             RetentionTimeCollection retentionTimes = Extract.RetentionTimes(rawFile, Index);
 
             ScanMetaDataCollectionDIA metaData = MetaDataProcessingDIA.AggregateMetaDataDIA(centroidStreams, segmentScans, methodData,
-                trailerExtras, retentionTimes, Index);
+                trailerExtras, retentionTimes, Index, parameters.MaxProcesses);
 
             RawMetricsDataDIA metrics = MetaDataProcessingDIA.GetMetricsDataDIA(metaData, methodData, rawFile.FileName, retentionTimes, Index);
 

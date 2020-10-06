@@ -85,9 +85,8 @@
     <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="CLParserForNetFramework, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>D:\Development\CLParserForNetFramework\CLParserForNetFramework\bin\Release\CLParserForNetFramework.dll</HintPath>
+    <Reference Include="CLParserForNetFramework">
+      <HintPath>..\..\..\..\NuGet\CLParserForNetFramework.dll</HintPath>
     </Reference>
     <Reference Include="Serilog, Version=2.0.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
       <HintPath>..\packages\Serilog.2.7.1\lib\net46\Serilog.dll</HintPath>
@@ -109,17 +108,21 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
-    <Reference Include="ThermoFisher.CommonCore.BackgroundSubtraction">
-      <HintPath>..\packages\ThermoFisher.CommonCore.RawFileReader.4.0.26\lib\Windows\ThermoFisher.CommonCore.BackgroundSubtraction.dll</HintPath>
+    <Reference Include="ThermoFisher.CommonCore.BackgroundSubtraction, Version=5.0.0.0, Culture=neutral, PublicKeyToken=1aef06afb5abd953, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\NuGet\RawFileReader_old\ThermoFisher.CommonCore.BackgroundSubtraction.dll</HintPath>
     </Reference>
-    <Reference Include="ThermoFisher.CommonCore.Data">
-      <HintPath>..\packages\ThermoFisher.CommonCore.RawFileReader.4.0.26\lib\Windows\ThermoFisher.CommonCore.Data.dll</HintPath>
+    <Reference Include="ThermoFisher.CommonCore.Data, Version=5.0.0.0, Culture=neutral, PublicKeyToken=1aef06afb5abd953, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\NuGet\RawFileReader_old\ThermoFisher.CommonCore.Data.dll</HintPath>
     </Reference>
-    <Reference Include="ThermoFisher.CommonCore.MassPrecisionEstimator">
-      <HintPath>..\packages\ThermoFisher.CommonCore.RawFileReader.4.0.26\lib\Windows\ThermoFisher.CommonCore.MassPrecisionEstimator.dll</HintPath>
+    <Reference Include="ThermoFisher.CommonCore.MassPrecisionEstimator, Version=5.0.0.0, Culture=neutral, PublicKeyToken=1aef06afb5abd953, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\NuGet\RawFileReader_old\ThermoFisher.CommonCore.MassPrecisionEstimator.dll</HintPath>
     </Reference>
-    <Reference Include="ThermoFisher.CommonCore.RawFileReader">
-      <HintPath>..\packages\ThermoFisher.CommonCore.RawFileReader.4.0.26\lib\Windows\ThermoFisher.CommonCore.RawFileReader.dll</HintPath>
+    <Reference Include="ThermoFisher.CommonCore.RawFileReader, Version=5.0.0.0, Culture=neutral, PublicKeyToken=1aef06afb5abd953, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\NuGet\RawFileReader_old\ThermoFisher.CommonCore.RawFileReader.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

@@ -38,7 +38,7 @@ namespace RawTools.Algorithms.ExtractData
 {
     static class Extract
     {
-        public static (ScanIndex, PrecursorScanCollection, ScanDependentsCollections) ScanIndicesPrecursorsDependents(IRawFileThreadManager rawFileAccessor)
+        public static (ScanIndex, PrecursorScanCollection, ScanDependentsCollections) ScanIndicesPrecursorsDependents(IRawFileThreadManager rawFileAccessor, int MaxProcesses)
         {
             Log.Information("Extracting scan indices");
             ConcurrentDictionary<int, ScanData> allScans;
@@ -54,8 +54,6 @@ namespace RawTools.Algorithms.ExtractData
             ConcurrentDictionary<int, PrecursorScanData> precursorScans = new ConcurrentDictionary<int, PrecursorScanData>();
             ConcurrentDictionary<int, IScanDependents> dependents = new ConcurrentDictionary<int, IScanDependents>();
 
-            
-
             var staticRawFile = rawFileAccessor.CreateThreadAccessor();
             staticRawFile.SelectMsData();
 
@@ -66,16 +64,13 @@ namespace RawTools.Algorithms.ExtractData
             Console.Write("Determing MS analysis order... ");
             AnalysisOrder = (from x in scans select staticRawFile.GetScanEventForScanNumber(x).MSOrder).Max();
             Console.WriteLine("Done!");
-
             object lockTarget = new object();
-
             ProgressIndicator P = new ProgressIndicator(scans.Count(), "Extracting scan indices");
-
             int chunkSize = Constants.MultiThreading.ChunkSize(scans.Count());
-
             var batches = scans.Chunk(chunkSize);
+            var options = Constants.MultiThreading.Options(MaxThreads: 1);
 
-            Parallel.ForEach(batches, batch =>
+            Parallel.ForEach(batches, options, batch =>
             {
                 ScanData ms1ScanData;
                 ScanData ms2ScanData;

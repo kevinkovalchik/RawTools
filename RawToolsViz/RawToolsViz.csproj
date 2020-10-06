@@ -33,7 +33,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="CheckBoxComboBox">
-      <HintPath>..\packages\CheckBoxComboBox\CheckBoxComboBox.dll</HintPath>
+      <HintPath>..\..\..\..\NuGet\CheckBoxComboBox.dll</HintPath>
     </Reference>
     <Reference Include="OxyPlot, Version=1.0.0.0, Culture=neutral, PublicKeyToken=638079a8f0bd61e9, processorArchitecture=MSIL">
       <HintPath>..\packages\OxyPlot.Core.1.0.0\lib\net45\OxyPlot.dll</HintPath>
@@ -52,21 +52,21 @@
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
-    <Reference Include="ThermoFisher.CommonCore.BackgroundSubtraction, Version=1.0.0.0, Culture=neutral, PublicKeyToken=1aef06afb5abd953, processorArchitecture=MSIL">
+    <Reference Include="ThermoFisher.CommonCore.BackgroundSubtraction, Version=5.0.0.0, Culture=neutral, PublicKeyToken=1aef06afb5abd953, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\ThermoFisher.CommonCore.RawFileReader.4.0.26\lib\Windows\ThermoFisher.CommonCore.BackgroundSubtraction.dll</HintPath>
+      <HintPath>..\..\..\..\NuGet\RawFileReader_old\ThermoFisher.CommonCore.BackgroundSubtraction.dll</HintPath>
     </Reference>
-    <Reference Include="ThermoFisher.CommonCore.Data, Version=1.0.0.0, Culture=neutral, PublicKeyToken=1aef06afb5abd953, processorArchitecture=MSIL">
+    <Reference Include="ThermoFisher.CommonCore.Data, Version=5.0.0.0, Culture=neutral, PublicKeyToken=1aef06afb5abd953, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\ThermoFisher.CommonCore.RawFileReader.4.0.26\lib\Windows\ThermoFisher.CommonCore.Data.dll</HintPath>
+      <HintPath>..\..\..\..\NuGet\RawFileReader_old\ThermoFisher.CommonCore.Data.dll</HintPath>
     </Reference>
-    <Reference Include="ThermoFisher.CommonCore.MassPrecisionEstimator, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="ThermoFisher.CommonCore.MassPrecisionEstimator, Version=5.0.0.0, Culture=neutral, PublicKeyToken=1aef06afb5abd953, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\ThermoFisher.CommonCore.RawFileReader.4.0.26\lib\Windows\ThermoFisher.CommonCore.MassPrecisionEstimator.dll</HintPath>
+      <HintPath>..\..\..\..\NuGet\RawFileReader_old\ThermoFisher.CommonCore.MassPrecisionEstimator.dll</HintPath>
     </Reference>
-    <Reference Include="ThermoFisher.CommonCore.RawFileReader, Version=1.0.0.0, Culture=neutral, PublicKeyToken=1aef06afb5abd953, processorArchitecture=MSIL">
+    <Reference Include="ThermoFisher.CommonCore.RawFileReader, Version=5.0.0.0, Culture=neutral, PublicKeyToken=1aef06afb5abd953, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\ThermoFisher.CommonCore.RawFileReader.4.0.26\lib\Windows\ThermoFisher.CommonCore.RawFileReader.dll</HintPath>
+      <HintPath>..\..\..\..\NuGet\RawFileReader_old\ThermoFisher.CommonCore.RawFileReader.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

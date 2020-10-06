@@ -42,7 +42,7 @@ namespace RawTools.Algorithms.Analyze
     static class MetaDataProcessingDIA
     {
         public static ScanMetaDataCollectionDIA AggregateMetaDataDIA(CentroidStreamCollection centroidStreams, SegmentScanCollection segmentScans, MethodDataContainer methodData,
-            TrailerExtraCollection trailerExtras, RetentionTimeCollection retentionTimes, ScanIndex index)
+            TrailerExtraCollection trailerExtras, RetentionTimeCollection retentionTimes, ScanIndex index, int maxProcesses)
         {
             //ProgressIndicator progress = new ProgressIndicator(index.ScanEnumerators[MSOrderType.Any].Count(),
              //   "Formatting scan meta data");
@@ -59,11 +59,11 @@ namespace RawTools.Algorithms.Analyze
 
             metaData.DutyCycle = MetaDataCalculations.DutyCycle(retentionTimes, index);
 
-            metaData.IntensityDistribution = MetaDataCalculations.IntensityDistributions(centroidStreams, segmentScans, index);
+            metaData.IntensityDistribution = MetaDataCalculations.IntensityDistributions(centroidStreams, segmentScans, index, maxProcesses);
 
-            metaData.SummedIntensity = MetaDataCalculations.SummedIntensities(centroidStreams, segmentScans, index);
+            metaData.SummedIntensity = MetaDataCalculations.SummedIntensities(centroidStreams, segmentScans, index, maxProcesses);
 
-            metaData.FractionConsumingTop80PercentTotalIntensity = MetaDataCalculations.Top80Frac(centroidStreams, segmentScans, index);
+            metaData.FractionConsumingTop80PercentTotalIntensity = MetaDataCalculations.Top80Frac(centroidStreams, segmentScans, index, maxProcesses);
 
             //Task.WaitAll();
 

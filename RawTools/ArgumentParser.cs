@@ -149,6 +149,15 @@ namespace RawTools.ArgumentParser
             parser.Add(new Argument(name: "ExampleModifications", shortArgument: "-modifications", longArgument: "-examplemods", required: false, typeOf: typeof(bool),
                 helpText: "Displays example peptide modifications."));
 
+            parser.Add(new Argument(
+                name: "MaxProcesses",
+                shortArgument: "-k",
+                longArgument: "-maxprocesses",
+                required: false,
+                typeOf: typeof(int),
+                defaultValue: 4,
+                helpText: "Maximum number of concurrent processes."));
+
             parser.AddMutuallyExclusiveGroup(new List<string> { "RawFiles", "RawFileDirectory" });
             parser.AddMutuallyExclusiveGroup(new List<string> { "RawFiles", "QcDirectory" });
 

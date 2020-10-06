@@ -69,6 +69,7 @@ namespace RawTools.QC
             customParameters.AddNoteToXTandemParameters(type: "input", label: "spectrum, parent monoisotopic mass error minus", value: "10");
             customParameters.AddNoteToXTandemParameters(type: "input", label: "spectrum, parent monoisotopic mass isotope error", value: "yes");
             customParameters.AddNoteToXTandemParameters(type: "input", label: "spectrum, parent monoisotopic mass error units", value: "ppm");
+            customParameters.AddNoteToXTandemParameters(type: "input", label: "spectrum, threads", value: Convert.ToString(parameters.MaxProcesses));
 
             // need to check where the fragment scan is happening to assign mass error
             if (methodData.MassAnalyzers[MSOrderType.Ms2] == MassAnalyzerType.MassAnalyzerFTMS)

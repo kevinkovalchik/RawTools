@@ -110,7 +110,7 @@ namespace RawTools.Algorithms.Analyze
         }
 
         public static Dictionary<int, Distribution> IntensityDistributions(CentroidStreamCollection centroidStreams,
-            SegmentScanCollection segmentScans, ScanIndex index)
+            SegmentScanCollection segmentScans, ScanIndex index, int maxProcesses)
         {
             ConcurrentDictionary<int, Distribution> intDist = new ConcurrentDictionary<int, Distribution>();
 
@@ -118,7 +118,7 @@ namespace RawTools.Algorithms.Analyze
 
             var batches = index.allScans.Keys.Chunk(chunkSize);
 
-            Parallel.ForEach(batches, Constants.MultiThreading.Options(), batch =>
+            Parallel.ForEach(batches, Constants.MultiThreading.Options(maxProcesses), batch =>
             {
                 foreach (int scan in batch)
                 {
@@ -143,7 +143,7 @@ namespace RawTools.Algorithms.Analyze
         }
 
         public static Dictionary<int, double> SummedIntensities(CentroidStreamCollection centroidStreams,
-            SegmentScanCollection segmentScans, ScanIndex index)
+            SegmentScanCollection segmentScans, ScanIndex index, int maxProcesses)
         {
             ConcurrentDictionary<int, double> summedInt = new ConcurrentDictionary<int, double>();
 
@@ -151,7 +151,7 @@ namespace RawTools.Algorithms.Analyze
 
             var batches = index.allScans.Keys.Chunk(chunkSize);
 
-            Parallel.ForEach(batches, Constants.MultiThreading.Options(), batch =>
+            Parallel.ForEach(batches, Constants.MultiThreading.Options(maxProcesses), batch =>
             {
                 foreach (int scan in batch)
                 {
@@ -174,7 +174,7 @@ namespace RawTools.Algorithms.Analyze
         }
 
         public static Dictionary<int, double> Top80Frac(CentroidStreamCollection centroidStreams,
-            SegmentScanCollection segmentScans, ScanIndex index)
+            SegmentScanCollection segmentScans, ScanIndex index, int maxProcesses)
         {
             ConcurrentDictionary<int, double> top80 = new ConcurrentDictionary<int, double>();
 
@@ -182,7 +182,7 @@ namespace RawTools.Algorithms.Analyze
 
             var batches = index.allScans.Keys.Chunk(chunkSize);
 
-            Parallel.ForEach(batches, Constants.MultiThreading.Options(), batch =>
+            Parallel.ForEach(batches, Constants.MultiThreading.Options(maxProcesses), batch =>
             {
                 foreach (int scan in batch)
                 {
@@ -205,7 +205,8 @@ namespace RawTools.Algorithms.Analyze
         }
 
         public static Dictionary<int, double> Ms1Interference(CentroidStreamCollection centroidStreams, PrecursorMassCollection precursorMasses,
-            TrailerExtraCollection trailerExtras, PrecursorScanCollection precursorScans, ScanEventReactionCollection reactions, ScanIndex index)
+            TrailerExtraCollection trailerExtras, PrecursorScanCollection precursorScans, ScanEventReactionCollection reactions, ScanIndex index,
+            int maxProcesses)
         {
             ConcurrentDictionary<int, double> interference = new ConcurrentDictionary<int, double>();
 
@@ -213,7 +214,7 @@ namespace RawTools.Algorithms.Analyze
 
             var batches = index.ScanEnumerators[index.AnalysisOrder].Chunk(chunkSize);
 
-            Parallel.ForEach(batches, Constants.MultiThreading.Options(), batch =>
+            Parallel.ForEach(batches, Constants.MultiThreading.Options(maxProcesses), batch =>
             {
                 foreach (int scan in batch)
                 {

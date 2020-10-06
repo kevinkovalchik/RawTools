@@ -69,7 +69,7 @@ namespace RawTools.WorkFlows
             //staticRawFile.CheckIfBoxcar();
 
             (ScanIndex Index, PrecursorScanCollection precursorScans, ScanDependentsCollections scanDependents) =
-                Extract.ScanIndicesPrecursorsDependents(rawFileThreadManager);
+                Extract.ScanIndicesPrecursorsDependents(rawFileThreadManager, MaxProcesses: parameters.MaxProcesses);
 
             nScans = Index.ScanEnumerators[MSOrderType.Ms2].Length;
 
@@ -90,7 +90,7 @@ namespace RawTools.WorkFlows
 
             if (parameters.ParseParams.Parse | parameters.ParseParams.Quant | parameters.ParseParams.Metrics | parameters.RefineMassCharge | parameters.QcParams.QcDirectory != null)
             {
-                peakData = AnalyzePeaks.AnalyzeAllPeaks(centroidStreams, retentionTimes, precursorMasses, precursorScans, Index);
+                peakData = AnalyzePeaks.AnalyzeAllPeaks(centroidStreams, retentionTimes, precursorMasses, precursorScans, Index, parameters.MaxProcesses);
 
                 if (parameters.RefineMassCharge)
                 {
@@ -98,7 +98,7 @@ namespace RawTools.WorkFlows
                 }
 
                 metaData = MetaDataProcessingDDA.AggregateMetaDataDDA(centroidStreams, segmentScans, methodData, precursorScans,
-                    trailerExtras, precursorMasses, retentionTimes, scanDependents, reactions, Index);
+                    trailerExtras, precursorMasses, retentionTimes, scanDependents, reactions, Index, parameters.MaxProcesses);
             }
 
             QuantDataCollection quantData = null;

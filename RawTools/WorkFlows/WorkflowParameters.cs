@@ -32,6 +32,7 @@ namespace RawTools.WorkFlows
         public bool IncludeSubdirectories, RefineMassCharge, LogDump;
         public (int Min, int Max) ConsideredChargeStates;
         public IEnumerable<string> InputFiles;
+        public int MaxProcesses;
 
         public ParseWorkflowParameters ParseParams;
         public QcWorkflowParameters QcParams;
@@ -48,7 +49,7 @@ namespace RawTools.WorkFlows
             
             ExpType = ExperimentType.DDA;
             MgfIntensityCutoff = 0;
-
+            MaxProcesses = Convert.ToInt32(TryGetElseDefault(Options, "MaxProcesses"));
             MgfMassCutoff = Convert.ToDouble(TryGetElseDefault(Options, "MgfMassCutOff"));
             InputFiles = (List<string>)TryGetElseDefault(Options,"RawFiles");
             RawFileDirectory = (string)TryGetElseDefault(Options,"RawFileDirectory");
