@@ -28,7 +28,7 @@ namespace RawTools.WorkFlows
     {
         public ExperimentType ExpType;
         public double MgfIntensityCutoff, MgfMassCutoff;
-        public string RawFileDirectory;
+        public string RawFileDirectory, ImpurityTable;
         public bool IncludeSubdirectories, RefineMassCharge, LogDump;
         public (int Min, int Max) ConsideredChargeStates;
         public IEnumerable<string> InputFiles;
@@ -65,6 +65,7 @@ namespace RawTools.WorkFlows
             ConsideredChargeStates.Min = Convert.ToInt32(TryGetElseDefault(Options, "MinCharge"));
             ConsideredChargeStates.Max = Convert.ToInt32(TryGetElseDefault(Options, "MaxCharge"));
             LogDump = (bool)TryGetElseDefault(Options, "LogDump");
+            ImpurityTable = (string)TryGetElseDefault(Options, "TmtImpurityTable");
 
             string output = (string)TryGetElseDefault(Options, "OutputDirectory");
 

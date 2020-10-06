@@ -140,6 +140,7 @@
     <Compile Include="Algorithms\Ms1Interference.cs" />
     <Compile Include="Algorithms\QuantifyAllScans.cs" />
     <Compile Include="Algorithms\QuantifyReporters.cs" />
+    <Compile Include="Algorithms\TmtPurityCorrection.cs" />
     <Compile Include="ArgumentParser.cs" />
     <Compile Include="Constants\Constants.cs" />
     <Compile Include="Data\Collections.cs" />
