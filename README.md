@@ -14,6 +14,10 @@ If you need help installing and using RawTools, please visit the wiki page appro
 
 <br>
 
+### RawTools 2.0.3 released
+
+- 2.0.3 brings functionality for processing TMTPro data.
+
 ### RawTools 2.0.2 released
 
 - 2.0.0 and 2.0.1 contained a bug which crashed the command line help in Linux and MacOS. This is now fixed.

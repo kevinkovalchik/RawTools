@@ -4,6 +4,10 @@ All notable changes to RawTools will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.3] 2020-11-05
+### Fixed
+- Added functionality for TMTPro reagents.
+
 ## [2.0.2] 2019-07-08
 ### Fixed
 - Fixed a bug which crashed the command line help in Linux and MacOS.

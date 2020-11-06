@@ -173,10 +173,10 @@ namespace RawTools
 
             if (parameters.ParseParams.Quant)
             {
-                List<string> possible = new List<string>() { "TMT0", "TMT2", "TMT6", "TMT10", "TMT11", "iTRAQ4", "iTRAQ8" };
+                List<string> possible = new List<string>() { "TMT0", "TMT2", "TMT6", "TMT10", "TMT11", "TMT16", "iTRAQ4", "iTRAQ8" };
                 if (!possible.Contains(parameters.ParseParams.LabelingReagents))
                 {
-                    Console.WriteLine("ERROR: For quantification, the labeling reagent must be one of {TMT0, TMT2, TMT6, TMT10, TMT11, iTRAQ4, iTRAQ8}");
+                    Console.WriteLine("ERROR: For quantification, the labeling reagent must be one of {TMT0, TMT2, TMT6, TMT10, TMT11, TMT16, iTRAQ4, iTRAQ8}");
                     Log.Error("Invalid labeling reagent provided: {0}", parameters.ParseParams.LabelingReagents);
                     //Console.Write("Press any key to exit...");
                     //Console.ReadKey();

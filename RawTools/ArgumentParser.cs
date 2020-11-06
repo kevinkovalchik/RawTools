@@ -64,7 +64,7 @@ namespace RawTools.ArgumentParser
             parser.Add(new Argument(name: "LabelingReagent", shortArgument: "-r", longArgument: "-labellingreagent", required: false,
                 typeOf: typeof(string),
                 helpText: "Required for reporter ion quantification. Reagents used to label peptides, required if using quant option. " +
-                "Available options are: {TMT0, TMT2, TMT6, TMT10, TMT11, iTRAQ4, iTRAQ8}."));
+                "Available options are: {TMT0, TMT2, TMT6, TMT10, TMT11, TMT16, iTRAQ4, iTRAQ8}."));
 
             parser.Add(new Argument(name: "UnlabeledQuant", shortArgument: "-u", longArgument: "-unlabeledquant", required: false,
                 typeOf: typeof(bool),

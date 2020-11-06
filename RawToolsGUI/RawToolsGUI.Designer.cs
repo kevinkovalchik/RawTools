@@ -117,9 +117,11 @@
             // 
             this.groupBoxMode.Controls.Add(this.checkBoxModeQC);
             this.groupBoxMode.Controls.Add(this.checkBoxModeParse);
-            this.groupBoxMode.Location = new System.Drawing.Point(3, 3);
+            this.groupBoxMode.Location = new System.Drawing.Point(2, 2);
+            this.groupBoxMode.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.groupBoxMode.Name = "groupBoxMode";
-            this.groupBoxMode.Size = new System.Drawing.Size(90, 85);
+            this.groupBoxMode.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBoxMode.Size = new System.Drawing.Size(68, 69);
             this.groupBoxMode.TabIndex = 0;
             this.groupBoxMode.TabStop = false;
             this.groupBoxMode.Text = "Mode";
@@ -127,9 +129,10 @@
             // checkBoxModeQC
             // 
             this.checkBoxModeQC.AutoSize = true;
-            this.checkBoxModeQC.Location = new System.Drawing.Point(6, 48);
+            this.checkBoxModeQC.Location = new System.Drawing.Point(4, 39);
+            this.checkBoxModeQC.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.checkBoxModeQC.Name = "checkBoxModeQC";
-            this.checkBoxModeQC.Size = new System.Drawing.Size(50, 21);
+            this.checkBoxModeQC.Size = new System.Drawing.Size(41, 17);
             this.checkBoxModeQC.TabIndex = 1;
             this.checkBoxModeQC.Text = "QC";
             this.toolTip1.SetToolTip(this.checkBoxModeQC, "Enables quality control (QC) mode of RawTools.\r\nIf this is selected, you will onl" +
@@ -140,9 +143,10 @@
             // checkBoxModeParse
             // 
             this.checkBoxModeParse.AutoSize = true;
-            this.checkBoxModeParse.Location = new System.Drawing.Point(6, 21);
+            this.checkBoxModeParse.Location = new System.Drawing.Point(4, 17);
+            this.checkBoxModeParse.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.checkBoxModeParse.Name = "checkBoxModeParse";
-            this.checkBoxModeParse.Size = new System.Drawing.Size(67, 21);
+            this.checkBoxModeParse.Size = new System.Drawing.Size(53, 17);
             this.checkBoxModeParse.TabIndex = 0;
             this.checkBoxModeParse.Text = "Parse";
             this.toolTip1.SetToolTip(this.checkBoxModeParse, "Enables parsing of quant and meta data. Select this\r\nfor options under the \"Parse" +
@@ -158,9 +162,11 @@
             this.groupBoxRawFiles.Controls.Add(this.textBoxRawFileDirectory);
             this.groupBoxRawFiles.Controls.Add(this.buttonSelectFiles);
             this.groupBoxRawFiles.Controls.Add(this.buttonSelectDirectory);
-            this.groupBoxRawFiles.Location = new System.Drawing.Point(99, 3);
+            this.groupBoxRawFiles.Location = new System.Drawing.Point(74, 2);
+            this.groupBoxRawFiles.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.groupBoxRawFiles.Name = "groupBoxRawFiles";
-            this.groupBoxRawFiles.Size = new System.Drawing.Size(654, 85);
+            this.groupBoxRawFiles.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBoxRawFiles.Size = new System.Drawing.Size(490, 69);
             this.groupBoxRawFiles.TabIndex = 1;
             this.groupBoxRawFiles.TabStop = false;
             this.groupBoxRawFiles.Text = "Raw Files";
@@ -168,9 +174,10 @@
             // radioButtonSelectFiles
             // 
             this.radioButtonSelectFiles.AutoSize = true;
-            this.radioButtonSelectFiles.Location = new System.Drawing.Point(6, 57);
+            this.radioButtonSelectFiles.Location = new System.Drawing.Point(4, 46);
+            this.radioButtonSelectFiles.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.radioButtonSelectFiles.Name = "radioButtonSelectFiles";
-            this.radioButtonSelectFiles.Size = new System.Drawing.Size(17, 16);
+            this.radioButtonSelectFiles.Size = new System.Drawing.Size(14, 13);
             this.radioButtonSelectFiles.TabIndex = 2;
             this.toolTip1.SetToolTip(this.radioButtonSelectFiles, "Select one or more Thermo raw files to process.");
             this.radioButtonSelectFiles.UseVisualStyleBackColor = true;
@@ -179,9 +186,10 @@
             // 
             this.radioButtonSelectDirectory.AutoSize = true;
             this.radioButtonSelectDirectory.Checked = true;
-            this.radioButtonSelectDirectory.Location = new System.Drawing.Point(6, 25);
+            this.radioButtonSelectDirectory.Location = new System.Drawing.Point(4, 20);
+            this.radioButtonSelectDirectory.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.radioButtonSelectDirectory.Name = "radioButtonSelectDirectory";
-            this.radioButtonSelectDirectory.Size = new System.Drawing.Size(17, 16);
+            this.radioButtonSelectDirectory.Size = new System.Drawing.Size(14, 13);
             this.radioButtonSelectDirectory.TabIndex = 2;
             this.radioButtonSelectDirectory.TabStop = true;
             this.toolTip1.SetToolTip(this.radioButtonSelectDirectory, "Choose a directory in which to process all Thermo raw files.");
@@ -191,27 +199,30 @@
             // textBoxRawFiles
             // 
             this.textBoxRawFiles.Enabled = false;
-            this.textBoxRawFiles.Location = new System.Drawing.Point(163, 51);
+            this.textBoxRawFiles.Location = new System.Drawing.Point(122, 41);
+            this.textBoxRawFiles.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.textBoxRawFiles.Name = "textBoxRawFiles";
             this.textBoxRawFiles.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.textBoxRawFiles.Size = new System.Drawing.Size(475, 22);
+            this.textBoxRawFiles.Size = new System.Drawing.Size(357, 20);
             this.textBoxRawFiles.TabIndex = 2;
             this.toolTip1.SetToolTip(this.textBoxRawFiles, "Select one or more Thermo raw files to process.");
             // 
             // textBoxRawFileDirectory
             // 
-            this.textBoxRawFileDirectory.Location = new System.Drawing.Point(163, 22);
+            this.textBoxRawFileDirectory.Location = new System.Drawing.Point(122, 18);
+            this.textBoxRawFileDirectory.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.textBoxRawFileDirectory.Name = "textBoxRawFileDirectory";
-            this.textBoxRawFileDirectory.Size = new System.Drawing.Size(475, 22);
+            this.textBoxRawFileDirectory.Size = new System.Drawing.Size(357, 20);
             this.textBoxRawFileDirectory.TabIndex = 3;
             this.toolTip1.SetToolTip(this.textBoxRawFileDirectory, "Choose a directory in which to process all Thermo raw files.");
             // 
             // buttonSelectFiles
             // 
             this.buttonSelectFiles.Enabled = false;
-            this.buttonSelectFiles.Location = new System.Drawing.Point(29, 51);
+            this.buttonSelectFiles.Location = new System.Drawing.Point(22, 41);
+            this.buttonSelectFiles.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.buttonSelectFiles.Name = "buttonSelectFiles";
-            this.buttonSelectFiles.Size = new System.Drawing.Size(128, 23);
+            this.buttonSelectFiles.Size = new System.Drawing.Size(96, 19);
             this.buttonSelectFiles.TabIndex = 3;
             this.buttonSelectFiles.Text = "Select File(s)";
             this.toolTip1.SetToolTip(this.buttonSelectFiles, "Select one or more Thermo raw files to process.");
@@ -220,9 +231,10 @@
             // 
             // buttonSelectDirectory
             // 
-            this.buttonSelectDirectory.Location = new System.Drawing.Point(29, 22);
+            this.buttonSelectDirectory.Location = new System.Drawing.Point(22, 18);
+            this.buttonSelectDirectory.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.buttonSelectDirectory.Name = "buttonSelectDirectory";
-            this.buttonSelectDirectory.Size = new System.Drawing.Size(128, 23);
+            this.buttonSelectDirectory.Size = new System.Drawing.Size(96, 19);
             this.buttonSelectDirectory.TabIndex = 2;
             this.buttonSelectDirectory.Text = "Select Directory";
             this.toolTip1.SetToolTip(this.buttonSelectDirectory, "Choose a directory in which to process all Thermo raw files.");
@@ -244,9 +256,11 @@
             this.groupBoxDataOutput.Controls.Add(this.ckbxOutputParse);
             this.groupBoxDataOutput.Controls.Add(this.ckbxOutputMGF);
             this.groupBoxDataOutput.Enabled = false;
-            this.groupBoxDataOutput.Location = new System.Drawing.Point(3, 94);
+            this.groupBoxDataOutput.Location = new System.Drawing.Point(2, 75);
+            this.groupBoxDataOutput.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.groupBoxDataOutput.Name = "groupBoxDataOutput";
-            this.groupBoxDataOutput.Size = new System.Drawing.Size(333, 145);
+            this.groupBoxDataOutput.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBoxDataOutput.Size = new System.Drawing.Size(250, 118);
             this.groupBoxDataOutput.TabIndex = 2;
             this.groupBoxDataOutput.TabStop = false;
             this.groupBoxDataOutput.Text = "Parse Data Output";
@@ -254,9 +268,10 @@
             // checkBoxDataOutputDirectory
             // 
             this.checkBoxDataOutputDirectory.AutoSize = true;
-            this.checkBoxDataOutputDirectory.Location = new System.Drawing.Point(125, 48);
+            this.checkBoxDataOutputDirectory.Location = new System.Drawing.Point(94, 39);
+            this.checkBoxDataOutputDirectory.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.checkBoxDataOutputDirectory.Name = "checkBoxDataOutputDirectory";
-            this.checkBoxDataOutputDirectory.Size = new System.Drawing.Size(204, 21);
+            this.checkBoxDataOutputDirectory.Size = new System.Drawing.Size(154, 17);
             this.checkBoxDataOutputDirectory.TabIndex = 12;
             this.checkBoxDataOutputDirectory.Text = "Output to different directory";
             this.toolTip1.SetToolTip(this.checkBoxDataOutputDirectory, "Select if you want the output files to go in a directory\r\ndifferent from the raw " +
@@ -268,18 +283,20 @@
             // textBoxDataOutputDir
             // 
             this.textBoxDataOutputDir.Enabled = false;
-            this.textBoxDataOutputDir.Location = new System.Drawing.Point(150, 102);
+            this.textBoxDataOutputDir.Location = new System.Drawing.Point(112, 83);
+            this.textBoxDataOutputDir.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.textBoxDataOutputDir.Name = "textBoxDataOutputDir";
-            this.textBoxDataOutputDir.Size = new System.Drawing.Size(177, 22);
+            this.textBoxDataOutputDir.Size = new System.Drawing.Size(134, 20);
             this.textBoxDataOutputDir.TabIndex = 11;
             this.toolTip1.SetToolTip(this.textBoxDataOutputDir, "Choose a directory in which to save all output files.");
             // 
             // buttonDataOutputDir
             // 
             this.buttonDataOutputDir.Enabled = false;
-            this.buttonDataOutputDir.Location = new System.Drawing.Point(6, 102);
+            this.buttonDataOutputDir.Location = new System.Drawing.Point(4, 83);
+            this.buttonDataOutputDir.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.buttonDataOutputDir.Name = "buttonDataOutputDir";
-            this.buttonDataOutputDir.Size = new System.Drawing.Size(138, 23);
+            this.buttonDataOutputDir.Size = new System.Drawing.Size(104, 19);
             this.buttonDataOutputDir.TabIndex = 10;
             this.buttonDataOutputDir.Text = "Output Directory";
             this.toolTip1.SetToolTip(this.buttonDataOutputDir, "Choose a directory in which to save all output files.\r\nIf no directory is selecte" +
@@ -291,9 +308,10 @@
             // ckbxOutputChromatograms
             // 
             this.ckbxOutputChromatograms.AutoSize = true;
-            this.ckbxOutputChromatograms.Location = new System.Drawing.Point(125, 21);
+            this.ckbxOutputChromatograms.Location = new System.Drawing.Point(94, 17);
+            this.ckbxOutputChromatograms.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.ckbxOutputChromatograms.Name = "ckbxOutputChromatograms";
-            this.ckbxOutputChromatograms.Size = new System.Drawing.Size(130, 21);
+            this.ckbxOutputChromatograms.Size = new System.Drawing.Size(99, 17);
             this.ckbxOutputChromatograms.TabIndex = 4;
             this.ckbxOutputChromatograms.Text = "Chromatograms";
             this.toolTip1.SetToolTip(this.ckbxOutputChromatograms, "Generate chromatograms. You must choose further\r\noptions under \"Chromatogram Opti" +
@@ -304,9 +322,10 @@
             // ckbxOutputMetrics
             // 
             this.ckbxOutputMetrics.AutoSize = true;
-            this.ckbxOutputMetrics.Location = new System.Drawing.Point(6, 75);
+            this.ckbxOutputMetrics.Location = new System.Drawing.Point(4, 61);
+            this.ckbxOutputMetrics.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.ckbxOutputMetrics.Name = "ckbxOutputMetrics";
-            this.ckbxOutputMetrics.Size = new System.Drawing.Size(75, 21);
+            this.ckbxOutputMetrics.Size = new System.Drawing.Size(60, 17);
             this.ckbxOutputMetrics.TabIndex = 3;
             this.ckbxOutputMetrics.Text = "Metrics";
             this.toolTip1.SetToolTip(this.ckbxOutputMetrics, "Calculate descriptive metrics from the scan meta data\r\nand write them to a text f" +
@@ -316,9 +335,10 @@
             // ckbxOutputParse
             // 
             this.ckbxOutputParse.AutoSize = true;
-            this.ckbxOutputParse.Location = new System.Drawing.Point(6, 48);
+            this.ckbxOutputParse.Location = new System.Drawing.Point(4, 39);
+            this.ckbxOutputParse.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.ckbxOutputParse.Name = "ckbxOutputParse";
-            this.ckbxOutputParse.Size = new System.Drawing.Size(108, 21);
+            this.ckbxOutputParse.Size = new System.Drawing.Size(84, 17);
             this.ckbxOutputParse.TabIndex = 1;
             this.ckbxOutputParse.Text = "Parse Matrix";
             this.toolTip1.SetToolTip(this.ckbxOutputParse, "Create a matrix containing scan meta data and,\r\noptionally, quantification data f" +
@@ -329,9 +349,10 @@
             // ckbxOutputMGF
             // 
             this.ckbxOutputMGF.AutoSize = true;
-            this.ckbxOutputMGF.Location = new System.Drawing.Point(6, 21);
+            this.ckbxOutputMGF.Location = new System.Drawing.Point(4, 17);
+            this.ckbxOutputMGF.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.ckbxOutputMGF.Name = "ckbxOutputMGF";
-            this.ckbxOutputMGF.Size = new System.Drawing.Size(60, 21);
+            this.ckbxOutputMGF.Size = new System.Drawing.Size(49, 17);
             this.ckbxOutputMGF.TabIndex = 0;
             this.ckbxOutputMGF.Text = "MGF";
             this.toolTip1.SetToolTip(this.ckbxOutputMGF, "Create an MGF file of all MS2 scans in the raw file.");
@@ -341,9 +362,10 @@
             // ckbxOutputQuant
             // 
             this.ckbxOutputQuant.AutoSize = true;
-            this.ckbxOutputQuant.Location = new System.Drawing.Point(6, 21);
+            this.ckbxOutputQuant.Location = new System.Drawing.Point(4, 17);
+            this.ckbxOutputQuant.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.ckbxOutputQuant.Name = "ckbxOutputQuant";
-            this.ckbxOutputQuant.Size = new System.Drawing.Size(173, 21);
+            this.ckbxOutputQuant.Size = new System.Drawing.Size(132, 17);
             this.ckbxOutputQuant.TabIndex = 2;
             this.ckbxOutputQuant.Text = "Quantify Reporter Ions";
             this.toolTip1.SetToolTip(this.ckbxOutputQuant, "Select to quantify reporter ions and include in the\r\nparse matrix output.");
@@ -357,9 +379,11 @@
             this.groupBoxCommonOptions.Controls.Add(this.labelMaxCharge);
             this.groupBoxCommonOptions.Controls.Add(this.comboBoxMaxCharge);
             this.groupBoxCommonOptions.Controls.Add(this.checkBoxRefinePrecursor);
-            this.groupBoxCommonOptions.Location = new System.Drawing.Point(342, 94);
+            this.groupBoxCommonOptions.Location = new System.Drawing.Point(256, 75);
+            this.groupBoxCommonOptions.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.groupBoxCommonOptions.Name = "groupBoxCommonOptions";
-            this.groupBoxCommonOptions.Size = new System.Drawing.Size(411, 145);
+            this.groupBoxCommonOptions.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBoxCommonOptions.Size = new System.Drawing.Size(308, 118);
             this.groupBoxCommonOptions.TabIndex = 3;
             this.groupBoxCommonOptions.TabStop = false;
             this.groupBoxCommonOptions.Text = "Common Options";
@@ -375,9 +399,10 @@
             "4",
             "5",
             "6"});
-            this.comboBoxMinCharge.Location = new System.Drawing.Point(158, 46);
+            this.comboBoxMinCharge.Location = new System.Drawing.Point(118, 37);
+            this.comboBoxMinCharge.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.comboBoxMinCharge.Name = "comboBoxMinCharge";
-            this.comboBoxMinCharge.Size = new System.Drawing.Size(106, 24);
+            this.comboBoxMinCharge.Size = new System.Drawing.Size(80, 21);
             this.comboBoxMinCharge.TabIndex = 9;
             this.toolTip1.SetToolTip(this.comboBoxMinCharge, resources.GetString("comboBoxMinCharge.ToolTip"));
             this.comboBoxMinCharge.SelectedIndexChanged += new System.EventHandler(this.comboBoxMinCharge_SelectedIndexChanged);
@@ -388,9 +413,10 @@
             // 
             this.labelMinCharge.AutoSize = true;
             this.labelMinCharge.Enabled = false;
-            this.labelMinCharge.Location = new System.Drawing.Point(32, 48);
+            this.labelMinCharge.Location = new System.Drawing.Point(24, 39);
+            this.labelMinCharge.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.labelMinCharge.Name = "labelMinCharge";
-            this.labelMinCharge.Size = new System.Drawing.Size(117, 17);
+            this.labelMinCharge.Size = new System.Drawing.Size(88, 13);
             this.labelMinCharge.TabIndex = 3;
             this.labelMinCharge.Text = "Minimum Charge:";
             this.toolTip1.SetToolTip(this.labelMinCharge, resources.GetString("labelMinCharge.ToolTip"));
@@ -399,9 +425,10 @@
             // 
             this.labelMaxCharge.AutoSize = true;
             this.labelMaxCharge.Enabled = false;
-            this.labelMaxCharge.Location = new System.Drawing.Point(32, 79);
+            this.labelMaxCharge.Location = new System.Drawing.Point(24, 64);
+            this.labelMaxCharge.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.labelMaxCharge.Name = "labelMaxCharge";
-            this.labelMaxCharge.Size = new System.Drawing.Size(120, 17);
+            this.labelMaxCharge.Size = new System.Drawing.Size(91, 13);
             this.labelMaxCharge.TabIndex = 2;
             this.labelMaxCharge.Text = "Maximum Charge:";
             this.toolTip1.SetToolTip(this.labelMaxCharge, resources.GetString("labelMaxCharge.ToolTip"));
@@ -417,9 +444,10 @@
             "4",
             "5",
             "6"});
-            this.comboBoxMaxCharge.Location = new System.Drawing.Point(158, 76);
+            this.comboBoxMaxCharge.Location = new System.Drawing.Point(118, 62);
+            this.comboBoxMaxCharge.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.comboBoxMaxCharge.Name = "comboBoxMaxCharge";
-            this.comboBoxMaxCharge.Size = new System.Drawing.Size(106, 24);
+            this.comboBoxMaxCharge.Size = new System.Drawing.Size(80, 21);
             this.comboBoxMaxCharge.TabIndex = 1;
             this.toolTip1.SetToolTip(this.comboBoxMaxCharge, resources.GetString("comboBoxMaxCharge.ToolTip"));
             this.comboBoxMaxCharge.SelectedIndexChanged += new System.EventHandler(this.comboBoxMaxCharge_SelectedIndexChanged);
@@ -429,9 +457,10 @@
             // checkBoxRefinePrecursor
             // 
             this.checkBoxRefinePrecursor.AutoSize = true;
-            this.checkBoxRefinePrecursor.Location = new System.Drawing.Point(6, 21);
+            this.checkBoxRefinePrecursor.Location = new System.Drawing.Point(4, 17);
+            this.checkBoxRefinePrecursor.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.checkBoxRefinePrecursor.Name = "checkBoxRefinePrecursor";
-            this.checkBoxRefinePrecursor.Size = new System.Drawing.Size(252, 21);
+            this.checkBoxRefinePrecursor.Size = new System.Drawing.Size(191, 17);
             this.checkBoxRefinePrecursor.TabIndex = 0;
             this.checkBoxRefinePrecursor.Text = "Refine Precursor Mass and Charge";
             this.toolTip1.SetToolTip(this.checkBoxRefinePrecursor, resources.GetString("checkBoxRefinePrecursor.ToolTip"));
@@ -454,9 +483,11 @@
             this.groupBoxQcOptions.Controls.Add(this.radioButtonSearchNone);
             this.groupBoxQcOptions.Controls.Add(this.label2);
             this.groupBoxQcOptions.Enabled = false;
-            this.groupBoxQcOptions.Location = new System.Drawing.Point(3, 245);
+            this.groupBoxQcOptions.Location = new System.Drawing.Point(2, 197);
+            this.groupBoxQcOptions.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.groupBoxQcOptions.Name = "groupBoxQcOptions";
-            this.groupBoxQcOptions.Size = new System.Drawing.Size(750, 195);
+            this.groupBoxQcOptions.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBoxQcOptions.Size = new System.Drawing.Size(562, 158);
             this.groupBoxQcOptions.TabIndex = 4;
             this.groupBoxQcOptions.TabStop = false;
             this.groupBoxQcOptions.Text = "QC Options";
@@ -465,18 +496,20 @@
             // 
             this.labelPeptideMods.AutoSize = true;
             this.labelPeptideMods.Enabled = false;
-            this.labelPeptideMods.Location = new System.Drawing.Point(331, 152);
+            this.labelPeptideMods.Location = new System.Drawing.Point(248, 124);
+            this.labelPeptideMods.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.labelPeptideMods.Name = "labelPeptideMods";
-            this.labelPeptideMods.Size = new System.Drawing.Size(146, 17);
+            this.labelPeptideMods.Size = new System.Drawing.Size(111, 13);
             this.labelPeptideMods.TabIndex = 23;
             this.labelPeptideMods.Text = "Peptide Modifications:";
             // 
             // buttonPeptideMods
             // 
             this.buttonPeptideMods.Enabled = false;
-            this.buttonPeptideMods.Location = new System.Drawing.Point(483, 149);
+            this.buttonPeptideMods.Location = new System.Drawing.Point(362, 121);
+            this.buttonPeptideMods.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.buttonPeptideMods.Name = "buttonPeptideMods";
-            this.buttonPeptideMods.Size = new System.Drawing.Size(247, 23);
+            this.buttonPeptideMods.Size = new System.Drawing.Size(185, 19);
             this.buttonPeptideMods.TabIndex = 9;
             this.buttonPeptideMods.Text = "Add/Review Peptide Modifications";
             this.toolTip1.SetToolTip(this.buttonPeptideMods, "Choose peptide modifications for the database search.");
@@ -485,17 +518,19 @@
             // 
             // textBoxQcDataDirectory
             // 
-            this.textBoxQcDataDirectory.Location = new System.Drawing.Point(163, 21);
+            this.textBoxQcDataDirectory.Location = new System.Drawing.Point(122, 17);
+            this.textBoxQcDataDirectory.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.textBoxQcDataDirectory.Name = "textBoxQcDataDirectory";
-            this.textBoxQcDataDirectory.Size = new System.Drawing.Size(567, 22);
+            this.textBoxQcDataDirectory.Size = new System.Drawing.Size(426, 20);
             this.textBoxQcDataDirectory.TabIndex = 22;
             this.toolTip1.SetToolTip(this.textBoxQcDataDirectory, "Select a directory in which to store the QC data.");
             // 
             // buttonQcDataDirectory
             // 
-            this.buttonQcDataDirectory.Location = new System.Drawing.Point(6, 21);
+            this.buttonQcDataDirectory.Location = new System.Drawing.Point(4, 17);
+            this.buttonQcDataDirectory.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.buttonQcDataDirectory.Name = "buttonQcDataDirectory";
-            this.buttonQcDataDirectory.Size = new System.Drawing.Size(151, 23);
+            this.buttonQcDataDirectory.Size = new System.Drawing.Size(113, 19);
             this.buttonQcDataDirectory.TabIndex = 21;
             this.buttonQcDataDirectory.Text = "QC Data Directory";
             this.toolTip1.SetToolTip(this.buttonQcDataDirectory, "Select a directory in which to store the QC data.");
@@ -505,9 +540,10 @@
             // textBoxNumSpectra
             // 
             this.textBoxNumSpectra.Enabled = false;
-            this.textBoxNumSpectra.Location = new System.Drawing.Point(211, 149);
+            this.textBoxNumSpectra.Location = new System.Drawing.Point(158, 121);
+            this.textBoxNumSpectra.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.textBoxNumSpectra.Name = "textBoxNumSpectra";
-            this.textBoxNumSpectra.Size = new System.Drawing.Size(100, 22);
+            this.textBoxNumSpectra.Size = new System.Drawing.Size(76, 20);
             this.textBoxNumSpectra.TabIndex = 20;
             this.textBoxNumSpectra.Text = "10000";
             this.toolTip1.SetToolTip(this.textBoxNumSpectra, "Choose the number of spectra to use for the database\r\nsearch. These are chosen fr" +
@@ -519,27 +555,30 @@
             // 
             this.labelNumSpectra.AutoSize = true;
             this.labelNumSpectra.Enabled = false;
-            this.labelNumSpectra.Location = new System.Drawing.Point(9, 152);
+            this.labelNumSpectra.Location = new System.Drawing.Point(7, 124);
+            this.labelNumSpectra.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.labelNumSpectra.Name = "labelNumSpectra";
-            this.labelNumSpectra.Size = new System.Drawing.Size(196, 17);
+            this.labelNumSpectra.Size = new System.Drawing.Size(148, 13);
             this.labelNumSpectra.TabIndex = 19;
             this.labelNumSpectra.Text = "Number of Spectra to Search:";
             // 
             // textBoxXTandemDir
             // 
             this.textBoxXTandemDir.Enabled = false;
-            this.textBoxXTandemDir.Location = new System.Drawing.Point(163, 76);
+            this.textBoxXTandemDir.Location = new System.Drawing.Point(122, 62);
+            this.textBoxXTandemDir.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.textBoxXTandemDir.Name = "textBoxXTandemDir";
-            this.textBoxXTandemDir.Size = new System.Drawing.Size(571, 22);
+            this.textBoxXTandemDir.Size = new System.Drawing.Size(429, 20);
             this.textBoxXTandemDir.TabIndex = 16;
             this.toolTip1.SetToolTip(this.textBoxXTandemDir, "Select the directory which contains the X! Tandem\r\nexecutable.");
             // 
             // buttonXTandemDir
             // 
             this.buttonXTandemDir.Enabled = false;
-            this.buttonXTandemDir.Location = new System.Drawing.Point(6, 75);
+            this.buttonXTandemDir.Location = new System.Drawing.Point(4, 61);
+            this.buttonXTandemDir.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.buttonXTandemDir.Name = "buttonXTandemDir";
-            this.buttonXTandemDir.Size = new System.Drawing.Size(151, 23);
+            this.buttonXTandemDir.Size = new System.Drawing.Size(113, 19);
             this.buttonXTandemDir.TabIndex = 15;
             this.buttonXTandemDir.Text = "X! Tandem Directory";
             this.toolTip1.SetToolTip(this.buttonXTandemDir, "Select the directory which contains the X! Tandem\r\nexecutable.");
@@ -549,18 +588,20 @@
             // textBoxFastaFile
             // 
             this.textBoxFastaFile.Enabled = false;
-            this.textBoxFastaFile.Location = new System.Drawing.Point(163, 104);
+            this.textBoxFastaFile.Location = new System.Drawing.Point(122, 84);
+            this.textBoxFastaFile.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.textBoxFastaFile.Name = "textBoxFastaFile";
-            this.textBoxFastaFile.Size = new System.Drawing.Size(571, 22);
+            this.textBoxFastaFile.Size = new System.Drawing.Size(429, 20);
             this.textBoxFastaFile.TabIndex = 8;
             this.toolTip1.SetToolTip(this.textBoxFastaFile, "Select the FASTA file you wish to use for the database\r\nsearch.");
             // 
             // buttonFastaFile
             // 
             this.buttonFastaFile.Enabled = false;
-            this.buttonFastaFile.Location = new System.Drawing.Point(6, 104);
+            this.buttonFastaFile.Location = new System.Drawing.Point(4, 84);
+            this.buttonFastaFile.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.buttonFastaFile.Name = "buttonFastaFile";
-            this.buttonFastaFile.Size = new System.Drawing.Size(151, 23);
+            this.buttonFastaFile.Size = new System.Drawing.Size(113, 19);
             this.buttonFastaFile.TabIndex = 12;
             this.buttonFastaFile.Text = "Select Fasta File";
             this.toolTip1.SetToolTip(this.buttonFastaFile, "Select the FASTA file you wish to use for the database\r\nsearch.");
@@ -570,9 +611,10 @@
             // radioButtonSearchXTandem
             // 
             this.radioButtonSearchXTandem.AutoSize = true;
-            this.radioButtonSearchXTandem.Location = new System.Drawing.Point(189, 53);
+            this.radioButtonSearchXTandem.Location = new System.Drawing.Point(142, 43);
+            this.radioButtonSearchXTandem.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.radioButtonSearchXTandem.Name = "radioButtonSearchXTandem";
-            this.radioButtonSearchXTandem.Size = new System.Drawing.Size(97, 21);
+            this.radioButtonSearchXTandem.Size = new System.Drawing.Size(77, 17);
             this.radioButtonSearchXTandem.TabIndex = 10;
             this.radioButtonSearchXTandem.Text = "X! Tandem";
             this.radioButtonSearchXTandem.UseVisualStyleBackColor = true;
@@ -582,9 +624,10 @@
             // 
             this.radioButtonSearchNone.AutoSize = true;
             this.radioButtonSearchNone.Checked = true;
-            this.radioButtonSearchNone.Location = new System.Drawing.Point(120, 53);
+            this.radioButtonSearchNone.Location = new System.Drawing.Point(90, 43);
+            this.radioButtonSearchNone.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.radioButtonSearchNone.Name = "radioButtonSearchNone";
-            this.radioButtonSearchNone.Size = new System.Drawing.Size(63, 21);
+            this.radioButtonSearchNone.Size = new System.Drawing.Size(51, 17);
             this.radioButtonSearchNone.TabIndex = 9;
             this.radioButtonSearchNone.TabStop = true;
             this.radioButtonSearchNone.Text = "None";
@@ -594,18 +637,20 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(9, 55);
+            this.label2.Location = new System.Drawing.Point(7, 45);
+            this.label2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(105, 17);
+            this.label2.Size = new System.Drawing.Size(80, 13);
             this.label2.TabIndex = 8;
             this.label2.Text = "Search Engine:";
             // 
             // textBoxReporterNumberMissingFilter
             // 
             this.textBoxReporterNumberMissingFilter.Enabled = false;
-            this.textBoxReporterNumberMissingFilter.Location = new System.Drawing.Point(342, 73);
+            this.textBoxReporterNumberMissingFilter.Location = new System.Drawing.Point(256, 59);
+            this.textBoxReporterNumberMissingFilter.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.textBoxReporterNumberMissingFilter.Name = "textBoxReporterNumberMissingFilter";
-            this.textBoxReporterNumberMissingFilter.Size = new System.Drawing.Size(72, 22);
+            this.textBoxReporterNumberMissingFilter.Size = new System.Drawing.Size(55, 20);
             this.textBoxReporterNumberMissingFilter.TabIndex = 12;
             this.textBoxReporterNumberMissingFilter.Text = "0";
             this.textBoxReporterNumberMissingFilter.Visible = false;
@@ -614,9 +659,10 @@
             // textBoxReporterIntensityFilter
             // 
             this.textBoxReporterIntensityFilter.Enabled = false;
-            this.textBoxReporterIntensityFilter.Location = new System.Drawing.Point(342, 45);
+            this.textBoxReporterIntensityFilter.Location = new System.Drawing.Point(256, 37);
+            this.textBoxReporterIntensityFilter.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.textBoxReporterIntensityFilter.Name = "textBoxReporterIntensityFilter";
-            this.textBoxReporterIntensityFilter.Size = new System.Drawing.Size(72, 22);
+            this.textBoxReporterIntensityFilter.Size = new System.Drawing.Size(55, 20);
             this.textBoxReporterIntensityFilter.TabIndex = 11;
             this.textBoxReporterIntensityFilter.Text = "0";
             this.textBoxReporterIntensityFilter.Visible = false;
@@ -626,9 +672,10 @@
             // 
             this.labelReporterIonIntensityFilter.AutoSize = true;
             this.labelReporterIonIntensityFilter.Enabled = false;
-            this.labelReporterIonIntensityFilter.Location = new System.Drawing.Point(212, 45);
+            this.labelReporterIonIntensityFilter.Location = new System.Drawing.Point(159, 37);
+            this.labelReporterIonIntensityFilter.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.labelReporterIonIntensityFilter.Name = "labelReporterIonIntensityFilter";
-            this.labelReporterIonIntensityFilter.Size = new System.Drawing.Size(114, 17);
+            this.labelReporterIonIntensityFilter.Size = new System.Drawing.Size(87, 13);
             this.labelReporterIonIntensityFilter.TabIndex = 9;
             this.labelReporterIonIntensityFilter.Text = "Median Intensity:";
             this.labelReporterIonIntensityFilter.Visible = false;
@@ -637,9 +684,10 @@
             // 
             this.labelReporterIonMissingFilter.AutoSize = true;
             this.labelReporterIonMissingFilter.Enabled = false;
-            this.labelReporterIonMissingFilter.Location = new System.Drawing.Point(212, 76);
+            this.labelReporterIonMissingFilter.Location = new System.Drawing.Point(159, 62);
+            this.labelReporterIonMissingFilter.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.labelReporterIonMissingFilter.Name = "labelReporterIonMissingFilter";
-            this.labelReporterIonMissingFilter.Size = new System.Drawing.Size(126, 17);
+            this.labelReporterIonMissingFilter.Size = new System.Drawing.Size(94, 13);
             this.labelReporterIonMissingFilter.TabIndex = 10;
             this.labelReporterIonMissingFilter.Text = "Missing Reporters:";
             this.labelReporterIonMissingFilter.Visible = false;
@@ -648,9 +696,10 @@
             // 
             this.checkBoxReporterIonFiltering.AutoSize = true;
             this.checkBoxReporterIonFiltering.Enabled = false;
-            this.checkBoxReporterIonFiltering.Location = new System.Drawing.Point(185, 21);
+            this.checkBoxReporterIonFiltering.Location = new System.Drawing.Point(139, 17);
+            this.checkBoxReporterIonFiltering.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.checkBoxReporterIonFiltering.Name = "checkBoxReporterIonFiltering";
-            this.checkBoxReporterIonFiltering.Size = new System.Drawing.Size(208, 21);
+            this.checkBoxReporterIonFiltering.Size = new System.Drawing.Size(157, 17);
             this.checkBoxReporterIonFiltering.TabIndex = 0;
             this.checkBoxReporterIonFiltering.Text = "Reporter Ion-Based Filtering";
             this.checkBoxReporterIonFiltering.UseVisualStyleBackColor = true;
@@ -664,9 +713,11 @@
             this.groupBoxChromatograms.Controls.Add(this.checkBoxChroMs2);
             this.groupBoxChromatograms.Controls.Add(this.checkBoxChroMs1);
             this.groupBoxChromatograms.Enabled = false;
-            this.groupBoxChromatograms.Location = new System.Drawing.Point(3, 545);
+            this.groupBoxChromatograms.Location = new System.Drawing.Point(2, 439);
+            this.groupBoxChromatograms.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.groupBoxChromatograms.Name = "groupBoxChromatograms";
-            this.groupBoxChromatograms.Size = new System.Drawing.Size(183, 80);
+            this.groupBoxChromatograms.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBoxChromatograms.Size = new System.Drawing.Size(137, 65);
             this.groupBoxChromatograms.TabIndex = 7;
             this.groupBoxChromatograms.TabStop = false;
             this.groupBoxChromatograms.Text = "Chromatogram Options";
@@ -674,9 +725,10 @@
             // checkBoxChroBP
             // 
             this.checkBoxChroBP.AutoSize = true;
-            this.checkBoxChroBP.Location = new System.Drawing.Point(70, 48);
+            this.checkBoxChroBP.Location = new System.Drawing.Point(52, 39);
+            this.checkBoxChroBP.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.checkBoxChroBP.Name = "checkBoxChroBP";
-            this.checkBoxChroBP.Size = new System.Drawing.Size(48, 21);
+            this.checkBoxChroBP.Size = new System.Drawing.Size(40, 17);
             this.checkBoxChroBP.TabIndex = 3;
             this.checkBoxChroBP.Text = "BP";
             this.toolTip1.SetToolTip(this.checkBoxChroBP, "Write a base peak chromatogram to disk. You must also\r\none or more of MS1 and MS2" +
@@ -686,9 +738,10 @@
             // checkBoxChroTIC
             // 
             this.checkBoxChroTIC.AutoSize = true;
-            this.checkBoxChroTIC.Location = new System.Drawing.Point(70, 21);
+            this.checkBoxChroTIC.Location = new System.Drawing.Point(52, 17);
+            this.checkBoxChroTIC.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.checkBoxChroTIC.Name = "checkBoxChroTIC";
-            this.checkBoxChroTIC.Size = new System.Drawing.Size(51, 21);
+            this.checkBoxChroTIC.Size = new System.Drawing.Size(43, 17);
             this.checkBoxChroTIC.TabIndex = 2;
             this.checkBoxChroTIC.Text = "TIC";
             this.toolTip1.SetToolTip(this.checkBoxChroTIC, "Write a total ion current chromatogram to disk. You must also\r\none or more of MS1" +
@@ -698,9 +751,10 @@
             // checkBoxChroMs2
             // 
             this.checkBoxChroMs2.AutoSize = true;
-            this.checkBoxChroMs2.Location = new System.Drawing.Point(6, 48);
+            this.checkBoxChroMs2.Location = new System.Drawing.Point(4, 39);
+            this.checkBoxChroMs2.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.checkBoxChroMs2.Name = "checkBoxChroMs2";
-            this.checkBoxChroMs2.Size = new System.Drawing.Size(58, 21);
+            this.checkBoxChroMs2.Size = new System.Drawing.Size(48, 17);
             this.checkBoxChroMs2.TabIndex = 1;
             this.checkBoxChroMs2.Text = "MS2";
             this.toolTip1.SetToolTip(this.checkBoxChroMs2, "Write a MS2 chromatogram to disk. You must also\r\none or more of TIC and BP.");
@@ -709,9 +763,10 @@
             // checkBoxChroMs1
             // 
             this.checkBoxChroMs1.AutoSize = true;
-            this.checkBoxChroMs1.Location = new System.Drawing.Point(6, 21);
+            this.checkBoxChroMs1.Location = new System.Drawing.Point(4, 17);
+            this.checkBoxChroMs1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.checkBoxChroMs1.Name = "checkBoxChroMs1";
-            this.checkBoxChroMs1.Size = new System.Drawing.Size(58, 21);
+            this.checkBoxChroMs1.Size = new System.Drawing.Size(48, 17);
             this.checkBoxChroMs1.TabIndex = 0;
             this.checkBoxChroMs1.Text = "MS1";
             this.toolTip1.SetToolTip(this.checkBoxChroMs1, "Write a MS1 chromatogram to disk. You must also\r\none or more of TIC and BP.");
@@ -728,12 +783,14 @@
             "TMT6",
             "TMT10",
             "TMT11",
+            "TMT16",
             "iTRAQ4",
             "iTRAQ8",
             "Custom"});
-            this.comboBoxLabelingReagents.Location = new System.Drawing.Point(28, 48);
+            this.comboBoxLabelingReagents.Location = new System.Drawing.Point(21, 39);
+            this.comboBoxLabelingReagents.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.comboBoxLabelingReagents.Name = "comboBoxLabelingReagents";
-            this.comboBoxLabelingReagents.Size = new System.Drawing.Size(121, 24);
+            this.comboBoxLabelingReagents.Size = new System.Drawing.Size(92, 21);
             this.comboBoxLabelingReagents.TabIndex = 17;
             this.toolTip1.SetToolTip(this.comboBoxLabelingReagents, "Select a labeling reagent from the drop down list.");
             this.comboBoxLabelingReagents.SelectedIndexChanged += new System.EventHandler(this.comboBoxLabelingReagents_SelectedIndexChanged);
@@ -742,9 +799,10 @@
             // textBoxMgfLowMass
             // 
             this.textBoxMgfLowMass.Enabled = false;
-            this.textBoxMgfLowMass.Location = new System.Drawing.Point(185, 19);
+            this.textBoxMgfLowMass.Location = new System.Drawing.Point(139, 15);
+            this.textBoxMgfLowMass.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.textBoxMgfLowMass.Name = "textBoxMgfLowMass";
-            this.textBoxMgfLowMass.Size = new System.Drawing.Size(100, 22);
+            this.textBoxMgfLowMass.Size = new System.Drawing.Size(76, 20);
             this.textBoxMgfLowMass.TabIndex = 2;
             this.textBoxMgfLowMass.Text = "0";
             this.toolTip1.SetToolTip(this.textBoxMgfLowMass, resources.GetString("textBoxMgfLowMass.ToolTip"));
@@ -754,9 +812,10 @@
             // checkBoxMgfLowMass
             // 
             this.checkBoxMgfLowMass.AutoSize = true;
-            this.checkBoxMgfLowMass.Location = new System.Drawing.Point(6, 21);
+            this.checkBoxMgfLowMass.Location = new System.Drawing.Point(4, 17);
+            this.checkBoxMgfLowMass.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.checkBoxMgfLowMass.Name = "checkBoxMgfLowMass";
-            this.checkBoxMgfLowMass.Size = new System.Drawing.Size(173, 21);
+            this.checkBoxMgfLowMass.Size = new System.Drawing.Size(135, 17);
             this.checkBoxMgfLowMass.TabIndex = 0;
             this.checkBoxMgfLowMass.Text = "Low Mass Cutoff (m/z):";
             this.toolTip1.SetToolTip(this.checkBoxMgfLowMass, resources.GetString("checkBoxMgfLowMass.ToolTip"));
@@ -765,9 +824,10 @@
             // 
             // buttonGo
             // 
-            this.buttonGo.Location = new System.Drawing.Point(3, 9);
+            this.buttonGo.Location = new System.Drawing.Point(2, 7);
+            this.buttonGo.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.buttonGo.Name = "buttonGo";
-            this.buttonGo.Size = new System.Drawing.Size(555, 68);
+            this.buttonGo.Size = new System.Drawing.Size(416, 55);
             this.buttonGo.TabIndex = 0;
             this.buttonGo.Text = "Go!";
             this.toolTip1.SetToolTip(this.buttonGo, "Start processing!");
@@ -786,10 +846,11 @@
             this.flowLayoutPanel1.Controls.Add(this.groupBoxMgfOpts);
             this.flowLayoutPanel1.Controls.Add(this.groupBoxChromatograms);
             this.flowLayoutPanel1.Controls.Add(this.panel1);
-            this.flowLayoutPanel1.Location = new System.Drawing.Point(10, 36);
-            this.flowLayoutPanel1.MaximumSize = new System.Drawing.Size(781, 720);
+            this.flowLayoutPanel1.Location = new System.Drawing.Point(8, 29);
+            this.flowLayoutPanel1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.flowLayoutPanel1.MaximumSize = new System.Drawing.Size(586, 585);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
-            this.flowLayoutPanel1.Size = new System.Drawing.Size(781, 639);
+            this.flowLayoutPanel1.Size = new System.Drawing.Size(586, 519);
             this.flowLayoutPanel1.TabIndex = 8;
             // 
             // groupBoxQuantOpt
@@ -805,9 +866,11 @@
             this.groupBoxQuantOpt.Controls.Add(this.textBoxReporterIntensityFilter);
             this.groupBoxQuantOpt.Controls.Add(this.labelReporterIonIntensityFilter);
             this.groupBoxQuantOpt.Enabled = false;
-            this.groupBoxQuantOpt.Location = new System.Drawing.Point(3, 446);
+            this.groupBoxQuantOpt.Location = new System.Drawing.Point(2, 359);
+            this.groupBoxQuantOpt.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.groupBoxQuantOpt.Name = "groupBoxQuantOpt";
-            this.groupBoxQuantOpt.Size = new System.Drawing.Size(426, 93);
+            this.groupBoxQuantOpt.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBoxQuantOpt.Size = new System.Drawing.Size(320, 76);
             this.groupBoxQuantOpt.TabIndex = 16;
             this.groupBoxQuantOpt.TabStop = false;
             this.groupBoxQuantOpt.Text = "Quantification Options";
@@ -816,9 +879,10 @@
             // 
             this.checkBoxReporterFilterMGF.AutoSize = true;
             this.checkBoxReporterFilterMGF.Enabled = false;
-            this.checkBoxReporterFilterMGF.Location = new System.Drawing.Point(354, 101);
+            this.checkBoxReporterFilterMGF.Location = new System.Drawing.Point(266, 82);
+            this.checkBoxReporterFilterMGF.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.checkBoxReporterFilterMGF.Name = "checkBoxReporterFilterMGF";
-            this.checkBoxReporterFilterMGF.Size = new System.Drawing.Size(60, 21);
+            this.checkBoxReporterFilterMGF.Size = new System.Drawing.Size(49, 17);
             this.checkBoxReporterFilterMGF.TabIndex = 15;
             this.checkBoxReporterFilterMGF.Text = "MGF";
             this.checkBoxReporterFilterMGF.UseVisualStyleBackColor = true;
@@ -828,9 +892,10 @@
             // 
             this.checkBoxReporterFilterMatrix.AutoSize = true;
             this.checkBoxReporterFilterMatrix.Enabled = false;
-            this.checkBoxReporterFilterMatrix.Location = new System.Drawing.Point(281, 101);
+            this.checkBoxReporterFilterMatrix.Location = new System.Drawing.Point(211, 82);
+            this.checkBoxReporterFilterMatrix.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.checkBoxReporterFilterMatrix.Name = "checkBoxReporterFilterMatrix";
-            this.checkBoxReporterFilterMatrix.Size = new System.Drawing.Size(67, 21);
+            this.checkBoxReporterFilterMatrix.Size = new System.Drawing.Size(54, 17);
             this.checkBoxReporterFilterMatrix.TabIndex = 14;
             this.checkBoxReporterFilterMatrix.Text = "Matrix";
             this.checkBoxReporterFilterMatrix.UseVisualStyleBackColor = true;
@@ -840,9 +905,10 @@
             // 
             this.labelReporterIonFilteringApplyTo.AutoSize = true;
             this.labelReporterIonFilteringApplyTo.Enabled = false;
-            this.labelReporterIonFilteringApplyTo.Location = new System.Drawing.Point(212, 101);
+            this.labelReporterIonFilteringApplyTo.Location = new System.Drawing.Point(159, 82);
+            this.labelReporterIonFilteringApplyTo.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.labelReporterIonFilteringApplyTo.Name = "labelReporterIonFilteringApplyTo";
-            this.labelReporterIonFilteringApplyTo.Size = new System.Drawing.Size(63, 17);
+            this.labelReporterIonFilteringApplyTo.Size = new System.Drawing.Size(48, 13);
             this.labelReporterIonFilteringApplyTo.TabIndex = 13;
             this.labelReporterIonFilteringApplyTo.Text = "Apply to:";
             this.labelReporterIonFilteringApplyTo.Visible = false;
@@ -852,9 +918,11 @@
             this.groupBoxMgfOpts.Controls.Add(this.textBoxMgfLowMass);
             this.groupBoxMgfOpts.Controls.Add(this.checkBoxMgfLowMass);
             this.groupBoxMgfOpts.Enabled = false;
-            this.groupBoxMgfOpts.Location = new System.Drawing.Point(435, 446);
+            this.groupBoxMgfOpts.Location = new System.Drawing.Point(326, 359);
+            this.groupBoxMgfOpts.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.groupBoxMgfOpts.Name = "groupBoxMgfOpts";
-            this.groupBoxMgfOpts.Size = new System.Drawing.Size(318, 93);
+            this.groupBoxMgfOpts.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBoxMgfOpts.Size = new System.Drawing.Size(238, 76);
             this.groupBoxMgfOpts.TabIndex = 17;
             this.groupBoxMgfOpts.TabStop = false;
             this.groupBoxMgfOpts.Text = "MGF Options";
@@ -862,9 +930,10 @@
             // panel1
             // 
             this.panel1.Controls.Add(this.buttonGo);
-            this.panel1.Location = new System.Drawing.Point(192, 545);
+            this.panel1.Location = new System.Drawing.Point(143, 439);
+            this.panel1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(561, 80);
+            this.panel1.Size = new System.Drawing.Size(421, 65);
             this.panel1.TabIndex = 8;
             // 
             // menuStrip1
@@ -873,9 +942,10 @@
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileStripMenuItem,
             this.helpToolStripMenuItem});
-            this.menuStrip1.Location = new System.Drawing.Point(10, 0);
+            this.menuStrip1.Location = new System.Drawing.Point(8, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(781, 28);
+            this.menuStrip1.Padding = new System.Windows.Forms.Padding(4, 2, 0, 2);
+            this.menuStrip1.Size = new System.Drawing.Size(585, 24);
             this.menuStrip1.TabIndex = 9;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -887,34 +957,34 @@
             this.toolStripMenuItemSaveParameters,
             this.exitToolStripMenuItemExit});
             this.fileStripMenuItem.Name = "fileStripMenuItem";
-            this.fileStripMenuItem.Size = new System.Drawing.Size(44, 24);
+            this.fileStripMenuItem.Size = new System.Drawing.Size(37, 20);
             this.fileStripMenuItem.Text = "File";
             // 
             // toolStripMenuItemNewParameters
             // 
             this.toolStripMenuItemNewParameters.Name = "toolStripMenuItemNewParameters";
-            this.toolStripMenuItemNewParameters.Size = new System.Drawing.Size(197, 26);
+            this.toolStripMenuItemNewParameters.Size = new System.Drawing.Size(165, 22);
             this.toolStripMenuItemNewParameters.Text = "New Parameters";
             this.toolStripMenuItemNewParameters.Click += new System.EventHandler(this.toolStripMenuItemNewParameters_Click);
             // 
             // toolStripMenuItemOpenParameters
             // 
             this.toolStripMenuItemOpenParameters.Name = "toolStripMenuItemOpenParameters";
-            this.toolStripMenuItemOpenParameters.Size = new System.Drawing.Size(197, 26);
+            this.toolStripMenuItemOpenParameters.Size = new System.Drawing.Size(165, 22);
             this.toolStripMenuItemOpenParameters.Text = "Open Parameters";
             this.toolStripMenuItemOpenParameters.Click += new System.EventHandler(this.toolStripMenuItemOpenParameters_Click);
             // 
             // toolStripMenuItemSaveParameters
             // 
             this.toolStripMenuItemSaveParameters.Name = "toolStripMenuItemSaveParameters";
-            this.toolStripMenuItemSaveParameters.Size = new System.Drawing.Size(197, 26);
+            this.toolStripMenuItemSaveParameters.Size = new System.Drawing.Size(165, 22);
             this.toolStripMenuItemSaveParameters.Text = "Save Parameters";
             this.toolStripMenuItemSaveParameters.Click += new System.EventHandler(this.toolStripMenuItemSaveParameters_Click);
             // 
             // exitToolStripMenuItemExit
             // 
             this.exitToolStripMenuItemExit.Name = "exitToolStripMenuItemExit";
-            this.exitToolStripMenuItemExit.Size = new System.Drawing.Size(197, 26);
+            this.exitToolStripMenuItemExit.Size = new System.Drawing.Size(165, 22);
             this.exitToolStripMenuItemExit.Text = "Exit";
             this.exitToolStripMenuItemExit.Click += new System.EventHandler(this.exitToolStripMenuItemExit_Click);
             // 
@@ -923,28 +993,29 @@
             this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.aboutToolStripMenuItem});
             this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
-            this.helpToolStripMenuItem.Size = new System.Drawing.Size(53, 24);
+            this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
             this.helpToolStripMenuItem.Text = "Help";
             // 
             // aboutToolStripMenuItem
             // 
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(192, 26);
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
             this.aboutToolStripMenuItem.Text = "About RawTools";
             this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 
             // RawToolsGUI
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoScroll = true;
-            this.ClientSize = new System.Drawing.Size(801, 680);
+            this.ClientSize = new System.Drawing.Size(601, 552);
             this.Controls.Add(this.flowLayoutPanel1);
             this.Controls.Add(this.menuStrip1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
+            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.Name = "RawToolsGUI";
-            this.Padding = new System.Windows.Forms.Padding(10, 0, 10, 15);
+            this.Padding = new System.Windows.Forms.Padding(8, 0, 8, 12);
             this.Text = "RawToolsGUI";
             this.groupBoxMode.ResumeLayout(false);
             this.groupBoxMode.PerformLayout();

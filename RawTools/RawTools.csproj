@@ -85,8 +85,15 @@
     <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="CLParserForNetFramework">
-      <HintPath>..\..\..\..\NuGet\CLParserForNetFramework.dll</HintPath>
+    <Reference Include="CLParserForNetFramework, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\softwareRepository\CLParser\CLParserForNetFramework\CLParserForNetFramework\bin\Release\CLParserForNetFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="OpenMcdf, Version=2.2.1.9, Culture=neutral, PublicKeyToken=fdbb1629d7c00800, processorArchitecture=MSIL">
+      <HintPath>..\packages\OpenMcdf.2.2.1.9\lib\net40\OpenMcdf.dll</HintPath>
+    </Reference>
+    <Reference Include="OpenMcdf.Extensions, Version=2.3.0.0, Culture=neutral, PublicKeyToken=fdbb1629d7c00800, processorArchitecture=MSIL">
+      <HintPath>..\packages\OpenMcdf.Extensions.2.2.1.4\lib\net40\OpenMcdf.Extensions.dll</HintPath>
     </Reference>
     <Reference Include="Serilog, Version=2.0.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
       <HintPath>..\packages\Serilog.2.7.1\lib\net46\Serilog.dll</HintPath>
@@ -97,8 +104,17 @@
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
+    <Reference Include="System.IO.FileSystem.AccessControl, Version=4.0.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.IO.FileSystem.AccessControl.4.5.0\lib\net461\System.IO.FileSystem.AccessControl.dll</HintPath>
+    </Reference>
     <Reference Include="System.Numerics" />
     <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security.AccessControl, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Security.AccessControl.4.5.0\lib\net461\System.Security.AccessControl.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Security.Principal.Windows, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Security.Principal.Windows.4.5.0\lib\net461\System.Security.Principal.Windows.dll</HintPath>
+    </Reference>
     <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net461\System.ValueTuple.dll</HintPath>
     </Reference>
@@ -109,20 +125,16 @@
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
     <Reference Include="ThermoFisher.CommonCore.BackgroundSubtraction, Version=5.0.0.0, Culture=neutral, PublicKeyToken=1aef06afb5abd953, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\NuGet\RawFileReader_old\ThermoFisher.CommonCore.BackgroundSubtraction.dll</HintPath>
+      <HintPath>..\packages\ThermoFisher.CommonCore.BackgroundSubtraction.5.0.0.7\lib\netstandard2.0\ThermoFisher.CommonCore.BackgroundSubtraction.dll</HintPath>
     </Reference>
     <Reference Include="ThermoFisher.CommonCore.Data, Version=5.0.0.0, Culture=neutral, PublicKeyToken=1aef06afb5abd953, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\NuGet\RawFileReader_old\ThermoFisher.CommonCore.Data.dll</HintPath>
+      <HintPath>..\packages\ThermoFisher.CommonCore.Data.5.0.0.7\lib\netstandard2.0\ThermoFisher.CommonCore.Data.dll</HintPath>
     </Reference>
     <Reference Include="ThermoFisher.CommonCore.MassPrecisionEstimator, Version=5.0.0.0, Culture=neutral, PublicKeyToken=1aef06afb5abd953, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\NuGet\RawFileReader_old\ThermoFisher.CommonCore.MassPrecisionEstimator.dll</HintPath>
+      <HintPath>..\packages\ThermoFisher.CommonCore.MassPrecisionEstimator.5.0.0.7\lib\netstandard2.0\ThermoFisher.CommonCore.MassPrecisionEstimator.dll</HintPath>
     </Reference>
     <Reference Include="ThermoFisher.CommonCore.RawFileReader, Version=5.0.0.0, Culture=neutral, PublicKeyToken=1aef06afb5abd953, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\NuGet\RawFileReader_old\ThermoFisher.CommonCore.RawFileReader.dll</HintPath>
+      <HintPath>..\packages\ThermoFisher.CommonCore.RawFileReader.5.0.0.7\lib\netstandard2.0\ThermoFisher.CommonCore.RawFileReader.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
