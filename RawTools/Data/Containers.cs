@@ -30,6 +30,9 @@ using ThermoFisher.CommonCore.Data;
 using ThermoFisher.CommonCore.Data.FilterEnums;
 using RawTools.Utilities;
 using RawTools.Data.Collections;
+using System.Collections.Specialized;
+using RawTools.Utilities.MathStats;
+using static RawTools.Utilities.MathStats.MatrixOperations;
 
 namespace RawTools.Data.Containers
 {
@@ -224,35 +227,95 @@ namespace RawTools.Data.Containers
 
     class ReporterIon
     {
-        public double Mass, Intensity, Noise, Resolution, Baseline, SignalToNoise, ppmMassError;
+        public double Mass, Intensity, Noise, Resolution, Baseline, ppmMassError;
+        public double SignalToNoise => Intensity / Noise;
+        public string Reporter;
 
         // for all centroid stream data
-        public ReporterIon(double mass, double intensity, double noise, double resolution, double baseline, double s2n, double ppmError)
+        public ReporterIon(double mass, double intensity, double noise, double resolution, double baseline, double s2n, double ppmError, string reporter)
         {
             Mass = mass;
             Intensity = intensity;
             Noise = noise;
             Resolution = resolution;
             Baseline = baseline;
-            SignalToNoise = s2n;
             ppmMassError = ppmError;
+            Reporter = reporter;
         }
 
         // for just mass and intensity (useful for ITMS data)
-        public ReporterIon(double mass, double intensity, double ppmError)
+        public ReporterIon(double mass, double intensity, double ppmError, string reporter)
         {
             Mass = mass;
             Intensity = intensity;
             Baseline = -1;
             Noise = -1;
             Resolution = -1;
-            SignalToNoise = -1;
             ppmMassError = ppmError;
+            Reporter = reporter;
         }
     }
 
-    class QuantData: Dictionary<string, ReporterIon>
+    class QuantData : Dictionary<string, ReporterIon>
+    { }
+
+    class ImpurityData
     {
+        public double[][] CorrectionMatrix;
+        public ImpurityData(string impurityTable)
+        {
+            char sep;
+            if (impurityTable.EndsWith(".csv"))
+            {
+                sep = ',';
+            }
+            else if (impurityTable.EndsWith(".tsv"))
+            {
+                sep = '\t';
+            }
+            else
+            {
+                throw new FileLoadException("The impurity table must be in .csv or .tsv format.");
+            }
+
+            using (var f = new StreamReader(impurityTable))
+            {
+                var header = f.ReadLine().Split(separator: sep).ToList();
+                int startIndex = header.FindIndex(x => x.Contains('-'));
+                int n = header.Count - startIndex;
+                
+                CorrectionMatrix = MatrixOperations.MatrixCreate(n, n);
+                
+                List<List<double>> contents = new List<List<double>>();
+                while (!f.EndOfStream)
+                {
+                    contents.Add(f.ReadLine().Replace("%", "")
+                        .Split(separator:sep).ToList().ConvertAll(Convert.ToDouble));
+                }
+
+                for (int row = startIndex; row < header.Count; row++)
+                {
+                    var sum = contents[row].Sum();
+                    contents[row] = (from x in contents[row] select x / sum).ToList();
+                }
+
+                for (int row = startIndex; row < header.Count; row++)
+                {
+                    for (int column = 0; column < contents.Count; column++)
+                    {
+                        if (column >= n)
+                        {
+                            CorrectionMatrix[column][row] = 0.0;
+                        }
+                        else
+                        {
+                            CorrectionMatrix[column][row] = contents[row][column];
+                        }
+                    }
+                }
+            }
+            CorrectionMatrix = MatrixInverse(CorrectionMatrix);
+        }
     }
 
     enum Operations
