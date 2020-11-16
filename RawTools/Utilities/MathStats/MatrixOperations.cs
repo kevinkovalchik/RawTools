@@ -20,6 +20,8 @@
 // any third-party libraries ditributed with RawTools. All third party
 // licenses are provided in accompanying files as outline in the NOTICE.using System;
 
+using System;
+
 namespace RawTools.Utilities.MathStats
 {
     public static class MatrixOperations
