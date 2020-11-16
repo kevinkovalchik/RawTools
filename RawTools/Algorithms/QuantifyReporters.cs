@@ -20,6 +20,8 @@ using System;
 using System.Linq;
 using RawTools.Data.Containers;
 using RawTools.Utilities;
+using System.Collections.Generic;
+using static RawTools.Utilities.MathStats.MatrixOperations;
 
 namespace RawTools.Algorithms
 {
@@ -38,6 +40,7 @@ namespace RawTools.Algorithms
             for (int i = 0; i < reporters.Masses.Length; i++)
             {
                 mass = reporters.Masses[i];
+                string reporter = reporters.Labels[i];
                 int[] indices = centroidStream.Masses.FindAllIndex1((x) =>
                 {
                     if (Math.Abs(x - mass) / mass * 1e6 < 10)
@@ -77,11 +80,11 @@ namespace RawTools.Algorithms
                         quantData.Add(reporters.Labels[i], new ReporterIon(centroidStream.Masses[index], centroidStream.Intensities[index],
                                                                    centroidStream.Noises[index], centroidStream.Resolutions[index],
                                                                    centroidStream.Baselines[index], centroidStream.SignalToNoise[index],
-                                                                   massDiff.Min() / mass * 1e6));
+                                                                   massDiff.Min() / mass * 1e6, reporter));
                     }
                     else
                     {
-                        quantData.Add(reporters.Labels[i], new ReporterIon(0, 0, 0, 0, 0, 0, 0));
+                        quantData.Add(reporters.Labels[i], new ReporterIon(0, 0, 0, 0, 0, 0, 0, reporter));
                     }
                 }
                 else
@@ -93,11 +96,11 @@ namespace RawTools.Algorithms
                         quantData.Add(reporters.Labels[i], new ReporterIon(centroidStream.Masses[index], centroidStream.Intensities[index],
                                                                    centroidStream.Noises[index], centroidStream.Resolutions[index],
                                                                    centroidStream.Baselines[index], centroidStream.SignalToNoise[index],
-                                                                   diff / mass * 1e6));
+                                                                   diff / mass * 1e6, reporter));
                     }
                     else
                     {
-                        quantData.Add(reporters.Labels[i], new ReporterIon(0, 0, 0, 0, 0, 0, 0));
+                        quantData.Add(reporters.Labels[i], new ReporterIon(0, 0, 0, 0, 0, 0, 0, reporter));
                     }
                 }
             }
@@ -116,6 +119,7 @@ namespace RawTools.Algorithms
             for (int i = 0; i < reporters.Masses.Length; i++)
             {
                 double mass = reporters.Masses[i];
+                string reporter = reporters.Labels[i];
                 int[] indices = segmentedScan.Positions.FindAllIndex1((x) =>
                 {
                     if (Math.Abs(x - mass) / mass * 1e6 < 10)
@@ -138,7 +142,7 @@ namespace RawTools.Algorithms
                     index = Array.Find(indices, (x) => { return massDiff[x] == massDiff.Min(); });
 
                     quantData.Add(reporters.Labels[i], new ReporterIon(segmentedScan.Positions[index],
-                        segmentedScan.Intensities[index], massDiff[index] / mass * 1e6));
+                        segmentedScan.Intensities[index], massDiff[index] / mass * 1e6, reporter));
 
                 }
                 else
@@ -148,11 +152,11 @@ namespace RawTools.Algorithms
                         index = indices[0];
                         var diff = Math.Abs(segmentedScan.Positions[index] - mass);
                         quantData.Add(reporters.Labels[i], new ReporterIon(segmentedScan.Positions[index],
-                            segmentedScan.Intensities[index], diff / mass * 1e6));
+                            segmentedScan.Intensities[index], diff / mass * 1e6, reporter));
                     }
                     else
                     {
-                        quantData.Add(reporters.Labels[i], new ReporterIon(0, 0, 0));
+                        quantData.Add(reporters.Labels[i], new ReporterIon(0, 0, 0, reporter));
                     }
 
                 }
@@ -160,6 +164,18 @@ namespace RawTools.Algorithms
 
             }
             return quantData;
+        }
+
+        public static void CorrectReporterImpurities(ref QuantData quantData, ImpurityData impurityData)
+        {
+            List<ReporterIon> reporterIons = quantData.Values.OrderBy(x => x.Mass).ToList();
+            double[][] intensities = new double[][1];
+            intensities[0] = (from x in reporterIons select x.Intensity).ToArray();
+            double[] corrected_intensities = MatrixProduct(impurityData.CorrectionMatrix, intensities)[0];
+            for (int i = 0; i < reporterIons.Count; i++)
+            {
+                quantData[reporterIons[i].Reporter].Intensity = corrected_intensities[i];
+            }
         }
     }
 }
