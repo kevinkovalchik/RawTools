@@ -156,7 +156,6 @@
     <Compile Include="Algorithms\Ms1Interference.cs" />
     <Compile Include="Algorithms\QuantifyAllScans.cs" />
     <Compile Include="Algorithms\QuantifyReporters.cs" />
-    <Compile Include="Algorithms\TmtPurityCorrection.cs" />
     <Compile Include="ArgumentParser.cs" />
     <Compile Include="Constants\Constants.cs" />
     <Compile Include="Data\Collections.cs" />
@@ -173,6 +172,7 @@
     <Compile Include="QC\QcWorkflow.cs" />
     <Compile Include="QC\XTandem.cs" />
     <Compile Include="Utilities\MathStats\FitScores.cs" />
+    <Compile Include="Utilities\MathStats\MatrixOperations.cs" />
     <Compile Include="Utilities\MathStats\ToleranceCalculator.cs" />
     <Compile Include="WorkFlows\DIA.cs" />
     <Compile Include="WorkFlows\DDA.cs" />
