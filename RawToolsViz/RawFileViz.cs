@@ -27,7 +27,6 @@ namespace RawToolsViz
     using OxyPlot.Series;
     using OxyPlot.Axes;
     using OxyPlot.Annotations;
-    using PresentationControls;
 
     public partial class RawFileViz : Form
     {

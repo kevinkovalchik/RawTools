@@ -96,30 +96,6 @@ namespace RawTools.Data.Collections
     class QuantDataCollection : Dictionary<int, QuantData>
     {
         public string LabelingReagents;
-        public string TmtImpurityTable;
-
-        public void CorrectTmtPurity()
-        {
-            List<string> Table = new List<string>();
-            using (StreamReader table = new StreamReader(this.TmtImpurityTable))
-            {
-                while (!table.EndOfStream)
-                {
-                    Table.Add(table.ReadLine());
-                }
-            }
-            List<string> Header = Table[0].Split(',').ToList();
-            int n_reporters = Table.Count - 1;
-            List<List<float>> CorrectionMatrix = new List<List<float>>();
-            for (int i = 0; i < n_reporters; i++)
-            {
-                CorrectionMatrix[i] = new List<float>();
-                for (int j = 3; j < 8; j++)
-                {
-                    CorrectionMatrix[i].Add(Table[])
-                }
-            }
-        }
     }
 
     class ScanMetaDataCollectionDDA

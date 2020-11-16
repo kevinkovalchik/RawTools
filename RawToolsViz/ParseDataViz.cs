@@ -18,7 +18,6 @@ namespace RawToolsViz
     using OxyPlot;
     using OxyPlot.Series;
     using OxyPlot.Axes;
-    using PresentationControls;
 
     public partial class ParseDataViz : Form
     {
