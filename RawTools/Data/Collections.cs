@@ -30,6 +30,7 @@ using ThermoFisher.CommonCore.Data.FilterEnums;
 using RawTools.Data.Containers;
 using RawTools.Data.Extraction;
 using System.Xml.Serialization;
+using System.IO;
 
 namespace RawTools.Data.Collections
 {

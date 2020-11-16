@@ -158,6 +158,14 @@ namespace RawTools.ArgumentParser
                 defaultValue: 4,
                 helpText: "Maximum number of concurrent processes."));
 
+            parser.Add(new Argument(
+                name: "TmtImpurityTable",
+                shortArgument: "-i",
+                longArgument: "-impurities",
+                required: false,
+                typeOf: typeof(string),
+                helpText: "Path to a TMT impurity table. To save an example table you can modify, use the command \"RawTools -printtable LABEL\" where LABEL is one of the available TMT labels."));
+
             parser.AddMutuallyExclusiveGroup(new List<string> { "RawFiles", "RawFileDirectory" });
             parser.AddMutuallyExclusiveGroup(new List<string> { "RawFiles", "QcDirectory" });
 
