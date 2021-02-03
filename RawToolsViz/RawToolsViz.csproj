@@ -33,28 +33,25 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="CheckBoxComboBox">
-      <HintPath>..\..\..\..\NuGet\CheckBoxComboBox.dll</HintPath>
+      <HintPath>..\..\CheckBoxComboBox\CheckBoxComboBox.dll</HintPath>
     </Reference>
     <Reference Include="mscorlib" />
-    <Reference Include="OxyPlot, Version=1.0.0.0, Culture=neutral, PublicKeyToken=638079a8f0bd61e9, processorArchitecture=MSIL">
-      <HintPath>..\packages\OxyPlot.Core.1.0.0\lib\net45\OxyPlot.dll</HintPath>
+    <Reference Include="OxyPlot, Version=2.0.0.0, Culture=neutral, PublicKeyToken=638079a8f0bd61e9, processorArchitecture=MSIL">
+      <HintPath>..\packages\OxyPlot.Core.2.0.0\lib\net45\OxyPlot.dll</HintPath>
     </Reference>
-    <Reference Include="OxyPlot.WindowsForms, Version=1.0.0.0, Culture=neutral, PublicKeyToken=245eacd6b5d2d338, processorArchitecture=MSIL">
-      <HintPath>..\packages\OxyPlot.WindowsForms.1.0.0\lib\net45\OxyPlot.WindowsForms.dll</HintPath>
+    <Reference Include="OxyPlot.WindowsForms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=245eacd6b5d2d338, processorArchitecture=MSIL">
+      <HintPath>..\packages\OxyPlot.WindowsForms.2.0.0\lib\net45\OxyPlot.WindowsForms.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.IO.FileSystem.AccessControl, Version=4.0.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <HintPath>..\packages\System.IO.FileSystem.AccessControl.4.5.0\lib\net461\System.IO.FileSystem.AccessControl.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="System.IO.FileSystem.AccessControl, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.IO.FileSystem.AccessControl.5.0.0\lib\net461\System.IO.FileSystem.AccessControl.dll</HintPath>
     </Reference>
-    <Reference Include="System.Security.AccessControl, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <HintPath>..\packages\System.Security.AccessControl.4.5.0\lib\net461\System.Security.AccessControl.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="System.Security.AccessControl, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Security.AccessControl.5.0.0\lib\net461\System.Security.AccessControl.dll</HintPath>
     </Reference>
-    <Reference Include="System.Security.Principal.Windows, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <HintPath>..\packages\System.Security.Principal.Windows.4.5.0\lib\net461\System.Security.Principal.Windows.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="System.Security.Principal.Windows, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Security.Principal.Windows.5.0.0\lib\net461\System.Security.Principal.Windows.dll</HintPath>
     </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -66,19 +63,19 @@
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="ThermoFisher.CommonCore.BackgroundSubtraction, Version=5.0.0.0, Culture=neutral, PublicKeyToken=1aef06afb5abd953">
-      <HintPath>..\packages\ThermoFisher.CommonCore.BackgroundSubtraction.5.0.0.7\lib\netstandard2.0\ThermoFisher.CommonCore.BackgroundSubtraction.dll</HintPath>
+      <HintPath>..\..\ThermoLibs\ThermoFisher.CommonCore.BackgroundSubtraction.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="ThermoFisher.CommonCore.Data, Version=5.0.0.0, Culture=neutral, PublicKeyToken=1aef06afb5abd953">
-      <HintPath>..\packages\ThermoFisher.CommonCore.Data.5.0.0.7\lib\netstandard2.0\ThermoFisher.CommonCore.Data.dll</HintPath>
+      <HintPath>..\..\ThermoLibs\ThermoFisher.CommonCore.Data.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="ThermoFisher.CommonCore.MassPrecisionEstimator, Version=5.0.0.0, Culture=neutral, PublicKeyToken=1aef06afb5abd953">
-      <HintPath>..\packages\ThermoFisher.CommonCore.MassPrecisionEstimator.5.0.0.7\lib\netstandard2.0\ThermoFisher.CommonCore.MassPrecisionEstimator.dll</HintPath>
+      <HintPath>..\..\ThermoLibs\ThermoFisher.CommonCore.MassPrecisionEstimator.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="ThermoFisher.CommonCore.RawFileReader, Version=5.0.0.0, Culture=neutral, PublicKeyToken=1aef06afb5abd953">
-      <HintPath>..\packages\ThermoFisher.CommonCore.RawFileReader.5.0.0.7\lib\netstandard2.0\ThermoFisher.CommonCore.RawFileReader.dll</HintPath>
+      <HintPath>..\..\ThermoLibs\ThermoFisher.CommonCore.RawFileReader.dll</HintPath>
       <Private>True</Private>
     </Reference>
   </ItemGroup>
