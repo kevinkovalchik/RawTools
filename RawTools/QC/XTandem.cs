@@ -74,11 +74,11 @@ namespace RawTools.QC
             // need to check where the fragment scan is happening to assign mass error
             if (methodData.MassAnalyzers[MSOrderType.Ms2] == MassAnalyzerType.MassAnalyzerFTMS)
             {
-                customParameters.AddNoteToXTandemParameters(type: "input", label: "spectrum, fragment monoisotopic mass error", value: "0.5");
+                customParameters.AddNoteToXTandemParameters(type: "input", label: "spectrum, fragment monoisotopic mass error", value: "0.05");
             }
             else
             {
-                customParameters.AddNoteToXTandemParameters(type: "input", label: "spectrum, fragment monoisotopic mass error", value: "0.05");
+                customParameters.AddNoteToXTandemParameters(type: "input", label: "spectrum, fragment monoisotopic mass error", value: "0.5");
             }
             customParameters.AddNoteToXTandemParameters(type: "input", label: "spectrum, fragment monoisotopic mass error units", value: "Daltons");
 

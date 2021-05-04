@@ -25,11 +25,11 @@ namespace RawTools.ArgumentParser
     {
         public static ClParser Create()
         {
-            ClParser parser = new ClParser("Welcome to the RawTools page! RawTools is an open-source and freely " +
-                "available package designed to perform scan data parsing and quantification, and quality control " +
-                "analysis of Thermo Orbitrap raw mass spectrometer files. RawTools uses the Thermo RawFileReader " +
-                "library (Copyright © 2016 by Thermo Fisher Scientific, Inc. All rights reserved). RawTools is " +
-                "fully compatible with Windows, Linux, and MacOS operating systems.");
+            ClParser parser = new ClParser("Welcome to the main page for RawTools version 2.0.3a! RawTools is an " +
+                "open-source and freely available package designed to perform scan data parsing and quantification, " +
+                "and quality control analysis of Thermo Orbitrap raw mass spectrometer files. RawTools uses the " +
+                "Thermo RawFileReader library (Copyright © 2016 by Thermo Fisher Scientific, Inc. All rights reserved). " +
+                "RawTools is fully compatible with Windows, Linux, and MacOS operating systems.");
 
             parser.Add(new Argument(name: "RawFiles", shortArgument: "-f", longArgument: "-files", required: false,
                 typeOf: typeof(List<string>), allowList: true,
