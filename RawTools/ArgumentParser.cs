@@ -25,7 +25,7 @@ namespace RawTools.ArgumentParser
     {
         public static ClParser Create()
         {
-            ClParser parser = new ClParser("Welcome to the main page for RawTools version 2.0.3a! RawTools is an " +
+            ClParser parser = new ClParser("Welcome to the main page for RawTools version 2.0.4! RawTools is an " +
                 "open-source and freely available package designed to perform scan data parsing and quantification, " +
                 "and quality control analysis of Thermo Orbitrap raw mass spectrometer files. RawTools uses the " +
                 "Thermo RawFileReader library (Copyright © 2016 by Thermo Fisher Scientific, Inc. All rights reserved). " +
@@ -64,7 +64,7 @@ namespace RawTools.ArgumentParser
             parser.Add(new Argument(name: "LabelingReagent", shortArgument: "-r", longArgument: "-labellingreagent", required: false,
                 typeOf: typeof(string),
                 helpText: "Required for reporter ion quantification. Reagents used to label peptides, required if using quant option. " +
-                "Available options are: {TMT0, TMT2, TMT6, TMT10, TMT11, TMT16, iTRAQ4, iTRAQ8}."));
+                "Available options are: {TMT0, TMT2, TMT6, TMT10, TMT11, TMT16, TMT18, iTRAQ4, iTRAQ8}."));
 
             parser.Add(new Argument(name: "UnlabeledQuant", shortArgument: "-u", longArgument: "-unlabeledquant", required: false,
                 typeOf: typeof(bool),
@@ -74,6 +74,12 @@ namespace RawTools.ArgumentParser
             parser.Add(new Argument(name: "WriteMGF", shortArgument: "-m", longArgument: "-mgf", required: false,
                 typeOf: typeof(bool),
                 helpText: "Writes a standard MGF file. To specify a mass cutoff use the -c argument."));
+
+            parser.Add(new Argument(name: "WriteMgfLevels", shortArgument: "-ml", longArgument: "-mgfLevels", required: false,
+                typeOf: typeof(string),
+                helpText: "Writes a standard MGF file for different scan levels. Should be in the format \"-mgfLevels [levels]\", " +
+                "where levels is the MS level (or a combination of levels). For example, to output MS2 and MS3 scans, you would " +
+                "invoke the command \"-mgfLevels 23\". Currently, only MS levels 1, 2, and 3 are supported."));
 
             parser.Add(new Argument(name: "MgfMassCutoff", shortArgument: "-c", longArgument: "-masscutoff", required: false,
                 typeOf: typeof(float),
@@ -148,6 +154,9 @@ namespace RawTools.ArgumentParser
 
             parser.Add(new Argument(name: "ExampleModifications", shortArgument: "-modifications", longArgument: "-examplemods", required: false, typeOf: typeof(bool),
                 helpText: "Displays example peptide modifications."));
+
+            parser.Add(new Argument(name: "VersionInfo", shortArgument: "-version", longArgument: "-version", required: false, typeOf: typeof(bool),
+                helpText: "Displays version details."));
 
             parser.Add(new Argument(
                 name: "MaxProcesses",

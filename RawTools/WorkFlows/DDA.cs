@@ -139,6 +139,11 @@ namespace RawTools.WorkFlows
                 MgfWriter.WriteMGF(staticRawFile.FileName, centroidStreams, segmentScans, parameters, retentionTimes, precursorMasses, precursorScans, trailerExtras, methodData, Index);
             }
 
+            if (parameters.ParseParams.WriteMgfLevels != null)
+            {
+                MgfLevelsWriter.WriteLevelsMgf(staticRawFile.FileName, centroidStreams, segmentScans, parameters, retentionTimes, precursorMasses, precursorScans, trailerExtras, methodData, Index);
+            }
+
             if (parameters.ParseParams.Chromatogram != null)
             {
                 ChromatogramWriter.WriteChromatogram(centroidStreams, segmentScans, retentionTimes, methodData, Index, parameters, staticRawFile.FileName);

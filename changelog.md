@@ -4,6 +4,18 @@ All notable changes to RawTools will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.4] 2022-02-01
+### Changes
+- Updated ThermoRawFileReader to version 5.0.0.71.
+- Added compatibility for TMT 18-plex reagents.
+- Added an MGF writer for different MS levels ('-mgfLevels' flag, see help).
+
+### Fixed
+- Typo in 'MedianMs1IsolationInterference' in QC output ([Issue #70](https://github.com/kevinkovalchik/RawTools/issues/70)).
+- Added an option to output the version number with --version ([Issue #65](https://github.com/kevinkovalchik/RawTools/issues/65)).
+- Added an option to output different MS levels to MGF ([Issue #69](https://github.com/kevinkovalchik/RawTools/issues/69)).
+
+
 ## [2.0.3] 2020-11-05
 ### Fixed
 - Added functionality for TMTPro reagents.

@@ -68,13 +68,19 @@ namespace RawTools
 
             var arguments = parser.Parse(args);
 
-            Run(arguments);
+            _ = Run(arguments);
 
             Log.CloseAndFlush();
         }
 
         static int Run(Dictionary<string, object> opts)
         {
+            if ((bool)opts["VersionInfo"] == true)
+            {
+                Examples.VersionInfo();
+                Environment.Exit(0);
+            }
+
             if ((bool)opts["ExampleCommands"] == true)
             {
                 Examples.CommandLineUsage();
@@ -173,10 +179,10 @@ namespace RawTools
 
             if (parameters.ParseParams.Quant)
             {
-                List<string> possible = new List<string>() { "TMT0", "TMT2", "TMT6", "TMT10", "TMT11", "TMT16", "iTRAQ4", "iTRAQ8" };
+                List<string> possible = new List<string>() { "TMT0", "TMT2", "TMT6", "TMT10", "TMT11", "TMT16", "TMT18", "iTRAQ4", "iTRAQ8" };
                 if (!possible.Contains(parameters.ParseParams.LabelingReagents))
                 {
-                    Console.WriteLine("ERROR: For quantification, the labeling reagent must be one of {TMT0, TMT2, TMT6, TMT10, TMT11, TMT16, iTRAQ4, iTRAQ8}");
+                    Console.WriteLine("ERROR: For quantification, the labeling reagent must be one of {TMT0, TMT2, TMT6, TMT10, TMT11, TMT16, TMT18, iTRAQ4, iTRAQ8}");
                     Log.Error("Invalid labeling reagent provided: {0}", parameters.ParseParams.LabelingReagents);
                     //Console.Write("Press any key to exit...");
                     //Console.ReadKey();
@@ -193,6 +199,22 @@ namespace RawTools
                     {
                         Console.WriteLine("ERROR: Incorrect format for -chro. See help.");
                         Log.Error("Invalid chromatogram argument provided: {Chro}", parameters.ParseParams.Chromatogram);
+                        //Console.Write("Press any key to exit...");
+                        //Console.ReadKey();
+                        return 1;
+                    }
+                }
+            }
+
+            if (parameters.ParseParams.WriteMgfLevels != null)
+            {
+                List<string> possible = new List<string>() { "1", "2", "3" };
+                foreach (var x in parameters.ParseParams.WriteMgfLevels)
+                {
+                    if (!possible.Contains(x.ToString()))
+                    {
+                        Console.WriteLine("ERROR: Incorrect format for -ml. See help.");
+                        Log.Error("Invalid mgf levels argument provided: {WriteMgfLevels}", parameters.ParseParams.WriteMgfLevels);
                         //Console.Write("Press any key to exit...");
                         //Console.ReadKey();
                         return 1;

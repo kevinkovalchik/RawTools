@@ -26,6 +26,13 @@ namespace RawTools
 {
     class Examples
     {
+        public static void VersionInfo()
+        {
+            StringBuilder examples = new StringBuilder();
+            examples.AppendLine("2.0.4");
+            Console.Write(examples);
+        }
+
         public static void ExampleMods()
         {
             StringBuilder examples = new StringBuilder();
@@ -47,7 +54,7 @@ namespace RawTools
             examples.AppendFormat("\t{0,-40}{1,-10}\n", "TMT0 label at K or N-terminus:", "224.15247@K,224.15247@[");
             examples.AppendFormat("\t{0,-40}{1,-10}\n", "TMT2 label at K or N-terminus:", "225.15583@K,225.15583@[");
             examples.AppendFormat("\t{0,-40}{1,-10}\n", "TMT6+ label at K or N-terminus:", "229.16293@K,229.16293@[");
-            examples.AppendFormat("\t{0,-40}{1,-10}\n", "TMT16 label at K or N-terminus:", "304.2071@K,304.2071@[");
+            examples.AppendFormat("\t{0,-40}{1,-10}\n", "TMT16+ label at K or N-terminus:", "304.2071@K,304.2071@[");
 
             examples.AppendLine("\nFor example, to specify fixed CamC, and variable oxidation of M and TMT10 quant labels, you would invoke the following arguments:");
             examples.AppendLine("\t-fmods 57.02146@C -vmods 229.16293@[,229.16293@K,15.99491@M");
