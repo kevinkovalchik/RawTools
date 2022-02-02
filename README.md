@@ -14,6 +14,10 @@ If you need help installing and using RawTools, please visit the wiki page appro
 
 <br>
 
+### RawTools 2.0.4 released
+
+- 2.0.4 brings multiple changes and fixes, please see the release notes for more details.
+
 ### RawTools 2.0.3 released
 
 - 2.0.3 brings functionality for processing TMTPro data.
