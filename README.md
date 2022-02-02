@@ -12,7 +12,6 @@ To obtain the latest compiled release of RawTools or to obtain an older version,
 
 If you need help installing and using RawTools, please visit the wiki page appropriate for your system and follow the instructions outlined [here](https://github.com/kevinkovalchik/RawTools/wiki).
 
-<br>
 
 ### RawTools 2.0.4 released
 
