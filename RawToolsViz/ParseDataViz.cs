@@ -78,6 +78,7 @@ namespace RawToolsViz
 
             myModel.SetDefaultColorsToColorBrewer8ClassSet2();
 
+ 
             myModel.LegendPosition = LegendPosition.BottomCenter;
             myModel.LegendPlacement = LegendPlacement.Outside;
             myModel.LegendOrientation = LegendOrientation.Horizontal;

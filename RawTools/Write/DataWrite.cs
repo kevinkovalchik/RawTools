@@ -458,7 +458,7 @@ namespace RawTools.Data.IO
                         MassAnalyzerType msMassAnalyzer = methodData.MassAnalyzers[order];
                         scans = Index.ScanEnumerators[MSOrderType.Ms];
 
-                        ProgressIndicator progress = new ProgressIndicator(scans.Count(), String.Format("Writing " + order + " MGF file."));
+                        ProgressIndicator progress = new ProgressIndicator(scans.Count(), String.Format("Writing " + order + " MGF file"));
 
                         // we need to add a blank line at the begining of the file so MS-GF+ works, no idea why...
                         f.WriteLine();
@@ -468,6 +468,7 @@ namespace RawTools.Data.IO
                             f.WriteLine("BEGIN IONS");
                             f.WriteLine("TITLE=Spectrum_{0}", i);
                             f.WriteLine("SCANS={0}", i);
+                            f.WriteLine("RTINSECONDS={0}", retentionTimes[i] * 60);
                             f.WriteLine("RAWFILE={0}", rawFileName);
 
                             if (msMassAnalyzer == MassAnalyzerType.MassAnalyzerFTMS)
@@ -527,7 +528,7 @@ namespace RawTools.Data.IO
                         MassAnalyzerType msMassAnalyzer = methodData.MassAnalyzers[order];
                         scans = Index.ScanEnumerators[MSOrderType.Ms2];
 
-                        ProgressIndicator progress = new ProgressIndicator(scans.Count(), String.Format("Writing MGF " + order + " MGF file."));
+                        ProgressIndicator progress = new ProgressIndicator(scans.Count(), String.Format("Writing " + order + " MGF file"));
 
                         // we need to add a blank line at the begining of the file so MS-GF+ works, no idea why...
                         f.WriteLine();
@@ -536,6 +537,9 @@ namespace RawTools.Data.IO
                         {
                             f.WriteLine("BEGIN IONS");
                             f.WriteLine("TITLE=Spectrum_{0}", i);
+                            f.WriteLine("PEPMASS={0}", precursorMasses[i].MonoisotopicMZ);
+                            f.WriteLine("CHARGE={0}+", trailerExtras[i].ChargeState);
+                            f.WriteLine("RTINSECONDS={0}", retentionTimes[i] * 60);
                             f.WriteLine("SCANS={0}", i);
                             f.WriteLine("RAWFILE={0}", rawFileName);
 
@@ -596,7 +600,7 @@ namespace RawTools.Data.IO
                         MassAnalyzerType msMassAnalyzer = methodData.MassAnalyzers[order];
                         scans = Index.ScanEnumerators[MSOrderType.Ms3];
 
-                        ProgressIndicator progress = new ProgressIndicator(scans.Count(), String.Format("Writing MGF " + order + " MGF file."));
+                        ProgressIndicator progress = new ProgressIndicator(scans.Count(), String.Format("Writing " + order + " MGF file"));
 
                         // we need to add a blank line at the begining of the file so MS-GF+ works, no idea why...
                         f.WriteLine();
@@ -605,6 +609,8 @@ namespace RawTools.Data.IO
                         {
                             f.WriteLine("BEGIN IONS");
                             f.WriteLine("TITLE=Spectrum_{0}", i);
+                            f.WriteLine("PEPMASS={0}", precursorMasses[i].MonoisotopicMZ);
+                            f.WriteLine("RTINSECONDS={0}", retentionTimes[i] * 60);
                             f.WriteLine("SCANS={0}", i);
                             f.WriteLine("RAWFILE={0}", rawFileName);
 

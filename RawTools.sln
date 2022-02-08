@@ -48,6 +48,7 @@ Global
 		{F399D28E-2751-4686-A61B-7710CDDB3114}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F399D28E-2751-4686-A61B-7710CDDB3114}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F399D28E-2751-4686-A61B-7710CDDB3114}.Release|x64.ActiveCfg = Release|Any CPU
+		{F399D28E-2751-4686-A61B-7710CDDB3114}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -118,9 +118,9 @@
             this.groupBoxMode.Controls.Add(this.checkBoxModeQC);
             this.groupBoxMode.Controls.Add(this.checkBoxModeParse);
             this.groupBoxMode.Location = new System.Drawing.Point(2, 2);
-            this.groupBoxMode.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBoxMode.Margin = new System.Windows.Forms.Padding(2);
             this.groupBoxMode.Name = "groupBoxMode";
-            this.groupBoxMode.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBoxMode.Padding = new System.Windows.Forms.Padding(2);
             this.groupBoxMode.Size = new System.Drawing.Size(68, 69);
             this.groupBoxMode.TabIndex = 0;
             this.groupBoxMode.TabStop = false;
@@ -130,7 +130,7 @@
             // 
             this.checkBoxModeQC.AutoSize = true;
             this.checkBoxModeQC.Location = new System.Drawing.Point(4, 39);
-            this.checkBoxModeQC.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.checkBoxModeQC.Margin = new System.Windows.Forms.Padding(2);
             this.checkBoxModeQC.Name = "checkBoxModeQC";
             this.checkBoxModeQC.Size = new System.Drawing.Size(41, 17);
             this.checkBoxModeQC.TabIndex = 1;
@@ -144,7 +144,7 @@
             // 
             this.checkBoxModeParse.AutoSize = true;
             this.checkBoxModeParse.Location = new System.Drawing.Point(4, 17);
-            this.checkBoxModeParse.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.checkBoxModeParse.Margin = new System.Windows.Forms.Padding(2);
             this.checkBoxModeParse.Name = "checkBoxModeParse";
             this.checkBoxModeParse.Size = new System.Drawing.Size(53, 17);
             this.checkBoxModeParse.TabIndex = 0;
@@ -163,9 +163,9 @@
             this.groupBoxRawFiles.Controls.Add(this.buttonSelectFiles);
             this.groupBoxRawFiles.Controls.Add(this.buttonSelectDirectory);
             this.groupBoxRawFiles.Location = new System.Drawing.Point(74, 2);
-            this.groupBoxRawFiles.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBoxRawFiles.Margin = new System.Windows.Forms.Padding(2);
             this.groupBoxRawFiles.Name = "groupBoxRawFiles";
-            this.groupBoxRawFiles.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBoxRawFiles.Padding = new System.Windows.Forms.Padding(2);
             this.groupBoxRawFiles.Size = new System.Drawing.Size(490, 69);
             this.groupBoxRawFiles.TabIndex = 1;
             this.groupBoxRawFiles.TabStop = false;
@@ -175,7 +175,7 @@
             // 
             this.radioButtonSelectFiles.AutoSize = true;
             this.radioButtonSelectFiles.Location = new System.Drawing.Point(4, 46);
-            this.radioButtonSelectFiles.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.radioButtonSelectFiles.Margin = new System.Windows.Forms.Padding(2);
             this.radioButtonSelectFiles.Name = "radioButtonSelectFiles";
             this.radioButtonSelectFiles.Size = new System.Drawing.Size(14, 13);
             this.radioButtonSelectFiles.TabIndex = 2;
@@ -187,7 +187,7 @@
             this.radioButtonSelectDirectory.AutoSize = true;
             this.radioButtonSelectDirectory.Checked = true;
             this.radioButtonSelectDirectory.Location = new System.Drawing.Point(4, 20);
-            this.radioButtonSelectDirectory.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.radioButtonSelectDirectory.Margin = new System.Windows.Forms.Padding(2);
             this.radioButtonSelectDirectory.Name = "radioButtonSelectDirectory";
             this.radioButtonSelectDirectory.Size = new System.Drawing.Size(14, 13);
             this.radioButtonSelectDirectory.TabIndex = 2;
@@ -200,7 +200,7 @@
             // 
             this.textBoxRawFiles.Enabled = false;
             this.textBoxRawFiles.Location = new System.Drawing.Point(122, 41);
-            this.textBoxRawFiles.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBoxRawFiles.Margin = new System.Windows.Forms.Padding(2);
             this.textBoxRawFiles.Name = "textBoxRawFiles";
             this.textBoxRawFiles.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.textBoxRawFiles.Size = new System.Drawing.Size(357, 20);
@@ -210,7 +210,7 @@
             // textBoxRawFileDirectory
             // 
             this.textBoxRawFileDirectory.Location = new System.Drawing.Point(122, 18);
-            this.textBoxRawFileDirectory.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBoxRawFileDirectory.Margin = new System.Windows.Forms.Padding(2);
             this.textBoxRawFileDirectory.Name = "textBoxRawFileDirectory";
             this.textBoxRawFileDirectory.Size = new System.Drawing.Size(357, 20);
             this.textBoxRawFileDirectory.TabIndex = 3;
@@ -220,7 +220,7 @@
             // 
             this.buttonSelectFiles.Enabled = false;
             this.buttonSelectFiles.Location = new System.Drawing.Point(22, 41);
-            this.buttonSelectFiles.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.buttonSelectFiles.Margin = new System.Windows.Forms.Padding(2);
             this.buttonSelectFiles.Name = "buttonSelectFiles";
             this.buttonSelectFiles.Size = new System.Drawing.Size(96, 19);
             this.buttonSelectFiles.TabIndex = 3;
@@ -232,7 +232,7 @@
             // buttonSelectDirectory
             // 
             this.buttonSelectDirectory.Location = new System.Drawing.Point(22, 18);
-            this.buttonSelectDirectory.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.buttonSelectDirectory.Margin = new System.Windows.Forms.Padding(2);
             this.buttonSelectDirectory.Name = "buttonSelectDirectory";
             this.buttonSelectDirectory.Size = new System.Drawing.Size(96, 19);
             this.buttonSelectDirectory.TabIndex = 2;
@@ -257,9 +257,9 @@
             this.groupBoxDataOutput.Controls.Add(this.ckbxOutputMGF);
             this.groupBoxDataOutput.Enabled = false;
             this.groupBoxDataOutput.Location = new System.Drawing.Point(2, 75);
-            this.groupBoxDataOutput.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBoxDataOutput.Margin = new System.Windows.Forms.Padding(2);
             this.groupBoxDataOutput.Name = "groupBoxDataOutput";
-            this.groupBoxDataOutput.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBoxDataOutput.Padding = new System.Windows.Forms.Padding(2);
             this.groupBoxDataOutput.Size = new System.Drawing.Size(250, 118);
             this.groupBoxDataOutput.TabIndex = 2;
             this.groupBoxDataOutput.TabStop = false;
@@ -269,7 +269,7 @@
             // 
             this.checkBoxDataOutputDirectory.AutoSize = true;
             this.checkBoxDataOutputDirectory.Location = new System.Drawing.Point(94, 39);
-            this.checkBoxDataOutputDirectory.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.checkBoxDataOutputDirectory.Margin = new System.Windows.Forms.Padding(2);
             this.checkBoxDataOutputDirectory.Name = "checkBoxDataOutputDirectory";
             this.checkBoxDataOutputDirectory.Size = new System.Drawing.Size(154, 17);
             this.checkBoxDataOutputDirectory.TabIndex = 12;
@@ -284,7 +284,7 @@
             // 
             this.textBoxDataOutputDir.Enabled = false;
             this.textBoxDataOutputDir.Location = new System.Drawing.Point(112, 83);
-            this.textBoxDataOutputDir.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBoxDataOutputDir.Margin = new System.Windows.Forms.Padding(2);
             this.textBoxDataOutputDir.Name = "textBoxDataOutputDir";
             this.textBoxDataOutputDir.Size = new System.Drawing.Size(134, 20);
             this.textBoxDataOutputDir.TabIndex = 11;
@@ -294,7 +294,7 @@
             // 
             this.buttonDataOutputDir.Enabled = false;
             this.buttonDataOutputDir.Location = new System.Drawing.Point(4, 83);
-            this.buttonDataOutputDir.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.buttonDataOutputDir.Margin = new System.Windows.Forms.Padding(2);
             this.buttonDataOutputDir.Name = "buttonDataOutputDir";
             this.buttonDataOutputDir.Size = new System.Drawing.Size(104, 19);
             this.buttonDataOutputDir.TabIndex = 10;
@@ -309,7 +309,7 @@
             // 
             this.ckbxOutputChromatograms.AutoSize = true;
             this.ckbxOutputChromatograms.Location = new System.Drawing.Point(94, 17);
-            this.ckbxOutputChromatograms.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.ckbxOutputChromatograms.Margin = new System.Windows.Forms.Padding(2);
             this.ckbxOutputChromatograms.Name = "ckbxOutputChromatograms";
             this.ckbxOutputChromatograms.Size = new System.Drawing.Size(99, 17);
             this.ckbxOutputChromatograms.TabIndex = 4;
@@ -323,7 +323,7 @@
             // 
             this.ckbxOutputMetrics.AutoSize = true;
             this.ckbxOutputMetrics.Location = new System.Drawing.Point(4, 61);
-            this.ckbxOutputMetrics.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.ckbxOutputMetrics.Margin = new System.Windows.Forms.Padding(2);
             this.ckbxOutputMetrics.Name = "ckbxOutputMetrics";
             this.ckbxOutputMetrics.Size = new System.Drawing.Size(60, 17);
             this.ckbxOutputMetrics.TabIndex = 3;
@@ -336,7 +336,7 @@
             // 
             this.ckbxOutputParse.AutoSize = true;
             this.ckbxOutputParse.Location = new System.Drawing.Point(4, 39);
-            this.ckbxOutputParse.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.ckbxOutputParse.Margin = new System.Windows.Forms.Padding(2);
             this.ckbxOutputParse.Name = "ckbxOutputParse";
             this.ckbxOutputParse.Size = new System.Drawing.Size(84, 17);
             this.ckbxOutputParse.TabIndex = 1;
@@ -350,7 +350,7 @@
             // 
             this.ckbxOutputMGF.AutoSize = true;
             this.ckbxOutputMGF.Location = new System.Drawing.Point(4, 17);
-            this.ckbxOutputMGF.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.ckbxOutputMGF.Margin = new System.Windows.Forms.Padding(2);
             this.ckbxOutputMGF.Name = "ckbxOutputMGF";
             this.ckbxOutputMGF.Size = new System.Drawing.Size(49, 17);
             this.ckbxOutputMGF.TabIndex = 0;
@@ -363,7 +363,7 @@
             // 
             this.ckbxOutputQuant.AutoSize = true;
             this.ckbxOutputQuant.Location = new System.Drawing.Point(4, 17);
-            this.ckbxOutputQuant.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.ckbxOutputQuant.Margin = new System.Windows.Forms.Padding(2);
             this.ckbxOutputQuant.Name = "ckbxOutputQuant";
             this.ckbxOutputQuant.Size = new System.Drawing.Size(132, 17);
             this.ckbxOutputQuant.TabIndex = 2;
@@ -380,9 +380,9 @@
             this.groupBoxCommonOptions.Controls.Add(this.comboBoxMaxCharge);
             this.groupBoxCommonOptions.Controls.Add(this.checkBoxRefinePrecursor);
             this.groupBoxCommonOptions.Location = new System.Drawing.Point(256, 75);
-            this.groupBoxCommonOptions.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBoxCommonOptions.Margin = new System.Windows.Forms.Padding(2);
             this.groupBoxCommonOptions.Name = "groupBoxCommonOptions";
-            this.groupBoxCommonOptions.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBoxCommonOptions.Padding = new System.Windows.Forms.Padding(2);
             this.groupBoxCommonOptions.Size = new System.Drawing.Size(308, 118);
             this.groupBoxCommonOptions.TabIndex = 3;
             this.groupBoxCommonOptions.TabStop = false;
@@ -400,7 +400,7 @@
             "5",
             "6"});
             this.comboBoxMinCharge.Location = new System.Drawing.Point(118, 37);
-            this.comboBoxMinCharge.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.comboBoxMinCharge.Margin = new System.Windows.Forms.Padding(2);
             this.comboBoxMinCharge.Name = "comboBoxMinCharge";
             this.comboBoxMinCharge.Size = new System.Drawing.Size(80, 21);
             this.comboBoxMinCharge.TabIndex = 9;
@@ -445,7 +445,7 @@
             "5",
             "6"});
             this.comboBoxMaxCharge.Location = new System.Drawing.Point(118, 62);
-            this.comboBoxMaxCharge.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.comboBoxMaxCharge.Margin = new System.Windows.Forms.Padding(2);
             this.comboBoxMaxCharge.Name = "comboBoxMaxCharge";
             this.comboBoxMaxCharge.Size = new System.Drawing.Size(80, 21);
             this.comboBoxMaxCharge.TabIndex = 1;
@@ -458,7 +458,7 @@
             // 
             this.checkBoxRefinePrecursor.AutoSize = true;
             this.checkBoxRefinePrecursor.Location = new System.Drawing.Point(4, 17);
-            this.checkBoxRefinePrecursor.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.checkBoxRefinePrecursor.Margin = new System.Windows.Forms.Padding(2);
             this.checkBoxRefinePrecursor.Name = "checkBoxRefinePrecursor";
             this.checkBoxRefinePrecursor.Size = new System.Drawing.Size(191, 17);
             this.checkBoxRefinePrecursor.TabIndex = 0;
@@ -484,9 +484,9 @@
             this.groupBoxQcOptions.Controls.Add(this.label2);
             this.groupBoxQcOptions.Enabled = false;
             this.groupBoxQcOptions.Location = new System.Drawing.Point(2, 197);
-            this.groupBoxQcOptions.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBoxQcOptions.Margin = new System.Windows.Forms.Padding(2);
             this.groupBoxQcOptions.Name = "groupBoxQcOptions";
-            this.groupBoxQcOptions.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBoxQcOptions.Padding = new System.Windows.Forms.Padding(2);
             this.groupBoxQcOptions.Size = new System.Drawing.Size(562, 158);
             this.groupBoxQcOptions.TabIndex = 4;
             this.groupBoxQcOptions.TabStop = false;
@@ -507,7 +507,7 @@
             // 
             this.buttonPeptideMods.Enabled = false;
             this.buttonPeptideMods.Location = new System.Drawing.Point(362, 121);
-            this.buttonPeptideMods.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.buttonPeptideMods.Margin = new System.Windows.Forms.Padding(2);
             this.buttonPeptideMods.Name = "buttonPeptideMods";
             this.buttonPeptideMods.Size = new System.Drawing.Size(185, 19);
             this.buttonPeptideMods.TabIndex = 9;
@@ -519,7 +519,7 @@
             // textBoxQcDataDirectory
             // 
             this.textBoxQcDataDirectory.Location = new System.Drawing.Point(122, 17);
-            this.textBoxQcDataDirectory.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBoxQcDataDirectory.Margin = new System.Windows.Forms.Padding(2);
             this.textBoxQcDataDirectory.Name = "textBoxQcDataDirectory";
             this.textBoxQcDataDirectory.Size = new System.Drawing.Size(426, 20);
             this.textBoxQcDataDirectory.TabIndex = 22;
@@ -528,7 +528,7 @@
             // buttonQcDataDirectory
             // 
             this.buttonQcDataDirectory.Location = new System.Drawing.Point(4, 17);
-            this.buttonQcDataDirectory.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.buttonQcDataDirectory.Margin = new System.Windows.Forms.Padding(2);
             this.buttonQcDataDirectory.Name = "buttonQcDataDirectory";
             this.buttonQcDataDirectory.Size = new System.Drawing.Size(113, 19);
             this.buttonQcDataDirectory.TabIndex = 21;
@@ -541,7 +541,7 @@
             // 
             this.textBoxNumSpectra.Enabled = false;
             this.textBoxNumSpectra.Location = new System.Drawing.Point(158, 121);
-            this.textBoxNumSpectra.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBoxNumSpectra.Margin = new System.Windows.Forms.Padding(2);
             this.textBoxNumSpectra.Name = "textBoxNumSpectra";
             this.textBoxNumSpectra.Size = new System.Drawing.Size(76, 20);
             this.textBoxNumSpectra.TabIndex = 20;
@@ -566,7 +566,7 @@
             // 
             this.textBoxXTandemDir.Enabled = false;
             this.textBoxXTandemDir.Location = new System.Drawing.Point(122, 62);
-            this.textBoxXTandemDir.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBoxXTandemDir.Margin = new System.Windows.Forms.Padding(2);
             this.textBoxXTandemDir.Name = "textBoxXTandemDir";
             this.textBoxXTandemDir.Size = new System.Drawing.Size(429, 20);
             this.textBoxXTandemDir.TabIndex = 16;
@@ -576,7 +576,7 @@
             // 
             this.buttonXTandemDir.Enabled = false;
             this.buttonXTandemDir.Location = new System.Drawing.Point(4, 61);
-            this.buttonXTandemDir.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.buttonXTandemDir.Margin = new System.Windows.Forms.Padding(2);
             this.buttonXTandemDir.Name = "buttonXTandemDir";
             this.buttonXTandemDir.Size = new System.Drawing.Size(113, 19);
             this.buttonXTandemDir.TabIndex = 15;
@@ -589,7 +589,7 @@
             // 
             this.textBoxFastaFile.Enabled = false;
             this.textBoxFastaFile.Location = new System.Drawing.Point(122, 84);
-            this.textBoxFastaFile.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBoxFastaFile.Margin = new System.Windows.Forms.Padding(2);
             this.textBoxFastaFile.Name = "textBoxFastaFile";
             this.textBoxFastaFile.Size = new System.Drawing.Size(429, 20);
             this.textBoxFastaFile.TabIndex = 8;
@@ -599,7 +599,7 @@
             // 
             this.buttonFastaFile.Enabled = false;
             this.buttonFastaFile.Location = new System.Drawing.Point(4, 84);
-            this.buttonFastaFile.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.buttonFastaFile.Margin = new System.Windows.Forms.Padding(2);
             this.buttonFastaFile.Name = "buttonFastaFile";
             this.buttonFastaFile.Size = new System.Drawing.Size(113, 19);
             this.buttonFastaFile.TabIndex = 12;
@@ -612,7 +612,7 @@
             // 
             this.radioButtonSearchXTandem.AutoSize = true;
             this.radioButtonSearchXTandem.Location = new System.Drawing.Point(142, 43);
-            this.radioButtonSearchXTandem.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.radioButtonSearchXTandem.Margin = new System.Windows.Forms.Padding(2);
             this.radioButtonSearchXTandem.Name = "radioButtonSearchXTandem";
             this.radioButtonSearchXTandem.Size = new System.Drawing.Size(77, 17);
             this.radioButtonSearchXTandem.TabIndex = 10;
@@ -625,7 +625,7 @@
             this.radioButtonSearchNone.AutoSize = true;
             this.radioButtonSearchNone.Checked = true;
             this.radioButtonSearchNone.Location = new System.Drawing.Point(90, 43);
-            this.radioButtonSearchNone.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.radioButtonSearchNone.Margin = new System.Windows.Forms.Padding(2);
             this.radioButtonSearchNone.Name = "radioButtonSearchNone";
             this.radioButtonSearchNone.Size = new System.Drawing.Size(51, 17);
             this.radioButtonSearchNone.TabIndex = 9;
@@ -648,7 +648,7 @@
             // 
             this.textBoxReporterNumberMissingFilter.Enabled = false;
             this.textBoxReporterNumberMissingFilter.Location = new System.Drawing.Point(256, 59);
-            this.textBoxReporterNumberMissingFilter.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBoxReporterNumberMissingFilter.Margin = new System.Windows.Forms.Padding(2);
             this.textBoxReporterNumberMissingFilter.Name = "textBoxReporterNumberMissingFilter";
             this.textBoxReporterNumberMissingFilter.Size = new System.Drawing.Size(55, 20);
             this.textBoxReporterNumberMissingFilter.TabIndex = 12;
@@ -660,7 +660,7 @@
             // 
             this.textBoxReporterIntensityFilter.Enabled = false;
             this.textBoxReporterIntensityFilter.Location = new System.Drawing.Point(256, 37);
-            this.textBoxReporterIntensityFilter.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBoxReporterIntensityFilter.Margin = new System.Windows.Forms.Padding(2);
             this.textBoxReporterIntensityFilter.Name = "textBoxReporterIntensityFilter";
             this.textBoxReporterIntensityFilter.Size = new System.Drawing.Size(55, 20);
             this.textBoxReporterIntensityFilter.TabIndex = 11;
@@ -697,7 +697,7 @@
             this.checkBoxReporterIonFiltering.AutoSize = true;
             this.checkBoxReporterIonFiltering.Enabled = false;
             this.checkBoxReporterIonFiltering.Location = new System.Drawing.Point(139, 17);
-            this.checkBoxReporterIonFiltering.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.checkBoxReporterIonFiltering.Margin = new System.Windows.Forms.Padding(2);
             this.checkBoxReporterIonFiltering.Name = "checkBoxReporterIonFiltering";
             this.checkBoxReporterIonFiltering.Size = new System.Drawing.Size(157, 17);
             this.checkBoxReporterIonFiltering.TabIndex = 0;
@@ -714,9 +714,9 @@
             this.groupBoxChromatograms.Controls.Add(this.checkBoxChroMs1);
             this.groupBoxChromatograms.Enabled = false;
             this.groupBoxChromatograms.Location = new System.Drawing.Point(2, 439);
-            this.groupBoxChromatograms.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBoxChromatograms.Margin = new System.Windows.Forms.Padding(2);
             this.groupBoxChromatograms.Name = "groupBoxChromatograms";
-            this.groupBoxChromatograms.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBoxChromatograms.Padding = new System.Windows.Forms.Padding(2);
             this.groupBoxChromatograms.Size = new System.Drawing.Size(137, 65);
             this.groupBoxChromatograms.TabIndex = 7;
             this.groupBoxChromatograms.TabStop = false;
@@ -726,7 +726,7 @@
             // 
             this.checkBoxChroBP.AutoSize = true;
             this.checkBoxChroBP.Location = new System.Drawing.Point(52, 39);
-            this.checkBoxChroBP.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.checkBoxChroBP.Margin = new System.Windows.Forms.Padding(2);
             this.checkBoxChroBP.Name = "checkBoxChroBP";
             this.checkBoxChroBP.Size = new System.Drawing.Size(40, 17);
             this.checkBoxChroBP.TabIndex = 3;
@@ -739,7 +739,7 @@
             // 
             this.checkBoxChroTIC.AutoSize = true;
             this.checkBoxChroTIC.Location = new System.Drawing.Point(52, 17);
-            this.checkBoxChroTIC.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.checkBoxChroTIC.Margin = new System.Windows.Forms.Padding(2);
             this.checkBoxChroTIC.Name = "checkBoxChroTIC";
             this.checkBoxChroTIC.Size = new System.Drawing.Size(43, 17);
             this.checkBoxChroTIC.TabIndex = 2;
@@ -752,7 +752,7 @@
             // 
             this.checkBoxChroMs2.AutoSize = true;
             this.checkBoxChroMs2.Location = new System.Drawing.Point(4, 39);
-            this.checkBoxChroMs2.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.checkBoxChroMs2.Margin = new System.Windows.Forms.Padding(2);
             this.checkBoxChroMs2.Name = "checkBoxChroMs2";
             this.checkBoxChroMs2.Size = new System.Drawing.Size(48, 17);
             this.checkBoxChroMs2.TabIndex = 1;
@@ -764,7 +764,7 @@
             // 
             this.checkBoxChroMs1.AutoSize = true;
             this.checkBoxChroMs1.Location = new System.Drawing.Point(4, 17);
-            this.checkBoxChroMs1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.checkBoxChroMs1.Margin = new System.Windows.Forms.Padding(2);
             this.checkBoxChroMs1.Name = "checkBoxChroMs1";
             this.checkBoxChroMs1.Size = new System.Drawing.Size(48, 17);
             this.checkBoxChroMs1.TabIndex = 0;
@@ -784,11 +784,12 @@
             "TMT10",
             "TMT11",
             "TMT16",
+            "TMT18",
             "iTRAQ4",
             "iTRAQ8",
             "Custom"});
             this.comboBoxLabelingReagents.Location = new System.Drawing.Point(21, 39);
-            this.comboBoxLabelingReagents.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.comboBoxLabelingReagents.Margin = new System.Windows.Forms.Padding(2);
             this.comboBoxLabelingReagents.Name = "comboBoxLabelingReagents";
             this.comboBoxLabelingReagents.Size = new System.Drawing.Size(92, 21);
             this.comboBoxLabelingReagents.TabIndex = 17;
@@ -800,7 +801,7 @@
             // 
             this.textBoxMgfLowMass.Enabled = false;
             this.textBoxMgfLowMass.Location = new System.Drawing.Point(139, 15);
-            this.textBoxMgfLowMass.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBoxMgfLowMass.Margin = new System.Windows.Forms.Padding(2);
             this.textBoxMgfLowMass.Name = "textBoxMgfLowMass";
             this.textBoxMgfLowMass.Size = new System.Drawing.Size(76, 20);
             this.textBoxMgfLowMass.TabIndex = 2;
@@ -813,7 +814,7 @@
             // 
             this.checkBoxMgfLowMass.AutoSize = true;
             this.checkBoxMgfLowMass.Location = new System.Drawing.Point(4, 17);
-            this.checkBoxMgfLowMass.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.checkBoxMgfLowMass.Margin = new System.Windows.Forms.Padding(2);
             this.checkBoxMgfLowMass.Name = "checkBoxMgfLowMass";
             this.checkBoxMgfLowMass.Size = new System.Drawing.Size(135, 17);
             this.checkBoxMgfLowMass.TabIndex = 0;
@@ -825,7 +826,7 @@
             // buttonGo
             // 
             this.buttonGo.Location = new System.Drawing.Point(2, 7);
-            this.buttonGo.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.buttonGo.Margin = new System.Windows.Forms.Padding(2);
             this.buttonGo.Name = "buttonGo";
             this.buttonGo.Size = new System.Drawing.Size(416, 55);
             this.buttonGo.TabIndex = 0;
@@ -847,7 +848,7 @@
             this.flowLayoutPanel1.Controls.Add(this.groupBoxChromatograms);
             this.flowLayoutPanel1.Controls.Add(this.panel1);
             this.flowLayoutPanel1.Location = new System.Drawing.Point(8, 29);
-            this.flowLayoutPanel1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.flowLayoutPanel1.Margin = new System.Windows.Forms.Padding(2);
             this.flowLayoutPanel1.MaximumSize = new System.Drawing.Size(586, 585);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
             this.flowLayoutPanel1.Size = new System.Drawing.Size(586, 519);
@@ -867,9 +868,9 @@
             this.groupBoxQuantOpt.Controls.Add(this.labelReporterIonIntensityFilter);
             this.groupBoxQuantOpt.Enabled = false;
             this.groupBoxQuantOpt.Location = new System.Drawing.Point(2, 359);
-            this.groupBoxQuantOpt.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBoxQuantOpt.Margin = new System.Windows.Forms.Padding(2);
             this.groupBoxQuantOpt.Name = "groupBoxQuantOpt";
-            this.groupBoxQuantOpt.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBoxQuantOpt.Padding = new System.Windows.Forms.Padding(2);
             this.groupBoxQuantOpt.Size = new System.Drawing.Size(320, 76);
             this.groupBoxQuantOpt.TabIndex = 16;
             this.groupBoxQuantOpt.TabStop = false;
@@ -880,7 +881,7 @@
             this.checkBoxReporterFilterMGF.AutoSize = true;
             this.checkBoxReporterFilterMGF.Enabled = false;
             this.checkBoxReporterFilterMGF.Location = new System.Drawing.Point(266, 82);
-            this.checkBoxReporterFilterMGF.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.checkBoxReporterFilterMGF.Margin = new System.Windows.Forms.Padding(2);
             this.checkBoxReporterFilterMGF.Name = "checkBoxReporterFilterMGF";
             this.checkBoxReporterFilterMGF.Size = new System.Drawing.Size(49, 17);
             this.checkBoxReporterFilterMGF.TabIndex = 15;
@@ -893,7 +894,7 @@
             this.checkBoxReporterFilterMatrix.AutoSize = true;
             this.checkBoxReporterFilterMatrix.Enabled = false;
             this.checkBoxReporterFilterMatrix.Location = new System.Drawing.Point(211, 82);
-            this.checkBoxReporterFilterMatrix.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.checkBoxReporterFilterMatrix.Margin = new System.Windows.Forms.Padding(2);
             this.checkBoxReporterFilterMatrix.Name = "checkBoxReporterFilterMatrix";
             this.checkBoxReporterFilterMatrix.Size = new System.Drawing.Size(54, 17);
             this.checkBoxReporterFilterMatrix.TabIndex = 14;
@@ -919,9 +920,9 @@
             this.groupBoxMgfOpts.Controls.Add(this.checkBoxMgfLowMass);
             this.groupBoxMgfOpts.Enabled = false;
             this.groupBoxMgfOpts.Location = new System.Drawing.Point(326, 359);
-            this.groupBoxMgfOpts.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBoxMgfOpts.Margin = new System.Windows.Forms.Padding(2);
             this.groupBoxMgfOpts.Name = "groupBoxMgfOpts";
-            this.groupBoxMgfOpts.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBoxMgfOpts.Padding = new System.Windows.Forms.Padding(2);
             this.groupBoxMgfOpts.Size = new System.Drawing.Size(238, 76);
             this.groupBoxMgfOpts.TabIndex = 17;
             this.groupBoxMgfOpts.TabStop = false;
@@ -931,7 +932,7 @@
             // 
             this.panel1.Controls.Add(this.buttonGo);
             this.panel1.Location = new System.Drawing.Point(143, 439);
-            this.panel1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.panel1.Margin = new System.Windows.Forms.Padding(2);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(421, 65);
             this.panel1.TabIndex = 8;
@@ -1013,7 +1014,7 @@
             this.Controls.Add(this.menuStrip1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "RawToolsGUI";
             this.Padding = new System.Windows.Forms.Padding(8, 0, 8, 12);
             this.Text = "RawToolsGUI";
