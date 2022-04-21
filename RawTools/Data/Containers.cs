@@ -571,7 +571,8 @@ namespace RawTools.Data.Containers
     {
         DDA = 1,
         DIA = 2,
-        PRM = 3
+        PRM = 3,
+        MS1 = 4
     }
 
     public class SearchData

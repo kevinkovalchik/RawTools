@@ -190,6 +190,22 @@ namespace RawTools
                 }
             }
 
+            if (parameters.Ms1OnlyParams.Chromatogram != null)
+            {
+                List<string> possible = new List<string>() { "1", "2", "3", "T", "B" };
+                foreach (var x in parameters.Ms1OnlyParams.Chromatogram)
+                {
+                    if (!possible.Contains(x.ToString()))
+                    {
+                        Console.WriteLine("ERROR: Incorrect format for -chro. See help.");
+                        Log.Error("Invalid chromatogram argument provided: {Chro}", parameters.Ms1OnlyParams.Chromatogram);
+                        //Console.Write("Press any key to exit...");
+                        //Console.ReadKey();
+                        return 1;
+                    }
+                }
+            }
+
             if (parameters.ParseParams.Chromatogram != null)
             {
                 List<string> possible = new List<string>() { "1", "2", "3", "T", "B" };

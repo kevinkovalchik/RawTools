@@ -36,15 +36,25 @@ namespace RawTools.WorkFlows
 
         public ParseWorkflowParameters ParseParams;
         public QcWorkflowParameters QcParams;
+        public Ms1OnlyWorkflowParameters Ms1OnlyParams;
 
         public WorkflowParameters()
         {
             QcParams = new QcWorkflowParameters();
             ParseParams = new ParseWorkflowParameters();
+            Ms1OnlyParams = new Ms1OnlyWorkflowParameters();
         }
 
         public WorkflowParameters(Dictionary<string, object> Options)
         {
+
+            Ms1OnlyParams = new Ms1OnlyWorkflowParameters();
+
+            Ms1OnlyParams.Chromatogram = (string)TryGetElseDefault(Options, "Chromatogram");
+            Ms1OnlyParams.Ms1Only = (bool)TryGetElseDefault(Options, "Ms1Only");
+            ExpType = ExperimentType.MS1;
+
+
             ParseParams = new ParseWorkflowParameters();
             
             ExpType = ExperimentType.DDA;
@@ -144,8 +154,14 @@ namespace RawTools.WorkFlows
 
     public class ParseWorkflowParameters
     {
-        public bool Parse, Quant, UnlabeledQuant, WriteMgf, Metrics;
+        public bool Parse, Quant, UnlabeledQuant, WriteMgf, Metrics, Ms1Only;
         public string LabelingReagents, OutputDirectory, Chromatogram, WriteMgfLevels;
+    }
+
+    public class Ms1OnlyWorkflowParameters
+    {
+        public bool Ms1Only;
+        public string Chromatogram;
     }
 
     public class QcWorkflowParameters
