@@ -9,7 +9,7 @@ namespace RawToolsGUI
     [Serializable]
     public class ParametersContainer
     {
-        public bool ParseMode, QcMode;
+        public bool ParseMode, QcMode, Ms1Mode;
 
         public string RawFileDirectory, RawFileList;
 
