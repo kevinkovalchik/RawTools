@@ -942,6 +942,123 @@ namespace RawTools.Data.IO
         }
     }
 
+
+    static class Ms1ChromatogramWriter
+    {
+        public static void WriteMs1Chromatogram(CentroidStreamCollection centroids, SegmentScanCollection segments, RetentionTimeCollection retentionTimes, MethodDataContainer methodData, ScanIndex index, WorkflowParameters parameters, string rawFileName)
+        {
+            string chro = parameters.ParseParams.Chromatogram;
+            int orderInt;
+            MSOrderType order;
+
+            foreach (var o in chro)
+            {
+                if (!Int32.TryParse(o.ToString(), out orderInt)) continue;
+                else order = (MSOrderType)orderInt;
+
+                MassAnalyzerType analyzer = methodData.MassAnalyzers[order];
+
+                if ((int)order > (int)methodData.AnalysisOrder)
+                {
+                    Log.Error("Specified MS order ({Order}) for chromatogram is higher than experiment order ({ExpOrder})",
+                        order, methodData.AnalysisOrder);
+                    Console.WriteLine("Specified MS order ({0}) for chromatogram is higher than experiment order ({1}). Chromatogram(s) won't be written.",
+                        order, methodData.AnalysisOrder);
+                }
+
+                bool TIC = chro.Contains("T");
+                bool BP = chro.Contains("B");
+
+                int[] scans = index.ScanEnumerators[order];
+
+                if (TIC)
+                {
+                    Console.WriteLine("Writing {0} TIC chromatogram", order);
+                    string fileName = ReadWrite.GetPathToFile(parameters.ParseParams.OutputDirectory, rawFileName, "_" + order + "_TIC_chromatogram.txt");
+
+                    ReadWrite.CheckFileAccessibility(fileName);
+
+                    using (StreamWriter f = new StreamWriter(fileName))
+                    {
+                        f.WriteLine("RetentionTime\tIntensity");
+
+                        if (analyzer == MassAnalyzerType.MassAnalyzerFTMS)
+                        {
+                            foreach (int scan in scans)
+                            {
+                                if (centroids[scan].Intensities.Length > 0)
+                                {
+                                    f.WriteLine("{0}\t{1}", retentionTimes[scan], centroids[scan].Intensities.Sum());
+                                }
+                                else
+                                {
+                                    f.WriteLine("{0}\t{1}", retentionTimes[scan], 0);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            foreach (int scan in scans)
+                            {
+                                if (segments[scan].Intensities.Length > 0)
+                                {
+                                    f.WriteLine("{0}\t{1}", retentionTimes[scan], segments[scan].Intensities.Sum());
+                                }
+                                else
+                                {
+                                    f.WriteLine("{0}\t{1}", retentionTimes[scan], 0);
+                                }
+                            }
+                        }
+                    }
+                }
+                if (BP)
+                {
+                    Console.WriteLine("Writing {0} base peak chromatogram", order);
+
+                    string fileName = ReadWrite.GetPathToFile(parameters.ParseParams.OutputDirectory, rawFileName, "_" + order + "_BP_chromatogram.txt");
+
+                    ReadWrite.CheckFileAccessibility(fileName);
+
+                    using (StreamWriter f = new StreamWriter(fileName))
+                    {
+                        f.WriteLine("RetentionTime\tIntensity");
+
+                        if (analyzer == MassAnalyzerType.MassAnalyzerFTMS)
+                        {
+                            foreach (int scan in scans)
+                            {
+                                if (centroids[scan].Intensities.Length > 0)
+                                {
+                                    f.WriteLine("{0}\t{1}", retentionTimes[scan], centroids[scan].Intensities.Max());
+                                }
+                                else
+                                {
+                                    f.WriteLine("{0}\t{1}", retentionTimes[scan], 0);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            foreach (int scan in scans)
+                            {
+                                if (segments[scan].Intensities.Length > 0)
+                                {
+                                    f.WriteLine("{0}\t{1}", retentionTimes[scan], segments[scan].Intensities.Max());
+                                }
+                                else
+                                {
+                                    f.WriteLine("{0}\t{1}", retentionTimes[scan], 0);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+
     static class ChromatogramWriter
     {
         public static void WriteChromatogram(CentroidStreamCollection centroids, SegmentScanCollection segments, RetentionTimeCollection retentionTimes, MethodDataContainer methodData, ScanIndex index, WorkflowParameters parameters, string rawFileName)

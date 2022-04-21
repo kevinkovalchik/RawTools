@@ -71,7 +71,7 @@ namespace RawTools.WorkFlows
             {
                 reactions = Extract.ScanEvents(rawFile, Index);
 
-                methodData = Extract.MethodData(rawFile, Index);
+                methodData = Extract.Ms1MethodData(rawFile, Index);
 
                 (centroidStreams, segmentScans) = Extract.MsData(rawFile: rawFile, index: Index);
 
@@ -84,7 +84,7 @@ namespace RawTools.WorkFlows
             {
                 if (parameters.Ms1OnlyParams.Chromatogram != null)
                 {
-                    ChromatogramWriter.WriteChromatogram(centroidStreams, segmentScans, retentionTimes, methodData, Index, parameters, staticRawFile.FileName);
+                    Ms1ChromatogramWriter.WriteMs1Chromatogram(centroidStreams, segmentScans, retentionTimes, methodData, Index, parameters, staticRawFile.FileName);
                 }
             }            
         }

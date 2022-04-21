@@ -256,7 +256,16 @@ namespace RawTools
                         parameters.ParseParams.OutputDirectory = Path.GetDirectoryName(file);
                     }
 
-                    WorkFlowsDDA.UniversalDDA(rawFile, parameters, qcDataCollection);
+                    if (parameters.ParseParams.Parse)
+                    {
+                        WorkFlowsDDA.UniversalDDA(rawFile, parameters, qcDataCollection);
+                    }
+                    
+                    if (parameters.Ms1OnlyParams.Ms1Only)
+                    {
+                        WorkFlowsSurveyScanOnly.UniversalMs1(rawFile, parameters);
+                    }
+                        
                 }
 
                 singleFileTime.Stop();

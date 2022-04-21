@@ -797,5 +797,28 @@ namespace RawTools.Algorithms.ExtractData
 
             return methodData;
         }
+
+        public static MethodDataContainer Ms1MethodData(IRawDataPlus rawFile, ScanIndex index)
+        {
+            rawFile.SelectInstrument(Device.MS, 1);
+
+            Log.Information("Extracting method/instrument information");
+
+            MethodDataContainer methodData = new MethodDataContainer();
+
+            methodData.CreationDate = rawFile.CreationDate;
+            methodData.Instrument = rawFile.GetInstrumentData().Name;
+
+            methodData.AnalysisOrder = index.AnalysisOrder;
+            int firstQuantScan = index.ScanEnumerators[index.AnalysisOrder][0];
+            methodData.QuantAnalyzer = index.allScans[firstQuantScan].MassAnalyzer;
+
+            int firstMs1Scan = index.ScanEnumerators[MSOrderType.Ms][0];
+            methodData.MassAnalyzers.Add(MSOrderType.Ms, index.allScans[firstMs1Scan].MassAnalyzer);
+
+            methodData.MSOrderEnumerator.Add(MSOrderType.Ms);
+
+            return methodData;
+        }
     }
 }
