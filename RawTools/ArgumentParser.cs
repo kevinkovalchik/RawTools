@@ -64,7 +64,7 @@ namespace RawTools.ArgumentParser
             parser.Add(new Argument(name: "Ms1Only", shortArgument: "-ms1", longArgument: "-ms1Only", required: false,
                 typeOf: typeof(bool),
                 helpText: "Parses chromatogram data from MS1 scans. Should be used in tandem with the -chro argument to specify " +
-                "which chromatogram types should be output."));
+                "which chromatogram types should be output. This option should not be used in conjunction with parse or quant."));
 
             parser.Add(new Argument(name: "LabelingReagent", shortArgument: "-r", longArgument: "-labellingreagent", required: false,
                 typeOf: typeof(string),
