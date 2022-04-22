@@ -45,6 +45,7 @@ namespace RawTools.Algorithms.ExtractData
             allScans = new ConcurrentDictionary<int, ScanData>();
             Dictionary<int, ScanData> orphanScans = new Dictionary<int, ScanData>();
             MSOrderType AnalysisOrder;
+            TriState faimsVoltage;
 
             ConcurrentBag<int> ms1 = new ConcurrentBag<int>();
             ConcurrentBag<int> ms2 = new ConcurrentBag<int>();
@@ -63,6 +64,7 @@ namespace RawTools.Algorithms.ExtractData
             // get ms order of experiment
             Console.Write("Determing MS analysis order... ");
             AnalysisOrder = (from x in scans select staticRawFile.GetScanEventForScanNumber(x).MSOrder).Max();
+            faimsVoltage = (from x in scans select staticRawFile.GetScanEventForScanNumber(x).CompensationVoltage).Max();
             Console.WriteLine("Done!");
             object lockTarget = new object();
             ProgressIndicator P = new ProgressIndicator(scans.Count(), "Extracting scan indices");
@@ -763,7 +765,7 @@ namespace RawTools.Algorithms.ExtractData
 
             methodData.CreationDate = rawFile.CreationDate;
             methodData.Instrument = rawFile.GetInstrumentData().Name;
-
+            
             methodData.AnalysisOrder = index.AnalysisOrder;
             int firstQuantScan = index.ScanEnumerators[index.AnalysisOrder][0];
             methodData.QuantAnalyzer = index.allScans[firstQuantScan].MassAnalyzer;

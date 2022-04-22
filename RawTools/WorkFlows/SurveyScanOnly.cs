@@ -43,7 +43,6 @@ namespace RawTools.WorkFlows
             SegmentScanCollection segmentScans;
             TrailerExtraCollection trailerExtras;
             RetentionTimeCollection retentionTimes;
-            ScanEventReactionCollection reactions;
 
             var staticRawFile = rawFileThreadManager.CreateThreadAccessor();
             staticRawFile.SelectInstrument(Device.MS, 1);
@@ -69,7 +68,6 @@ namespace RawTools.WorkFlows
 
             using (var rawFile = rawFileThreadManager.CreateThreadAccessor())
             {
-                reactions = Extract.ScanEvents(rawFile, Index);
 
                 methodData = Extract.Ms1MethodData(rawFile, Index);
 

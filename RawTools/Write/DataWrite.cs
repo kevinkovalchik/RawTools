@@ -64,7 +64,7 @@ namespace RawTools.Data.IO
                 f.Write("MS2RetTime(min)\tMS1RetTime(min)\tDutyCycle(s)\t" +
                 "Ms2TriggerRate(/Ms1Scan)\tParentIonMass\tMonoisotopicMass\tPrecursorCharge\tMS1IsolationInterference\t" +
                 "ParentPeakFound\tParentPeakArea\tPeakFirstScan\tPeakMaxScan\tPeakLastScan\tBaseLinePeakWidth(s)\t" +
-                "PeakParentScanIntensity\tPeakMaxIntensity\t");
+                "PeakParentScanIntensity\tPeakMaxIntensity\tCompensationVoltage\t");
 
                 if (Index.AnalysisOrder == MSOrderType.Ms3) f.Write("Ms3FillTime\t");
 

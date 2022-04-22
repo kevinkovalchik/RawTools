@@ -174,7 +174,7 @@ namespace RawTools.Data.Containers
 
     public class MethodDataContainer
     {
-        public double IsolationOffset, MS2IsolationWindow, MS3IsolationWindow;
+        public double IsolationOffset, MS2IsolationWindow, MS3IsolationWindow, CompensationVoltage;
         public MSOrderType AnalysisOrder;
         public Dictionary<MSOrderType, MassAnalyzerType> MassAnalyzers;
         public MassAnalyzerType QuantAnalyzer;
@@ -421,8 +421,6 @@ namespace RawTools.Data.Containers
         public SearchData SearchData;
         public SerializableDictionary<string, double> ModificationFrequency;
 
-        public SearchMetricsContainer()
-        { }
 
         public SearchMetricsContainer(string rawFile, DateTime dateAquired, MethodDataContainer methodData)
         {
