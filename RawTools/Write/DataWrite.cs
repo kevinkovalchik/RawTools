@@ -64,11 +64,11 @@ namespace RawTools.Data.IO
                 f.Write("MS2RetTime(min)\tMS1RetTime(min)\tDutyCycle(s)\t" +
                 "Ms2TriggerRate(/Ms1Scan)\tParentIonMass\tMonoisotopicMass\tPrecursorCharge\tMS1IsolationInterference\t" +
                 "ParentPeakFound\tParentPeakArea\tPeakFirstScan\tPeakMaxScan\tPeakLastScan\tBaseLinePeakWidth(s)\t" +
-                "PeakParentScanIntensity\tPeakMaxIntensity\tCompensationVoltage\t");
+                "PeakParentScanIntensity\tPeakMaxIntensity\t");
 
                 if (Index.AnalysisOrder == MSOrderType.Ms3) f.Write("Ms3FillTime\t");
 
-                f.Write("Ms2FillTime\tMs1FillTime\tHCDEnergy\tMs2MedianIntensity\tMs1MedianIntensity\t");
+                f.Write("Ms2FillTime\tMs1FillTime\tHCDEnergy\tFaimsVoltage\tMs2MedianIntensity\tMs1MedianIntensity\t");
 
                 if (quantData != null)
                 {
@@ -130,7 +130,7 @@ namespace RawTools.Data.IO
 
                     f.Write($"{metaData.FillTime[ms2scan]}\t{metaData.FillTime[masterScan]}\t");
 
-                    f.Write($"{trailerExtras[scan].HCDEnergy}\t{metaData.IntensityDistribution[ms2scan].P50}\t{metaData.IntensityDistribution[masterScan].P50}\t");
+                    f.Write($"{trailerExtras[scan].HCDEnergy}\t{trailerExtras[scan].FaimsVoltage}\t{metaData.IntensityDistribution[ms2scan].P50}\t{metaData.IntensityDistribution[masterScan].P50}\t");
 
                     if (quantData != null)
                     {
@@ -316,6 +316,7 @@ namespace RawTools.Data.IO
             string fileName;
 
             double intCutoff = 0;
+
             if (outputFile == null)
             {
                 fileName = ReadWrite.GetPathToFile(parameters.ParseParams.OutputDirectory, rawFileName, ".mgf");

@@ -39,6 +39,7 @@ namespace RawTools.Data.Containers
         public MassAnalyzerType MassAnalyzer;
         public bool HasPrecursors;
         public bool HasDependents;
+        public double CompensationVoltage;
     }
 
     class ScanIndex
@@ -142,6 +143,7 @@ namespace RawTools.Data.Containers
         public double MonoisotopicMZ = -1;
         public double HCDEnergy = -1;
         public double[] SPSMasses;
+        public double FaimsVoltage = -1;
     }
 
     class PrecursorScanData
@@ -507,7 +509,7 @@ namespace RawTools.Data.Containers
 
     class TrailerExtraIndices
     {
-        public int InjectionTime, MasterScan, MonoisotopicMZ, ChargeState, HCDEnergy = -1;
+        public int InjectionTime, MasterScan, MonoisotopicMZ, ChargeState, HCDEnergy = -1, FaimsVoltage = -1;
         public List<int> SPSMasses = new List<int>();
 
         public TrailerExtraIndices(IRawDataPlus rawFile)
@@ -539,6 +541,10 @@ namespace RawTools.Data.Containers
                 if (header[i].Label.ToLower().Contains("sps"))
                 {
                     SPSMasses.Add(i);
+                }
+                if (header[i].Label.ToLower().Contains("cv"))
+                {
+                    FaimsVoltage = i;
                 }
             }
         }

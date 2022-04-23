@@ -84,7 +84,7 @@ namespace RawTools.Algorithms.Analyze
 
         public static RawMetricsDataDDA GetMetricsDataDDA(ScanMetaDataCollectionDDA metaData, MethodDataContainer methodData,
             string rawFileName, RetentionTimeCollection retentionTimes, ScanIndex index, PrecursorPeakCollection peakData,
-            PrecursorScanCollection precursorScans, QuantDataCollection quantData = null)
+            PrecursorScanCollection precursorScans, TrailerExtraData trailerExtra QuantDataCollection quantData = null)
         {
             RawMetricsDataDDA metricsData = new RawMetricsDataDDA();
             metricsData.DateAcquired = methodData.CreationDate;
@@ -95,7 +95,6 @@ namespace RawTools.Algorithms.Analyze
             metricsData.Instrument = methodData.Instrument;
             metricsData.MS1Analyzer = methodData.MassAnalyzers[MSOrderType.Ms];
             metricsData.MS2Analyzer = methodData.MassAnalyzers[MSOrderType.Ms2];
-
             metricsData.TotalAnalysisTime = retentionTimes[index.ScanEnumerators[MSOrderType.Any].Last()] -
                 retentionTimes[index.ScanEnumerators[MSOrderType.Any].First()];
             

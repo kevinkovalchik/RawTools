@@ -45,7 +45,6 @@ namespace RawTools.Algorithms.ExtractData
             allScans = new ConcurrentDictionary<int, ScanData>();
             Dictionary<int, ScanData> orphanScans = new Dictionary<int, ScanData>();
             MSOrderType AnalysisOrder;
-            TriState faimsVoltage;
 
             ConcurrentBag<int> ms1 = new ConcurrentBag<int>();
             ConcurrentBag<int> ms2 = new ConcurrentBag<int>();
@@ -64,7 +63,6 @@ namespace RawTools.Algorithms.ExtractData
             // get ms order of experiment
             Console.Write("Determing MS analysis order... ");
             AnalysisOrder = (from x in scans select staticRawFile.GetScanEventForScanNumber(x).MSOrder).Max();
-            faimsVoltage = (from x in scans select staticRawFile.GetScanEventForScanNumber(x).CompensationVoltage).Max();
             Console.WriteLine("Done!");
             object lockTarget = new object();
             ProgressIndicator P = new ProgressIndicator(scans.Count(), "Extracting scan indices");
@@ -689,6 +687,12 @@ namespace RawTools.Algorithms.ExtractData
                 sps2.CopyTo(spsMasses, sps1.Length);
             }
             trailerExtra.SPSMasses = spsMasses;
+
+            if (indices.FaimsVoltage != -1)
+            {
+                trailerExtra.FaimsVoltage = Convert.ToDouble(rawFile.GetTrailerExtraValue(scan, indices.FaimsVoltage));
+            }
+
             return trailerExtra;
         }
 
@@ -823,4 +827,5 @@ namespace RawTools.Algorithms.ExtractData
             return methodData;
         }
     }
+
 }
