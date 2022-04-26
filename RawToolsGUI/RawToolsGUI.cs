@@ -313,6 +313,20 @@ namespace RawToolsGUI
             }
         }
 
+        private void ckbxOutputFaims_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkBoxFaims.Checked)
+            {
+                checkBoxReporterFilterMGF.Enabled = checkBoxReporterIonFiltering.Checked;
+                groupBoxMgfOpts.Enabled = true;
+            }
+            else
+            {
+                checkBoxReporterFilterMGF.Enabled = false;
+                groupBoxMgfOpts.Enabled = false;
+            }
+        }
+
         private void textBoxReporterIntensityFilter_KeyPress(object sender, KeyPressEventArgs e)
         {
             // can only be numerical values
@@ -495,7 +509,7 @@ namespace RawToolsGUI
             {
 
                 if (!ckbxOutputMGF.Checked & !ckbxOutputMetrics.Checked & !ckbxOutputChromatograms.Checked &
-                    !ckbxOutputParse.Checked & !ckbxOutputQuant.Checked & !checkBoxModeQC.Checked)
+                    !ckbxOutputParse.Checked & !ckbxOutputQuant.Checked & !checkBoxModeQC.Checked & !checkBoxFaims.Checked)
                 {
                     MessageBox.Show("You haven't selected any data output. Please choose something.");
                     return;
@@ -514,6 +528,11 @@ namespace RawToolsGUI
                 if (ckbxOutputMetrics.Checked)
                 {
                     arguments.Append("x");
+                }
+
+                if (checkBoxFaims.Checked)
+                {
+                    arguments.Append("faimsMgf");
                 }
 
                 if (checkBoxDataOutputDirectory.Checked)
@@ -787,6 +806,7 @@ namespace RawToolsGUI
             ckbxOutputChromatograms.Checked = Pars.DataOutputChromatograms;
             ckbxOutputMetrics.Checked = Pars.DataOutputMetrics;
             ckbxOutputMGF.Checked = Pars.DataOutputMGF;
+            checkBoxFaims.Checked = Pars.FaimsOutputMgf;
             ckbxOutputParse.Checked = Pars.DataOutputParseMatrix;
             checkBoxDataOutputDirectory.Checked = Pars.DataOutputDirectory;
             
@@ -841,6 +861,7 @@ namespace RawToolsGUI
             Pars.DataOutputChromatograms = ckbxOutputChromatograms.Checked;
             Pars.DataOutputMetrics = ckbxOutputMetrics.Checked;
             Pars.DataOutputMGF = ckbxOutputMGF.Checked;
+            Pars.FaimsOutputMgf = checkBoxFaims.Checked;
             Pars.DataOutputParseMatrix = ckbxOutputParse.Checked;
             Pars.DataOutputDirectory = checkBoxDataOutputDirectory.Checked;
 

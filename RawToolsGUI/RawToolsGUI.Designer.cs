@@ -101,6 +101,7 @@
             this.exitToolStripMenuItemExit = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.checkBoxFaims = new System.Windows.Forms.CheckBox();
             this.groupBoxMode.SuspendLayout();
             this.groupBoxRawFiles.SuspendLayout();
             this.groupBoxDataOutput.SuspendLayout();
@@ -263,6 +264,7 @@
             // 
             // groupBoxDataOutput
             // 
+            this.groupBoxDataOutput.Controls.Add(this.checkBoxFaims);
             this.groupBoxDataOutput.Controls.Add(this.checkBoxDataOutputDirectory);
             this.groupBoxDataOutput.Controls.Add(this.textBoxDataOutputDir);
             this.groupBoxDataOutput.Controls.Add(this.buttonDataOutputDir);
@@ -373,6 +375,19 @@
             this.toolTip1.SetToolTip(this.ckbxOutputMGF, "Create an MGF file of all MS2 scans in the raw file.");
             this.ckbxOutputMGF.UseVisualStyleBackColor = true;
             this.ckbxOutputMGF.CheckedChanged += new System.EventHandler(this.ckbxOutputMGF_CheckedChanged);
+            // 
+            // ckbxOutputMGF
+            // 
+            this.checkBoxFaims.AutoSize = true;
+            this.checkBoxFaims.Location = new System.Drawing.Point(94, 60);
+            this.checkBoxFaims.Margin = new System.Windows.Forms.Padding(2);
+            this.checkBoxFaims.Name = "checkBoxFaims";
+            this.checkBoxFaims.Size = new System.Drawing.Size(53, 17);
+            this.checkBoxFaims.TabIndex = 0;
+            this.checkBoxFaims.Text = "Faims";
+            this.toolTip1.SetToolTip(this.checkBoxFaims, "Create an MGF file of all MS2 scans in the raw file.");
+            this.checkBoxFaims.UseVisualStyleBackColor = true;
+            this.checkBoxFaims.CheckedChanged += new System.EventHandler(this.ckbxOutputFaims_CheckedChanged);
             // 
             // ckbxOutputQuant
             // 
@@ -1020,6 +1035,18 @@
             this.aboutToolStripMenuItem.Text = "About RawTools";
             this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 
+            // checkBoxFaims
+            // 
+            this.checkBoxFaims.AutoSize = true;
+            this.checkBoxFaims.Location = new System.Drawing.Point(94, 60);
+            this.checkBoxFaims.Margin = new System.Windows.Forms.Padding(2);
+            this.checkBoxFaims.Name = "checkBoxFaims";
+            this.checkBoxFaims.Size = new System.Drawing.Size(53, 17);
+            this.checkBoxFaims.TabIndex = 13;
+            this.checkBoxFaims.Text = "Faims";
+            this.toolTip1.SetToolTip(this.checkBoxFaims, "Generate MGF output for individual CV values from FAIMS data.");
+            this.checkBoxFaims.UseVisualStyleBackColor = true;
+            // 
             // RawToolsGUI
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1134,6 +1161,7 @@
         private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
         private System.Windows.Forms.CheckBox checkBoxModeMs1;
+        private System.Windows.Forms.CheckBox checkBoxFaims;
     }
 }
 
