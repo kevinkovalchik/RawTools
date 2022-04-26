@@ -305,6 +305,7 @@ namespace RawToolsGUI
             {
                 checkBoxReporterFilterMGF.Enabled = checkBoxReporterIonFiltering.Checked;
                 groupBoxMgfOpts.Enabled = true;
+                ckbxOutputParse.Checked = true;
             }
             else
             {
@@ -319,6 +320,7 @@ namespace RawToolsGUI
             {
                 checkBoxReporterFilterMGF.Enabled = checkBoxReporterIonFiltering.Checked;
                 groupBoxMgfOpts.Enabled = true;
+                ckbxOutputParse.Checked = true;
             }
             else
             {
@@ -532,7 +534,7 @@ namespace RawToolsGUI
 
                 if (checkBoxFaims.Checked)
                 {
-                    arguments.Append("faimsMgf");
+                    arguments.Append(" -faimsMgf");
                 }
 
                 if (checkBoxDataOutputDirectory.Checked)
@@ -646,6 +648,8 @@ namespace RawToolsGUI
             else
             {
                 groupBoxQuantOpt.Enabled = false;
+                ckbxOutputMGF.Checked = false;
+                checkBoxFaims.Checked = false;
             }
         }
 

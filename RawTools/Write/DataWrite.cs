@@ -317,8 +317,6 @@ namespace RawTools.Data.IO
 
             double intCutoff = 0;
 
-            List<double> faimsVoltages = new List<double>();
-
             if (outputFile == null)
             {
                 fileName = ReadWrite.GetPathToFile(parameters.ParseParams.OutputDirectory, rawFileName, ".mgf");
@@ -356,11 +354,6 @@ namespace RawTools.Data.IO
                     f.WriteLine("RTINSECONDS={0}", retentionTimes[i] * 60);
                     f.WriteLine("SCANS={0}", i);
                     f.WriteLine("RAWFILE={0}", rawFileName);
-
-                    if (trailerExtras[i].FaimsVoltage != -1)
-                    {
-                        faimsVoltages.Add(trailerExtras[i].FaimsVoltage);
-                    }
 
                     if (ms2MassAnalyzer == MassAnalyzerType.MassAnalyzerFTMS)
                     {
@@ -412,18 +405,6 @@ namespace RawTools.Data.IO
                 }
                 progress.Done();
                 
-            }
-
-            var DistinctFaimsVoltages = faimsVoltages.Distinct();
-            foreach (var item in DistinctFaimsVoltages)
-            {
-                Console.WriteLine("The faims values are " + item);
-                //fileName = ReadWrite.GetPathToFile(parameters.ParseParams.OutputDirectory, rawFileName, "_CV" + item + ".mgf");
-                //ReadWrite.CheckFileAccessibility(fileName);
-                //using (StreamWriter f = new StreamWriter(fileName, false, Encoding.UTF8, BufferSize)) //Open a new file, the MGF file
-                //{
-
-                //}
             }
         }
     }
