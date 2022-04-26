@@ -100,13 +100,13 @@ namespace RawTools.Data.Collections
 
     class ScanMetaDataCollectionDDA
     {
-        public Dictionary<int, double> DutyCycle, FillTime, SummedIntensity, Ms1IsolationInterference, FractionConsumingTop80PercentTotalIntensity;
+        public Dictionary<int, double> DutyCycle, FillTime, FaimsVoltage, SummedIntensity, Ms1IsolationInterference, FractionConsumingTop80PercentTotalIntensity;
         public Dictionary<int, Distribution> IntensityDistribution;
         public Dictionary<int, int> MS2ScansPerCycle;
 
         public ScanMetaDataCollectionDDA()
         {
-            DutyCycle = FillTime = Ms1IsolationInterference = SummedIntensity =
+            DutyCycle = FillTime = FaimsVoltage = Ms1IsolationInterference = SummedIntensity =
                 FractionConsumingTop80PercentTotalIntensity = new Dictionary<int, double>();
             IntensityDistribution = new Dictionary<int, Distribution>();
             MS2ScansPerCycle = new Dictionary<int, int>();

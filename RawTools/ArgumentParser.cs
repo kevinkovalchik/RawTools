@@ -61,6 +61,11 @@ namespace RawTools.ArgumentParser
                 helpText: "Similar to parse (-p), but also quantifies reporter ions and write results to output matrix. " +
                 "Use of this flag requires you also specify the reagents used for isobaric labeling with the -r argument (e.g. -r TMT10)"));
 
+            parser.Add(new Argument(name: "Ms1Only", shortArgument: "-ms1", longArgument: "-ms1Only", required: false,
+                typeOf: typeof(bool),
+                helpText: "Parses chromatogram data from MS1 scans. Should be used in tandem with the -chro argument to specify " +
+                "which chromatogram types should be output. This option should not be used in conjunction with parse or quant."));
+
             parser.Add(new Argument(name: "LabelingReagent", shortArgument: "-r", longArgument: "-labellingreagent", required: false,
                 typeOf: typeof(string),
                 helpText: "Required for reporter ion quantification. Reagents used to label peptides, required if using quant option. " +
@@ -80,6 +85,10 @@ namespace RawTools.ArgumentParser
                 helpText: "Writes a standard MGF file for different scan levels. Should be in the format \"-mgfLevels [levels]\", " +
                 "where levels is the MS level (or a combination of levels). For example, to output MS2 and MS3 scans, you would " +
                 "invoke the command \"-mgfLevels 23\". Currently, only MS levels 1, 2, and 3 are supported."));
+
+            parser.Add(new Argument(name: "FaimsMgf", shortArgument: "-faimsMgf", longArgument: "-faimsMgf", required: false,
+                typeOf: typeof(bool),
+                helpText: "Writes an MGF for each FAIMS CV detected in the file."));
 
             parser.Add(new Argument(name: "MgfMassCutoff", shortArgument: "-c", longArgument: "-masscutoff", required: false,
                 typeOf: typeof(float),

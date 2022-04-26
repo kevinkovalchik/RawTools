@@ -66,6 +66,9 @@ namespace RawTools.Algorithms.Analyze
             Console.WriteLine("  Ion injection time");
             metaData.FillTime = MetaDataCalculations.FillTimes(trailerExtras, index);
 
+            Console.WriteLine("  FAIMS voltages");
+            metaData.FaimsVoltage = MetaDataCalculations.FaimsVoltages(trailerExtras, index);
+
             Console.WriteLine("  Duty cycle");
             metaData.DutyCycle = MetaDataCalculations.DutyCycle(retentionTimes, index);
 
@@ -95,7 +98,6 @@ namespace RawTools.Algorithms.Analyze
             metricsData.Instrument = methodData.Instrument;
             metricsData.MS1Analyzer = methodData.MassAnalyzers[MSOrderType.Ms];
             metricsData.MS2Analyzer = methodData.MassAnalyzers[MSOrderType.Ms2];
-
             metricsData.TotalAnalysisTime = retentionTimes[index.ScanEnumerators[MSOrderType.Any].Last()] -
                 retentionTimes[index.ScanEnumerators[MSOrderType.Any].First()];
             
@@ -133,6 +135,8 @@ namespace RawTools.Algorithms.Analyze
             {
                 metricsData.MedianMS3FillTime = MetricsCalculations.GetMedianMSFillTime(metaData.FillTime, index, MSOrderType.Ms3);
             }
+
+            metricsData.FaimsVoltages = MetricsCalculations.GetFaimsVoltages(metaData.FaimsVoltage, index, MSOrderType.Ms);
 
             metricsData.MeanTopN = MetricsCalculations.GetMeanMs2ScansPerCycle(metaData.MS2ScansPerCycle);
 

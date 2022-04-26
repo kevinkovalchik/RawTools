@@ -190,6 +190,22 @@ namespace RawTools
                 }
             }
 
+            if (parameters.Ms1OnlyParams.Chromatogram != null)
+            {
+                List<string> possible = new List<string>() { "1", "T", "B" };
+                foreach (var x in parameters.Ms1OnlyParams.Chromatogram)
+                {
+                    if (!possible.Contains(x.ToString()))
+                    {
+                        Console.WriteLine("ERROR: Incorrect format for -chro when using MS1 only mode. See help.");
+                        Log.Error("Invalid chromatogram argument provided: {Chro}", parameters.Ms1OnlyParams.Chromatogram);
+                        //Console.Write("Press any key to exit...");
+                        //Console.ReadKey();
+                        return 1;
+                    }
+                }
+            }
+
             if (parameters.ParseParams.Chromatogram != null)
             {
                 List<string> possible = new List<string>() { "1", "2", "3", "T", "B" };
@@ -240,7 +256,16 @@ namespace RawTools
                         parameters.ParseParams.OutputDirectory = Path.GetDirectoryName(file);
                     }
 
-                    WorkFlowsDDA.UniversalDDA(rawFile, parameters, qcDataCollection);
+                    if (parameters.ParseParams.Parse)
+                    {
+                        WorkFlowsDDA.UniversalDDA(rawFile, parameters, qcDataCollection);
+                    }
+                    
+                    if (parameters.Ms1OnlyParams.Ms1Only)
+                    {
+                        WorkFlowsSurveyScanOnly.UniversalMs1(rawFile, parameters);
+                    }
+                        
                 }
 
                 singleFileTime.Stop();

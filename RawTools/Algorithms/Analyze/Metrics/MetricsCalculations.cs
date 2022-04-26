@@ -66,6 +66,15 @@ namespace RawTools.Algorithms.Analyze.Metrics
             return (from x in Index.ScanEnumerators[MsOrder] select SummedIntensities[x]).ToArray().Percentile(50);
         }
 
+        public static double[] GetFaimsVoltages(Dictionary<int, double> FaimsVoltages, ScanIndex Index, MSOrderType MsOrder)
+        {
+            //return (double[])(from x in Index.ScanEnumerators[MsOrder] select FaimsVoltages[x]).ToArray().Distinct();
+            List<double> faimsVoltageSet = new List<double>();
+            faimsVoltageSet = (from x in Index.ScanEnumerators[MsOrder] select FaimsVoltages[x]).ToList();
+            var DistinctFaimsVoltages = faimsVoltageSet.Distinct().ToArray();
+            return DistinctFaimsVoltages;
+        }
+
         public static int NumberOfEsiFlags(ScanMetaDataCollectionDDA metaData, ScanIndex index)
         {
             return NumberOfEsiFlags(metaData.SummedIntensity, index);

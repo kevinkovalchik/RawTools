@@ -9,11 +9,11 @@ namespace RawToolsGUI
     [Serializable]
     public class ParametersContainer
     {
-        public bool ParseMode, QcMode;
+        public bool ParseMode, QcMode, Ms1Mode;
 
         public string RawFileDirectory, RawFileList;
 
-        public bool DataOutputMGF, DataOutputParseMatrix, DataOutputMetrics, DataOutputChromatograms, DataOutputDirectory;
+        public bool DataOutputMGF, FaimsOutputMgf, DataOutputParseMatrix, DataOutputMetrics, DataOutputChromatograms, DataOutputDirectory;
 
         public string DataOutputDirectoryString;
 

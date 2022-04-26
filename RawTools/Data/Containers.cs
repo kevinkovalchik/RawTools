@@ -39,6 +39,7 @@ namespace RawTools.Data.Containers
         public MassAnalyzerType MassAnalyzer;
         public bool HasPrecursors;
         public bool HasDependents;
+        public double CompensationVoltage;
     }
 
     class ScanIndex
@@ -142,6 +143,7 @@ namespace RawTools.Data.Containers
         public double MonoisotopicMZ = -1;
         public double HCDEnergy = -1;
         public double[] SPSMasses;
+        public double FaimsVoltage = -1;
     }
 
     class PrecursorScanData
@@ -174,7 +176,7 @@ namespace RawTools.Data.Containers
 
     public class MethodDataContainer
     {
-        public double IsolationOffset, MS2IsolationWindow, MS3IsolationWindow;
+        public double IsolationOffset, MS2IsolationWindow, MS3IsolationWindow, CompensationVoltage;
         public MSOrderType AnalysisOrder;
         public Dictionary<MSOrderType, MassAnalyzerType> MassAnalyzers;
         public MassAnalyzerType QuantAnalyzer;
@@ -367,6 +369,7 @@ namespace RawTools.Data.Containers
         public double MS1ScanRate, MS2ScanRate, MS3ScanRate;
         public double MeanDutyCycle;
         public double MedianMS1FillTime, MedianMS2FillTime, MedianMS3FillTime;
+        public double[] FaimsVoltages;
         public double MedianPrecursorIntensity;
         public double MedianSummedMS1Intensity, MedianSummedMS2Intensity;
         public double MedianBaselinePeakWidth, MedianHalfHeightPeakWidth, PeakCapacity, Gradient,
@@ -421,8 +424,6 @@ namespace RawTools.Data.Containers
         public SearchData SearchData;
         public SerializableDictionary<string, double> ModificationFrequency;
 
-        public SearchMetricsContainer()
-        { }
 
         public SearchMetricsContainer(string rawFile, DateTime dateAquired, MethodDataContainer methodData)
         {
@@ -509,7 +510,7 @@ namespace RawTools.Data.Containers
 
     class TrailerExtraIndices
     {
-        public int InjectionTime, MasterScan, MonoisotopicMZ, ChargeState, HCDEnergy = -1;
+        public int InjectionTime, MasterScan, MonoisotopicMZ, ChargeState, HCDEnergy = -1, FaimsVoltage = -1;
         public List<int> SPSMasses = new List<int>();
 
         public TrailerExtraIndices(IRawDataPlus rawFile)
@@ -542,6 +543,10 @@ namespace RawTools.Data.Containers
                 {
                     SPSMasses.Add(i);
                 }
+                if (header[i].Label.ToLower().Contains("cv"))
+                {
+                    FaimsVoltage = i;
+                }
             }
         }
     }
@@ -571,7 +576,8 @@ namespace RawTools.Data.Containers
     {
         DDA = 1,
         DIA = 2,
-        PRM = 3
+        PRM = 3,
+        MS1 = 4
     }
 
     public class SearchData

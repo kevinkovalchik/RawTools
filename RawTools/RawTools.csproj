@@ -179,6 +179,7 @@
     <Compile Include="Utilities\MathStats\ToleranceCalculator.cs" />
     <Compile Include="WorkFlows\DIA.cs" />
     <Compile Include="WorkFlows\DDA.cs" />
+    <Compile Include="WorkFlows\SurveyScanOnly.cs" />
     <Compile Include="WorkFlows\WorkflowParameters.cs" />
     <Compile Include="Utilities\ScanData\AveragePeakScans.cs" />
     <Compile Include="Write\DataWrite.cs" />

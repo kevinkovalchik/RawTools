@@ -87,6 +87,19 @@ namespace RawTools.Algorithms.Analyze
             return fillTimes;
         }
 
+        public static Dictionary<int, double> FaimsVoltages(TrailerExtraCollection trailerExtras, ScanIndex index)
+        {
+            Dictionary<int, double> faimsVoltages = new Dictionary<int, double>();
+
+            foreach (int scan in index.ScanEnumerators[MSOrderType.Any])
+            {
+                faimsVoltages.Add(scan, trailerExtras[scan].FaimsVoltage);
+            }
+
+            return faimsVoltages;
+        }
+
+
         public static Dictionary<int, double> DutyCycle(RetentionTimeCollection retentionTimes, ScanIndex index)
         {
             Dictionary<int, double> dutyCycle = new Dictionary<int, double>();

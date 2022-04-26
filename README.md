@@ -17,6 +17,17 @@ If you need help installing and using RawTools, please visit the wiki page appro
 
 - 2.0.4 brings multiple changes and fixes, please see the release notes for more details.
 
+### RawTools 2.0.5 released
+- Added the ability to parse chromatograms from files that contain only MS1 scans (-ms1 flag).
+- Added the ability to create MGF output for individual CV values in FAIMS data (-faimsMgf).
+- Added a FAIMS CV column to the parse and quant matrix.
+- Added FAIMS values to the metrics output, if available.
+
+### RawTools 2.0.4 released
+- Updated ThermoRawFileReader to version 5.0.0.71.
+- Added compatibility for TMT 18-plex reagents.
+- Added an MGF writer for different MS levels ('-mgfLevels' flag, see help).
+
 ### RawTools 2.0.3 released
 
 - 2.0.3 brings functionality for processing TMTPro data.
