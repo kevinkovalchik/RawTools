@@ -369,6 +369,7 @@ namespace RawTools.Data.Containers
         public double MS1ScanRate, MS2ScanRate, MS3ScanRate;
         public double MeanDutyCycle;
         public double MedianMS1FillTime, MedianMS2FillTime, MedianMS3FillTime;
+        public double[] FaimsVoltages;
         public double MedianPrecursorIntensity;
         public double MedianSummedMS1Intensity, MedianSummedMS2Intensity;
         public double MedianBaselinePeakWidth, MedianHalfHeightPeakWidth, PeakCapacity, Gradient,

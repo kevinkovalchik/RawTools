@@ -67,6 +67,7 @@ namespace RawTools.WorkFlows
             RefineMassCharge = (bool)TryGetElseDefault(Options,"RefineMassCharge");
             ParseParams.Chromatogram = (string)TryGetElseDefault(Options, "Chromatogram");
             ParseParams.WriteMgfLevels = (string)TryGetElseDefault(Options, "WriteMgfLevels");
+            ParseParams.WriteFaimsMgf = (bool)TryGetElseDefault(Options, "FaimsMgf");
             ParseParams.LabelingReagents = (string)TryGetElseDefault(Options, "LabelingReagent");
             ParseParams.Metrics = (bool)TryGetElseDefault(Options, "Metrics");
             ParseParams.Parse = (bool)TryGetElseDefault(Options, "Parse");
@@ -154,7 +155,7 @@ namespace RawTools.WorkFlows
 
     public class ParseWorkflowParameters
     {
-        public bool Parse, Quant, UnlabeledQuant, WriteMgf, Metrics, Ms1Only;
+        public bool Parse, Quant, UnlabeledQuant, WriteMgf, WriteFaimsMgf, Metrics, Ms1Only;
         public string LabelingReagents, OutputDirectory, Chromatogram, WriteMgfLevels;
     }
 

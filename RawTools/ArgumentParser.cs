@@ -86,6 +86,10 @@ namespace RawTools.ArgumentParser
                 "where levels is the MS level (or a combination of levels). For example, to output MS2 and MS3 scans, you would " +
                 "invoke the command \"-mgfLevels 23\". Currently, only MS levels 1, 2, and 3 are supported."));
 
+            parser.Add(new Argument(name: "FaimsMgf", shortArgument: "-faimsMgf", longArgument: "-faimsMgf", required: false,
+                typeOf: typeof(bool),
+                helpText: "Writes an MGF for each FAIMS CV detected in the file."));
+
             parser.Add(new Argument(name: "MgfMassCutoff", shortArgument: "-c", longArgument: "-masscutoff", required: false,
                 typeOf: typeof(float),
                 helpText: "Specify a mass cutoff to be applied when generating MGF files. " +
