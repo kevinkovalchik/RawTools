@@ -98,7 +98,12 @@ namespace RawTools.ArgumentParser
 
             parser.Add(new Argument(name: "Metrics", shortArgument: "-x", longArgument: "-metrics", required: false,
                 typeOf: typeof(bool),
-                helpText: "Write a txt file containing general metrics about the MS run."));
+                helpText: "Write a text file containing general metrics about the MS run."));
+
+            parser.Add(new Argument(name: "AllScanData", shortArgument: "-asd", longArgument: "-allScanData", required: false,
+                typeOf: typeof(bool),
+                helpText: "Write a text file containing all scan data acquired in the MS run. Currently, this only outputs" +
+                "MS1 data to the text file. Depending on the size of your raw file, this will generate a large output and can be slow."));
 
             parser.Add(new Argument(name: "Chromatogram", shortArgument: "-chro", longArgument: "-chromatograms", required: false,
                 typeOf: typeof(string),
