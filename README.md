@@ -11,7 +11,6 @@ To obtain the latest compiled release of RawTools or to obtain an older version,
 If you need help installing and using RawTools, please visit the wiki page appropriate for your system and follow the instructions outlined [here](https://github.com/kevinkovalchik/RawTools/wiki).
 
 ### RawTools 2.0.6 released
-### Changes
 - Removed the 'MS1 only' mode. RawTools will now automatically detect if it is an MS1 only file and proceed based on the appropriate program flags.
 - Added an XIC function (-xic) that allows users to output chromatogram data based on specified mass/tolerance settings. 
 
