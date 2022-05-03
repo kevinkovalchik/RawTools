@@ -4,8 +4,6 @@ Welcome to the RawTools page! RawTools is an open-source and freely available pa
 
 The RawTools manuscript was just accepted for the Journal of Proteome Research special issue on Software Tools and Resources, [here](https://pubs.acs.org/doi/10.1021/acs.jproteome.8b00721). The RawTools original manuscript preprint is [available on bioRxiv](https://www.biorxiv.org/content/early/2018/09/15/418400).
 
-<br>
-
 ### RawTools releases and installation
 
 To obtain the latest compiled release of RawTools or to obtain an older version, please visit the [Releases page](https://github.com/kevinkovalchik/RawTools/releases). 
@@ -16,7 +14,7 @@ If you need help installing and using RawTools, please visit the wiki page appro
 ### Changes
 - Removed the 'MS1 only' mode. RawTools will now automatically detect if it is an MS1 only file and proceed based on the appropriate program flags.
 - Added an XIC function (-xic) that allows users to output chromatogram data based on specified mass/tolerance settings. 
-- 
+
 ### RawTools 2.0.5 released
 - Added the ability to parse chromatograms from files that contain only MS1 scans (-ms1 flag).
 - Added the ability to create MGF output for individual CV values in FAIMS data (-faimsMgf).
