@@ -12,6 +12,11 @@ To obtain the latest compiled release of RawTools or to obtain an older version,
 
 If you need help installing and using RawTools, please visit the wiki page appropriate for your system and follow the instructions outlined [here](https://github.com/kevinkovalchik/RawTools/wiki).
 
+### RawTools 2.0.6 released
+### Changes
+- Removed the 'MS1 only' mode. RawTools will now automatically detect if it is an MS1 only file and proceed based on the appropriate program flags.
+- Added an XIC function (-xic) that allows users to output chromatogram data based on specified mass/tolerance settings. 
+- 
 ### RawTools 2.0.5 released
 - Added the ability to parse chromatograms from files that contain only MS1 scans (-ms1 flag).
 - Added the ability to create MGF output for individual CV values in FAIMS data (-faimsMgf).
