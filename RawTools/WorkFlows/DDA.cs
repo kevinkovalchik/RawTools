@@ -154,6 +154,11 @@ namespace RawTools.WorkFlows
                 ChromatogramWriter.WriteChromatogram(centroidStreams, segmentScans, retentionTimes, methodData, Index, parameters, staticRawFile.FileName);
             }
 
+            if (parameters.ParseParams.Xic != null)
+            {
+                XicWriter.WriteXic(centroidStreams, segmentScans, retentionTimes, methodData, Index, parameters, staticRawFile.FileName);
+            }
+
             if (parameters.QcParams.QcDirectory != null)
             {
                 qcDataCollection = QC.QcWorkflow.LoadOrCreateQcCollection(parameters);

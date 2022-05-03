@@ -61,11 +61,6 @@ namespace RawTools.ArgumentParser
                 helpText: "Similar to parse (-p), but also quantifies reporter ions and write results to output matrix. " +
                 "Use of this flag requires you also specify the reagents used for isobaric labeling with the -r argument (e.g. -r TMT10)"));
 
-            parser.Add(new Argument(name: "Ms1Only", shortArgument: "-ms1", longArgument: "-ms1Only", required: false,
-                typeOf: typeof(bool),
-                helpText: "Parses chromatogram data from MS1 scans. Should be used in tandem with the -chro argument to specify " +
-                "which chromatogram types should be output. This option should not be used in conjunction with parse or quant."));
-
             parser.Add(new Argument(name: "LabelingReagent", shortArgument: "-r", longArgument: "-labellingreagent", required: false,
                 typeOf: typeof(string),
                 helpText: "Required for reporter ion quantification. Reagents used to label peptides, required if using quant option. " +
@@ -111,6 +106,12 @@ namespace RawTools.ArgumentParser
                 "is the MS order (or a combination of orders) and type is T, B, or TB (TIC, base peak and both, respectively). " +
                 "For example, to generate MS1 and MS2 TIC and base peak chromatograms, invoke \"-chro 12TB\". Or, to generate a MS2 TIC, " +
                 "invoke \"-chro 2T\"."));
+
+            parser.Add(new Argument(name: "Xic", shortArgument: "-xic", longArgument: "-xic", required: false,
+                typeOf: typeof(string),
+                helpText: "Provide a mass value to write an extraction ion chromatrogram from MS1 data. The values should be provided " +
+                "in a comma delimited format (e.g. 500,10) for mass,tolerance. The tolerance value is treated as a window around the " +
+                "given mass value."));
 
             parser.Add(new Argument(name: "RefineMassCharge", shortArgument: "-R", longArgument: "-refinemasscharge", required: false,
                 typeOf: typeof(bool),

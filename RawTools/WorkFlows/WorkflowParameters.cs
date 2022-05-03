@@ -36,22 +36,16 @@ namespace RawTools.WorkFlows
 
         public ParseWorkflowParameters ParseParams;
         public QcWorkflowParameters QcParams;
-        public Ms1OnlyWorkflowParameters Ms1OnlyParams;
 
         public WorkflowParameters()
         {
             QcParams = new QcWorkflowParameters();
             ParseParams = new ParseWorkflowParameters();
-            Ms1OnlyParams = new Ms1OnlyWorkflowParameters();
         }
 
         public WorkflowParameters(Dictionary<string, object> Options)
         {
 
-            Ms1OnlyParams = new Ms1OnlyWorkflowParameters();
-
-            Ms1OnlyParams.Chromatogram = (string)TryGetElseDefault(Options, "Chromatogram");
-            Ms1OnlyParams.Ms1Only = (bool)TryGetElseDefault(Options, "Ms1Only");
             ExpType = ExperimentType.MS1;
 
 
@@ -66,6 +60,7 @@ namespace RawTools.WorkFlows
             IncludeSubdirectories = (bool)TryGetElseDefault(Options,"SearchSubdirectories");
             RefineMassCharge = (bool)TryGetElseDefault(Options,"RefineMassCharge");
             ParseParams.Chromatogram = (string)TryGetElseDefault(Options, "Chromatogram");
+            ParseParams.Xic = (string)TryGetElseDefault(Options, "Xic");
             ParseParams.WriteMgfLevels = (string)TryGetElseDefault(Options, "WriteMgfLevels");
             ParseParams.WriteFaimsMgf = (bool)TryGetElseDefault(Options, "FaimsMgf");
             ParseParams.LabelingReagents = (string)TryGetElseDefault(Options, "LabelingReagent");
@@ -156,13 +151,7 @@ namespace RawTools.WorkFlows
     public class ParseWorkflowParameters
     {
         public bool Parse, Quant, UnlabeledQuant, WriteMgf, WriteFaimsMgf, Metrics, Ms1Only;
-        public string LabelingReagents, OutputDirectory, Chromatogram, WriteMgfLevels;
-    }
-
-    public class Ms1OnlyWorkflowParameters
-    {
-        public bool Ms1Only;
-        public string Chromatogram;
+        public string LabelingReagents, OutputDirectory, Chromatogram, WriteMgfLevels, Xic;
     }
 
     public class QcWorkflowParameters
