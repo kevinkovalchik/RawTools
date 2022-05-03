@@ -46,9 +46,6 @@ namespace RawTools.WorkFlows
         public WorkflowParameters(Dictionary<string, object> Options)
         {
 
-            ExpType = ExperimentType.MS1;
-
-
             ParseParams = new ParseWorkflowParameters();
             
             ExpType = ExperimentType.DDA;
@@ -65,6 +62,7 @@ namespace RawTools.WorkFlows
             ParseParams.WriteFaimsMgf = (bool)TryGetElseDefault(Options, "FaimsMgf");
             ParseParams.LabelingReagents = (string)TryGetElseDefault(Options, "LabelingReagent");
             ParseParams.Metrics = (bool)TryGetElseDefault(Options, "Metrics");
+            ParseParams.AllScanData = (bool)TryGetElseDefault(Options, "AllScanData");
             ParseParams.Parse = (bool)TryGetElseDefault(Options, "Parse");
             ParseParams.Quant = (bool)TryGetElseDefault(Options, "Quant");
             ParseParams.UnlabeledQuant = (bool)TryGetElseDefault(Options, "UnlabeledQuant");
@@ -150,7 +148,7 @@ namespace RawTools.WorkFlows
 
     public class ParseWorkflowParameters
     {
-        public bool Parse, Quant, UnlabeledQuant, WriteMgf, WriteFaimsMgf, Metrics, Ms1Only;
+        public bool Parse, Quant, UnlabeledQuant, WriteMgf, WriteFaimsMgf, Metrics, AllScanData;
         public string LabelingReagents, OutputDirectory, Chromatogram, WriteMgfLevels, Xic;
     }
 

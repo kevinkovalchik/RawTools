@@ -10,6 +10,12 @@ To obtain the latest compiled release of RawTools or to obtain an older version,
 
 If you need help installing and using RawTools, please visit the wiki page appropriate for your system and follow the instructions outlined [here](https://github.com/kevinkovalchik/RawTools/wiki).
 
+## [2.0.6a] 2022-04-25
+### Changes
+- Fixed a bug where the -p flag had to be active to run functions such as -chro or -mgf.
+- Fixed various bugs related to the handling of raw files containing only MS1 scans.
+- From a user request, added a function to output MS1 scan data to a text file (-asd flag). 
+
 ### RawTools 2.0.6 released
 - Removed the 'MS1 only' mode. RawTools will now automatically detect if it is an MS1 only file and proceed based on the appropriate program flags.
 - Added an XIC function (-xic) that allows users to output chromatogram data based on specified mass/tolerance settings. 

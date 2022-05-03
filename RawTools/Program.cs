@@ -240,11 +240,16 @@ namespace RawTools
                         parameters.ParseParams.OutputDirectory = Path.GetDirectoryName(file);
                     }
 
-                    if (parameters.ParseParams.Parse)
+                    if (parameters.ParseParams.Parse | parameters.ParseParams.Metrics | parameters.ParseParams.WriteMgf | parameters.ParseParams.WriteFaimsMgf | parameters.ParseParams.AllScanData | parameters.ParseParams.Chromatogram != null)
                     {
                         WorkFlowsDDA.UniversalDDA(rawFile, parameters, qcDataCollection);
                     }
-                                           
+
+                    if (parameters.ParseParams.Xic != null | parameters.ParseParams.WriteMgfLevels != null)
+                    {
+                        WorkFlowsDDA.UniversalDDA(rawFile, parameters, qcDataCollection);
+                    }
+
                 }
 
                 singleFileTime.Stop();

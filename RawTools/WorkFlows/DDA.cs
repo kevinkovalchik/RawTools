@@ -118,6 +118,11 @@ namespace RawTools.WorkFlows
                 MetricsWriter.WriteMatrix(rawMetrics, null, staticRawFile.FileName, parameters.ParseParams.OutputDirectory);
             }
 
+            if (parameters.ParseParams.AllScanData)
+            {
+                allScansWriter.WriteAllScans(centroidStreams, segmentScans, retentionTimes, methodData, Index, parameters, staticRawFile.FileName);
+            }
+
             if (parameters.ParseParams.Parse | parameters.ParseParams.Quant)
             {
                 string matrixFileName = ReadWrite.GetPathToFile(parameters.ParseParams.OutputDirectory, staticRawFile.FileName, "_Matrix.txt");
