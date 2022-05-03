@@ -191,22 +191,6 @@ namespace RawToolsGUI
             }
         }
 
-        private void checkBoxModeMs1_CheckedChanged(object sender, EventArgs e)
-        {
-            if (checkBoxModeMs1.Checked)
-            {
-                ckbxOutputChromatograms.Checked = true;
-                groupBoxChromatograms.Enabled = true;
-                checkBoxChroMs2.Enabled = false;
-            }
-            else
-            {
-                ckbxOutputChromatograms.Checked = false;
-                groupBoxChromatograms.Enabled = false;
-                checkBoxChroMs2.Enabled = false;
-            }
-        }
-
         private void radioButtonSelectDirectory_CheckedChanged(object sender, EventArgs e)
         {
             if (radioButtonSelectDirectory.Checked)
@@ -446,12 +430,6 @@ namespace RawToolsGUI
                 command = "RawTools.exe";
             }
                         
-            if (!checkBoxModeParse.Checked & !checkBoxModeQC.Checked & !checkBoxModeMs1.Checked)
-            {
-                MessageBox.Show("You need to select a Mode for RawTools. Please pick QC, Parse, both, or MS1.", "Info");
-                return;
-            }
-
             if (radioButtonSelectDirectory.Checked)
             {
                 if (textBoxRawFileDirectory.Text == "" | textBoxRawFileDirectory.Text == String.Empty)
@@ -475,37 +453,6 @@ namespace RawToolsGUI
                 MessageBox.Show("Something went wrong... please select a raw file directory or one or more raw files.", "Error");
                 return;
             }
-
-            if (checkBoxModeMs1.Checked)
-            {
-
-                if (!ckbxOutputChromatograms.Checked)
-                {
-                    MessageBox.Show("You haven't selected any chromatogram output. Please check chromatograms.");
-                    return;
-                }
-
-                arguments.Append(" -");
-
-                if (checkBoxModeMs1.Checked)
-                {
-                    arguments.Append("ms1");
-                }
-
-                if (ckbxOutputChromatograms.Checked)
-                {
-                    if (checkBoxChroMs1.Checked | checkBoxChroTIC.Checked | checkBoxChroBP.Checked)
-                    {
-                        arguments.Append(" -chro ");
-                    }
-
-                    if (checkBoxChroMs1.Checked) arguments.Append("1");
-                    if (checkBoxChroTIC.Checked) arguments.Append("T");
-                    if (checkBoxChroBP.Checked) arguments.Append("B");
-                }
-            }
-
-
 
             if (checkBoxModeParse.Checked)
             {
@@ -796,8 +743,6 @@ namespace RawToolsGUI
 
             checkBoxModeParse.Checked = Pars.ParseMode;
 
-            checkBoxModeMs1.Checked = Pars.Ms1Mode;
-
             checkBoxModeQC.Checked = Pars.QcMode;
 
             checkBoxRefinePrecursor.Checked = Pars.RefinePrecursorMassCharge;
@@ -854,8 +799,6 @@ namespace RawToolsGUI
             Pars.ParseMode = checkBoxModeParse.Checked;
 
             Pars.QcMode = checkBoxModeQC.Checked;
-
-            Pars.Ms1Mode = checkBoxModeMs1.Checked;
 
             Pars.RefinePrecursorMassCharge = checkBoxRefinePrecursor.Checked;
             

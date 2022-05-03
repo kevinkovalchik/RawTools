@@ -4,6 +4,11 @@ All notable changes to RawTools will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.6] 2022-04-25
+### Changes
+- Removed the 'MS1 only' mode. RawTools will now automatically detect if it is an MS1 only file and proceed based on the appropriate program flags.
+- Added an XIC function (-xic) that allows users to output chromatogram data based on specified mass/tolerance settings. 
+
 ## [2.0.5] 2022-04-25
 ### Changes
 - Added the ability to process files with only MS1 scans (-ms1 flag).
