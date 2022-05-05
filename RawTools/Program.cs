@@ -245,7 +245,7 @@ namespace RawTools
                         WorkFlowsDDA.UniversalDDA(rawFile, parameters, qcDataCollection);
                     }
 
-                    if (parameters.ParseParams.Xic != null | parameters.ParseParams.WriteMgfLevels != null)
+                    if (parameters.ParseParams.Xic != null | parameters.ParseParams.WriteMgfLevels != null | parameters.QcParams.QcDirectory != null)
                     {
                         WorkFlowsDDA.UniversalDDA(rawFile, parameters, qcDataCollection);
                     }
