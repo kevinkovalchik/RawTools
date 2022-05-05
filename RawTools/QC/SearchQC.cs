@@ -149,7 +149,7 @@ namespace RawTools.QC
             double missedCleavageRate;
             Dictionary<int, int> numCharges = new Dictionary<int, int>();
             List<PsmData> psms;
-            IEnumerable<PsmData> goodPsms, nonDecoys;
+            IEnumerable<PsmData> goodPsms, nonDecoys, decoys;
 
             int numSearched = parameters.QcParams.NumberSpectra;
 
@@ -157,99 +157,111 @@ namespace RawTools.QC
 
             // convert the dictionary to a list for easy parsing
             psms = psmCollection.Values.ToList();
+            decoys = from x in psms where x.Decoy select x;
 
-            // get the top decoy score
-            topDecoyScore = (from x in psms
-                             where x.Decoy
-                             select x.Hyperscore)
-                             .ToArray().Percentile(95);
+            // check for decoy hits
+            if (decoys.Count() > 1)
+            {
+                Console.Write("Decoy hits detected.");
+                // get the top decoy score
+                topDecoyScore = (from x in psms
+                                 where x.Decoy
+                                 select x.Hyperscore)
+                                 .ToArray().Percentile(95);
 
-            // get the non-decoys
-            nonDecoys = from x in psms
-                        where !x.Decoy
-                        select x;
+                // get the non-decoys
+                nonDecoys = from x in psms
+                            where !x.Decoy
+                            select x;
 
-            // and select the non-decoy hits which are above the top decoy score
-            goodPsms = from x in psms
-                       where !x.Decoy & x.Hyperscore > topDecoyScore
-                       select x;
+                // and select the non-decoy hits which are above the top decoy score
+                goodPsms = from x in psms
+                           where !x.Decoy & x.Hyperscore > topDecoyScore
+                           select x;
 
-            searchMetrics.CutoffDecoyScore = topDecoyScore;
-            searchMetrics.NumPSMs = goodPsms.Count();
+                searchMetrics.CutoffDecoyScore = topDecoyScore;
+                searchMetrics.NumPSMs = goodPsms.Count();
 
-            searchMetrics.MedianPeptideScore = (from x in goodPsms
-                                                select x.Hyperscore)
-                                                .ToArray().Percentile(50);
+                searchMetrics.MedianPeptideScore = (from x in goodPsms
+                                                    select x.Hyperscore)
+                                                    .ToArray().Percentile(50);
 
-            HashSet<string> seqs = new HashSet<string>();
+                HashSet<string> seqs = new HashSet<string>();
 
-            foreach (var psm in goodPsms) seqs.Add(psm.Seq);
+                foreach (var psm in goodPsms) seqs.Add(psm.Seq);
 
-            searchMetrics.NumUniquePeptides = seqs.Count;
+                searchMetrics.NumUniquePeptides = seqs.Count;
 
 
-            Console.WriteLine("Total hits: {0}", psms.Count());
-            Console.WriteLine("Top decoy score: {0}", topDecoyScore);
-            Console.WriteLine("Non-decoy hits: {0}", nonDecoys.Count());
-            Console.WriteLine("Non-decoy hits above top decoy score: {0}", goodPsms.Count());
+                Console.WriteLine("Total hits: {0}", psms.Count());
+                Console.WriteLine("Top decoy score: {0}", topDecoyScore);
+                Console.WriteLine("Non-decoy hits: {0}", nonDecoys.Count());
+                Console.WriteLine("Non-decoy hits above top decoy score: {0}", goodPsms.Count());
+
+
+                // parse out the charges
+                charges = from x in goodPsms
+                          select x.Charge;
+
+                // get the number of each charge, add to a dictionary
+                foreach (int charge in new List<int>() { 2, 3, 4 })
+                {
+                    numCharges.Add(charge, (from x in charges where x == charge select 1).Count());
+                }
+
+                // calculate charge ratios
+                chargeRatio3to2 = Convert.ToDouble(numCharges[3]) / Convert.ToDouble(numCharges[2]);
+                chargeRatio4to2 = Convert.ToDouble(numCharges[4]) / Convert.ToDouble(numCharges[2]);
+
+                // parse out the missed cleavage data
+                pepsWithNoMissedCleavages = (from x in goodPsms
+                                             where x.MissedCleavages == 0
+                                             select 1).Sum();
+
+                // number of PSMs is the length of this collection
+                numGoodPSMs = goodPsms.Count();
+
+                // missed cleavages per PSM
+                digestionEfficiency = (double)pepsWithNoMissedCleavages / numGoodPSMs;
+                Console.WriteLine("Digestion efficiency: {0}", digestionEfficiency);
+
+                // get missed cleavage rate, i.e. number of missed cleavages per psm
+                missedCleavageRate = (double)(from x in goodPsms select x.MissedCleavages).Sum() / numGoodPSMs;
+                Console.WriteLine("Missed cleavage rate (/PSM): {0}", missedCleavageRate);
+
+                // calculate ID rate
+                IdRate = (double)numGoodPSMs / numSearched;
+                Console.WriteLine("IDrate: {0}", IdRate);
+
+                // get labeling efficiency metrics
+                if (!String.IsNullOrEmpty(parameters.QcParams.VariableMods))
+                {
+                    searchMetrics.GetModificationFrequency(goodPsms, parameters);
+                }
+
+                // get median mass drift
+                searchMetrics.MedianMassDrift = (from x in goodPsms
+                                                 select x.MassDrift)
+                                          .ToArray().Percentile(50);
+
+                searchMetrics.SearchData.PSMsWithNoMissedCleavages = pepsWithNoMissedCleavages;
+                searchMetrics.SearchData.TotalNumGoodPSMs = numGoodPSMs;
+                searchMetrics.SearchData.NumCharge2 = numCharges[2];
+                searchMetrics.SearchData.NumCharge3 = numCharges[3];
+                searchMetrics.SearchData.NumCharge4 = numCharges[4];
+
+                searchMetrics.IdentificationRate = IdRate;
+                searchMetrics.MissedCleavageRate = missedCleavageRate;
+                searchMetrics.DigestionEfficiency = digestionEfficiency;
+                searchMetrics.ChargeRatio3to2 = chargeRatio3to2;
+                searchMetrics.ChargeRatio4to2 = chargeRatio4to2;
+            }
+            else
+            {
+                Console.Write("No decoy hits detected.");
+            }
+
             
-
-            // parse out the charges
-            charges = from x in goodPsms
-                      select x.Charge;
-
-            // get the number of each charge, add to a dictionary
-            foreach (int charge in new List<int>() { 2, 3, 4 })
-            {
-                numCharges.Add(charge, (from x in charges where x == charge select 1).Count());
-            }
-
-            // calculate charge ratios
-            chargeRatio3to2 = Convert.ToDouble(numCharges[3]) / Convert.ToDouble(numCharges[2]);
-            chargeRatio4to2 = Convert.ToDouble(numCharges[4]) / Convert.ToDouble(numCharges[2]);
-
-            // parse out the missed cleavage data
-            pepsWithNoMissedCleavages = (from x in goodPsms
-                                       where x.MissedCleavages == 0
-                                       select 1).Sum();
-
-            // number of PSMs is the length of this collection
-            numGoodPSMs = goodPsms.Count();
-
-            // missed cleavages per PSM
-            digestionEfficiency = (double)pepsWithNoMissedCleavages / numGoodPSMs;
-            Console.WriteLine("Digestion efficiency: {0}", digestionEfficiency);
-
-            // get missed cleavage rate, i.e. number of missed cleavages per psm
-            missedCleavageRate = (double)(from x in goodPsms select x.MissedCleavages).Sum() / numGoodPSMs;
-            Console.WriteLine("Missed cleavage rate (/PSM): {0}", missedCleavageRate);
-
-            // calculate ID rate
-            IdRate = (double)numGoodPSMs / numSearched;
-            Console.WriteLine("IDrate: {0}", IdRate);
-
-            // get labeling efficiency metrics
-            if (!String.IsNullOrEmpty(parameters.QcParams.VariableMods))
-            {
-                searchMetrics.GetModificationFrequency(goodPsms, parameters);
-            }
-
-            // get median mass drift
-            searchMetrics.MedianMassDrift = (from x in goodPsms
-                                      select x.MassDrift)
-                                      .ToArray().Percentile(50);
-
-            searchMetrics.SearchData.PSMsWithNoMissedCleavages = pepsWithNoMissedCleavages;
-            searchMetrics.SearchData.TotalNumGoodPSMs = numGoodPSMs;
-            searchMetrics.SearchData.NumCharge2 = numCharges[2];
-            searchMetrics.SearchData.NumCharge3 = numCharges[3];
-            searchMetrics.SearchData.NumCharge4 = numCharges[4];
-
-            searchMetrics.IdentificationRate = IdRate;
-            searchMetrics.MissedCleavageRate = missedCleavageRate;
-            searchMetrics.DigestionEfficiency = digestionEfficiency;
-            searchMetrics.ChargeRatio3to2 = chargeRatio3to2;
-            searchMetrics.ChargeRatio4to2 = chargeRatio4to2;
         }
 
         public static void GetModificationFrequency(this SearchMetricsContainer searchMetrics, IEnumerable<PsmData> psms, WorkflowParameters parameters)
