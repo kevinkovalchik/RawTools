@@ -150,12 +150,10 @@ namespace RawToolsGUI
             if (checkBoxModeParse.Checked)
             {
                 groupBoxDataOutput.Enabled = true;
-                groupBoxCommonOptions.Enabled = true;
             }
             else
             {
                 groupBoxDataOutput.Enabled = false;
-                groupBoxCommonOptions.Enabled = false;
             }
         }
 
@@ -167,7 +165,7 @@ namespace RawToolsGUI
                 radioButtonSelectDirectory.Enabled = true;
                 buttonSelectDirectory.Enabled = true;
                 textBoxRawFileDirectory.Enabled = true;
-                groupBoxCommonOptions.Enabled = true;
+
                 radioButtonSelectFiles.Checked = false;
                 radioButtonSelectFiles.Enabled = false;
                 buttonSelectFiles.Enabled = false;
@@ -181,7 +179,7 @@ namespace RawToolsGUI
                 radioButtonSelectDirectory.Enabled = true;
                 buttonSelectDirectory.Enabled = true;
                 textBoxRawFileDirectory.Enabled = true;
-                groupBoxCommonOptions.Enabled = false;
+
                 radioButtonSelectFiles.Checked = false;
                 radioButtonSelectFiles.Enabled = true;
                 buttonSelectFiles.Enabled = false;
@@ -289,7 +287,6 @@ namespace RawToolsGUI
             {
                 checkBoxReporterFilterMGF.Enabled = checkBoxReporterIonFiltering.Checked;
                 groupBoxMgfOpts.Enabled = true;
-                ckbxOutputParse.Checked = true;
             }
             else
             {
@@ -298,9 +295,9 @@ namespace RawToolsGUI
             }
         }
 
-        private void ckbxOutputFaims_CheckedChanged(object sender, EventArgs e)
+        private void checkBoxFaimsMgf_CheckedChanged(object sender, EventArgs e)
         {
-            if (checkBoxFaims.Checked)
+            if (checkBoxFaimsMgf.Checked)
             {
                 checkBoxReporterFilterMGF.Enabled = checkBoxReporterIonFiltering.Checked;
                 groupBoxMgfOpts.Enabled = true;
@@ -429,6 +426,12 @@ namespace RawToolsGUI
                 command = "RawTools.exe";
             }
                         
+            if (!checkBoxModeParse.Checked & !checkBoxModeQC.Checked)
+            {
+                MessageBox.Show("You need to select a Mode for RawTools. Please pick QC, Parse, or both.", "Info");
+                return;
+            }
+
             if (radioButtonSelectDirectory.Checked)
             {
                 if (textBoxRawFileDirectory.Text == "" | textBoxRawFileDirectory.Text == String.Empty)
@@ -457,7 +460,7 @@ namespace RawToolsGUI
             {
 
                 if (!ckbxOutputMGF.Checked & !ckbxOutputMetrics.Checked & !ckbxOutputChromatograms.Checked &
-                    !ckbxOutputParse.Checked & !ckbxOutputQuant.Checked & !checkBoxModeQC.Checked & !checkBoxFaims.Checked)
+                    !ckbxOutputParse.Checked & !ckbxOutputQuant.Checked & !checkBoxModeQC.Checked & !checkBoxFaimsMgf.Checked)
                 {
                     MessageBox.Show("You haven't selected any data output. Please choose something.");
                     return;
@@ -478,7 +481,7 @@ namespace RawToolsGUI
                     arguments.Append("x");
                 }
 
-                if (checkBoxFaims.Checked)
+                if (checkBoxFaimsMgf.Checked)
                 {
                     arguments.Append(" -faimsMgf");
                 }
@@ -594,8 +597,6 @@ namespace RawToolsGUI
             else
             {
                 groupBoxQuantOpt.Enabled = false;
-                ckbxOutputMGF.Checked = false;
-                checkBoxFaims.Checked = false;
             }
         }
 
@@ -754,7 +755,7 @@ namespace RawToolsGUI
             ckbxOutputChromatograms.Checked = Pars.DataOutputChromatograms;
             ckbxOutputMetrics.Checked = Pars.DataOutputMetrics;
             ckbxOutputMGF.Checked = Pars.DataOutputMGF;
-            checkBoxFaims.Checked = Pars.FaimsOutputMgf;
+            checkBoxFaimsMgf.Checked = Pars.DataOutputFaimsMgf;
             ckbxOutputParse.Checked = Pars.DataOutputParseMatrix;
             checkBoxDataOutputDirectory.Checked = Pars.DataOutputDirectory;
             
@@ -807,7 +808,7 @@ namespace RawToolsGUI
             Pars.DataOutputChromatograms = ckbxOutputChromatograms.Checked;
             Pars.DataOutputMetrics = ckbxOutputMetrics.Checked;
             Pars.DataOutputMGF = ckbxOutputMGF.Checked;
-            Pars.FaimsOutputMgf = checkBoxFaims.Checked;
+            Pars.DataOutputFaimsMgf = checkBoxFaimsMgf.Checked;
             Pars.DataOutputParseMatrix = ckbxOutputParse.Checked;
             Pars.DataOutputDirectory = checkBoxDataOutputDirectory.Checked;
 
