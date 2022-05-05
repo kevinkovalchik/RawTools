@@ -13,7 +13,7 @@ namespace RawToolsGUI
 
         public string RawFileDirectory, RawFileList;
 
-        public bool DataOutputMGF, DataOutputParseMatrix, DataOutputMetrics, DataOutputChromatograms, DataOutputDirectory;
+        public bool DataOutputMGF, DataOutputFaimsMgf, DataOutputParseMatrix, DataOutputMetrics, DataOutputChromatograms, DataOutputDirectory;
 
         public string DataOutputDirectoryString;
 
