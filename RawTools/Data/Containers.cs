@@ -142,6 +142,7 @@ namespace RawTools.Data.Containers
         public double MonoisotopicMZ = -1;
         public double HCDEnergy = -1;
         public double[] SPSMasses;
+        public double FaimsVoltage = -1;
     }
 
     class PrecursorScanData
@@ -367,6 +368,7 @@ namespace RawTools.Data.Containers
         public double MS1ScanRate, MS2ScanRate, MS3ScanRate;
         public double MeanDutyCycle;
         public double MedianMS1FillTime, MedianMS2FillTime, MedianMS3FillTime;
+        public double[] FaimsVoltages;
         public double MedianPrecursorIntensity;
         public double MedianSummedMS1Intensity, MedianSummedMS2Intensity;
         public double MedianBaselinePeakWidth, MedianHalfHeightPeakWidth, PeakCapacity, Gradient,
@@ -509,7 +511,7 @@ namespace RawTools.Data.Containers
 
     class TrailerExtraIndices
     {
-        public int InjectionTime, MasterScan, MonoisotopicMZ, ChargeState, HCDEnergy = -1;
+        public int InjectionTime, MasterScan, MonoisotopicMZ, ChargeState, HCDEnergy = -1, FaimsVoltage = -1;
         public List<int> SPSMasses = new List<int>();
 
         public TrailerExtraIndices(IRawDataPlus rawFile)
@@ -541,6 +543,10 @@ namespace RawTools.Data.Containers
                 if (header[i].Label.ToLower().Contains("sps"))
                 {
                     SPSMasses.Add(i);
+                }
+                if (header[i].Label.ToLower().Contains("cv"))
+                {
+                    FaimsVoltage = i;
                 }
             }
         }

@@ -687,6 +687,12 @@ namespace RawTools.Algorithms.ExtractData
                 sps2.CopyTo(spsMasses, sps1.Length);
             }
             trailerExtra.SPSMasses = spsMasses;
+
+            if (indices.FaimsVoltage != -1)
+            {
+                trailerExtra.FaimsVoltage = Convert.ToDouble(rawFile.GetTrailerExtraValue(scan, indices.FaimsVoltage));
+            }
+
             return trailerExtra;
         }
 
@@ -735,22 +741,33 @@ namespace RawTools.Algorithms.ExtractData
 
         public static ScanEventReactionCollection ScanEvents(IRawDataPlus rawFile, ScanIndex index)
         {
-            rawFile.SelectMsData();
 
-            ScanEventReactionCollection events = new ScanEventReactionCollection();
-
-            Log.Information("Extracting scan events");
-            ProgressIndicator P = new ProgressIndicator(index.ScanEnumerators[MSOrderType.Any].Length, "Extracting reaction events");
-            P.Start();
-
-            foreach (int scan in index.ScanEnumerators[index.AnalysisOrder])
+            if (index.AnalysisOrder == MSOrderType.Ms)
             {
-                events.Add(scan, rawFile.GetScanEventForScanNumber(scan).GetReaction(0));
-                P.Update();
+                Console.WriteLine("This is not an Orbitrap file. Skipping reaction event extraction.");
+                return null;
             }
-            P.Done();
+            else
+            {
+                rawFile.SelectMsData();
 
-            return events;
+                ScanEventReactionCollection events = new ScanEventReactionCollection();
+
+                Log.Information("Extracting scan events");
+                ProgressIndicator P = new ProgressIndicator(index.ScanEnumerators[MSOrderType.Any].Length, "Extracting reaction events");
+                P.Start();
+
+                foreach (int scan in index.ScanEnumerators[index.AnalysisOrder])
+                {
+                    events.Add(scan, rawFile.GetScanEventForScanNumber(scan).GetReaction(0));
+                    P.Update();
+                }
+                P.Done();
+
+                return events;
+            }
+
+
         }
 
         public static MethodDataContainer MethodData(IRawDataPlus rawFile, ScanIndex index)
@@ -770,18 +787,22 @@ namespace RawTools.Algorithms.ExtractData
 
             int firstMs1Scan = index.ScanEnumerators[MSOrderType.Ms][0];
             methodData.MassAnalyzers.Add(MSOrderType.Ms, index.allScans[firstMs1Scan].MassAnalyzer);
-
-            int firstMs2Scan = index.ScanEnumerators[MSOrderType.Ms2][0];
-            methodData.MassAnalyzers.Add(MSOrderType.Ms2, index.allScans[firstMs2Scan].MassAnalyzer);
-
             methodData.MSOrderEnumerator.Add(MSOrderType.Ms);
-            methodData.MSOrderEnumerator.Add(MSOrderType.Ms2);
 
-            int n = index.ScanEnumerators[MSOrderType.Ms2].Count();
-            double ms2window = rawFile.GetScanEventForScanNumber(index.ScanEnumerators[MSOrderType.Ms2][n / 2]).GetIsolationWidth(0);
-
-            if (methodData.AnalysisOrder == MSOrderType.Ms3)
+            if (methodData.AnalysisOrder == MSOrderType.Ms2)
             {
+                int firstMs2Scan = index.ScanEnumerators[MSOrderType.Ms2][0];
+                methodData.MassAnalyzers.Add(MSOrderType.Ms2, index.allScans[firstMs2Scan].MassAnalyzer);
+                methodData.MSOrderEnumerator.Add(MSOrderType.Ms2);
+            }
+            else if (methodData.AnalysisOrder == MSOrderType.Ms3)
+            {
+                int firstMs2Scan = index.ScanEnumerators[MSOrderType.Ms2][0];
+                methodData.MassAnalyzers.Add(MSOrderType.Ms2, index.allScans[firstMs2Scan].MassAnalyzer);
+                methodData.MSOrderEnumerator.Add(MSOrderType.Ms2);
+                int n = index.ScanEnumerators[MSOrderType.Ms2].Count();
+                double ms2window = rawFile.GetScanEventForScanNumber(index.ScanEnumerators[MSOrderType.Ms2][n / 2]).GetIsolationWidth(0);
+
                 int firstMs3Scan = index.ScanEnumerators[MSOrderType.Ms3][0];
                 methodData.MassAnalyzers.Add(MSOrderType.Ms3, index.allScans[firstMs3Scan].MassAnalyzer);
                 methodData.MSOrderEnumerator.Add(MSOrderType.Ms3);
@@ -792,7 +813,7 @@ namespace RawTools.Algorithms.ExtractData
             }
             else
             {
-                methodData.IsolationWindow = (MS2: ms2window, (MS1Window: -1, MS2Window: -1));
+                Console.WriteLine("This raw file contains only MS1 scans.");
             }
 
             return methodData;

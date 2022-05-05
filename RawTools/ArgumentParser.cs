@@ -25,7 +25,7 @@ namespace RawTools.ArgumentParser
     {
         public static ClParser Create()
         {
-            ClParser parser = new ClParser("Welcome to the main page for RawTools version 2.0.4! RawTools is an " +
+            ClParser parser = new ClParser("Welcome to the main page for RawTools version 2.0.7! RawTools is an " +
                 "open-source and freely available package designed to perform scan data parsing and quantification, " +
                 "and quality control analysis of Thermo Orbitrap raw mass spectrometer files. RawTools uses the " +
                 "Thermo RawFileReader library (Copyright © 2016 by Thermo Fisher Scientific, Inc. All rights reserved). " +
@@ -81,6 +81,10 @@ namespace RawTools.ArgumentParser
                 "where levels is the MS level (or a combination of levels). For example, to output MS2 and MS3 scans, you would " +
                 "invoke the command \"-mgfLevels 23\". Currently, only MS levels 1, 2, and 3 are supported."));
 
+            parser.Add(new Argument(name: "FaimsMgf", shortArgument: "-faimsMgf", longArgument: "-faimsMgf", required: false,
+                typeOf: typeof(bool),
+                helpText: "Writes an MGF for each FAIMS CV detected in the file."));
+
             parser.Add(new Argument(name: "MgfMassCutoff", shortArgument: "-c", longArgument: "-masscutoff", required: false,
                 typeOf: typeof(float),
                 helpText: "Specify a mass cutoff to be applied when generating MGF files. " +
@@ -96,12 +100,23 @@ namespace RawTools.ArgumentParser
                 typeOf: typeof(bool),
                 helpText: "Write a txt file containing general metrics about the MS run."));
 
+            parser.Add(new Argument(name: "AllScanData", shortArgument: "-asd", longArgument: "-allScanData", required: false,
+                typeOf: typeof(bool),
+                helpText: "Write a text file containing all scan data acquired in the MS run. Currently, this only outputs" +
+                "MS1 data to the text file. Depending on the size of your raw file, this will generate a large output and can be slow."));
+
             parser.Add(new Argument(name: "Chromatogram", shortArgument: "-chro", longArgument: "-chromatograms", required: false,
                 typeOf: typeof(string),
                 helpText: "Write a chromatogram to disk. Should be in the format \"-chro [order][type]\", where order " +
                 "is the MS order (or a combination of orders) and type is T, B, or TB (TIC, base peak and both, respectively). " +
                 "For example, to generate MS1 and MS2 TIC and base peak chromatograms, invoke \"-chro 12TB\". Or, to generate a MS2 TIC, " +
                 "invoke \"-chro 2T\"."));
+
+            parser.Add(new Argument(name: "Xic", shortArgument: "-xic", longArgument: "-xic", required: false,
+                typeOf: typeof(string),
+                helpText: "Provide a mass value to write an extraction ion chromatrogram from MS1 data. The values should be provided " +
+                "in a comma delimited format (e.g. 500,10) for mass,tolerance. The tolerance value is treated as a window around the " +
+                "given mass value."));
 
             parser.Add(new Argument(name: "RefineMassCharge", shortArgument: "-R", longArgument: "-refinemasscharge", required: false,
                 typeOf: typeof(bool),

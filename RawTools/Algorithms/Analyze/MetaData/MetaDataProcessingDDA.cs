@@ -54,32 +54,54 @@ namespace RawTools.Algorithms.Analyze
 
             double isoWindow = MetaDataCalculations.Ms1IsoWindow(methodData);
 
-            Console.WriteLine("Calculating meta data");
+            if (methodData.AnalysisOrder == MSOrderType.Ms)
+            {
+                Console.WriteLine("File only contains MS1 scans. Skipping meta data calculations.");
+                metaData.Ms1IsolationInterference = null;
+                metaData.MS2ScansPerCycle = null;
+                metaData.FillTime = MetaDataCalculations.FillTimes(trailerExtras, index);
+                metaData.FaimsVoltage = MetaDataCalculations.FaimsVoltages(trailerExtras, index);
+                metaData.DutyCycle = null;
+                metaData.IntensityDistribution = MetaDataCalculations.IntensityDistributions(centroidStreams, segmentScans, index, maxProcesses);
+                metaData.SummedIntensity = MetaDataCalculations.SummedIntensities(centroidStreams, segmentScans, index, maxProcesses);
+                metaData.FractionConsumingTop80PercentTotalIntensity = null;
 
-            Console.WriteLine("  MS1 isolation interference");
-            metaData.Ms1IsolationInterference = MetaDataCalculations.Ms1Interference(centroidStreams, precursorMasses, trailerExtras,
-                precursorScans, reactions, index, maxProcesses);
+                //Task.WaitAll();
 
-            Console.WriteLine("  MS2 scan cycle density");
-            metaData.MS2ScansPerCycle = MetaDataCalculations.MS2ScansPerCycle(scanDependents, index);
+                return metaData;
+            }
+            else
+            {
+                Console.WriteLine("Calculating meta data");
 
-            Console.WriteLine("  Ion injection time");
-            metaData.FillTime = MetaDataCalculations.FillTimes(trailerExtras, index);
+                Console.WriteLine("  MS1 isolation interference");
+                metaData.Ms1IsolationInterference = MetaDataCalculations.Ms1Interference(centroidStreams, precursorMasses, trailerExtras,
+                    precursorScans, reactions, index, maxProcesses);
 
-            Console.WriteLine("  Duty cycle");
-            metaData.DutyCycle = MetaDataCalculations.DutyCycle(retentionTimes, index);
+                Console.WriteLine("  MS2 scan cycle density");
+                metaData.MS2ScansPerCycle = MetaDataCalculations.MS2ScansPerCycle(scanDependents, index);
 
-            Console.WriteLine("  Intensity distribution");
-            metaData.IntensityDistribution = MetaDataCalculations.IntensityDistributions(centroidStreams, segmentScans, index, maxProcesses);
+                Console.WriteLine("  Ion injection time");
+                metaData.FillTime = MetaDataCalculations.FillTimes(trailerExtras, index);
 
-            Console.WriteLine("  Summed intensities");
-            metaData.SummedIntensity = MetaDataCalculations.SummedIntensities(centroidStreams, segmentScans, index, maxProcesses);
+                Console.WriteLine("  FAIMS voltages");
+                metaData.FaimsVoltage = MetaDataCalculations.FaimsVoltages(trailerExtras, index);
 
-            metaData.FractionConsumingTop80PercentTotalIntensity = MetaDataCalculations.Top80Frac(centroidStreams, segmentScans, index, maxProcesses);
+                Console.WriteLine("  Duty cycle");
+                metaData.DutyCycle = MetaDataCalculations.DutyCycle(retentionTimes, index);
 
-            //Task.WaitAll();
+                Console.WriteLine("  Intensity distribution");
+                metaData.IntensityDistribution = MetaDataCalculations.IntensityDistributions(centroidStreams, segmentScans, index, maxProcesses);
 
-            return metaData;
+                Console.WriteLine("  Summed intensities");
+                metaData.SummedIntensity = MetaDataCalculations.SummedIntensities(centroidStreams, segmentScans, index, maxProcesses);
+
+                metaData.FractionConsumingTop80PercentTotalIntensity = MetaDataCalculations.Top80Frac(centroidStreams, segmentScans, index, maxProcesses);
+
+                //Task.WaitAll();
+
+                return metaData;
+            }
         }
 
         public static RawMetricsDataDDA GetMetricsDataDDA(ScanMetaDataCollectionDDA metaData, MethodDataContainer methodData,
@@ -90,20 +112,31 @@ namespace RawTools.Algorithms.Analyze
             metricsData.DateAcquired = methodData.CreationDate;
             metricsData.Instrument = methodData.Instrument;
             Console.WriteLine("Calculating metrics");
-            
+
             metricsData.RawFileName = rawFileName;
             metricsData.Instrument = methodData.Instrument;
             metricsData.MS1Analyzer = methodData.MassAnalyzers[MSOrderType.Ms];
-            metricsData.MS2Analyzer = methodData.MassAnalyzers[MSOrderType.Ms2];
-
             metricsData.TotalAnalysisTime = retentionTimes[index.ScanEnumerators[MSOrderType.Any].Last()] -
                 retentionTimes[index.ScanEnumerators[MSOrderType.Any].First()];
-            
-            metricsData.NumberOfEsiFlags = MetricsCalculations.NumberOfEsiFlags(metaData, index);
+
+            if (methodData.AnalysisOrder == MSOrderType.Ms2)
+            {
+                metricsData.NumberOfEsiFlags = MetricsCalculations.NumberOfEsiFlags(metaData, index);
+            }
 
             metricsData.TotalScans = index.TotalScans;
             metricsData.MS1Scans = index.ScanEnumerators[MSOrderType.Ms].Length;
-            metricsData.MS2Scans = index.ScanEnumerators[MSOrderType.Ms2].Length;
+
+            if (methodData.AnalysisOrder == MSOrderType.Ms2)
+            {
+                metricsData.MS2Analyzer = methodData.MassAnalyzers[MSOrderType.Ms2];
+                metricsData.MS2Scans = index.ScanEnumerators[MSOrderType.Ms2].Length;
+            }
+            else
+            {
+                metricsData.MS2Analyzer = MassAnalyzerType.Any;
+                metricsData.MS2Scans = 0;
+            }
 
             if (methodData.AnalysisOrder == MSOrderType.Ms3)
             {
@@ -116,49 +149,60 @@ namespace RawTools.Algorithms.Analyze
                 metricsData.MS3Scans = 0;
             }
 
-            var pickedMs1 = new HashSet<int>((from x in index.ScanEnumerators[methodData.AnalysisOrder]
-                                              select precursorScans[x].MasterScan)).ToList();
-            
+            //var pickedMs1 = new HashSet<int>((from x in index.ScanEnumerators[methodData.AnalysisOrder]
+            //                                  select precursorScans[x].MasterScan)).ToList();
+
             metricsData.MSOrder = methodData.AnalysisOrder;
 
             metricsData.MedianSummedMS1Intensity = MetricsCalculations.GetMedianSummedMSIntensity(metaData.SummedIntensity, index, MSOrderType.Ms);
-            metricsData.MedianSummedMS2Intensity = MetricsCalculations.GetMedianSummedMSIntensity(metaData.SummedIntensity, index, MSOrderType.Ms2);
 
-            metricsData.MedianPrecursorIntensity = (from x in peakData.Keys select peakData[x].ParentIntensity).ToArray().Percentile(50);
+            if (methodData.AnalysisOrder == MSOrderType.Ms2)
+            {
+                metricsData.MedianSummedMS2Intensity = MetricsCalculations.GetMedianSummedMSIntensity(metaData.SummedIntensity, index, MSOrderType.Ms2);
+                metricsData.MedianPrecursorIntensity = (from x in peakData.Keys select peakData[x].ParentIntensity).ToArray().Percentile(50);
+            }
 
             metricsData.MedianMS1FillTime = MetricsCalculations.GetMedianMSFillTime(metaData.FillTime, index, MSOrderType.Ms);
-            metricsData.MedianMS2FillTime = MetricsCalculations.GetMedianMSFillTime(metaData.FillTime, index, MSOrderType.Ms2);
+
+            if (methodData.AnalysisOrder == MSOrderType.Ms2)
+            {
+                metricsData.MedianMS2FillTime = MetricsCalculations.GetMedianMSFillTime(metaData.FillTime, index, MSOrderType.Ms2);
+            }
 
             if (methodData.AnalysisOrder == MSOrderType.Ms3)
             {
                 metricsData.MedianMS3FillTime = MetricsCalculations.GetMedianMSFillTime(metaData.FillTime, index, MSOrderType.Ms3);
             }
 
-            metricsData.MeanTopN = MetricsCalculations.GetMeanMs2ScansPerCycle(metaData.MS2ScansPerCycle);
+            metricsData.FaimsVoltages = MetricsCalculations.GetFaimsVoltages(metaData.FaimsVoltage, index, MSOrderType.Ms);
 
-            metricsData.MeanDutyCycle = MetricsCalculations.GetMedianDutyCycle(metaData.DutyCycle, index);
-            
-            metricsData.MedianMs2FractionConsumingTop80PercentTotalIntensity =
+            if (methodData.AnalysisOrder == MSOrderType.Ms2)
+            {
+                metricsData.MeanTopN = MetricsCalculations.GetMeanMs2ScansPerCycle(metaData.MS2ScansPerCycle);
+                metricsData.MeanDutyCycle = MetricsCalculations.GetMedianDutyCycle(metaData.DutyCycle, index);
+                metricsData.MedianMs2FractionConsumingTop80PercentTotalIntensity =
                 MetricsCalculations.GetMedianMs2FractionConsumingTop80PercentTotalIntensity(
                     metaData.FractionConsumingTop80PercentTotalIntensity, index);
-
+            }
 
             metricsData.MS1ScanRate = metricsData.MS1Scans / metricsData.TotalAnalysisTime;
-            metricsData.MS2ScanRate = metricsData.MS2Scans / metricsData.TotalAnalysisTime;
-            if (methodData.AnalysisOrder == MSOrderType.Ms3)  metricsData.MS3ScanRate = metricsData.MS3Scans / metricsData.TotalAnalysisTime;
+            if (methodData.AnalysisOrder == MSOrderType.Ms2) metricsData.MS2ScanRate = metricsData.MS2Scans / metricsData.TotalAnalysisTime;
+            if (methodData.AnalysisOrder == MSOrderType.Ms3) metricsData.MS3ScanRate = metricsData.MS3Scans / metricsData.TotalAnalysisTime;
 
-            metricsData.MedianBaselinePeakWidth = peakData.PeakShapeMedians.Width.P10;
-            metricsData.MedianHalfHeightPeakWidth = peakData.PeakShapeMedians.Width.P50;
+            if (methodData.AnalysisOrder == MSOrderType.Ms2)
+            {
+                metricsData.MedianBaselinePeakWidth = peakData.PeakShapeMedians.Width.P10;
+                metricsData.MedianHalfHeightPeakWidth = peakData.PeakShapeMedians.Width.P50;
+                metricsData.MedianAsymmetryFactor = peakData.PeakShapeMedians.Asymmetry.P10;
 
-            // we can't access the instrument method in Linux, so we will assume the gradient length is the length of the MS acquisition
-            metricsData.Gradient = retentionTimes[index.allScans.Keys.Max()];
-            metricsData.PeakCapacity = metricsData.Gradient / metricsData.MedianHalfHeightPeakWidth;
+                // we can't access the instrument method in Linux, so we will assume the gradient length is the length of the MS acquisition
+                metricsData.Gradient = retentionTimes[index.allScans.Keys.Max()];
+                metricsData.PeakCapacity = metricsData.Gradient / metricsData.MedianHalfHeightPeakWidth;
 
-            metricsData.MedianAsymmetryFactor = peakData.PeakShapeMedians.Asymmetry.P10;
-
-            // add isolation interference
-            metricsData.MedianMs1IsolationInterference = (from scan in index.ScanEnumerators[methodData.AnalysisOrder]
-                                                          select metaData.Ms1IsolationInterference[scan]).ToArray().Percentile(50);
+                // add isolation interference
+                metricsData.MedianMs1IsolationInterference = (from scan in index.ScanEnumerators[methodData.AnalysisOrder]
+                                                              select metaData.Ms1IsolationInterference[scan]).ToArray().Percentile(50);
+            }
 
             (double timeBefore, double timeAfter, double fracAbove) = MetricsCalculations.ChromIntensityMetrics(metaData, retentionTimes, index);
             metricsData.TimeBeforeFirstScanToExceedPoint1MaxIntensity = timeBefore;
@@ -166,14 +210,18 @@ namespace RawTools.Algorithms.Analyze
             metricsData.FractionOfRunAbovePoint1MaxIntensity = fracAbove;
 
             metricsData.Ms1FillTimeDistribution = new Distribution((from x in index.ScanEnumerators[MSOrderType.Ms] select metaData.FillTime[x]).ToArray());
-            metricsData.Ms2FillTimeDistribution = new Distribution((from x in index.ScanEnumerators[MSOrderType.Ms2] select metaData.FillTime[x]).ToArray());
+            if (methodData.AnalysisOrder == MSOrderType.Ms2) metricsData.Ms2FillTimeDistribution = new Distribution((from x in index.ScanEnumerators[MSOrderType.Ms2] select metaData.FillTime[x]).ToArray());
             if (methodData.AnalysisOrder == MSOrderType.Ms3) metricsData.Ms3FillTimeDistribution = new Distribution((from x in index.ScanEnumerators[MSOrderType.Ms3] select metaData.FillTime[x]).ToArray());
 
-            metricsData.PeakShape.Asymmetry.P10 = peakData.PeakShapeMedians.Asymmetry.P10;
-            metricsData.PeakShape.Asymmetry.P50 = peakData.PeakShapeMedians.Asymmetry.P50;
 
-            metricsData.PeakShape.Width.P10 = peakData.PeakShapeMedians.Width.P10;
-            metricsData.PeakShape.Width.P50 = peakData.PeakShapeMedians.Width.P50;
+            if (methodData.AnalysisOrder == MSOrderType.Ms2)
+            {
+                metricsData.PeakShape.Asymmetry.P10 = peakData.PeakShapeMedians.Asymmetry.P10;
+                metricsData.PeakShape.Asymmetry.P50 = peakData.PeakShapeMedians.Asymmetry.P50;
+
+                metricsData.PeakShape.Width.P10 = peakData.PeakShapeMedians.Width.P10;
+                metricsData.PeakShape.Width.P50 = peakData.PeakShapeMedians.Width.P50;
+            }
 
             // now add the quant meta data, if quant was performed
             double medianReporterIntensity = 0;

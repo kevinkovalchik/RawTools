@@ -56,9 +56,12 @@ namespace RawTools.WorkFlows
             IncludeSubdirectories = (bool)TryGetElseDefault(Options,"SearchSubdirectories");
             RefineMassCharge = (bool)TryGetElseDefault(Options,"RefineMassCharge");
             ParseParams.Chromatogram = (string)TryGetElseDefault(Options, "Chromatogram");
+            ParseParams.Xic = (string)TryGetElseDefault(Options, "Xic");
             ParseParams.WriteMgfLevels = (string)TryGetElseDefault(Options, "WriteMgfLevels");
+            ParseParams.WriteFaimsMgf = (bool)TryGetElseDefault(Options, "FaimsMgf");
             ParseParams.LabelingReagents = (string)TryGetElseDefault(Options, "LabelingReagent");
             ParseParams.Metrics = (bool)TryGetElseDefault(Options, "Metrics");
+            ParseParams.AllScanData = (bool)TryGetElseDefault(Options, "AllScanData");
             ParseParams.Parse = (bool)TryGetElseDefault(Options, "Parse");
             ParseParams.Quant = (bool)TryGetElseDefault(Options, "Quant");
             ParseParams.UnlabeledQuant = (bool)TryGetElseDefault(Options, "UnlabeledQuant");
@@ -144,8 +147,8 @@ namespace RawTools.WorkFlows
 
     public class ParseWorkflowParameters
     {
-        public bool Parse, Quant, UnlabeledQuant, WriteMgf, Metrics;
-        public string LabelingReagents, OutputDirectory, Chromatogram, WriteMgfLevels;
+        public bool Parse, Quant, UnlabeledQuant, WriteMgf, WriteFaimsMgf, Metrics, AllScanData;
+        public string LabelingReagents, OutputDirectory, Chromatogram, WriteMgfLevels, Xic;
     }
 
     public class QcWorkflowParameters

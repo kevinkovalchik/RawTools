@@ -4,15 +4,32 @@ Welcome to the RawTools page! RawTools is an open-source and freely available pa
 
 The RawTools manuscript was just accepted for the Journal of Proteome Research special issue on Software Tools and Resources, [here](https://pubs.acs.org/doi/10.1021/acs.jproteome.8b00721). The RawTools original manuscript preprint is [available on bioRxiv](https://www.biorxiv.org/content/early/2018/09/15/418400).
 
-<br>
-
 ### RawTools releases and installation
 
 To obtain the latest compiled release of RawTools or to obtain an older version, please visit the [Releases page](https://github.com/kevinkovalchik/RawTools/releases). 
 
 If you need help installing and using RawTools, please visit the wiki page appropriate for your system and follow the instructions outlined [here](https://github.com/kevinkovalchik/RawTools/wiki).
 
-<br>
+## [2.0.7] 2022-05-06
+### Changes
+- Fix an issue with parse and qc triggering.
+- Fixed an issue that would cause QC to fail if no search results were found.
+
+## RawTools 2.0.6a released
+### Changes
+- Fixed a bug where the -p flag had to be active to run functions such as -chro or -mgf.
+- Fixed various bugs related to the handling of raw files containing only MS1 scans.
+- From a user request, added a function to output MS1 scan data to a text file (-asd flag). 
+
+### RawTools 2.0.6 released
+- Removed the 'MS1 only' mode. RawTools will now automatically detect if it is an MS1 only file and proceed based on the appropriate program flags.
+- Added an XIC function (-xic) that allows users to output chromatogram data based on specified mass/tolerance settings. 
+
+### RawTools 2.0.5 released
+- Added the ability to parse chromatograms from files that contain only MS1 scans (-ms1 flag).
+- Added the ability to create MGF output for individual CV values in FAIMS data (-faimsMgf).
+- Added a FAIMS CV column to the parse and quant matrix.
+- Added FAIMS values to the metrics output, if available.
 
 ### RawTools 2.0.3 released
 

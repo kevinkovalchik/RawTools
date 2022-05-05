@@ -4,6 +4,35 @@ All notable changes to RawTools will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [2.0.7] 2022-05-06
+### Changes
+- Fix an issue with parse and qc triggering.
+- Fixed an issue that would cause QC to fail if no search results were found.
+
+## [2.0.6a] 2022-05-03
+### Changes
+- Fixed a bug where the -p flag had to be active to run functions such as -chro or -mgf.
+- Fixed various bugs related to the handling of raw files containing only MS1 scans.
+- From a user request, added a function to output MS1 scan data to a text file (-asd flag). 
+
+## [2.0.6] 2022-04-25
+### Changes
+- Removed the 'MS1 only' mode. RawTools will now automatically detect if it is an MS1 only file and proceed based on the appropriate program flags.
+- Added an XIC function (-xic) that allows users to output chromatogram data based on specified mass/tolerance settings. 
+
+## [2.0.5] 2022-04-25
+### Changes
+- Added the ability to process files with only MS1 scans (-ms1 flag).
+- Added the ability to create MGF output for individual CV values in FAIMS data (-faimsMgf).
+- Added a FAIMS CV column to the parse and quant matrix.
+- Added FAIMS values to the metrics output, if available.
+
+### Known bugs
+- When processing a non-FAIMS file, if the faimsMgf option is enabled, it will simply re-write the whole MGF.
+
 ## [2.0.4] 2022-02-01
 ### Changes
 - Updated ThermoRawFileReader to version 5.0.0.71.

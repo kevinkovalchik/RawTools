@@ -29,7 +29,7 @@ namespace RawTools
         public static void VersionInfo()
         {
             StringBuilder examples = new StringBuilder();
-            examples.AppendLine("2.0.4");
+            examples.AppendLine("2.0.7");
             Console.Write(examples);
         }
 

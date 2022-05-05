@@ -118,6 +118,11 @@ namespace RawTools.WorkFlows
                 MetricsWriter.WriteMatrix(rawMetrics, null, staticRawFile.FileName, parameters.ParseParams.OutputDirectory);
             }
 
+            if (parameters.ParseParams.AllScanData)
+            {
+                allScansWriter.WriteAllScans(centroidStreams, segmentScans, retentionTimes, methodData, Index, parameters, staticRawFile.FileName);
+            }
+
             if (parameters.ParseParams.Parse | parameters.ParseParams.Quant)
             {
                 string matrixFileName = ReadWrite.GetPathToFile(parameters.ParseParams.OutputDirectory, staticRawFile.FileName, "_Matrix.txt");
@@ -144,9 +149,19 @@ namespace RawTools.WorkFlows
                 MgfLevelsWriter.WriteLevelsMgf(staticRawFile.FileName, centroidStreams, segmentScans, parameters, retentionTimes, precursorMasses, precursorScans, trailerExtras, methodData, Index);
             }
 
+            if (parameters.ParseParams.WriteFaimsMgf)
+            {
+                FaimsMgfWriter.WriteFaimsMGF(staticRawFile.FileName, centroidStreams, segmentScans, parameters, retentionTimes, precursorMasses, precursorScans, trailerExtras, methodData, Index);
+            }
+
             if (parameters.ParseParams.Chromatogram != null)
             {
                 ChromatogramWriter.WriteChromatogram(centroidStreams, segmentScans, retentionTimes, methodData, Index, parameters, staticRawFile.FileName);
+            }
+
+            if (parameters.ParseParams.Xic != null)
+            {
+                XicWriter.WriteXic(centroidStreams, segmentScans, retentionTimes, methodData, Index, parameters, staticRawFile.FileName);
             }
 
             if (parameters.QcParams.QcDirectory != null)
