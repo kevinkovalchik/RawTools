@@ -102,8 +102,6 @@ namespace RawTools.Algorithms.Analyze
 
                 return metaData;
             }
-
-
         }
 
         public static RawMetricsDataDDA GetMetricsDataDDA(ScanMetaDataCollectionDDA metaData, MethodDataContainer methodData,
@@ -114,10 +112,10 @@ namespace RawTools.Algorithms.Analyze
             metricsData.DateAcquired = methodData.CreationDate;
             metricsData.Instrument = methodData.Instrument;
             Console.WriteLine("Calculating metrics");
-            
+
             metricsData.RawFileName = rawFileName;
             metricsData.Instrument = methodData.Instrument;
-            metricsData.MS1Analyzer = methodData.MassAnalyzers[MSOrderType.Ms];            
+            metricsData.MS1Analyzer = methodData.MassAnalyzers[MSOrderType.Ms];
             metricsData.TotalAnalysisTime = retentionTimes[index.ScanEnumerators[MSOrderType.Any].Last()] -
                 retentionTimes[index.ScanEnumerators[MSOrderType.Any].First()];
 
@@ -153,7 +151,7 @@ namespace RawTools.Algorithms.Analyze
 
             //var pickedMs1 = new HashSet<int>((from x in index.ScanEnumerators[methodData.AnalysisOrder]
             //                                  select precursorScans[x].MasterScan)).ToList();
-            
+
             metricsData.MSOrder = methodData.AnalysisOrder;
 
             metricsData.MedianSummedMS1Intensity = MetricsCalculations.GetMedianSummedMSIntensity(metaData.SummedIntensity, index, MSOrderType.Ms);
@@ -162,14 +160,14 @@ namespace RawTools.Algorithms.Analyze
             {
                 metricsData.MedianSummedMS2Intensity = MetricsCalculations.GetMedianSummedMSIntensity(metaData.SummedIntensity, index, MSOrderType.Ms2);
                 metricsData.MedianPrecursorIntensity = (from x in peakData.Keys select peakData[x].ParentIntensity).ToArray().Percentile(50);
-            }            
-            
+            }
+
             metricsData.MedianMS1FillTime = MetricsCalculations.GetMedianMSFillTime(metaData.FillTime, index, MSOrderType.Ms);
 
             if (methodData.AnalysisOrder == MSOrderType.Ms2)
             {
                 metricsData.MedianMS2FillTime = MetricsCalculations.GetMedianMSFillTime(metaData.FillTime, index, MSOrderType.Ms2);
-            }            
+            }
 
             if (methodData.AnalysisOrder == MSOrderType.Ms3)
             {
@@ -185,11 +183,11 @@ namespace RawTools.Algorithms.Analyze
                 metricsData.MedianMs2FractionConsumingTop80PercentTotalIntensity =
                 MetricsCalculations.GetMedianMs2FractionConsumingTop80PercentTotalIntensity(
                     metaData.FractionConsumingTop80PercentTotalIntensity, index);
-            }  
-            
-            metricsData.MS1ScanRate = metricsData.MS1Scans / metricsData.TotalAnalysisTime;            
+            }
+
+            metricsData.MS1ScanRate = metricsData.MS1Scans / metricsData.TotalAnalysisTime;
             if (methodData.AnalysisOrder == MSOrderType.Ms2) metricsData.MS2ScanRate = metricsData.MS2Scans / metricsData.TotalAnalysisTime;
-            if (methodData.AnalysisOrder == MSOrderType.Ms3)  metricsData.MS3ScanRate = metricsData.MS3Scans / metricsData.TotalAnalysisTime;
+            if (methodData.AnalysisOrder == MSOrderType.Ms3) metricsData.MS3ScanRate = metricsData.MS3Scans / metricsData.TotalAnalysisTime;
 
             if (methodData.AnalysisOrder == MSOrderType.Ms2)
             {
@@ -205,13 +203,13 @@ namespace RawTools.Algorithms.Analyze
                 metricsData.MedianMs1IsolationInterference = (from scan in index.ScanEnumerators[methodData.AnalysisOrder]
                                                               select metaData.Ms1IsolationInterference[scan]).ToArray().Percentile(50);
             }
-             
+
             (double timeBefore, double timeAfter, double fracAbove) = MetricsCalculations.ChromIntensityMetrics(metaData, retentionTimes, index);
             metricsData.TimeBeforeFirstScanToExceedPoint1MaxIntensity = timeBefore;
             metricsData.TimeAfterLastScanToExceedPoint1MaxIntensity = timeAfter;
             metricsData.FractionOfRunAbovePoint1MaxIntensity = fracAbove;
 
-            metricsData.Ms1FillTimeDistribution = new Distribution((from x in index.ScanEnumerators[MSOrderType.Ms] select metaData.FillTime[x]).ToArray());            
+            metricsData.Ms1FillTimeDistribution = new Distribution((from x in index.ScanEnumerators[MSOrderType.Ms] select metaData.FillTime[x]).ToArray());
             if (methodData.AnalysisOrder == MSOrderType.Ms2) metricsData.Ms2FillTimeDistribution = new Distribution((from x in index.ScanEnumerators[MSOrderType.Ms2] select metaData.FillTime[x]).ToArray());
             if (methodData.AnalysisOrder == MSOrderType.Ms3) metricsData.Ms3FillTimeDistribution = new Distribution((from x in index.ScanEnumerators[MSOrderType.Ms3] select metaData.FillTime[x]).ToArray());
 

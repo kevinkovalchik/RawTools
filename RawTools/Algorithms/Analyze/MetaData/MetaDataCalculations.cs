@@ -99,7 +99,6 @@ namespace RawTools.Algorithms.Analyze
             return faimsVoltages;
         }
 
-
         public static Dictionary<int, double> DutyCycle(RetentionTimeCollection retentionTimes, ScanIndex index)
         {
             Dictionary<int, double> dutyCycle = new Dictionary<int, double>();

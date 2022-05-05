@@ -10,7 +10,12 @@ To obtain the latest compiled release of RawTools or to obtain an older version,
 
 If you need help installing and using RawTools, please visit the wiki page appropriate for your system and follow the instructions outlined [here](https://github.com/kevinkovalchik/RawTools/wiki).
 
-## [2.0.6a] 2022-04-25
+## [2.0.7] 2022-05-06
+### Changes
+- Fix an issue with parse and qc triggering.
+- Fixed an issue that would cause QC to fail if no search results were found.
+
+## RawTools 2.0.6a released
 ### Changes
 - Fixed a bug where the -p flag had to be active to run functions such as -chro or -mgf.
 - Fixed various bugs related to the handling of raw files containing only MS1 scans.
@@ -25,11 +30,6 @@ If you need help installing and using RawTools, please visit the wiki page appro
 - Added the ability to create MGF output for individual CV values in FAIMS data (-faimsMgf).
 - Added a FAIMS CV column to the parse and quant matrix.
 - Added FAIMS values to the metrics output, if available.
-
-### RawTools 2.0.4 released
-- Updated ThermoRawFileReader to version 5.0.0.71.
-- Added compatibility for TMT 18-plex reagents.
-- Added an MGF writer for different MS levels ('-mgfLevels' flag, see help).
 
 ### RawTools 2.0.3 released
 

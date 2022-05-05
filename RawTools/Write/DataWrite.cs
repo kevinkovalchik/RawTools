@@ -305,17 +305,16 @@ namespace RawTools.Data.IO
             }
 
             var data = new List<string>
-                {
+            {
                 "MS3ScanNumber\tMS2ScanNumber\tMS1ScanNumber\tQuantScanRetTime\tParentScanRetTime\tDutyCycle\t",
                 "MS2ScansPerCycle\tParentIonMass\tMonoisotopicMass\tPrecursorCharge\tMS1IsolationInterference\t",
                 "ParentPeakFound\tParentPeakArea\tPeakFirstScan\tPeakMaxScan\tPeakLastScan\tBaseLinePeakWidth(s)\t",
                 "PeakParentScanIntensity\tPeakMaxIntensity\tMS1IonInjectionTime\tMS2IonInjectionTime\t",
                 "MS3IonInjectionTime\tHCDEnergy\tMS1MedianIntensity\tMS2MedianIntensity\t"
-                };
+            };
         }
     }
 
-    
     static class MgfWriter
     {
         public static void WriteMGF(string rawFileName, CentroidStreamCollection centroidStreams, SegmentScanCollection segmentScans, WorkflowParameters parameters, RetentionTimeCollection retentionTimes,
@@ -344,7 +343,7 @@ namespace RawTools.Data.IO
                 ReadWrite.CheckFileAccessibility(fileName);
 
                 MassAnalyzerType ms2MassAnalyzer = methodData.MassAnalyzers[MSOrderType.Ms2];
-                
+
                 const int BufferSize = 65536;  // 64 Kilobytes
 
                 using (StreamWriter f = new StreamWriter(fileName, false, Encoding.UTF8, BufferSize)) //Open a new file, the MGF file
@@ -423,7 +422,7 @@ namespace RawTools.Data.IO
                 }
 
             }
-            
+
         }
     }
 
@@ -559,10 +558,9 @@ namespace RawTools.Data.IO
                 }
 
             }
-            
+
         }
     }
-
 
     static class MgfLevelsWriter
     {
@@ -587,246 +585,241 @@ namespace RawTools.Data.IO
                     Console.WriteLine("Specified MS order ({0}) for mgf is higher than experiment order ({1}). MGF won't be written.",
                         order, methodData.AnalysisOrder);
                 }
+
+
+                double intCutoff = 0;
+                if (outputFile == null)
+                {
+                    fileName = ReadWrite.GetPathToFile(parameters.ParseParams.OutputDirectory, rawFileName, "_" + order + ".mgf");
+                }
                 else
                 {
-                    double intCutoff = 0;
-                    if (outputFile == null)
-                    {
-                        fileName = ReadWrite.GetPathToFile(parameters.ParseParams.OutputDirectory, rawFileName, "_" + order + ".mgf");
-                    }
-                    else
-                    {
-                        fileName = outputFile;
-                    }
-
-                    ReadWrite.CheckFileAccessibility(fileName);
-
-                    MassAnalyzerType analyzer = methodData.MassAnalyzers[order];
-                    Console.WriteLine("Mass analyzer for " + order + " is " + analyzer);
-
-                    const int BufferSize = 65536;  // 64 Kilobytes
-
-                    using (StreamWriter f = new StreamWriter(fileName, false, Encoding.UTF8, BufferSize)) //Open a new file, the MGF file
-                    {
-                        // if the scans argument is null, use all scans
-
-                        if ((levelsInt == 1) && (scans == null))
-                        {
-                            MassAnalyzerType msMassAnalyzer = methodData.MassAnalyzers[order];
-                            scans = Index.ScanEnumerators[MSOrderType.Ms];
-
-                            ProgressIndicator progress = new ProgressIndicator(scans.Count(), String.Format("Writing " + order + " MGF file"));
-
-                            // we need to add a blank line at the begining of the file so MS-GF+ works, no idea why...
-                            f.WriteLine();
-
-                            foreach (int i in scans)
-                            {
-                                f.WriteLine("BEGIN IONS");
-                                f.WriteLine("TITLE=Spectrum_{0}", i);
-                                f.WriteLine("SCANS={0}", i);
-                                f.WriteLine("RTINSECONDS={0}", retentionTimes[i] * 60);
-                                f.WriteLine("RAWFILE={0}", rawFileName);
-
-                                if (msMassAnalyzer == MassAnalyzerType.MassAnalyzerFTMS)
-                                {
-                                    CentroidStreamData centroid = centroidStreams[i];
-
-                                    if (centroid.Intensities.Length > 0)
-                                    {
-                                        intCutoff = centroid.Intensities.Max() * parameters.MgfIntensityCutoff;
-                                    }
-                                    else
-                                    {
-                                        intCutoff = 0;
-                                    }
-
-                                    for (int j = 0; j < centroid.Masses.Length; j++)
-                                    {
-                                        //f.WriteLine(Math.Round(centroid.Masses[j], 4).ToString() + " " + Math.Round(centroid.Intensities[j], 4).ToString());
-                                        if (centroid.Masses[j] > parameters.MgfMassCutoff & centroid.Intensities[j] > intCutoff)
-                                        {
-                                            f.WriteLine("{0} {1}", Math.Round(centroid.Masses[j], 5), Math.Round(centroid.Intensities[j], 4));
-                                        }
-                                    }
-                                }
-                                else
-                                {
-                                    SegmentedScanData segments = segmentScans[i];
-
-                                    if (segments.Intensities.Length > 0)
-                                    {
-                                        intCutoff = segments.Intensities.Max() * parameters.MgfIntensityCutoff;
-                                    }
-                                    else
-                                    {
-                                        intCutoff = 0;
-                                    }
-
-                                    for (int j = 0; j < segments.Positions.Length; j++)
-                                    {
-                                        if (segments.Positions[j] > parameters.MgfMassCutoff & segments.Intensities[j] > intCutoff)
-                                        {
-                                            f.WriteLine("{0} {1}", Math.Round(segments.Positions[j], 5), Math.Round(segments.Intensities[j], 4));
-                                        }
-                                    }
-                                }
-
-                                f.WriteLine("END IONS\n");
-
-                                progress.Update();
-                            }
-                            progress.Done();
-                            scans = null;
-                        }
-
-                        if ((levelsInt == 2) && (scans == null))
-                        {
-                            MassAnalyzerType msMassAnalyzer = methodData.MassAnalyzers[order];
-                            scans = Index.ScanEnumerators[MSOrderType.Ms2];
-
-                            ProgressIndicator progress = new ProgressIndicator(scans.Count(), String.Format("Writing " + order + " MGF file"));
-
-                            // we need to add a blank line at the begining of the file so MS-GF+ works, no idea why...
-                            f.WriteLine();
-
-                            foreach (int i in scans)
-                            {
-                                f.WriteLine("BEGIN IONS");
-                                f.WriteLine("TITLE=Spectrum_{0}", i);
-                                f.WriteLine("PEPMASS={0}", precursorMasses[i].MonoisotopicMZ);
-                                f.WriteLine("CHARGE={0}+", trailerExtras[i].ChargeState);
-                                f.WriteLine("RTINSECONDS={0}", retentionTimes[i] * 60);
-                                f.WriteLine("SCANS={0}", i);
-                                f.WriteLine("RAWFILE={0}", rawFileName);
-
-                                if (msMassAnalyzer == MassAnalyzerType.MassAnalyzerFTMS)
-                                {
-                                    CentroidStreamData centroid = centroidStreams[i];
-
-                                    if (centroid.Intensities.Length > 0)
-                                    {
-                                        intCutoff = centroid.Intensities.Max() * parameters.MgfIntensityCutoff;
-                                    }
-                                    else
-                                    {
-                                        intCutoff = 0;
-                                    }
-
-                                    for (int j = 0; j < centroid.Masses.Length; j++)
-                                    {
-                                        //f.WriteLine(Math.Round(centroid.Masses[j], 4).ToString() + " " + Math.Round(centroid.Intensities[j], 4).ToString());
-                                        if (centroid.Masses[j] > parameters.MgfMassCutoff & centroid.Intensities[j] > intCutoff)
-                                        {
-                                            f.WriteLine("{0} {1}", Math.Round(centroid.Masses[j], 5), Math.Round(centroid.Intensities[j], 4));
-                                        }
-                                    }
-                                }
-                                else
-                                {
-                                    SegmentedScanData segments = segmentScans[i];
-
-                                    if (segments.Intensities.Length > 0)
-                                    {
-                                        intCutoff = segments.Intensities.Max() * parameters.MgfIntensityCutoff;
-                                    }
-                                    else
-                                    {
-                                        intCutoff = 0;
-                                    }
-
-                                    for (int j = 0; j < segments.Positions.Length; j++)
-                                    {
-                                        if (segments.Positions[j] > parameters.MgfMassCutoff & segments.Intensities[j] > intCutoff)
-                                        {
-                                            f.WriteLine("{0} {1}", Math.Round(segments.Positions[j], 5), Math.Round(segments.Intensities[j], 4));
-                                        }
-                                    }
-                                }
-
-                                f.WriteLine("END IONS\n");
-
-                                progress.Update();
-                            }
-                            progress.Done();
-                            scans = null;
-                        }
-
-                        if ((levelsInt == 3) && (scans == null))
-                        {
-                            MassAnalyzerType msMassAnalyzer = methodData.MassAnalyzers[order];
-                            scans = Index.ScanEnumerators[MSOrderType.Ms3];
-
-                            ProgressIndicator progress = new ProgressIndicator(scans.Count(), String.Format("Writing " + order + " MGF file"));
-
-                            // we need to add a blank line at the begining of the file so MS-GF+ works, no idea why...
-                            f.WriteLine();
-
-                            foreach (int i in scans)
-                            {
-                                f.WriteLine("BEGIN IONS");
-                                f.WriteLine("TITLE=Spectrum_{0}", i);
-                                f.WriteLine("PEPMASS={0}", precursorMasses[i].MonoisotopicMZ);
-                                f.WriteLine("RTINSECONDS={0}", retentionTimes[i] * 60);
-                                f.WriteLine("SCANS={0}", i);
-                                f.WriteLine("RAWFILE={0}", rawFileName);
-
-                                if (msMassAnalyzer == MassAnalyzerType.MassAnalyzerFTMS)
-                                {
-                                    CentroidStreamData centroid = centroidStreams[i];
-
-                                    if (centroid.Intensities.Length > 0)
-                                    {
-                                        intCutoff = centroid.Intensities.Max() * parameters.MgfIntensityCutoff;
-                                    }
-                                    else
-                                    {
-                                        intCutoff = 0;
-                                    }
-
-                                    for (int j = 0; j < centroid.Masses.Length; j++)
-                                    {
-                                        //f.WriteLine(Math.Round(centroid.Masses[j], 4).ToString() + " " + Math.Round(centroid.Intensities[j], 4).ToString());
-                                        if (centroid.Masses[j] > parameters.MgfMassCutoff & centroid.Intensities[j] > intCutoff)
-                                        {
-                                            f.WriteLine("{0} {1}", Math.Round(centroid.Masses[j], 5), Math.Round(centroid.Intensities[j], 4));
-                                        }
-                                    }
-                                }
-                                else
-                                {
-                                    SegmentedScanData segments = segmentScans[i];
-
-                                    if (segments.Intensities.Length > 0)
-                                    {
-                                        intCutoff = segments.Intensities.Max() * parameters.MgfIntensityCutoff;
-                                    }
-                                    else
-                                    {
-                                        intCutoff = 0;
-                                    }
-
-                                    for (int j = 0; j < segments.Positions.Length; j++)
-                                    {
-                                        if (segments.Positions[j] > parameters.MgfMassCutoff & segments.Intensities[j] > intCutoff)
-                                        {
-                                            f.WriteLine("{0} {1}", Math.Round(segments.Positions[j], 5), Math.Round(segments.Intensities[j], 4));
-                                        }
-                                    }
-                                }
-
-                                f.WriteLine("END IONS\n");
-
-                                progress.Update();
-                            }
-                            progress.Done();
-                            scans = null;
-                        }
-
-                    }
+                    fileName = outputFile;
                 }
+
+                ReadWrite.CheckFileAccessibility(fileName);
+
+                MassAnalyzerType analyzer = methodData.MassAnalyzers[order];
+                Console.WriteLine("Mass analyzer for " + order + " is " + analyzer);
                 
-            }                      
+                const int BufferSize = 65536;  // 64 Kilobytes
+
+                using (StreamWriter f = new StreamWriter(fileName, false, Encoding.UTF8, BufferSize)) //Open a new file, the MGF file
+                {
+                    // if the scans argument is null, use all scans
+
+                    if ((levelsInt == 1) && (scans == null))
+                    {
+                        MassAnalyzerType msMassAnalyzer = methodData.MassAnalyzers[order];
+                        scans = Index.ScanEnumerators[MSOrderType.Ms];
+
+                        ProgressIndicator progress = new ProgressIndicator(scans.Count(), String.Format("Writing " + order + " MGF file."));
+
+                        // we need to add a blank line at the begining of the file so MS-GF+ works, no idea why...
+                        f.WriteLine();
+
+                        foreach (int i in scans)
+                        {
+                            f.WriteLine("BEGIN IONS");
+                            f.WriteLine("TITLE=Spectrum_{0}", i);
+                            f.WriteLine("SCANS={0}", i);
+                            f.WriteLine("RAWFILE={0}", rawFileName);
+
+                            if (msMassAnalyzer == MassAnalyzerType.MassAnalyzerFTMS)
+                            {
+                                CentroidStreamData centroid = centroidStreams[i];
+
+                                if (centroid.Intensities.Length > 0)
+                                {
+                                    intCutoff = centroid.Intensities.Max() * parameters.MgfIntensityCutoff;
+                                }
+                                else
+                                {
+                                    intCutoff = 0;
+                                }
+
+                                for (int j = 0; j < centroid.Masses.Length; j++)
+                                {
+                                    //f.WriteLine(Math.Round(centroid.Masses[j], 4).ToString() + " " + Math.Round(centroid.Intensities[j], 4).ToString());
+                                    if (centroid.Masses[j] > parameters.MgfMassCutoff & centroid.Intensities[j] > intCutoff)
+                                    {
+                                        f.WriteLine("{0} {1}", Math.Round(centroid.Masses[j], 5), Math.Round(centroid.Intensities[j], 4));
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                SegmentedScanData segments = segmentScans[i];
+
+                                if (segments.Intensities.Length > 0)
+                                {
+                                    intCutoff = segments.Intensities.Max() * parameters.MgfIntensityCutoff;
+                                }
+                                else
+                                {
+                                    intCutoff = 0;
+                                }
+
+                                for (int j = 0; j < segments.Positions.Length; j++)
+                                {
+                                    if (segments.Positions[j] > parameters.MgfMassCutoff & segments.Intensities[j] > intCutoff)
+                                    {
+                                        f.WriteLine("{0} {1}", Math.Round(segments.Positions[j], 5), Math.Round(segments.Intensities[j], 4));
+                                    }
+                                }
+                            }
+
+                            f.WriteLine("END IONS\n");
+
+                            progress.Update();
+                        }
+                        progress.Done();
+                        scans = null;
+                    }
+
+                    if ((levelsInt == 2) && (scans == null))
+                    {
+                        MassAnalyzerType msMassAnalyzer = methodData.MassAnalyzers[order];
+                        scans = Index.ScanEnumerators[MSOrderType.Ms2];
+
+                        ProgressIndicator progress = new ProgressIndicator(scans.Count(), String.Format("Writing MGF " + order + " MGF file."));
+
+                        // we need to add a blank line at the begining of the file so MS-GF+ works, no idea why...
+                        f.WriteLine();
+
+                        foreach (int i in scans)
+                        {
+                            f.WriteLine("BEGIN IONS");
+                            f.WriteLine("TITLE=Spectrum_{0}", i);
+                            f.WriteLine("SCANS={0}", i);
+                            f.WriteLine("RAWFILE={0}", rawFileName);
+
+                            if (msMassAnalyzer == MassAnalyzerType.MassAnalyzerFTMS)
+                            {
+                                CentroidStreamData centroid = centroidStreams[i];
+
+                                if (centroid.Intensities.Length > 0)
+                                {
+                                    intCutoff = centroid.Intensities.Max() * parameters.MgfIntensityCutoff;
+                                }
+                                else
+                                {
+                                    intCutoff = 0;
+                                }
+
+                                for (int j = 0; j < centroid.Masses.Length; j++)
+                                {
+                                    //f.WriteLine(Math.Round(centroid.Masses[j], 4).ToString() + " " + Math.Round(centroid.Intensities[j], 4).ToString());
+                                    if (centroid.Masses[j] > parameters.MgfMassCutoff & centroid.Intensities[j] > intCutoff)
+                                    {
+                                        f.WriteLine("{0} {1}", Math.Round(centroid.Masses[j], 5), Math.Round(centroid.Intensities[j], 4));
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                SegmentedScanData segments = segmentScans[i];
+
+                                if (segments.Intensities.Length > 0)
+                                {
+                                    intCutoff = segments.Intensities.Max() * parameters.MgfIntensityCutoff;
+                                }
+                                else
+                                {
+                                    intCutoff = 0;
+                                }
+
+                                for (int j = 0; j < segments.Positions.Length; j++)
+                                {
+                                    if (segments.Positions[j] > parameters.MgfMassCutoff & segments.Intensities[j] > intCutoff)
+                                    {
+                                        f.WriteLine("{0} {1}", Math.Round(segments.Positions[j], 5), Math.Round(segments.Intensities[j], 4));
+                                    }
+                                }
+                            }
+
+                            f.WriteLine("END IONS\n");
+
+                            progress.Update();
+                        }
+                        progress.Done();
+                        scans = null;
+                    }
+
+                    if ((levelsInt == 3) && (scans == null))
+                    {
+                        MassAnalyzerType msMassAnalyzer = methodData.MassAnalyzers[order];
+                        scans = Index.ScanEnumerators[MSOrderType.Ms3];
+
+                        ProgressIndicator progress = new ProgressIndicator(scans.Count(), String.Format("Writing MGF " + order + " MGF file."));
+
+                        // we need to add a blank line at the begining of the file so MS-GF+ works, no idea why...
+                        f.WriteLine();
+
+                        foreach (int i in scans)
+                        {
+                            f.WriteLine("BEGIN IONS");
+                            f.WriteLine("TITLE=Spectrum_{0}", i);
+                            f.WriteLine("SCANS={0}", i);
+                            f.WriteLine("RAWFILE={0}", rawFileName);
+
+                            if (msMassAnalyzer == MassAnalyzerType.MassAnalyzerFTMS)
+                            {
+                                CentroidStreamData centroid = centroidStreams[i];
+
+                                if (centroid.Intensities.Length > 0)
+                                {
+                                    intCutoff = centroid.Intensities.Max() * parameters.MgfIntensityCutoff;
+                                }
+                                else
+                                {
+                                    intCutoff = 0;
+                                }
+
+                                for (int j = 0; j < centroid.Masses.Length; j++)
+                                {
+                                    //f.WriteLine(Math.Round(centroid.Masses[j], 4).ToString() + " " + Math.Round(centroid.Intensities[j], 4).ToString());
+                                    if (centroid.Masses[j] > parameters.MgfMassCutoff & centroid.Intensities[j] > intCutoff)
+                                    {
+                                        f.WriteLine("{0} {1}", Math.Round(centroid.Masses[j], 5), Math.Round(centroid.Intensities[j], 4));
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                SegmentedScanData segments = segmentScans[i];
+
+                                if (segments.Intensities.Length > 0)
+                                {
+                                    intCutoff = segments.Intensities.Max() * parameters.MgfIntensityCutoff;
+                                }
+                                else
+                                {
+                                    intCutoff = 0;
+                                }
+
+                                for (int j = 0; j < segments.Positions.Length; j++)
+                                {
+                                    if (segments.Positions[j] > parameters.MgfMassCutoff & segments.Intensities[j] > intCutoff)
+                                    {
+                                        f.WriteLine("{0} {1}", Math.Round(segments.Positions[j], 5), Math.Round(segments.Intensities[j], 4));
+                                    }
+                                }
+                            }
+
+                            f.WriteLine("END IONS\n");
+
+                            progress.Update();
+                        }
+                        progress.Done();
+                        scans = null;
+                    }
+
+
+                }
+            }
+
+                      
         }
     }
 
@@ -877,7 +870,7 @@ namespace RawTools.Data.IO
                 foreach (var item in metrics.FaimsVoltages)
                 {
                     f.WriteLine("FaimsVoltage(CV):\t" + item);
-                }                    
+                }
                 f.WriteLine("Ms2MedianSummedIntensity:\t" + Math.Round(metrics.MedianSummedMS2Intensity, 4));
                 f.WriteLine("MedianMS1IsolationInterference:\t" + Math.Round(metrics.MedianMs1IsolationInterference, 4));
                 f.WriteLine("MedianPeakWidthAt10%H(s):\t" + Math.Round(metrics.MedianBaselinePeakWidth * 60, 4));
@@ -939,6 +932,156 @@ namespace RawTools.Data.IO
                 f.WriteLine("MedianMS2FillTime:\t" + Math.Round(metrics.MedianMS2FillTime, 4));
                 f.WriteLine("MedianMS2Intensity:\t" + Math.Round(metrics.MedianSummedMS2Intensity, 4));
             }
+        }
+    }
+
+    static class allScansWriter
+    {
+        public static void WriteAllScans(CentroidStreamCollection centroidStreams, SegmentScanCollection segmentScans, RetentionTimeCollection retentionTimes, MethodDataContainer methodData, ScanIndex Index, WorkflowParameters parameters, string rawFileName,
+            int[] scans = null)
+        {
+            Console.WriteLine("Writing all scan data to text file.");
+
+            string fileName = ReadWrite.GetPathToFile(parameters.ParseParams.OutputDirectory, rawFileName, "_allScansData.txt");
+
+            ReadWrite.CheckFileAccessibility(fileName);
+
+            using (StreamWriter f = new StreamWriter(fileName))
+            {
+                f.WriteLine("Scan\tRetentionTime\tMass\tIntensity");
+
+                MassAnalyzerType analyzer = methodData.MassAnalyzers[MSOrderType.Ms];
+
+                if (scans == null)
+                {
+                    scans = Index.ScanEnumerators[MSOrderType.Ms];
+                }
+
+                foreach (int i in scans)
+                {
+
+                    if (analyzer == MassAnalyzerType.MassAnalyzerFTMS)
+                    {
+                        CentroidStreamData centroid = centroidStreams[i];
+
+                        for (int j = 0; j < centroid.Masses.Length; j++)
+                        {
+                            f.WriteLine("{0}\t{1}\t{2}\t{3}", i, retentionTimes[i], centroid.Masses[j], centroid.Intensities[j]);
+                        }
+
+                    }
+                    else
+                    {
+                        SegmentedScanData segments = segmentScans[i];
+
+                        for (int j = 0; j < segments.Positions.Length; j++)
+                        {
+                            f.WriteLine("{0}\t{1}\t{2}\t{3}", i, retentionTimes[i], segments.Positions[j], segments.Intensities[j]);
+                        }
+                    }
+
+                }
+
+            }
+
+        }
+
+    }
+
+    static class XicWriter
+    {
+        public static void WriteXic(CentroidStreamCollection centroids, SegmentScanCollection segmentScans, RetentionTimeCollection retentionTimes, MethodDataContainer methodData, ScanIndex Index, WorkflowParameters parameters, string rawFileName,
+            int[] scans = null)
+        {
+            string[] xicValues = parameters.ParseParams.Xic.Split(',');
+
+            if (xicValues.Length != 2)
+            {
+                Console.WriteLine("You did not provide enough values for the XIC function.");
+            }
+            else
+            {
+                double xicLower = Convert.ToDouble(xicValues[0]) - (Convert.ToDouble(xicValues[1]) / 2);
+                double xicHigher = Convert.ToDouble(xicValues[0]) + (Convert.ToDouble(xicValues[1]) / 2);
+
+                MassAnalyzerType analyzer = methodData.MassAnalyzers[MSOrderType.Ms];
+
+                Console.WriteLine("Writing XIC file with bounds {0} - {1} Daltons.", xicLower, xicHigher);
+
+                if (scans == null)
+                {
+                    scans = Index.ScanEnumerators[MSOrderType.Ms];
+                }
+
+
+                string fileName = ReadWrite.GetPathToFile(parameters.ParseParams.OutputDirectory, rawFileName, "_XIC.txt");
+
+                ReadWrite.CheckFileAccessibility(fileName);
+
+                using (StreamWriter f = new StreamWriter(fileName))
+                {
+                    ProgressIndicator progress = new ProgressIndicator(scans.Count(), String.Format("Writing XIC file"));
+
+                    f.WriteLine("RetentionTime\tIntensity");
+
+                    if (analyzer == MassAnalyzerType.MassAnalyzerFTMS)
+                    {
+                        foreach (int i in scans)
+                        {
+
+                            CentroidStreamData centroid = centroids[i];
+                            List<double> intensities = new List<double> { };
+
+                            for (int j = 0; j < centroid.Masses.Length; j++)
+                            {
+                                if (centroid.Masses[j] >= xicLower & centroid.Masses[j] <= xicHigher)
+                                {
+                                    intensities.Add(centroid.Intensities[j]);
+                                }
+                            }
+
+                            if (intensities.Count > 0)
+                            {
+                                f.WriteLine("{0}\t{1}", retentionTimes[i], intensities.Sum());
+                            }
+                            else
+                            {
+                                f.WriteLine("{0}\t{1}", retentionTimes[i], 0);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        foreach (int i in scans)
+                        {
+
+                            SegmentedScanData segments = segmentScans[i];
+                            List<double> intensities = new List<double> { };
+
+
+                            for (int j = 0; j < segments.Positions.Length; j++)
+                            {
+                                if (segments.Positions[j] >= xicLower & segments.Positions[j] <= xicHigher)
+                                {
+                                    intensities.Add(segments.Intensities[j]);
+                                }
+                            }
+
+
+                            if (intensities.Count > 0)
+                            {
+                                f.WriteLine("{0}\t{1}", retentionTimes[i], intensities.Sum());
+                            }
+                            else
+                            {
+                                f.WriteLine("{0}\t{1}", retentionTimes[i], 0);
+                            }
+                        }
+                    }
+                }
+            }
+
+
         }
     }
 
@@ -1102,157 +1245,6 @@ namespace RawTools.Data.IO
         }
     }
 
-
-    static class allScansWriter
-    {
-        public static void WriteAllScans(CentroidStreamCollection centroidStreams, SegmentScanCollection segmentScans, RetentionTimeCollection retentionTimes, MethodDataContainer methodData, ScanIndex Index, WorkflowParameters parameters, string rawFileName,
-            int[] scans = null)
-        {
-            Console.WriteLine("Writing all scan data to text file.");
-
-            string fileName = ReadWrite.GetPathToFile(parameters.ParseParams.OutputDirectory, rawFileName, "_allScansData.txt");
-
-            ReadWrite.CheckFileAccessibility(fileName);
-
-            using (StreamWriter f = new StreamWriter(fileName))
-            {
-                f.WriteLine("Scan\tRetentionTime\tMass\tIntensity");
-
-                MassAnalyzerType analyzer = methodData.MassAnalyzers[MSOrderType.Ms];
-
-                if (scans == null)
-                {
-                    scans = Index.ScanEnumerators[MSOrderType.Ms];
-                }
-
-                foreach (int i in scans)
-                {
-             
-                    if (analyzer == MassAnalyzerType.MassAnalyzerFTMS)
-                    {
-                        CentroidStreamData centroid = centroidStreams[i];
-
-                        for (int j = 0; j < centroid.Masses.Length; j++)
-                        {
-                            f.WriteLine("{0}\t{1}\t{2}\t{3}", i, retentionTimes[i], Math.Round(centroid.Masses[j], 5), Math.Round(centroid.Intensities[j], 4));
-                        }
-
-                    }
-                    else
-                    {
-                        SegmentedScanData segments = segmentScans[i];
-
-                        for (int j = 0; j < segments.Positions.Length; j++)
-                        {
-                            f.WriteLine("{0}\t{1}\t{2}\t{3}", i, retentionTimes[i], Math.Round(segments.Positions[j], 5), Math.Round(segments.Intensities[j], 4));
-                        }
-                    }
-
-                }
-                
-            }
-
-        }
-
-    }
-
-    static class XicWriter
-    {
-        public static void WriteXic(CentroidStreamCollection centroids, SegmentScanCollection segmentScans, RetentionTimeCollection retentionTimes, MethodDataContainer methodData, ScanIndex Index, WorkflowParameters parameters, string rawFileName,
-            int[] scans = null)
-        {
-            string[] xicValues = parameters.ParseParams.Xic.Split(',');
-
-            if (xicValues.Length != 2)
-            {
-                Console.WriteLine("You did not provide enough values for the XIC function.");
-            }
-            else
-            {
-                double xicLower = Convert.ToDouble(xicValues[0]) - (Convert.ToDouble(xicValues[1])/2);
-                double xicHigher = Convert.ToDouble(xicValues[0]) + (Convert.ToDouble(xicValues[1])/2);
-
-                MassAnalyzerType analyzer = methodData.MassAnalyzers[MSOrderType.Ms];
-
-                Console.WriteLine("Writing XIC file with bounds {0} - {1} Daltons.", xicLower, xicHigher);
-
-                if (scans == null)
-                {
-                    scans = Index.ScanEnumerators[MSOrderType.Ms];
-                }
-
-
-                string fileName = ReadWrite.GetPathToFile(parameters.ParseParams.OutputDirectory, rawFileName, "_XIC.txt");
-
-                ReadWrite.CheckFileAccessibility(fileName);
-
-                using (StreamWriter f = new StreamWriter(fileName))
-                {
-                    ProgressIndicator progress = new ProgressIndicator(scans.Count(), String.Format("Writing XIC file"));
-
-                    f.WriteLine("RetentionTime\tIntensity");
-
-                    if (analyzer == MassAnalyzerType.MassAnalyzerFTMS)
-                    {
-                        foreach (int i in scans)
-                        {
-
-                            CentroidStreamData centroid = centroids[i];
-                            List<double> intensities = new List<double> { };
-
-                            for (int j = 0; j < centroid.Masses.Length; j++)
-                            {
-                                if (centroid.Masses[j] >= xicLower & centroid.Masses[j] <= xicHigher)
-                                {
-                                    intensities.Add(centroid.Intensities[j]);
-                                }
-                            }
-
-                            if (intensities.Count > 0)
-                            {
-                                f.WriteLine("{0}\t{1}", retentionTimes[i], intensities.Sum());
-                            }
-                            else
-                            {
-                                f.WriteLine("{0}\t{1}", retentionTimes[i], 0);
-                            }
-                        }
-                    }
-                    else
-                    {
-                        foreach (int i in scans)
-                        {
-
-                            SegmentedScanData segments = segmentScans[i];
-                            List<double> intensities = new List<double> { };
-
-
-                            for (int j = 0; j < segments.Positions.Length; j++)
-                            {
-                                if (segments.Positions[j] >= xicLower & segments.Positions[j] <= xicHigher)
-                                {
-                                    intensities.Add(segments.Intensities[j]);
-                                }
-                            }
-
-
-                            if (intensities.Count > 0)
-                            {
-                                f.WriteLine("{0}\t{1}", retentionTimes[i], intensities.Sum());
-                            }
-                            else
-                            {
-                                f.WriteLine("{0}\t{1}", retentionTimes[i], 0);
-                            }
-                        }
-                    }
-                }
-            }      
-            
-
-        }
-    }
-
     static class ChromatogramWriter
     {
         public static void WriteChromatogram(CentroidStreamCollection centroids, SegmentScanCollection segments, RetentionTimeCollection retentionTimes, MethodDataContainer methodData, ScanIndex index, WorkflowParameters parameters, string rawFileName)
@@ -1266,107 +1258,104 @@ namespace RawTools.Data.IO
                 if (!Int32.TryParse(o.ToString(), out orderInt)) continue;
                 else order = (MSOrderType)orderInt;
 
+                MassAnalyzerType analyzer = methodData.MassAnalyzers[order];
+
                 if ((int)order > (int)methodData.AnalysisOrder)
                 {
                     Log.Error("Specified MS order ({Order}) for chromatogram is higher than experiment order ({ExpOrder})",
                         order, methodData.AnalysisOrder);
-                    Console.WriteLine("Specified MS order ({0}) for chromatogram is higher than experiment order ({1}). Some chromatogram(s) won't be written.",
+                    Console.WriteLine("Specified MS order ({0}) for chromatogram is higher than experiment order ({1}). Chromatogram(s) won't be written.",
                         order, methodData.AnalysisOrder);
                 }
-                else
+
+                bool TIC = chro.Contains("T");
+                bool BP = chro.Contains("B");
+
+                int[] scans = index.ScanEnumerators[order];
+
+                if (TIC)
                 {
-                    MassAnalyzerType analyzer = methodData.MassAnalyzers[order];
+                    Console.WriteLine("Writing {0} TIC chromatogram", order);
+                    string fileName = ReadWrite.GetPathToFile(parameters.ParseParams.OutputDirectory, rawFileName, "_" + order + "_TIC_chromatogram.txt");
 
-                    bool TIC = chro.Contains("T");
-                    bool BP = chro.Contains("B");
+                    ReadWrite.CheckFileAccessibility(fileName);
 
-                    int[] scans = index.ScanEnumerators[order];
-
-                    if (TIC)
+                    using (StreamWriter f = new StreamWriter(fileName))
                     {
-                        Console.WriteLine("Writing {0} TIC chromatogram", order);
-                        string fileName = ReadWrite.GetPathToFile(parameters.ParseParams.OutputDirectory, rawFileName, "_" + order + "_TIC_chromatogram.txt");
+                        f.WriteLine("RetentionTime\tIntensity");
 
-                        ReadWrite.CheckFileAccessibility(fileName);
-
-                        using (StreamWriter f = new StreamWriter(fileName))
+                        if (analyzer == MassAnalyzerType.MassAnalyzerFTMS)
                         {
-                            f.WriteLine("RetentionTime\tIntensity");
-
-                            if (analyzer == MassAnalyzerType.MassAnalyzerFTMS)
+                            foreach (int scan in scans)
                             {
-                                foreach (int scan in scans)
+                                if (centroids[scan].Intensities.Length > 0)
                                 {
-                                    if (centroids[scan].Intensities.Length > 0)
-                                    {
-                                        f.WriteLine("{0}\t{1}", retentionTimes[scan], centroids[scan].Intensities.Sum());
-                                    }
-                                    else
-                                    {
-                                        f.WriteLine("{0}\t{1}", retentionTimes[scan], 0);
-                                    }
+                                    f.WriteLine("{0}\t{1}", retentionTimes[scan], centroids[scan].Intensities.Sum());
                                 }
-                            }
-                            else
-                            {
-                                foreach (int scan in scans)
+                                else
                                 {
-                                    if (segments[scan].Intensities.Length > 0)
-                                    {
-                                        f.WriteLine("{0}\t{1}", retentionTimes[scan], segments[scan].Intensities.Sum());
-                                    }
-                                    else
-                                    {
-                                        f.WriteLine("{0}\t{1}", retentionTimes[scan], 0);
-                                    }
+                                    f.WriteLine("{0}\t{1}", retentionTimes[scan], 0);
                                 }
                             }
                         }
-                    }
-                    if (BP)
-                    {
-                        Console.WriteLine("Writing {0} base peak chromatogram", order);
-
-                        string fileName = ReadWrite.GetPathToFile(parameters.ParseParams.OutputDirectory, rawFileName, "_" + order + "_BP_chromatogram.txt");
-
-                        ReadWrite.CheckFileAccessibility(fileName);
-
-                        using (StreamWriter f = new StreamWriter(fileName))
+                        else
                         {
-                            f.WriteLine("RetentionTime\tIntensity");
-
-                            if (analyzer == MassAnalyzerType.MassAnalyzerFTMS)
+                            foreach (int scan in scans)
                             {
-                                foreach (int scan in scans)
+                                if (segments[scan].Intensities.Length > 0)
                                 {
-                                    if (centroids[scan].Intensities.Length > 0)
-                                    {
-                                        f.WriteLine("{0}\t{1}", retentionTimes[scan], centroids[scan].Intensities.Max());
-                                    }
-                                    else
-                                    {
-                                        f.WriteLine("{0}\t{1}", retentionTimes[scan], 0);
-                                    }
+                                    f.WriteLine("{0}\t{1}", retentionTimes[scan], segments[scan].Intensities.Sum());
                                 }
-                            }
-                            else
-                            {
-                                foreach (int scan in scans)
+                                else
                                 {
-                                    if (segments[scan].Intensities.Length > 0)
-                                    {
-                                        f.WriteLine("{0}\t{1}", retentionTimes[scan], segments[scan].Intensities.Max());
-                                    }
-                                    else
-                                    {
-                                        f.WriteLine("{0}\t{1}", retentionTimes[scan], 0);
-                                    }
+                                    f.WriteLine("{0}\t{1}", retentionTimes[scan], 0);
                                 }
                             }
                         }
                     }
                 }
-                
+                if (BP)
+                {
+                    Console.WriteLine("Writing {0} base peak chromatogram", order);
+
+                    string fileName = ReadWrite.GetPathToFile(parameters.ParseParams.OutputDirectory, rawFileName, "_" + order + "_BP_chromatogram.txt");
+
+                    ReadWrite.CheckFileAccessibility(fileName);
+
+                    using (StreamWriter f = new StreamWriter(fileName))
+                    {
+                        f.WriteLine("RetentionTime\tIntensity");
+
+                        if (analyzer == MassAnalyzerType.MassAnalyzerFTMS)
+                        {
+                            foreach (int scan in scans)
+                            {
+                                if (centroids[scan].Intensities.Length > 0)
+                                {
+                                    f.WriteLine("{0}\t{1}", retentionTimes[scan], centroids[scan].Intensities.Max());
+                                }
+                                else
+                                {
+                                    f.WriteLine("{0}\t{1}", retentionTimes[scan], 0);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            foreach (int scan in scans)
+                            {
+                                if (segments[scan].Intensities.Length > 0)
+                                {
+                                    f.WriteLine("{0}\t{1}", retentionTimes[scan], segments[scan].Intensities.Max());
+                                }
+                                else
+                                {
+                                    f.WriteLine("{0}\t{1}", retentionTimes[scan], 0);
+                                }
+                            }
+                        }
+                    }
+                }
             }            
         }
     }

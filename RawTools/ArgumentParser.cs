@@ -25,7 +25,7 @@ namespace RawTools.ArgumentParser
     {
         public static ClParser Create()
         {
-            ClParser parser = new ClParser("Welcome to the main page for RawTools version 2.0.4! RawTools is an " +
+            ClParser parser = new ClParser("Welcome to the main page for RawTools version 2.0.7! RawTools is an " +
                 "open-source and freely available package designed to perform scan data parsing and quantification, " +
                 "and quality control analysis of Thermo Orbitrap raw mass spectrometer files. RawTools uses the " +
                 "Thermo RawFileReader library (Copyright © 2016 by Thermo Fisher Scientific, Inc. All rights reserved). " +
@@ -34,7 +34,7 @@ namespace RawTools.ArgumentParser
             parser.Add(new Argument(name: "RawFiles", shortArgument: "-f", longArgument: "-files", required: false,
                 typeOf: typeof(List<string>), allowList: true,
                 helpText: "Indicates input file(s) to be processed, separated by a space if there are multiple files. " +
-                "Must be Thermo .raw files. You must use either -f or -d to indicate the file(s) to process."));
+            "Must be Thermo .raw files. You must use either -f or -d to indicate the file(s) to process."));
 
             parser.Add(new Argument(name: "RawFileDirectory", shortArgument: "-d", longArgument: "-directory", required: false,
                 typeOf: typeof(string),
@@ -98,11 +98,11 @@ namespace RawTools.ArgumentParser
 
             parser.Add(new Argument(name: "Metrics", shortArgument: "-x", longArgument: "-metrics", required: false,
                 typeOf: typeof(bool),
-                helpText: "Write a text file containing general metrics about the MS run."));
+                helpText: "Write a txt file containing general metrics about the MS run."));
 
             parser.Add(new Argument(name: "AllScanData", shortArgument: "-asd", longArgument: "-allScanData", required: false,
                 typeOf: typeof(bool),
-                helpText: "Write a text file containing all scan data acquired in the MS run. Currently, this only outputs " +
+                helpText: "Write a text file containing all scan data acquired in the MS run. Currently, this only outputs" +
                 "MS1 data to the text file. Depending on the size of your raw file, this will generate a large output and can be slow."));
 
             parser.Add(new Argument(name: "Chromatogram", shortArgument: "-chro", longArgument: "-chromatograms", required: false,
@@ -113,9 +113,9 @@ namespace RawTools.ArgumentParser
                 "invoke \"-chro 2T\"."));
 
             parser.Add(new Argument(name: "Xic", shortArgument: "-xic", longArgument: "-xic", required: false,
-                typeOf: typeof(string), 
-                helpText: "Provide a mass value to write an extracted ion chromatrogram from MS1 data. The values should be provided " +
-                "in a comma delimited format (e.g. 500,10) for mass,tolerance (both in Daltons). The tolerance value is treated as a window around the " +
+                typeOf: typeof(string),
+                helpText: "Provide a mass value to write an extraction ion chromatrogram from MS1 data. The values should be provided " +
+                "in a comma delimited format (e.g. 500,10) for mass,tolerance. The tolerance value is treated as a window around the " +
                 "given mass value."));
 
             parser.Add(new Argument(name: "RefineMassCharge", shortArgument: "-R", longArgument: "-refinemasscharge", required: false,
