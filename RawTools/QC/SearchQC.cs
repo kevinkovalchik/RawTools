@@ -160,9 +160,12 @@ namespace RawTools.QC
             decoys = from x in psms where x.Decoy select x;
 
             // check for decoy hits
-            if (decoys.Count() > 1)
+            if (decoys.Count() > 3 & psms.Count() > 100)
             {
-                Console.Write("Decoy hits detected.");
+                Console.WriteLine("Sufficient PSMs and decoy hits detected for ID filtering.");
+                Console.WriteLine("Total number of unfiltered PSMs: {0}", psms.Count());
+                Console.WriteLine("Total number of decoy hits: {0}", decoys.Count());
+
                 // get the top decoy score
                 topDecoyScore = (from x in psms
                                  where x.Decoy
@@ -258,7 +261,9 @@ namespace RawTools.QC
             }
             else
             {
-                Console.Write("No decoy hits detected.");
+                Console.WriteLine("Insufficient PSMs or decoy hits detected for filtering.");
+                Console.WriteLine("Total number of unfiltered PSMs: {0}", psms.Count());
+                Console.WriteLine("Total number of decoy hits: {0}", decoys.Count());
             }
 
             
