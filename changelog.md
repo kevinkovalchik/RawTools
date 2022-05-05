@@ -9,8 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [2.0.7] 2022-05-06
 ### Changes
-- Fix an issue with parse and qc triggering.
-- Fixed an issue that would cause QC to fail if no search results were found.
+- Fix a major issue with parse and qc triggering.
+- Fixed an issue that would cause QC to fail if no or insufficient search results were found.
 
 ## [2.0.6a] 2022-05-03
 ### Changes

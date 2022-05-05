@@ -12,8 +12,8 @@ If you need help installing and using RawTools, please visit the wiki page appro
 
 ## [2.0.7] 2022-05-06
 ### Changes
-- Fix an issue with parse and qc triggering.
-- Fixed an issue that would cause QC to fail if no search results were found.
+- Fix a major issue with parse and qc triggering.
+- Fixed an issue that would cause QC to fail if no or insufficient search results were found.
 
 ## RawTools 2.0.6a released
 ### Changes
