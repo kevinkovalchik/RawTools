@@ -304,7 +304,6 @@ namespace RawToolsGUI
             {
                 checkBoxReporterFilterMGF.Enabled = checkBoxReporterIonFiltering.Checked;
                 groupBoxMgfOpts.Enabled = true;
-                ckbxOutputParse.Checked = true;
             }
             else
             {

@@ -273,9 +273,9 @@
             this.checkBoxFaims.Location = new System.Drawing.Point(94, 60);
             this.checkBoxFaims.Margin = new System.Windows.Forms.Padding(2);
             this.checkBoxFaims.Name = "checkBoxFaims";
-            this.checkBoxFaims.Size = new System.Drawing.Size(53, 17);
+            this.checkBoxFaims.Size = new System.Drawing.Size(115, 17);
             this.checkBoxFaims.TabIndex = 13;
-            this.checkBoxFaims.Text = "Faims";
+            this.checkBoxFaims.Text = "MGF by FAIMS CV";
             this.toolTip1.SetToolTip(this.checkBoxFaims, "Generate MGF output for individual CV values from FAIMS data.");
             this.checkBoxFaims.UseVisualStyleBackColor = true;
             this.checkBoxFaims.CheckedChanged += new System.EventHandler(this.ckbxOutputFaims_CheckedChanged);
