@@ -119,7 +119,7 @@ namespace RawTools.Algorithms.Analyze
             metricsData.TotalAnalysisTime = retentionTimes[index.ScanEnumerators[MSOrderType.Any].Last()] -
                 retentionTimes[index.ScanEnumerators[MSOrderType.Any].First()];
 
-            if (methodData.AnalysisOrder == MSOrderType.Ms2)
+            if (methodData.AnalysisOrder == MSOrderType.Ms2 | methodData.AnalysisOrder == MSOrderType.Ms3)
             {
                 metricsData.NumberOfEsiFlags = MetricsCalculations.NumberOfEsiFlags(metaData, index);
             }
@@ -127,7 +127,7 @@ namespace RawTools.Algorithms.Analyze
             metricsData.TotalScans = index.TotalScans;
             metricsData.MS1Scans = index.ScanEnumerators[MSOrderType.Ms].Length;
 
-            if (methodData.AnalysisOrder == MSOrderType.Ms2)
+            if (methodData.AnalysisOrder == MSOrderType.Ms2 | methodData.AnalysisOrder == MSOrderType.Ms3)
             {
                 metricsData.MS2Analyzer = methodData.MassAnalyzers[MSOrderType.Ms2];
                 metricsData.MS2Scans = index.ScanEnumerators[MSOrderType.Ms2].Length;
@@ -156,7 +156,7 @@ namespace RawTools.Algorithms.Analyze
 
             metricsData.MedianSummedMS1Intensity = MetricsCalculations.GetMedianSummedMSIntensity(metaData.SummedIntensity, index, MSOrderType.Ms);
 
-            if (methodData.AnalysisOrder == MSOrderType.Ms2)
+            if (methodData.AnalysisOrder == MSOrderType.Ms2 | methodData.AnalysisOrder == MSOrderType.Ms3)
             {
                 metricsData.MedianSummedMS2Intensity = MetricsCalculations.GetMedianSummedMSIntensity(metaData.SummedIntensity, index, MSOrderType.Ms2);
                 metricsData.MedianPrecursorIntensity = (from x in peakData.Keys select peakData[x].ParentIntensity).ToArray().Percentile(50);
@@ -164,7 +164,7 @@ namespace RawTools.Algorithms.Analyze
 
             metricsData.MedianMS1FillTime = MetricsCalculations.GetMedianMSFillTime(metaData.FillTime, index, MSOrderType.Ms);
 
-            if (methodData.AnalysisOrder == MSOrderType.Ms2)
+            if (methodData.AnalysisOrder == MSOrderType.Ms2 | methodData.AnalysisOrder == MSOrderType.Ms3)
             {
                 metricsData.MedianMS2FillTime = MetricsCalculations.GetMedianMSFillTime(metaData.FillTime, index, MSOrderType.Ms2);
             }
@@ -176,7 +176,7 @@ namespace RawTools.Algorithms.Analyze
 
             metricsData.FaimsVoltages = MetricsCalculations.GetFaimsVoltages(metaData.FaimsVoltage, index, MSOrderType.Ms);
 
-            if (methodData.AnalysisOrder == MSOrderType.Ms2)
+            if (methodData.AnalysisOrder == MSOrderType.Ms2 | methodData.AnalysisOrder == MSOrderType.Ms3)
             {
                 metricsData.MeanTopN = MetricsCalculations.GetMeanMs2ScansPerCycle(metaData.MS2ScansPerCycle);
                 metricsData.MeanDutyCycle = MetricsCalculations.GetMedianDutyCycle(metaData.DutyCycle, index);
@@ -186,10 +186,10 @@ namespace RawTools.Algorithms.Analyze
             }
 
             metricsData.MS1ScanRate = metricsData.MS1Scans / metricsData.TotalAnalysisTime;
-            if (methodData.AnalysisOrder == MSOrderType.Ms2) metricsData.MS2ScanRate = metricsData.MS2Scans / metricsData.TotalAnalysisTime;
+            if (methodData.AnalysisOrder == MSOrderType.Ms2 | methodData.AnalysisOrder == MSOrderType.Ms3) metricsData.MS2ScanRate = metricsData.MS2Scans / metricsData.TotalAnalysisTime;
             if (methodData.AnalysisOrder == MSOrderType.Ms3) metricsData.MS3ScanRate = metricsData.MS3Scans / metricsData.TotalAnalysisTime;
 
-            if (methodData.AnalysisOrder == MSOrderType.Ms2)
+            if (methodData.AnalysisOrder == MSOrderType.Ms2 | methodData.AnalysisOrder == MSOrderType.Ms3)
             {
                 metricsData.MedianBaselinePeakWidth = peakData.PeakShapeMedians.Width.P10;
                 metricsData.MedianHalfHeightPeakWidth = peakData.PeakShapeMedians.Width.P50;
@@ -214,7 +214,7 @@ namespace RawTools.Algorithms.Analyze
             if (methodData.AnalysisOrder == MSOrderType.Ms3) metricsData.Ms3FillTimeDistribution = new Distribution((from x in index.ScanEnumerators[MSOrderType.Ms3] select metaData.FillTime[x]).ToArray());
 
 
-            if (methodData.AnalysisOrder == MSOrderType.Ms2)
+            if (methodData.AnalysisOrder == MSOrderType.Ms2 | methodData.AnalysisOrder == MSOrderType.Ms3)
             {
                 metricsData.PeakShape.Asymmetry.P10 = peakData.PeakShapeMedians.Asymmetry.P10;
                 metricsData.PeakShape.Asymmetry.P50 = peakData.PeakShapeMedians.Asymmetry.P50;
