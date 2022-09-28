@@ -127,43 +127,58 @@ namespace RawTools.Algorithms.ExtractData
                                     ms2ScanData.HasDependents = false;
                                     ms2ScanData.HasPrecursors = true;
                                     allScans.TryAdd(ms2Scan, ms2ScanData);
-
                                     precursorScans.TryAdd(ms2Scan, new PrecursorScanData(ms2scan: ms2Scan, masterScan: scan));
                                 }
                                 else // it is ms3
                                 {
-                                    var ms2Dependents = rawFile.GetScanDependents(ms2Scan, 4).ScanDependentDetailArray;
-
                                     ms2ScanData = new ScanData();
-                                    scanEvent = rawFile.GetScanEventForScanNumber(ms2Scan);
-                                    ms2ScanData.MassAnalyzer = scanEvent.MassAnalyzer;
-                                    ms2ScanData.MSOrder = scanEvent.MSOrder;
-                                    ms2ScanData.HasPrecursors = true;
 
-                                    if (ms2Dependents.Length != 0) // make sure there is ms3 data
+                                    if (rawFile.GetScanDependents(ms2Scan, 4) == null)
                                     {
-                                        int ms3Scan = ms2Dependents[0].ScanIndex;
-                                        ms3.Add(ms3Scan);
-                                        msAny.Add(ms3Scan);
-
-                                        scanEvent = rawFile.GetScanEventForScanNumber(ms3Scan);
-                                        precursorScans.TryAdd(ms2Scan, new PrecursorScanData(ms2scan: ms2Scan, masterScan: scan));
-                                        precursorScans.TryAdd(ms3Scan, new PrecursorScanData(ms3scan: ms3Scan, ms2Scan: ms2Scan, masterScan: scan));
-                                        ms2ScanData.HasDependents = true;
-
-                                        ms3ScanData = new ScanData();
-                                        ms3ScanData.HasPrecursors = true;
-                                        ms3ScanData.MassAnalyzer = scanEvent.MassAnalyzer;
-                                        ms3ScanData.MSOrder = scanEvent.MSOrder;
-                                        allScans.TryAdd(ms3Scan, ms3ScanData);
-                                    }
-                                    else
-                                    {
-                                        // there is no ms3 scan, so we only add the ms2 scan
+                                        Console.WriteLine("\nScan " + ms2Scan + " has no dependents.\n");
+                                        scanEvent = rawFile.GetScanEventForScanNumber(ms2Scan);
+                                        ms2ScanData.MassAnalyzer = scanEvent.MassAnalyzer;
+                                        ms2ScanData.MSOrder = scanEvent.MSOrder;
+                                        ms2ScanData.HasPrecursors = true;
                                         precursorScans.TryAdd(ms2Scan, new PrecursorScanData(ms2scan: ms2Scan, masterScan: scan));
                                         ms2ScanData.HasDependents = false;
                                     }
+                                    else
+                                    {
+                                        var ms2Dependents = rawFile.GetScanDependents(ms2Scan, 4).ScanDependentDetailArray;
+                                        scanEvent = rawFile.GetScanEventForScanNumber(ms2Scan);
+                                        ms2ScanData.MassAnalyzer = scanEvent.MassAnalyzer;
+                                        ms2ScanData.MSOrder = scanEvent.MSOrder;
+                                        ms2ScanData.HasPrecursors = true;
+
+                                        if (ms2Dependents.Length != 0) // make sure there is ms3 data
+                                        {
+                                            int ms3Scan = ms2Dependents[0].ScanIndex;
+                                            ms3.Add(ms3Scan);
+                                            msAny.Add(ms3Scan);
+
+                                            scanEvent = rawFile.GetScanEventForScanNumber(ms3Scan);
+                                            precursorScans.TryAdd(ms2Scan, new PrecursorScanData(ms2scan: ms2Scan, masterScan: scan));
+                                            precursorScans.TryAdd(ms3Scan, new PrecursorScanData(ms3scan: ms3Scan, ms2Scan: ms2Scan, masterScan: scan));
+                                            ms2ScanData.HasDependents = true;
+
+                                            ms3ScanData = new ScanData();
+                                            ms3ScanData.HasPrecursors = true;
+                                            ms3ScanData.MassAnalyzer = scanEvent.MassAnalyzer;
+                                            ms3ScanData.MSOrder = scanEvent.MSOrder;
+                                            allScans.TryAdd(ms3Scan, ms3ScanData);
+                                        }
+                                        else
+                                        {
+                                            // there is no ms3 scan, so we only add the ms2 scan
+                                            precursorScans.TryAdd(ms2Scan, new PrecursorScanData(ms2scan: ms2Scan, masterScan: scan));
+                                            ms2ScanData.HasDependents = false;
+                                        }    
+                                        
+                                    }
+
                                     allScans.TryAdd(ms2Scan, ms2ScanData);
+
                                 }
                             }
                         }
@@ -587,6 +602,7 @@ namespace RawTools.Algorithms.ExtractData
 
         public static PrecursorMassCollection PrecursorMasses(IRawDataPlus rawFile, PrecursorScanCollection precursorScans, TrailerExtraCollection trailerExtras, ScanIndex index)
         {
+
             rawFile.SelectInstrument(Device.MS, 1);
             Log.Information("Extracting precursor masses");
 
@@ -597,6 +613,7 @@ namespace RawTools.Algorithms.ExtractData
 
             foreach (int scan in scans)
             {
+               
                 if (index.allScans[scan].MSOrder == MSOrderType.Ms2)
                 {
                     double parent_mass = rawFile.GetScanEventForScanNumber(scan).GetReaction(0).PrecursorMass;
