@@ -43,36 +43,36 @@ namespace RawTools.WorkFlows
             ParseParams = new ParseWorkflowParameters();
         }
 
-        public WorkflowParameters(Dictionary<string, object> Options)
+        public WorkflowParameters(ArgumentParser.Options Options)
         {
 
             ParseParams = new ParseWorkflowParameters();
             
             ExpType = ExperimentType.DDA;
             MgfIntensityCutoff = 0;
-            MaxProcesses = Convert.ToInt32(TryGetElseDefault(Options, "MaxProcesses"));
-            MgfMassCutoff = Convert.ToDouble(TryGetElseDefault(Options, "MgfMassCutOff"));
-            InputFiles = (List<string>)TryGetElseDefault(Options,"RawFiles");
-            RawFileDirectory = (string)TryGetElseDefault(Options,"RawFileDirectory");
-            IncludeSubdirectories = (bool)TryGetElseDefault(Options,"SearchSubdirectories");
-            RefineMassCharge = (bool)TryGetElseDefault(Options,"RefineMassCharge");
-            ParseParams.Chromatogram = (string)TryGetElseDefault(Options, "Chromatogram");
-            ParseParams.Xic = (string)TryGetElseDefault(Options, "Xic");
-            ParseParams.WriteMgfLevels = (string)TryGetElseDefault(Options, "WriteMgfLevels");
-            ParseParams.WriteFaimsMgf = (bool)TryGetElseDefault(Options, "FaimsMgf");
-            ParseParams.LabelingReagents = (string)TryGetElseDefault(Options, "LabelingReagent");
-            ParseParams.Metrics = (bool)TryGetElseDefault(Options, "Metrics");
-            ParseParams.AllScanData = (bool)TryGetElseDefault(Options, "AllScanData");
-            ParseParams.Parse = (bool)TryGetElseDefault(Options, "Parse");
-            ParseParams.Quant = (bool)TryGetElseDefault(Options, "Quant");
-            ParseParams.UnlabeledQuant = (bool)TryGetElseDefault(Options, "UnlabeledQuant");
-            ParseParams.WriteMgf = (bool)TryGetElseDefault(Options, "WriteMGF");
-            ConsideredChargeStates.Min = Convert.ToInt32(TryGetElseDefault(Options, "MinCharge"));
-            ConsideredChargeStates.Max = Convert.ToInt32(TryGetElseDefault(Options, "MaxCharge"));
-            LogDump = (bool)TryGetElseDefault(Options, "LogDump");
-            ImpurityTable = (string)TryGetElseDefault(Options, "TmtImpurityTable");
+            MaxProcesses = Options.MaxProcesses;
+            MgfMassCutoff = Options.MgfMassCutOff;
+            InputFiles = Options.RawFiles;
+            RawFileDirectory = Options.RawFileDirectory;
+            IncludeSubdirectories = Options.SearchSubdirectories;
+            RefineMassCharge = Options.RefineMassCharge;
+            ParseParams.Chromatogram = Options.Chromatogram;
+            ParseParams.Xic = Options.Xic;
+            ParseParams.WriteMgfLevels = Options.WriteMgfLevels;
+            ParseParams.WriteFaimsMgf = Options.FaimsMgf;
+            ParseParams.LabelingReagents = Options.LabelingReagent;
+            ParseParams.Metrics = Options.Metrics;
+            ParseParams.AllScanData = Options.AllScanData;
+            ParseParams.Parse = Options.Parse;
+            ParseParams.Quant = Options.Quant;
+            ParseParams.UnlabeledQuant = Options.UnlabeledQuant;
+            ParseParams.WriteMgf = Options.WriteMGF;
+            ConsideredChargeStates.Min = Options.MinCharge;
+            ConsideredChargeStates.Max = Options.MaxCharge;
+            LogDump = Options.LogDump;
+            ImpurityTable = Options.TmtImpurityTable;
 
-            string output = (string)TryGetElseDefault(Options, "OutputDirectory");
+            string output = Options.OutputDirectory;
 
             if (!String.IsNullOrEmpty(output))
             {
@@ -86,8 +86,8 @@ namespace RawTools.WorkFlows
 
             QcParams = new QcWorkflowParameters();
 
-            QcParams.QcDirectory = (string)TryGetElseDefault(Options, "QcDirectory");
-            QcParams.XTandemDirectory = (string)TryGetElseDefault(Options, "XTandemDirectory");
+            QcParams.QcDirectory = Options.QcDirectory;
+            QcParams.XTandemDirectory = Options.XTandemDirectory;
 
             if (!String.IsNullOrEmpty(QcParams.XTandemDirectory))
             {
@@ -96,12 +96,12 @@ namespace RawTools.WorkFlows
 
             ExpType = ExperimentType.DDA;
             
-            QcParams.FastaDatabase = (string)TryGetElseDefault(Options, "FastaDB");
-            QcParams.FixedMods = (string)TryGetElseDefault(Options, "FixedModifications");
+            QcParams.FastaDatabase = Options.FastaDB;
+            QcParams.FixedMods = Options.FixedModifications;
             //QcParams.FixedScans = Options.FixedScans;
-            QcParams.VariableMods = (string)TryGetElseDefault(Options, "VariableModifications");
+            QcParams.VariableMods = Options.VariableModifications;
 
-            QcParams.NumberSpectra = Convert.ToInt32(TryGetElseDefault(Options, "NumberSpectra"));
+            QcParams.NumberSpectra = Options.NumberSpectra;
 
             if (QcParams.SearchAlgorithm != SearchAlgorithm.None)
             {
@@ -130,18 +130,6 @@ namespace RawTools.WorkFlows
                 {
                     QcParams.XTandemDirectory = Path.Combine(Directory.GetCurrentDirectory(), QcParams.XTandemDirectory);
                 }
-            }
-        }
-
-        private V TryGetElseDefault<T, V>(Dictionary<T, V> parameters, T key)
-        {
-            if (parameters.ContainsKey(key))
-            {
-                return parameters[key];
-            }
-            else
-            {
-                return default(V);
             }
         }
     }

@@ -424,17 +424,20 @@ namespace RawTools.Data.Containers
         public SearchData SearchData;
         public SerializableDictionary<string, double> ModificationFrequency;
 
-
-        public SearchMetricsContainer(string rawFile, DateTime dateAquired, MethodDataContainer methodData)
+        public SearchMetricsContainer()
         {
+            SearchData = new SearchData();
+            ModificationFrequency = new SerializableDictionary<string, double>();
+        }
+
+        public SearchMetricsContainer(string rawFile, DateTime dateAquired, MethodDataContainer methodData) : this()
+        {            
             RawFile = rawFile;
             Instrument = methodData.Instrument;
             DateAcquired = dateAquired;
             DigestionEfficiency = IdentificationRate = MissedCleavageRate = -1;
             ChargeRatio3to2 = ChargeRatio4to2 = -1;
             MedianMassDrift = -1;
-            SearchData = new SearchData();
-            ModificationFrequency = new SerializableDictionary<string, double>();
         }
     }
 

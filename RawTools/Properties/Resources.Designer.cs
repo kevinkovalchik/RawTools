@@ -19,7 +19,7 @@ namespace RawTools.Properties {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -103,10 +103,7 @@ namespace RawTools.Properties {
         /// <summary>
         ///   Looks up a localized string similar to &lt;?xml version=&quot;1.0&quot;?&gt;
         ///&lt;bioml label=&quot;x! taxon-to-file matching list&quot;&gt;
-        ///	&lt;taxon label=&quot;yeast&quot;&gt;
-        ///		&lt;file format=&quot;peptide&quot; URL=&quot;../fasta/scd.fasta.pro&quot; /&gt;
-        ///		&lt;file format=&quot;peptide&quot; URL=&quot;../fasta/scd_1.fasta.pro&quot; /&gt;
-        ///		&lt;file format=&quot;peptide&quot; URL=&quot;../fasta/crap.fasta.pro&quot; /&gt;
+        ///	&lt;taxon label=&quot;all&quot;&gt;
         ///	&lt;/taxon&gt;
         ///&lt;/bioml&gt;
         ///.

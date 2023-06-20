@@ -20,27 +20,12 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ThermoFisher;
 using ThermoFisher.CommonCore.Data.Business;
 using ThermoFisher.CommonCore.Data.Interfaces;
-using ThermoFisher.CommonCore.Data.FilterEnums;
-using ThermoFisher.CommonCore.Data;
-using RawTools.Data.IO;
-using RawTools.Data.Collections;
-using RawTools.Data.Extraction;
-using RawTools.Data.Containers;
 using RawTools.Utilities;
-using RawTools.Algorithms;
 using RawTools.QC;
 using RawTools.WorkFlows;
-using RawTools.Algorithms.Analyze;
-using RawTools.Algorithms.ExtractData;
-using RawTools.Utilities.MathStats;
-using System.Xml.Linq;
 using Serilog;
-using CLParser;
 //using Serilog.Sinks.File;
 
 namespace RawTools
@@ -64,30 +49,30 @@ namespace RawTools
 
             Log.Information("Program started with arguments: {0}", String.Join(" ", args));
 
-            ClParser parser = ArgumentParser.ParserForRawTools.Create();
-
-            var arguments = parser.Parse(args);
-
-            _ = Run(arguments);
+            var arguments = ArgumentParser.ParserForRawTools.Parse(args);
+            if (arguments != null)
+            {
+                _ = Run(arguments);
+            }
 
             Log.CloseAndFlush();
         }
 
-        static int Run(Dictionary<string, object> opts)
+        static int Run(ArgumentParser.Options opts)
         {
-            if ((bool)opts["VersionInfo"] == true)
+            if ((bool)opts.VersionInfo == true)
             {
                 Examples.VersionInfo();
                 Environment.Exit(0);
             }
 
-            if ((bool)opts["ExampleCommands"] == true)
+            if ((bool)opts.ExampleCommands == true)
             {
                 Examples.CommandLineUsage();
                 Environment.Exit(0);
             }
 
-            if ((bool)opts["ExampleModifications"] == true)
+            if ((bool)opts.ExampleModifications == true)
             {
                 Examples.ExampleMods();
                 Environment.Exit(0);
@@ -98,7 +83,7 @@ namespace RawTools
 
             WorkflowParameters parameters = new WorkflowParameters(opts);
 
-            if (parameters.InputFiles != null) // did the user give us a list of files?
+            if (parameters.InputFiles != null && parameters.InputFiles.Count() > 0) // did the user give us a list of files?
             {
                 List<string> problems = new List<string>();
                 files = parameters.InputFiles.ToList();
