@@ -98,7 +98,7 @@ namespace RawTools.WorkFlows
             
             QcParams.FastaDatabase = Options.FastaDB;
             QcParams.FixedMods = Options.FixedModifications;
-            //QcParams.FixedScans = Options.FixedScans;
+            QcParams.FixedScans = Options.FixedScans;
             QcParams.VariableMods = Options.VariableModifications;
 
             QcParams.NumberSpectra = Options.NumberSpectra;

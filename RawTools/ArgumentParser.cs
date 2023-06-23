@@ -16,7 +16,9 @@
 // any third-party libraries ditributed with RawTools. All third party
 // licenses are provided in accompanying files as outline in the NOTICE.
 
+using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography.X509Certificates;
 using System.Xml.Linq;
@@ -144,6 +146,11 @@ namespace RawTools.ArgumentParser
             "to see examples of some common modifications")]
         public string VariableModifications { get; set; }
 
+        [Option("fixedscans", Required = false,
+            HelpText = "Fix random number generator seed for selecting random scan numbers for search. " +
+            "This guarantees that running the QC step twice in a row produces identical results")]
+        public bool FixedScans { get; set; } = false;
+
         [Option('X', "xtandem", Required = false,
             HelpText = "Specify the path to the X! Tandem directory (the directory containing \"tandem.exe\") if you want " +
             "to run a database search as part of QC.")]
@@ -152,7 +159,7 @@ namespace RawTools.ArgumentParser
         [Option('N', "numberspectra", Required = false,
             HelpText = "The number of MS2 spectra to be passes to the search engine as an MGF file. Defaults to 10,000. " +
             "If N is greater than the number of MS2 scans in a raw file, all MS2 scans will be used.")]
-        public int NumberSpectra { get; set; } = 3000;
+        public int NumberSpectra { get; set; } = 10000;
 
         [Option('l', "logdump", Required = false,
             HelpText = "Write the instrument logs from all provided raw files to disk.")]
