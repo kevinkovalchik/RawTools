@@ -39,7 +39,7 @@ namespace RawTools.QC
     {
         public static void WriteSearchMGF(WorkflowParameters parameters, CentroidStreamCollection centroids, SegmentScanCollection segments, RetentionTimeCollection retentionTimes,
             PrecursorMassCollection precursorMasses, PrecursorScanCollection precursorScans, TrailerExtraCollection trailerExtras, MethodDataContainer methodData,
-            ScanIndex index, string rawFileName, bool fixedScans = false)
+            ScanIndex index, string rawFileName)
         {
             var pars = parameters.QcParams.SearchParameters;
             int[] scans = AdditionalMath.SelectRandomScans(scans: index.ScanEnumerators[MSOrderType.Ms2],

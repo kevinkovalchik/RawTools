@@ -347,6 +347,11 @@ namespace RawTools.Utilities
     {
         public static double Percentile(this double[] Values, int percentile)
         {
+            if(Values.Length == 0)
+            {
+                return Double.NaN;
+            }
+
             int end = Values.Length - 1;
             double endAsDouble = Convert.ToDouble(end);
             double[] sortedValues = (double[])Values.Clone();
@@ -600,8 +605,7 @@ namespace RawTools.Utilities
             }
             finally
             {
-                if (stream != null)
-                    stream.Close();
+                stream?.Close();
             }
 
             //file is not locked
@@ -763,8 +767,7 @@ namespace RawTools.Utilities
             }
             finally
             {
-                if (writer != null)
-                    writer.Close();
+                writer?.Close();
             }
         }
 
@@ -786,8 +789,7 @@ namespace RawTools.Utilities
             }
             finally
             {
-                if (reader != null)
-                    reader.Close();
+                reader?.Close();
             }
         }
     }

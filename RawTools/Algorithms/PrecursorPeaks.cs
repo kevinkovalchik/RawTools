@@ -60,7 +60,7 @@ namespace RawTools.Algorithms
             List<double> profileTimes = new List<double>();
             List<double> profileIntensities = new List<double>();
 
-            double[] masses, intensities, massDiff;
+            double[] masses, intensities;
 
             Dictionary<int, double> indexedIntensities = new Dictionary<int, double>();
 
@@ -78,14 +78,16 @@ namespace RawTools.Algorithms
                 return peak;
             }
 
-            massDiff = new double[masses.Length];
+            minMassDiff = Double.PositiveInfinity;
 
             for (int i = 0; i < masses.Length; i++)
             {
-                massDiff[i] = Math.Abs(masses[i] - targetMass);
+                var massDiff = Math.Min(minMassDiff, Math.Abs(masses[i] - targetMass));
+                if(massDiff < minMassDiff)
+                {
+                    minMassDiff = massDiff;
+                }
             }
-
-            minMassDiff = massDiff.Min();
 
             if (minMassDiff / targetMass * 1e6 < 10)
             {
@@ -106,20 +108,24 @@ namespace RawTools.Algorithms
                 masses = centroids[currentScan].Masses;
                 intensities = centroids[currentScan].Intensities;
 
-                massDiff = new double[masses.Length];
+                minMassDiff = Double.PositiveInfinity;
+                int minMassDiffIndex = -1;
 
                 for (int i = 0; i < masses.Length; i++)
                 {
-                    massDiff[i] = Math.Abs(masses[i] - targetMass);
+                    var massDiff = Math.Abs(masses[i] - targetMass);
+                    if(massDiff < minMassDiff)
+                    {
+                        minMassDiff = massDiff;
+                        minMassDiffIndex = i;
+                    }
                 }
-
-                minMassDiff = massDiff.Min();
 
                 if (minMassDiff / targetMass * 1e6 < 10)
                 {
                     scans.Add(currentScan);
                     scanIndex -= 1;
-                    indexedIntensities.Add(currentScan, intensities[Array.IndexOf(massDiff, minMassDiff)]);
+                    indexedIntensities.Add(currentScan, intensities[minMassDiffIndex]);
                     if (scanIndex < 0)
                     {
                         previousMS1scan = currentScan;
@@ -157,20 +163,24 @@ namespace RawTools.Algorithms
                 masses = centroids[currentScan].Masses;
                 intensities = centroids[currentScan].Intensities;
 
-                massDiff = new double[masses.Length];
+                minMassDiff = Double.PositiveInfinity;
+                int minMassDiffIndex = -1;
 
                 for (int i = 0; i < masses.Length; i++)
                 {
-                    massDiff[i] = Math.Abs(masses[i] - targetMass);
+                    double massDiff = Math.Abs(masses[i] - targetMass);
+                    if (massDiff < minMassDiff)
+                    {
+                        minMassDiff = massDiff;
+                        minMassDiffIndex = i;
+                    }
                 }
-
-                minMassDiff = massDiff.Min();
 
                 if (minMassDiff / targetMass * 1e6 < 10)
                 {
                     scans.Add(currentScan);
                     scanIndex += 1;
-                    indexedIntensities.Add(currentScan, intensities[Array.IndexOf(massDiff, minMassDiff)]);
+                    indexedIntensities.Add(currentScan, intensities[minMassDiffIndex]);
                     if (scanIndex >= MS1Scans.Length)
                     {
                         nextMS1scan = currentScan;

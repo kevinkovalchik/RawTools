@@ -183,7 +183,7 @@ namespace RawTools.WorkFlows
                     if (parameters.QcParams.PerformSearch)
                     {
                         Search.WriteSearchMGF(parameters, centroidStreams, segmentScans, retentionTimes, precursorMasses, precursorScans, trailerExtras, methodData,
-                            Index, staticRawFile.FileName, parameters.QcParams.FixedScans);
+                            Index, staticRawFile.FileName);
 
                         Search.RunSearch(parameters, methodData, staticRawFile.FileName);
 
