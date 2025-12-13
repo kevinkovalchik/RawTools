@@ -1,4 +1,10 @@
-# RawTools
+# RawTools 3 is (potentially) on the way!
+
+It has been a while, but I am starting to think about a "modern" rewrite of RawTools. The idea is support pretty much any experiment using a method-agnostic data structure, e.g. DDA, DIA, and PRM should obviously be handled as well as whatever else you throw at it. Most of the meta data for these experiments is quite similar, but how they are stored in the raw files and how scans are logically linked varies, which will make for an interesting task. Chris also has some interesting ideas on ways we can support the metabolomics and lipodomics communities.
+
+If you happen to stumble upon this and have requests or ideas, please submit a feature request on the [issues page](https://github.com/kevinkovalchik/RawTools/issues) or post something in the [discussions section](https://github.com/kevinkovalchik/RawTools/discussions).
+
+## Readme (archive)
 
 Welcome to the RawTools page! RawTools is an open-source and freely available package designed to perform scan data parsing and quantification, and quality control analysis of Thermo Orbitrap raw mass spectrometer files. RawTools is written in C# and uses the Thermo RawFileReader library. RawTools is fully compatible with Windows, Linux, and MacOS operating systems. RawTools is the replacement for the previously described [RawQuant](https://github.com/kevinkovalchik/RawQuant) Python package. 
 
