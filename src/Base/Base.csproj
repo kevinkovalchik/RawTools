@@ -8,27 +8,27 @@
 
   <ItemGroup>
     <Reference Include="ThermoFisher.CommonCore.BackgroundSubtraction">
-      <HintPath>..\Lib\ThermoFisher.CommonCore.BackgroundSubtraction.dll</HintPath>
+      <HintPath>..\..\Lib\ThermoFisher.CommonCore.BackgroundSubtraction.dll</HintPath>
       <Private>true</Private>
     </Reference>
     <Reference Include="ThermoFisher.CommonCore.Data">
-      <HintPath>..\Lib\ThermoFisher.CommonCore.Data.dll</HintPath>
+      <HintPath>..\..\Lib\ThermoFisher.CommonCore.Data.dll</HintPath>
       <Private>true</Private>
     </Reference>
     <Reference Include="ThermoFisher.CommonCore.MassPrecisionEstimator">
-      <HintPath>..\Lib\ThermoFisher.CommonCore.MassPrecisionEstimator.dll</HintPath>
+      <HintPath>..\..\Lib\ThermoFisher.CommonCore.MassPrecisionEstimator.dll</HintPath>
       <Private>true</Private>
     </Reference>
     <Reference Include="ThermoFisher.CommonCore.RawFileReader">
-      <HintPath>..\Lib\ThermoFisher.CommonCore.RawFileReader.dll</HintPath>
+      <HintPath>..\..\Lib\ThermoFisher.CommonCore.RawFileReader.dll</HintPath>
       <Private>true</Private>
     </Reference>
     <Reference Include="OpenMcdf">
-      <HintPath>..\Lib\OpenMcdf.dll</HintPath>
+      <HintPath>..\..\Lib\OpenMcdf.dll</HintPath>
       <Private>true</Private>
     </Reference>
     <Reference Include="OpenMcdf.Extensions">
-      <HintPath>..\Lib\OpenMcdf.Extensions.dll</HintPath>
+      <HintPath>..\..\Lib\OpenMcdf.Extensions.dll</HintPath>
       <Private>true</Private>
     </Reference>
   </ItemGroup>
